@@ -1,5 +1,5 @@
 #pragma once
-#include <direct.h>
+#include <d3d11.h>
 #include <DirectXMath.h>
 
 class Game
@@ -7,6 +7,8 @@ class Game
 private:
 
 	bool isRunning;
+	ID3D11Device* device;
+	ID3D11DeviceContext* context; // Device Context
 
 public:
 
