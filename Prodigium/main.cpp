@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <Windows.h>
 #include <stdlib.h>
-//#include "Game.h"
+#include "Game.h"
 #pragma comment(lib, "Winmm.lib")
 #define WIDTH 1920
 #define HEIGHT 1080
