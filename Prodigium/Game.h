@@ -1,6 +1,6 @@
 #pragma once
 #include <d3d11.h>
-#include <DirectXMath.h>
+#include <Windows.h>
 
 class Game
 {
@@ -16,5 +16,11 @@ public:
 	~Game();
 
 	void run();
+
+	/*
+	* Setups
+	*/
+
+	bool SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND& window);
 
 };
