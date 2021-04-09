@@ -32,7 +32,7 @@ bool SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND
 
 	RegisterClass(&wc);
 
-	window = CreateWindowEx(0, CLASS_NAME, L"Lol", WS_OVERLAPPEDWINDOW,
+	window = CreateWindowEx(0, CLASS_NAME, L"Prodigium", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, width, height, nullptr, nullptr, instance, nullptr);
 
 	if (window == nullptr)
@@ -52,7 +52,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	HWND window;
 	Game game;
-	const int WIDTH = 1024;
+
+	/*
+		Width and Height of presented window, Can be changed in options?
+	*/
+	const int WIDTH = 1280;
 	const int HEIGHT = 1024;
 	if (!SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
 	{
@@ -63,6 +67,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	/*
 		Why are you running?
 	*/
-	game.run();
+	bool success = false;
+	success = game.StartUp(WIDTH, HEIGHT, window);
+
+	if (!success)
+	{
+		// Something went wrong with Start up. Handle Errors. Crash?
+	}
+
+	MSG state = {};
+	while (!(GetKeyState(VK_ESCAPE)) && state.message != WM_QUIT)
+	{
+		if (PeekMessage(&state, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&state);
+			DispatchMessage(&state);
+		}
+
+		game.run();
+	}
 	return 0;
 }
