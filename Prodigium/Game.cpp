@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <iostream>
+#include <omp.h>
 
 bool Game::SetupDevice(int width, int height, HWND window)
 {
@@ -133,6 +134,9 @@ Game::~Game()
 
 void Game::run()
 {
+	// Calculate difference since last run() call.
+	double frameDiff = omp_get_wtime() - this->frameTime;
+
 	// Active game loop.
 	if (isRunning)
 	{
@@ -140,6 +144,9 @@ void Game::run()
 
 		this->swapChain->Present(0, 0);
 	}
+
+	// Retake the frame time for difference calculation later on.
+	this->frameTime = omp_get_wtime();
 }
 
 bool Game::StartUp(int width, int height, HWND window)
@@ -147,6 +154,9 @@ bool Game::StartUp(int width, int height, HWND window)
 	// Save for reference in other functions.
 	this->windowHeight = height;
 	this->windowWidth = width;
+
+	// Start taking one frame second on start up.
+	this->frameTime = omp_get_wtime();
 
 	if (!this->SetupDevice(width, height, window))
 	{

@@ -17,6 +17,7 @@ private:
 
 	// Boolean for if the game is paused or not.
 	bool isRunning;
+	double frameTime;
 
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
@@ -44,6 +45,7 @@ public:
 	Game();
 	~Game();
 
+	// Main loop of the game.
 	void run();
 
 	// Start up for device. Run only once outside of loop.
