@@ -64,9 +64,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	/*
-		Why are you running?
-	*/
 	bool success = false;
 	success = game.StartUp(WIDTH, HEIGHT, window);
 

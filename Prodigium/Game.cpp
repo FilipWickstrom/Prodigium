@@ -105,6 +105,7 @@ Game::Game()
 	this->rasterState = 0;
 	this->backBufferView = 0;
 	this->depthView = 0;
+	this->frameTime = 0;
 
 	this->windowHeight = 0;
 	this->windowWidth = 0;
