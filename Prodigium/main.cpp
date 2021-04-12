@@ -2,6 +2,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "Game.h"
+#include <omp.h>
+
 #pragma comment(lib, "Winmm.lib")
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -50,38 +52,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	HWND window;
 	Game game;
+	float deltaTime = 0;
+	float currentFrame = 0;
+	float lastFrame = 0;
 
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
 	const int WIDTH = 1280;
 	const int HEIGHT = 1024;
-	if (!SetupWindow(hInstance, WIDTH, HEIGHT, nCmdShow, window))
-	{
-		std::cerr << "Setting up Window failed" << std::endl;
-		return -1;
-	}
 
 	bool success = false;
-	success = game.StartUp(WIDTH, HEIGHT, window);
+	success = game.Run(hInstance, WIDTH, HEIGHT);
 
 	if (!success)
 	{
-		// Something went wrong with Start up. Handle Errors. Crash?
+		std::cout << "Couldn't initialize game, aborting!" << std::endl;
+		return -1;
 	}
 
 	MSG state = {};
-	while (!(GetKeyState(VK_ESCAPE)) && state.message != WM_QUIT)
+	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)
 	{
 		if (PeekMessage(&state, 0, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&state);
 			DispatchMessage(&state);
 		}
-
-		game.run();
+		currentFrame = static_cast<float>(omp_get_wtime());
+		game.OnFrame(deltaTime);
+		lastFrame = static_cast<float>(omp_get_wtime());
+		deltaTime = lastFrame - currentFrame;
 	}
 	return 0;
 }
