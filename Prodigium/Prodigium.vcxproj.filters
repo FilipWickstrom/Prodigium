@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Helper Includes">
       <UniqueIdentifier>{0a9cf4e6-1e69-4984-8591-d5e0afa9e627}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Techniques">
+      <UniqueIdentifier>{7ce04cc5-359b-41c6-a2ed-1d5d7fbf7cbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -34,6 +37,12 @@
     </ClInclude>
     <ClInclude Include="UsefulStructuresHeader.h">
       <Filter>Header Files\Helper Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAO.h">
+      <Filter>Header Files\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files\Techniques</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

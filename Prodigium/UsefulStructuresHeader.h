@@ -25,17 +25,16 @@ struct Material
 
 /*
 	Struct for usage with different Matrices
-	Contains the matrices for world/global, view and projection.
+	Contains the matrices for view and projection.
 */
 struct Matrix
 {
-	DirectX::XMFLOAT4X4 world;
 	DirectX::XMFLOAT4X4 view;
 	DirectX::XMFLOAT4X4 projection;
 };
 
 /*
-	Compact version of the Matrix struct.
+	Compact version of the 'Matrix' struct.
 	Contains one element that can be used as world, view and projection in one matrix.
 */
 struct MatrixCompact
