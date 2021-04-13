@@ -143,6 +143,8 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneHandler.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +152,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneHandler.h" />
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="UsefulStructuresHeader.h" />
     <ClInclude Include="Window.h" />
