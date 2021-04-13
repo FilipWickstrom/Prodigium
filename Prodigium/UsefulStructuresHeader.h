@@ -1,13 +1,13 @@
 #pragma once
 #include <DirectXMath.h>
-
+#define BUFFER_COUNT 1
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.
 */
 struct Vertex
 {
-	DirectX::XMFLOAT4 position;
+	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 normal;
 	DirectX::XMFLOAT2 uv;
 };
@@ -40,4 +40,11 @@ struct Matrix
 struct MatrixCompact
 {
 	DirectX::XMFLOAT4X4 transform;
+};
+
+struct TextureRenderTargets
+{
+	ID3D11RenderTargetView* renderTargets[BUFFER_COUNT];
+	ID3D11ShaderResourceView* shaderResourceViews[BUFFER_COUNT];
+	ID3D11Texture2D* textures[BUFFER_COUNT];
 };

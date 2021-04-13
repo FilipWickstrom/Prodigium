@@ -113,7 +113,6 @@ bool Engine::SetupDevice()
 	swapDesc.BufferDesc.Width = this->window.GetWindowWidth();
 	swapDesc.BufferDesc.Height = this->window.GetWindowHeight();
 
-
 	swapDesc.SampleDesc.Count = 1;
 	swapDesc.SampleDesc.Quality = 0;
 

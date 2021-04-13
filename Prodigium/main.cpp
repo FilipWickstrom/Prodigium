@@ -53,9 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	Game game;
-	float deltaTime = 0;
-	float currentFrame = 0;
-	float lastFrame = 0;
+	float currentFrame, lastFrame, deltaTime = 0;
 
 	/*
 		Width and Height of presented window, Can be changed in options?
@@ -63,14 +61,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	const int WIDTH = 1280;
 	const int HEIGHT = 1024;
 
-	bool success = false;
-	success = game.Run(hInstance, WIDTH, HEIGHT);
-
-	if (!success)
-	{
-		std::cout << "Couldn't initialize game, aborting!" << std::endl;
-		return -1;
-	}
+	game.Run(hInstance, WIDTH, HEIGHT);
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)
@@ -85,5 +76,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		lastFrame = static_cast<float>(omp_get_wtime());
 		deltaTime = lastFrame - currentFrame;
 	}
+
 	return 0;
 }

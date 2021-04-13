@@ -3,26 +3,25 @@
 
 Game::Game()
 {
-
 }
 
 Game::~Game()
 {
 }
 
-bool Game::Run(HINSTANCE& instance, UINT width, UINT height)
+void Game::Run(HINSTANCE& instance, UINT width, UINT height)
 {
 	if (!engine.StartUp(instance, width, height))
 	{
-		return false;
+		std::cout << "Couldn't initialize engine, aborting!" << std::endl;
 	}
 
-	return true;
 }
 
 bool Game::OnFrame(const float& deltaTime)
 {
 	engine.ClearDisplay();
 	engine.PresentScene();
+
 	return true;
 }

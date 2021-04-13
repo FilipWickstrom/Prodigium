@@ -23,7 +23,7 @@ public:
 	~Game();
 
 	// Main loop of the game.
-	bool Run(HINSTANCE& instance, UINT width, UINT height);
+	void Run(HINSTANCE& instance, UINT width, UINT height);
 
 	// Start up for device. Run only once outside of loop.
 	bool OnFrame(const float& deltaTime);
