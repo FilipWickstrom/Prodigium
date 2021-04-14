@@ -8,12 +8,6 @@ Engine::Engine()
 	this->device = nullptr;
 	this->rasterState = nullptr;
 	this->swapChain = nullptr;
-	for (int i = 0; i < bufferCount; i++)
-	{
-		this->renderTargetViews[i] = nullptr;
-		this->textures[i] = nullptr;
-		this->shaderResourceViews[i] = nullptr;
-	}
 	this->viewPort = {};
 }
 
@@ -29,15 +23,6 @@ Engine::~Engine()
 		this->context->Release();
 	if (this->device)
 		this->device->Release();
-	for (int i = 0; i < bufferCount; i++)
-	{
-		if (this->renderTargetViews[i])
-			this->renderTargetViews[i]->Release();
-		if (this->textures[i])
-			this->textures[i]->Release();
-		if (this->shaderResourceViews[i])
-			this->shaderResourceViews[i]->Release();
-	}
 }
 
 void Engine::ClearDisplay()
@@ -61,10 +46,13 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
+	gPass.RenderGPass(context);
+	context->RSSetViewports(1, &viewPort);
+
 	this->swapChain->Present(0, 0);
 }
 
-bool Engine::StartUp(HINSTANCE& instance, UINT width, UINT height)
+bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	if (!this->window.SetupWindow(instance, width, height))
 	{
@@ -82,6 +70,8 @@ bool Engine::StartUp(HINSTANCE& instance, UINT width, UINT height)
 	}
 
 	this->SetupViewPort();
+
+	this->gPass.Initialize(device, width, height);
 
 	return true;
 }

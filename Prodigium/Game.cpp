@@ -15,7 +15,6 @@ void Game::Run(HINSTANCE& instance, UINT width, UINT height)
 	{
 		std::cout << "Couldn't initialize engine, aborting!" << std::endl;
 	}
-
 }
 
 bool Game::OnFrame(const float& deltaTime)

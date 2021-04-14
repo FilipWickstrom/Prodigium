@@ -1,15 +1,15 @@
 #pragma once
 #include <DirectXMath.h>
-#define BUFFER_COUNT 1
+#define BUFFER_COUNT 3
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.
 */
 struct Vertex
 {
-	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 normal;
-	DirectX::XMFLOAT2 uv;
+	DirectX::XMFLOAT3 position = {};
+	DirectX::XMFLOAT2 uv = {};
+	DirectX::XMFLOAT3 normal = {};
 };
 
 /*

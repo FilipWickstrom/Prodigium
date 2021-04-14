@@ -31,25 +31,6 @@ bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
-	D3D11_TEXTURE2D_DESC depthDesc = {};
-
-	depthDesc.Width = windowWidth;
-	depthDesc.Height = windowHeight;
-	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthDesc.SampleDesc.Count = 1;
-	depthDesc.SampleDesc.Quality = 0;
-	depthDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthDesc.CPUAccessFlags = 0;
-	depthDesc.MipLevels = 1;
-	depthDesc.ArraySize = 1;
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-
-	depthStencilDesc.Format = depthDesc.Format;
-	depthStencilDesc.Texture2D.MipSlice = 0;
-	depthStencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		hr = device->CreateTexture2D(&textureDesc, nullptr, &gBuffer.textures[i]);
@@ -219,6 +200,38 @@ bool GeometryPass::CreateInputLayout(ID3D11Device*& device)
 	return true;
 }
 
+bool GeometryPass::CreateQuad(ID3D11Device*& device)
+{
+	Vertex quad[] =
+	{
+		{ { -0.5f, -0.5f, 0.0 }, { 0.0f, 1.0f }, { 0.f, 0.f, -1.0f} },
+		{ {-0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f} },
+		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+
+		{ { -0.5f, -0.5f, 0.0f}, { 0.0, 1.0f }, { 0.f, 0.f, -1.0f} },
+		{ { 0.5f, 0.5f, 0.0f}, { 1.0, 0.0f }, { 0.f, 0.f, -1.0f} },
+		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
+	};
+
+	D3D11_BUFFER_DESC bufferDesc = {};
+	bufferDesc.ByteWidth = sizeof quad;
+	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.CPUAccessFlags = 0;
+	bufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA data = {};
+	data.pSysMem = quad;
+	// Default to 0, only used by textures
+	data.SysMemPitch = 0;
+	// Only used in 3D for depth level to the next
+	data.SysMemSlicePitch = 0;
+
+	HRESULT hr = device->CreateBuffer(&bufferDesc, &data, &vBuffer);
+
+	return true;
+}
+
 GeometryPass::GeometryPass()
 {
 	this->depthTexture = nullptr;
@@ -227,7 +240,6 @@ GeometryPass::GeometryPass()
 	this->vShader = nullptr;
 	this->pShader = nullptr;
 	this->sampler = nullptr;
-	this->viewport = {};
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
@@ -261,7 +273,7 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-bool GeometryPass::Initialize(ID3D11Device* device, ID3D11DeviceContext* context, const UINT& windowWidth, const UINT& windowHeight)
+bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight)
 {
 	if (!LoadShaders(device))
 	{
@@ -287,7 +299,26 @@ bool GeometryPass::Initialize(ID3D11Device* device, ID3D11DeviceContext* context
 	{
 		return false;
 	}
-
+	
+	if (!CreateQuad(device))
+	{
+		return false;
+	}
 
 	return true;
+}
+
+void GeometryPass::RenderGPass(ID3D11DeviceContext* context)
+{
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+	context->VSSetShader(vShader, NULL, 0);
+	context->PSSetShader(pShader, NULL, 0);
+	context->IASetInputLayout(inputLayout);
+	context->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
+	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+	context->Draw(6, 0);
 }
