@@ -8,7 +8,6 @@ class Scene
 private:
 
 	// Vector for all the objects present in this scene.
-	//std::vector<Mesh*> objects;
 
 public:
 
