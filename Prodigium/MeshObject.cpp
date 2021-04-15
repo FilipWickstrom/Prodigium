@@ -3,11 +3,11 @@
 MeshObject::MeshObject()
 {
     this->vertexCount = 0;
-    this->vertexBuffer = 0;
-    this->diffuseMap = 0;
-    this->normalMap = 0;
-    this->normalMapResourceView = 0;
-    this->diffuseMapResourceView = 0;
+    this->vertexBuffer = nullptr;
+    this->diffuseMap = nullptr;
+    this->normalMap = nullptr;
+    this->normalMapResourceView = nullptr;
+    this->diffuseMapResourceView = nullptr;
 
     this->isPickUp = false;
     this->isVisible = false;
@@ -15,6 +15,17 @@ MeshObject::MeshObject()
 
 MeshObject::~MeshObject()
 {
+    if (this->vertexBuffer)
+        this->vertexBuffer->Release();
+
+    if (this->diffuseMap)
+        this->diffuseMap->Release();
+
+    if (this->normalMapResourceView)
+        this->normalMapResourceView->Release();
+
+    if (this->diffuseMapResourceView)
+        this->diffuseMapResourceView->Release();
 }
 
 void MeshObject::SetVisible(bool toggle)

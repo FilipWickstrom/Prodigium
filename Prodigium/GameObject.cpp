@@ -5,7 +5,7 @@ GameObject::GameObject()
 	this->position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->scale = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	this->modelMatrixBuffer = 0;
+	this->modelMatrixBuffer = nullptr;
 	this->modelMatrix = DirectX::XMFLOAT4X4(0.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 0.0f, 0.0f, 0.0f,
