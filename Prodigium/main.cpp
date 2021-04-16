@@ -58,13 +58,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
-	const UINT WIDTH = 1280;
-	const UINT HEIGHT = 1024;
+	const int WIDTH = 1280;
+	const int HEIGHT = 1024;
 
-	if (!game.Start(hInstance, WIDTH, HEIGHT))
-	{
-		return -1;
-	}
+	game.Run(hInstance, WIDTH, HEIGHT);
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)

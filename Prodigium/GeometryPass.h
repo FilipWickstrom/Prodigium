@@ -7,7 +7,7 @@ class GeometryPass
 {
 private:
 	TextureRenderTargets gBuffer;
-	ID3D11DepthStencilView* depthStencil;
+	ID3D11DepthStencilView* depthStencilView;
 	ID3D11Texture2D* depthTexture;
 	ID3D11InputLayout* inputLayout;
 	ID3D11VertexShader* vShader;
@@ -31,7 +31,4 @@ public:
 
 	bool Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight);
 	void RenderGPass(ID3D11DeviceContext* context);
-
-	// Remember to add in if we fill in more data to this class
-	void Clear(ID3D11DeviceContext* context);
 };

@@ -17,8 +17,6 @@ Engine::~Engine()
 		this->depthView->Release();
 	if (this->rasterState)
 		this->rasterState->Release();
-	if (this->backBufferView)
-		this->backBufferView->Release();
 	if (this->swapChain)
 		this->swapChain->Release();
 	if (this->context)
@@ -48,12 +46,8 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
-	this->gPass.RenderGPass(context);
-	this->context->RSSetViewports(1, &viewPort);
-	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
-	this->context->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
-	this->context->OMSetRenderTargets(1, &backBufferView, depthView);
-	this->lightPass.Render(context);
+	gPass.RenderGPass(context);
+	context->RSSetViewports(1, &viewPort);
 
 	this->swapChain->Present(0, 0);
 }
@@ -77,16 +71,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 
 	this->SetupViewPort();
 
-	if (!this->gPass.Initialize(device, width, height))
-	{
-		return false;
-	}
-
-	if (!this->lightPass.Initialize(device, width, height))
-	{
-		return false;
-	}
-
+	this->gPass.Initialize(device, width, height);
 
 	return true;
 }
@@ -97,9 +82,8 @@ bool Engine::SetupDevice()
 
 	// Debug mode
 	UINT flags = 0;
-    #ifdef _DEBUG
+	if (_DEBUG)
 		flags = D3D11_CREATE_DEVICE_DEBUG;
-    #endif
 
 	// Change this feature level to change DirectX version, Most stable is DirectX11
 	D3D_FEATURE_LEVEL directXfeature[] = { D3D_FEATURE_LEVEL_11_0 };

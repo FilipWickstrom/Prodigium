@@ -45,6 +45,6 @@ struct MatrixCompact
 struct TextureRenderTargets
 {
 	ID3D11RenderTargetView* renderTargets[BUFFER_COUNT];
-	ID3D11ShaderResourceView* shaderResources[BUFFER_COUNT];
+	ID3D11ShaderResourceView* shaderResourceViews[BUFFER_COUNT];
 	ID3D11Texture2D* textures[BUFFER_COUNT];
 };

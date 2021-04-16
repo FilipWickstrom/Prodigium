@@ -22,9 +22,9 @@ public:
 	Game();
 	~Game();
 
-	// Start up for device. Run only once outside of loop.
-	bool Start(HINSTANCE& instance, UINT width, UINT height);
+	// Main loop of the game.
+	void Run(HINSTANCE& instance, UINT width, UINT height);
 
-    // Main loop of the game.
+	// Start up for device. Run only once outside of loop.
 	bool OnFrame(const float& deltaTime);
 };

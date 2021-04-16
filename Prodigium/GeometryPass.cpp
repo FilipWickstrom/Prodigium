@@ -47,7 +47,7 @@ bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth
 			return false;
 		}
 
-		hr = device->CreateShaderResourceView(gBuffer.textures[i], &shaderResourceDesc, &gBuffer.shaderResources[i]);
+		hr = device->CreateShaderResourceView(gBuffer.textures[i], &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
 
 		if (FAILED(hr))
 		{
@@ -88,7 +88,7 @@ bool GeometryPass::CreateDepthBuffer(ID3D11Device*& device, const UINT& windowWi
 		return false;
 	}
 
-	hr = device->CreateDepthStencilView(depthTexture, &depthStencilDesc, &depthStencil);
+	hr = device->CreateDepthStencilView(depthTexture, &depthStencilDesc, &depthStencilView);
 
 	if (FAILED(hr))
 	{
@@ -235,7 +235,7 @@ bool GeometryPass::CreateQuad(ID3D11Device*& device)
 GeometryPass::GeometryPass()
 {
 	this->depthTexture = nullptr;
-	this->depthStencil = nullptr;
+	this->depthStencilView = nullptr;
 	this->inputLayout = nullptr;
 	this->vShader = nullptr;
 	this->pShader = nullptr;
@@ -244,15 +244,15 @@ GeometryPass::GeometryPass()
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		gBuffer.renderTargets[i] = nullptr;
-		gBuffer.shaderResources[i] = nullptr;
+		gBuffer.shaderResourceViews[i] = nullptr;
 		gBuffer.textures[i] = nullptr;
 	}
 }
 
 GeometryPass::~GeometryPass()
 {
-	if (this->depthStencil)
-		this->depthStencil->Release();
+	if (this->depthStencilView)
+		this->depthStencilView->Release();
 	if (this->depthTexture)
 		this->depthTexture->Release();
 	if (this->inputLayout)
@@ -266,8 +266,8 @@ GeometryPass::~GeometryPass()
 	{
 		if (this->gBuffer.renderTargets[i])
 			this->gBuffer.renderTargets[i]->Release();
-		if (this->gBuffer.shaderResources[i])
-			this->gBuffer.shaderResources[i]->Release();
+		if (this->gBuffer.shaderResourceViews[i])
+			this->gBuffer.shaderResourceViews[i]->Release();
 		if (this->gBuffer.textures[i])
 			this->gBuffer.textures[i]->Release();
 	}
@@ -317,16 +317,8 @@ void GeometryPass::RenderGPass(ID3D11DeviceContext* context)
 	context->VSSetShader(vShader, NULL, 0);
 	context->PSSetShader(pShader, NULL, 0);
 	context->IASetInputLayout(inputLayout);
-	context->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencil);
-	context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	context->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
+	context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	context->Draw(6, 0);
-}
-
-void GeometryPass::Clear(ID3D11DeviceContext* context)
-{
-	context->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, nullptr);
-	context->IASetInputLayout(nullptr);
-	context->VSSetShader(nullptr, NULL, 0);
-	context->PSSetShader(nullptr, NULL, 0);
 }
