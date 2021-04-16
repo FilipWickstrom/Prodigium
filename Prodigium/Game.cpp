@@ -3,7 +3,6 @@
 
 Game::Game()
 {
-	engine.RedirectIoToConsole();
 }
 
 Game::~Game()
