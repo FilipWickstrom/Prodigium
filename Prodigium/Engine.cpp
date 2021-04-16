@@ -25,6 +25,19 @@ Engine::~Engine()
 		this->device->Release();
 }
 
+void Engine::RedirectIoToConsole()
+{
+	AllocConsole();
+	HANDLE stdHandle;
+	int hConsole;
+	FILE* fp;
+	stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	fp = _fdopen(hConsole, "w");
+
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+}
+
 void Engine::ClearDisplay()
 {
 	float color[4];
