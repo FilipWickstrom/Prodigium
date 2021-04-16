@@ -17,6 +17,13 @@ void Scene::Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 p
 {
 	MeshObject newObject;
 	newObject.BuildMatrix(device, pos, scale, rotation);
+	
+	/*
+		To be changed later on.
+	*/
+	//newObject.LoadMesh(device, filePath);
+	//newObject.LoadNormalTexture(device, filePath + "normal");
+	//newObject.LoadDiffuseTexture(device, filePath + "diffuse");
 
 	objects.push_back(&newObject);
 }
