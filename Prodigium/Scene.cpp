@@ -7,10 +7,6 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (int i = 0; i < (int)objects.size(); i++)
-	{
-		objects.pop_back();
-	}
 }
 
 void Scene::Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
