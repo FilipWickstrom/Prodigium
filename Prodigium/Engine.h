@@ -2,6 +2,7 @@
 #include "Window.h"
 #include <d3d11.h>
 #include "GeometryPass.h"
+#include "LightPass.h"
 
 class Engine
 {
@@ -13,6 +14,7 @@ private:
 	D3D11_VIEWPORT viewPort;
 	Window window;
 	GeometryPass gPass;
+	LightPass lightPass;
 
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;

@@ -46,8 +46,12 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
-	gPass.RenderGPass(context);
-	context->RSSetViewports(1, &viewPort);
+	this->gPass.RenderGPass(context);
+	this->context->RSSetViewports(1, &viewPort);
+	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
+	this->context->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
+	this->context->OMSetRenderTargets(1, &backBufferView, depthView);
+	this->lightPass.Render(context);
 
 	this->swapChain->Present(0, 0);
 }
@@ -71,7 +75,15 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 
 	this->SetupViewPort();
 
-	this->gPass.Initialize(device, width, height);
+	if (!this->gPass.Initialize(device, width, height))
+	{
+		return false;
+	}
+
+	if (!this->lightPass.Initialize(device, width, height))
+	{
+		return false;
+	}
 
 	return true;
 }
