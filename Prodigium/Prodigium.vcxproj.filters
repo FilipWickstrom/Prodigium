@@ -25,6 +25,15 @@
     <Filter Include="Header Files\Objects">
       <UniqueIdentifier>{919d79aa-3046-4251-a3bc-c4702498737b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{2e46a888-da47-4f2c-b2fb-a83d41b6e4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Geometry Pass">
+      <UniqueIdentifier>{fa8bf416-c0a9-4cfd-ab18-de3c28c115d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\Light Pass">
+      <UniqueIdentifier>{efcc7285-a386-4b17-a9ef-5a6aac4100fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -51,9 +60,6 @@
     <ClCompile Include="MeshObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeometryPass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -63,8 +69,11 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeometryPass.cpp">
+      <Filter>Rendering\Geometry Pass</Filter>
+    </ClCompile>
     <ClCompile Include="LightPass.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering\Light Pass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -98,9 +107,6 @@
     <ClInclude Include="MeshObject.h">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="GeometryPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,22 +116,25 @@
     <ClInclude Include="Singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryPass.h">
+      <Filter>Rendering\Geometry Pass</Filter>
+    </ClInclude>
     <ClInclude Include="LightPass.h">
-      <Filter>Header Files</Filter>
+      <Filter>Rendering\Light Pass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShaderGPass.hlsl">
-      <Filter>Header Files</Filter>
+      <Filter>Rendering\Geometry Pass</Filter>
     </FxCompile>
     <FxCompile Include="VertexShaderGPass.hlsl">
-      <Filter>Header Files</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderLightPass.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering\Geometry Pass</Filter>
     </FxCompile>
     <FxCompile Include="PixelShaderLightPass.hlsl">
-      <Filter>Source Files</Filter>
+      <Filter>Rendering\Light Pass</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderLightPass.hlsl">
+      <Filter>Rendering\Light Pass</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
