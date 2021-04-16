@@ -3,7 +3,8 @@
 #include <d3d11.h>
 #include "GeometryPass.h"
 #include "LightPass.h"
-
+#include <fcntl.h>
+#include <io.h>
 class Engine
 {
 private:
@@ -29,7 +30,7 @@ public:
 	virtual ~Engine();
 	Engine(const Engine& other) = delete;
 	Engine& operator=(const Engine& other) = delete;
-
+	void RedirectIoToConsole();
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
 	void PresentScene();
