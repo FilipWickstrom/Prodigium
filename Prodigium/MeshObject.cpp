@@ -11,6 +11,7 @@ MeshObject::MeshObject()
 
     this->isPickUp = false;
     this->isVisible = false;
+
 }
 
 MeshObject::~MeshObject()
@@ -21,11 +22,24 @@ MeshObject::~MeshObject()
     if (this->diffuseMap)
         this->diffuseMap->Release();
 
+    if (this->normalMap)
+        this->normalMap->Release();
+
     if (this->normalMapResourceView)
         this->normalMapResourceView->Release();
 
     if (this->diffuseMapResourceView)
         this->diffuseMapResourceView->Release();
+}
+
+bool MeshObject::Initialize()
+{
+    //JUST SOME TESTING
+    Assimp::Importer importer;
+    auto model = importer.ReadFile("Models/necklace.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+
+
+    return true;
 }
 
 void MeshObject::SetVisible(bool toggle)
