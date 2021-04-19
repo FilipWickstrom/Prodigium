@@ -3,6 +3,14 @@
 #include <d3d11.h>
 #include "GeometryPass.h"
 #include "LightPass.h"
+#include "ResourceManager.h"
+
+//#define MAKE_CLASS_SAFE(className)                      \
+//	className(const className& other) = delete;          \
+//	className(const className&& other) = delete;           \
+//	className& operator=(const className& other) = delete;  \
+//	className& operator=(const className&& other) = delete;  \
+
 
 class Engine
 {
@@ -27,8 +35,7 @@ private:
 public:
 	Engine();
 	virtual ~Engine();
-	Engine(const Engine& other) = delete;
-	Engine& operator=(const Engine& other) = delete;
+	DELETE_COPY_ASSIGNMENT(Engine)
 
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();

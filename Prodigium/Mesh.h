@@ -22,7 +22,6 @@ private:
 
 
 public:
-
-
-
+	Mesh();
+	virtual ~Mesh();
 };
