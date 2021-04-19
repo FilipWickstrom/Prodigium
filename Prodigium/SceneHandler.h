@@ -6,6 +6,9 @@ private:
 
 	std::vector<Scene> scenes;
 
+	// Initializer for Forest Scene/Level
+	void ForestScene();
+
 public:
 
 	SceneHandler();

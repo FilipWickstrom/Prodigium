@@ -11,6 +11,9 @@ Scene::~Scene()
 
 void Scene::Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
 {
+	/*
+		Create a new object to be placed within the scene.
+	*/
 	MeshObject newObject;
 	newObject.BuildMatrix(device, pos, scale, rotation);
 	newObject.Initialize(device, filePath + ".obj");
