@@ -61,6 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	const int HEIGHT = 1024;
 
 	game.Run(hInstance, WIDTH, HEIGHT);
+	// FOR TESTING
+	//ResourceManager* rm = ResourceManager::Instance();
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)
@@ -70,6 +72,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			TranslateMessage(&state);
 			DispatchMessage(&state);
 		}
+		// FOR TESTING
+		//rm->GetResource<Test>("TheResource");
+		//rm->GetResource<Test>("TheResource");
 		currentFrame = static_cast<float>(omp_get_wtime());
 		game.OnFrame(deltaTime);
 		lastFrame = static_cast<float>(omp_get_wtime());

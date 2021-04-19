@@ -149,6 +149,7 @@
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Test.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SSAO.h" />
+    <ClInclude Include="Test.h" />
     <ClInclude Include="UsefulStructuresHeader.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
