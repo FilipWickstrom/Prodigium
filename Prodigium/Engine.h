@@ -29,8 +29,8 @@ private:
 public:
 	Engine();
 	virtual ~Engine();
-	virtual ~Engine();
 	DELETE_COPY_ASSIGNMENT(Engine)
+
     void RedirectIoToConsole();
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
