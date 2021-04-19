@@ -5,6 +5,9 @@
 #include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
+
+#include "MeshObject.h"	//testing****
+
 #include "ResourceManager.h"
 
 class Engine
@@ -21,6 +24,8 @@ private:
 
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
+
+	MeshObject meshtest;	//testing****
 
 private:
 	bool SetupDevice();

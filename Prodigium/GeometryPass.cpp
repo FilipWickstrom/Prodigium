@@ -247,6 +247,8 @@ GeometryPass::GeometryPass()
 		gBuffer.shaderResourceViews[i] = nullptr;
 		gBuffer.textures[i] = nullptr;
 	}
+
+	this->vBuffer = nullptr;
 }
 
 GeometryPass::~GeometryPass()
@@ -275,6 +277,10 @@ GeometryPass::~GeometryPass()
 		if (this->gBuffer.textures[i])
 			this->gBuffer.textures[i]->Release();
 	}
+
+	//Added***
+	if (this->vBuffer)
+		this->vBuffer->Release();
 }
 
 bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight)
@@ -314,7 +320,7 @@ bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, con
 
 void GeometryPass::RenderGPass(ID3D11DeviceContext* context)
 {
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
