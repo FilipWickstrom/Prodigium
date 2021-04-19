@@ -6,6 +6,21 @@
 
 #pragma comment(lib, "Winmm.lib")
 
+//KEEP
+void RedirectIoToConsole()
+{
+	AllocConsole();
+	HANDLE stdHandle;
+	int hConsole;
+	FILE* fp;
+	stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	fp = _fdopen(hConsole, "w");
+
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+}
+
+//REMOVE TO WINDOW
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
@@ -22,6 +37,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+//REMOVE TO WINDOW
 bool SetupWindow(HINSTANCE instance, UINT width, UINT height, int nCmdShow, HWND& window)
 {
 	const wchar_t CLASS_NAME[] = L"Test Window Class";
@@ -52,6 +68,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+	RedirectIoToConsole();
 	Game game;
 	float currentFrame, lastFrame, deltaTime = 0;
 

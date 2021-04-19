@@ -25,6 +25,19 @@ Engine::~Engine()
 		this->device->Release();
 }
 
+void Engine::RedirectIoToConsole()
+{
+	AllocConsole();
+	HANDLE stdHandle;
+	int hConsole;
+	FILE* fp;
+	stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+	hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
+	fp = _fdopen(hConsole, "w");
+
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+}
+
 void Engine::ClearDisplay()
 {
 	float color[4];
@@ -48,6 +61,9 @@ void Engine::PresentScene()
 {
 	this->gPass.RenderGPass(context);
 	this->context->RSSetViewports(1, &viewPort);
+	
+	this->meshtest.Render(this->context);
+
 	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
 	this->context->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
 	this->context->OMSetRenderTargets(1, &backBufferView, depthView);
@@ -84,6 +100,9 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
+
+	meshtest.Initialize(this->device, "necklace.obj");							//testing****
+	meshtest.BuildMatrix(this->device, { 0, 0, 10 }, { 1, 1, 1 }, { 0,0,0 });	//testing***
 
 	return true;
 }

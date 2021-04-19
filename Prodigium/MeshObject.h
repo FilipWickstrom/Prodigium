@@ -1,18 +1,26 @@
 #pragma once
-#include "GameObject.h"
 #include <string>
+#include <vector>
+#include <iostream>
 
 //Assimp
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <assimp/material.h>
+#include <assimp/cimport.h>
+
+#include "GameObject.h"
+#include "UsefulStructuresHeader.h"
 
 class MeshObject : public GameObject
 {
 private:
-
 	UINT vertexCount;
+	UINT indexCount;
 	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* indexBuffer;
+
 	ID3D11Texture2D* diffuseMap;
 	ID3D11Texture2D* normalMap;
 	ID3D11ShaderResourceView* normalMapResourceView;
@@ -21,17 +29,21 @@ private:
 	bool isPickUp;
 	bool isVisible;
 
+	Matrix viewProjmatrix;
+	ID3D11Buffer* viewProjBuffer;
+
 //Help functions
 private:
-
-
+	bool CreateVertIndiBuffers(ID3D11Device* device, 
+							   std::vector<Vertex>& vertices, 
+							   std::vector<unsigned short>& indices);
 
 public:
 
 	MeshObject();
 	virtual ~MeshObject();
 
-	bool Initialize();
+	bool Initialize(ID3D11Device* device, std::string filename);
 
 	//MAKE PRIVATE LATER:
 	void SetVisible(bool toggle = true);

@@ -3,6 +3,10 @@
 #include <d3d11.h>
 #include "GeometryPass.h"
 #include "LightPass.h"
+#include <fcntl.h>
+#include <io.h>
+
+#include "MeshObject.h"	//testing****
 
 class Engine
 {
@@ -19,6 +23,8 @@ private:
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
 
+	MeshObject meshtest;	//testing****
+
 private:
 	bool SetupDevice();
 	bool SetupBackBuffer();
@@ -29,7 +35,7 @@ public:
 	virtual ~Engine();
 	Engine(const Engine& other) = delete;
 	Engine& operator=(const Engine& other) = delete;
-
+	void RedirectIoToConsole();
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
 	void PresentScene();
