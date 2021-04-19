@@ -29,6 +29,9 @@ private:
 	bool isPickUp;
 	bool isVisible;
 
+	Matrix viewProjmatrix;
+	ID3D11Buffer* viewProjBuffer;
+
 //Help functions
 private:
 	bool CreateVertIndiBuffers(ID3D11Device* device, 
