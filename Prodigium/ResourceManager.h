@@ -6,6 +6,15 @@
 #include <memory>
 #include "UsefulStructuresHeader.h"
 
+// The resourceManager will manage all the resources(Assets) in the game. 
+// Remember to inherit from Resource.h for every type of asset. 
+// Every Resource needs to know what ResourceType it is in its constructor
+// Example Below:
+// Test()
+// :Resource(ResourceType::TEXTURE)
+// Using GetResource() will give you the requested resource. 
+// If it doesn't exist it will load it in otherwise it will directly return it.
+
 class ResourceManager
 {
 private:
@@ -67,6 +76,7 @@ public:
 
 	static bool Initialize();
 
+	// GetResource return a pointer to a resource
 	//template <typename T>
 	//T* GetResource(const std::string& key)
 	//{
