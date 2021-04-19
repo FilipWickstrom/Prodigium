@@ -5,6 +5,7 @@
 #include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
+#include "ResourceManager.h"
 
 class Engine
 {

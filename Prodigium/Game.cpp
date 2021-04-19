@@ -11,6 +11,7 @@ Game::~Game()
 
 void Game::Run(HINSTANCE& instance, UINT width, UINT height)
 {
+	engine.RedirectIoToConsole();
 	if (!engine.StartUp(instance, width, height))
 	{
 		std::cout << "Couldn't initialize engine, aborting!" << std::endl;
