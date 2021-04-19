@@ -122,6 +122,9 @@
     <ClInclude Include="LightPass.h">
       <Filter>Rendering\Light Pass</Filter>
     </ClInclude>
+    <ClInclude Include="EnumHeader.h">
+      <Filter>Header Files\Helper Includes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShaderGPass.hlsl">
