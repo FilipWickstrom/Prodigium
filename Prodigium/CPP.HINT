@@ -1,0 +1,1 @@
+#define DELETE_COPY_ASSIGNMENT(className) className(const className& other) = delete; className(const className&& other) = delete; className& operator=(const className& other) = delete; className& operator=(const className&& other) = delete;
