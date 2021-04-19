@@ -61,6 +61,9 @@ void Engine::PresentScene()
 {
 	this->gPass.RenderGPass(context);
 	this->context->RSSetViewports(1, &viewPort);
+	
+	this->meshtest.Render(this->context);
+
 	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
 	this->context->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
 	this->context->OMSetRenderTargets(1, &backBufferView, depthView);
@@ -97,6 +100,9 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
+
+	meshtest.Initialize(this->device, "necklace.obj");							//testing****
+	meshtest.BuildMatrix(this->device, { 0, 0, 0 }, { 1, 1, 1 }, { 0,0,0 });	//testing***
 
 	return true;
 }
