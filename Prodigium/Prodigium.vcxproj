@@ -152,6 +152,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneHandler.cpp" />
     <ClCompile Include="Test.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -167,7 +168,9 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneHandler.h" />
     <ClInclude Include="SSAO.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Test.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="UsefulStructuresHeader.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
