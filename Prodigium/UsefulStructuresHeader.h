@@ -1,6 +1,15 @@
 #pragma once
 #include <DirectXMath.h>
+#include <d3d11.h>
 #define BUFFER_COUNT 3
+
+// Macro to secure a class by deleting its copy constructors and assignment operators
+#define DELETE_COPY_ASSIGNMENT(className)                      \
+	className(const className& other) = delete;          \
+	className(const className&& other) = delete;           \
+	className& operator=(const className& other) = delete;  \
+	className& operator=(const className&& other) = delete;  \
+
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.

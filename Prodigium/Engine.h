@@ -5,6 +5,8 @@
 #include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
+#include "ResourceManager.h"
+
 class Engine
 {
 private:
@@ -28,9 +30,9 @@ private:
 public:
 	Engine();
 	virtual ~Engine();
-	Engine(const Engine& other) = delete;
-	Engine& operator=(const Engine& other) = delete;
-	void RedirectIoToConsole();
+	DELETE_COPY_ASSIGNMENT(Engine)
+
+    void RedirectIoToConsole();
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
 	void PresentScene();

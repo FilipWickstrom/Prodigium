@@ -23,6 +23,8 @@ Engine::~Engine()
 		this->context->Release();
 	if (this->device)
 		this->device->Release();
+	if (this->backBufferView)
+		this->backBufferView->Release();
 }
 
 void Engine::RedirectIoToConsole()
@@ -159,6 +161,7 @@ bool Engine::SetupBackBuffer()
 
 	hr = this->device->CreateRenderTargetView(tempTexture, 0, &this->backBufferView);
 	tempTexture->Release();
+
 	return !FAILED(hr);
 }
 

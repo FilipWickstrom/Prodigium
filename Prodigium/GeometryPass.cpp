@@ -261,6 +261,10 @@ GeometryPass::~GeometryPass()
 		this->vShader->Release();
 	if (this->pShader)
 		this->pShader->Release();
+	if (this->vBuffer)
+		this->vBuffer->Release();
+	if (this->sampler)
+		this->sampler->Release();
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{

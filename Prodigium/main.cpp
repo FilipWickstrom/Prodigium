@@ -54,7 +54,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	Game game;
 	float currentFrame, lastFrame, deltaTime = 0;
-
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
@@ -62,6 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	const int HEIGHT = 1024;
 
 	game.Run(hInstance, WIDTH, HEIGHT);
+	// FOR TESTING
+	ResourceManager* rm = ResourceManager::Instance();
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)
@@ -71,6 +72,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			TranslateMessage(&state);
 			DispatchMessage(&state);
 		}
+		// FOR TESTING
+		ResourceManager::Instance()->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
+		rm->GetResource<Test>("TheResource");
 		currentFrame = static_cast<float>(omp_get_wtime());
 		game.OnFrame(deltaTime);
 		lastFrame = static_cast<float>(omp_get_wtime());
