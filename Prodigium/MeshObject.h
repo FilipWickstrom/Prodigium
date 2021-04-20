@@ -16,7 +16,7 @@
 class MeshObject : public GameObject
 {
 private:
-	UINT vertexCount;
+	UINT vertexCount;				//Does not need it actually...
 	UINT indexCount;
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -37,6 +37,10 @@ private:
 	bool CreateVertIndiBuffers(ID3D11Device* device, 
 							   std::vector<Vertex>& vertices, 
 							   std::vector<unsigned short>& indices);
+
+	//Load Mesh
+	//Load Material
+	//Load Textures
 
 public:
 

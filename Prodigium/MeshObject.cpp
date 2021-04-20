@@ -15,11 +15,9 @@ MeshObject::MeshObject()
     this->isPickUp = false;
     this->isVisible = false;
 
-    //
+    //TEMP*****
+    viewProjmatrix = {};
     viewProjBuffer = nullptr;
-
-
-
 }
 
 MeshObject::~MeshObject()
@@ -76,26 +74,40 @@ bool MeshObject::CreateVertIndiBuffers(ID3D11Device* device, std::vector<Vertex>
     return true;
 }
 
+//CLEAN UP THE INITIALIZE! Should later have - build matrix inside of it
 bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
 {
     //JUST SOME TESTING
     Assimp::Importer importer;
     
     //Load in the scene - can be many meshes together in one file
-    const aiScene* scene = importer.ReadFile("Models/" + filename, 
-                                            aiProcess_Triangulate |             //Triangles only
-                                            aiProcess_JoinIdenticalVertices |   //Indexbuffer
-                                            aiProcess_MakeLeftHanded);          //Use a lefthanded system
+    const aiScene* scene = importer.ReadFile("Models/" + filename,
+                                            aiProcess_Triangulate |               //Triangulate every surface
+                                            aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
+                                            aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models
                                             //aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
+                                            //aiProcess_FlipUVs                   //If textures gets in the wrong direction...
 
     //Reading file: Success
     if (scene != nullptr)
     {
+        /*FIX A LOOP SO THAT WE CAN LOAD IN A MODEL WITH MORE THAN ONE MESH IN IT*/
+        /*
+        for (unsigned int i = 0; i < scene->mNumMeshes)
+        {
+            const aiMesh* mesh = scene->mMeshes[i];
+            
+            LoadMesh(mesh,)
+                l--->LoadMaterial()
+                l--->LoadTextures()
+        }
+        */
+
         //Only works with one mesh at this time
         if (scene->mNumMeshes == 1)
         {
             const aiMesh* mesh = scene->mMeshes[0];
-          
+
             std::vector<Vertex> vertices;
             this->vertexCount = mesh->mNumVertices;
             vertices.reserve(mesh->mNumVertices);
@@ -134,6 +146,26 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
                 return false;
             }
 
+            
+            
+            if (scene->HasMaterials())
+            {
+                const aiMaterial* material = scene->mMaterials[0];
+                unsigned int nrOfDiffuse = material->GetTextureCount(aiTextureType_DIFFUSE);
+                std::cout << "Diffuse textures: " << nrOfDiffuse << std::endl;
+
+                aiString diffusePath;
+                if (material->GetTexture(aiTextureType_DIFFUSE, 0, &diffusePath) == AI_SUCCESS)
+                {
+                    std::cout << "Got the texture: " << diffusePath.C_Str() << std::endl;
+                }
+
+            }
+            else
+            {
+                std::cout << "Scene does not have any materials..." << std::endl;
+            }
+
             //***For debugging for now***
             std::cout << "Model: " << filename << " was successfully loaded! Vertices: " << this->vertexCount << std::endl;
 
@@ -147,6 +179,7 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
             LATER FIX: Should be possible to load in files with more than one mesh in 
             */
             std::cout << "Only works with one mesh for now..." << std::endl;
+            std::cout << "Nr of meshes is: " << scene->mNumMeshes << std::endl;
             aiReleaseImport(scene);
             return false;
         }
@@ -158,7 +191,7 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
         return false;
     }
 
-
+    //-------------------TEMP START--------------------
     DirectX::XMFLOAT4X4 view;
     DirectX::XMFLOAT4X4 proj;
     XMStoreFloat4x4(&proj, DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, float(16.0f / 9.0f), 0.1f, 100.0f));
@@ -170,7 +203,6 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
     viewProjmatrix.projection = proj;
     viewProjmatrix.view = view;
 
-    //testing
     D3D11_BUFFER_DESC desc;
     desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     desc.Usage = D3D11_USAGE_DYNAMIC;
@@ -181,7 +213,7 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
     data.pSysMem = &this->viewProjmatrix;
     HRESULT result = device->CreateBuffer(&desc, &data, &this->viewProjBuffer);
     return !FAILED(result);
-
+    //-------------------TEMP END--------------------
 
     //return true;
 }
@@ -223,15 +255,23 @@ bool MeshObject::LoadNormalTexture(ID3D11Device* device, std::string filePath)
 void MeshObject::Render(ID3D11DeviceContext*& context)
 {
 
-    context->VSSetConstantBuffers(0, 1, &this->viewProjBuffer);
+    context->VSSetConstantBuffers(0, 1, &this->viewProjBuffer);     //TEMP. CAMERA SHOULD DO THIS LATER!*****
    
-    //SET THE MODEL MATRIX??? 
+    //Set the modelmatrix
     context->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+
+    /*
+    for every mesh
+        set modelmatrix for that mesh
+
+
+    */
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
     context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-    context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R16_UINT, 0);
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    context->DrawIndexed(this->vertexCount, 0, 0);
+    context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    context->DrawIndexed(this->indexCount, 0, 0);
+
 }

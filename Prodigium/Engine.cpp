@@ -101,8 +101,8 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	meshtest.Initialize(this->device, "necklace.obj");							//testing****
-	meshtest.BuildMatrix(this->device, { 0, 0, 10 }, { 1, 1, 1 }, { 0,0,0 });	//testing***
+	meshtest.Initialize(this->device, "Necklace/necklace_FBX.fbx");				//testing****
+	meshtest.BuildMatrix(this->device, { 0, 0, 5 }, { 1, 1, 1 }, { 0,0,0 });	//testing***
 
 	return true;
 }
