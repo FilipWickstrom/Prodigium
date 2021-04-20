@@ -5,6 +5,7 @@
 #include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
+#include "SceneHandler.h"
 #include "ResourceManager.h"
 
 
@@ -24,6 +25,8 @@ private:
 
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
+
+	SceneHandler sceneHandler;
 
 	MeshObject meshtest;	//testing****
 
