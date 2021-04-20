@@ -4,7 +4,7 @@ class SceneHandler
 {
 private:
 
-	std::vector<Scene*> scenes;
+	std::vector<Scene> scenes;
 
 public:
 
