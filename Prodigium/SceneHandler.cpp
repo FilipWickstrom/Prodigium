@@ -16,6 +16,11 @@ void SceneHandler::AddScene()
 	scenes.push_back(newScene);
 }
 
+void SceneHandler::RemoveScene(int index)
+{
+	this->scenes.erase(this->scenes.begin() + index);
+}
+
 Scene& SceneHandler::EditScene(int index)
 {
 	return this->scenes[index];
