@@ -26,6 +26,7 @@ bool Texture::LoadTexture(ID3D11Device*& device, std::string filePath)
 	if (!ImageData)
 	{
 		printf("Couldn't open File!\n");
+		return false;
 	}
 	else
 	{
