@@ -13,12 +13,12 @@ SceneHandler::~SceneHandler()
 void SceneHandler::AddScene()
 {
 	Scene newScene;
-	scenes.push_back(&newScene);
+	scenes.push_back(newScene);
 }
 
 Scene& SceneHandler::EditScene(int index)
 {
-	return *this->scenes[index];
+	return this->scenes[index];
 }
 
 int SceneHandler::GetNrOfScenes() const
@@ -28,5 +28,5 @@ int SceneHandler::GetNrOfScenes() const
 
 void SceneHandler::Render(ID3D11DeviceContext*& context, int sceneIndex)
 {
-	scenes[sceneIndex]->Render(context);
+	scenes[sceneIndex].Render(context);
 }
