@@ -14,6 +14,12 @@ MeshObject::MeshObject()
 
     this->isPickUp = false;
     this->isVisible = false;
+
+    //
+    viewProjBuffer = nullptr;
+
+
+
 }
 
 MeshObject::~MeshObject()
@@ -128,7 +134,6 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
                 return false;
             }
 
-
             //***For debugging for now***
             std::cout << "Model: " << filename << " was successfully loaded! Vertices: " << this->vertexCount << std::endl;
 
@@ -153,7 +158,32 @@ bool MeshObject::Initialize(ID3D11Device* device, std::string filename)
         return false;
     }
 
-    return true;
+
+    DirectX::XMFLOAT4X4 view;
+    DirectX::XMFLOAT4X4 proj;
+    XMStoreFloat4x4(&proj, DirectX::XMMatrixPerspectiveFovLH(0.4f * DirectX::XM_PI, float(16.0f / 9.0f), 0.1f, 100.0f));
+    DirectX::XMVECTOR eye = { 0.0f, 0.0f, 0.0f, 0.0f };
+    DirectX::XMVECTOR target = { 0.0f, 0.0f, 1.0f, 0.0f };
+    DirectX::XMVECTOR up = { 0.0f, 1.0f, 0.0f, 0.0f };
+    XMStoreFloat4x4(&view, DirectX::XMMatrixLookAtLH(eye, target, up));
+
+    viewProjmatrix.projection = proj;
+    viewProjmatrix.view = view;
+
+    //testing
+    D3D11_BUFFER_DESC desc;
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+    desc.ByteWidth = sizeof(this->viewProjmatrix);
+    D3D11_SUBRESOURCE_DATA data;
+    data.pSysMem = &this->viewProjmatrix;
+    HRESULT result = device->CreateBuffer(&desc, &data, &this->viewProjBuffer);
+    return !FAILED(result);
+
+
+    //return true;
 }
 
 void MeshObject::SetVisible(bool toggle)
@@ -192,7 +222,11 @@ bool MeshObject::LoadNormalTexture(ID3D11Device* device, std::string filePath)
 
 void MeshObject::Render(ID3D11DeviceContext*& context)
 {
+
+    context->VSSetConstantBuffers(0, 1, &this->viewProjBuffer);
+   
     //SET THE MODEL MATRIX??? 
+    context->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
