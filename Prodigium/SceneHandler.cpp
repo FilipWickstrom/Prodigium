@@ -7,7 +7,10 @@ SceneHandler::SceneHandler()
 
 SceneHandler::~SceneHandler()
 {
-	// Empty
+	for (int i = 0; i < (int)this->scenes.size(); i++)
+	{
+		this->scenes.pop_back();
+	}
 }
 
 void SceneHandler::AddScene()
