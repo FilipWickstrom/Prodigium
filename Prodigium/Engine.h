@@ -6,13 +6,11 @@
 #include <fcntl.h>
 #include <io.h>
 #include "ResourceManager.h"
+#include "Graphics.h"
 
 class Engine
 {
 private:
-	ID3D11Device* device;
-	ID3D11DeviceContext* context;
-	IDXGISwapChain* swapChain;
 	ID3D11RasterizerState* rasterState;
 	D3D11_VIEWPORT viewPort;
 	Window window;
@@ -23,7 +21,6 @@ private:
 	ID3D11DepthStencilView* depthView;
 
 private:
-	bool SetupDevice();
 	bool SetupBackBuffer();
 	void SetupViewPort();
 

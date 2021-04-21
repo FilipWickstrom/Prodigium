@@ -31,23 +31,19 @@ bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
+
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
-		hr = device->CreateTexture2D(&textureDesc, nullptr, &gBuffer.textures[i]);
+		ID3D11Texture2D* texture = ResourceManager::GetTexture(std::string(std::to_string(i)));
+
+		hr = device->CreateRenderTargetView(texture, &renderTargetDesc, &gBuffer.renderTargets[i]);
 
 		if (FAILED(hr))
 		{
 			return false;
 		}
 
-		hr = device->CreateRenderTargetView(gBuffer.textures[i], &renderTargetDesc, &gBuffer.renderTargets[i]);
-
-		if (FAILED(hr))
-		{
-			return false;
-		}
-
-		hr = device->CreateShaderResourceView(gBuffer.textures[i], &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
+		hr = device->CreateShaderResourceView(texture, &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
 
 		if (FAILED(hr))
 		{
@@ -272,8 +268,6 @@ GeometryPass::~GeometryPass()
 			this->gBuffer.renderTargets[i]->Release();
 		if (this->gBuffer.shaderResourceViews[i])
 			this->gBuffer.shaderResourceViews[i]->Release();
-		if (this->gBuffer.textures[i])
-			this->gBuffer.textures[i]->Release();
 	}
 }
 
@@ -303,7 +297,7 @@ bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, con
 	{
 		return false;
 	}
-	
+
 	if (!CreateQuad(device))
 	{
 		return false;

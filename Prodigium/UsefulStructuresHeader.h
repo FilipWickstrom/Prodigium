@@ -1,14 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
-#include <d3d11.h>
+#include "Texture.h"
 #define BUFFER_COUNT 3
-
-// Macro to secure a class by deleting its copy constructors and assignment operators
-#define DELETE_COPY_ASSIGNMENT(className)                      \
-	className(const className& other) = delete;          \
-	className(const className&& other) = delete;           \
-	className& operator=(const className& other) = delete;  \
-	className& operator=(const className&& other) = delete;  \
 
 /*
 	Struct for usage with Vertices.
@@ -55,5 +48,5 @@ struct TextureRenderTargets
 {
 	ID3D11RenderTargetView* renderTargets[BUFFER_COUNT];
 	ID3D11ShaderResourceView* shaderResourceViews[BUFFER_COUNT];
-	ID3D11Texture2D* textures[BUFFER_COUNT];
+	Texture* textures[BUFFER_COUNT];
 };
