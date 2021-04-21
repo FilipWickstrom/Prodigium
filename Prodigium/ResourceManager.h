@@ -5,6 +5,7 @@
 #include "UsefulStructuresHeader.h"
 #include "UsefulHeader.h"
 #include "Texture.h"
+#include "Mesh.h"
 
 // The resourceManager will manage all the resources(Assets) in the game. 
 // Remember to inherit from Resource.h for every type of asset. 
@@ -29,25 +30,7 @@ private:
 	void AddResource(std::string key, Resource* resource);
 
 	ID3D11Texture2D* GetTextureInternal(const std::string& key);
-
-	//Mesh* GetMeshInternal(const std::string& key)
-	//{
-
-	//	auto found = instance->meshes.find(key);
-
-	//	if (found == instance->meshes.end())
-	//	{
-	//		Mesh* mesh = nullptr;
-	//		if (!AddResource(key, mesh = new Mesh))
-	//		{
-	//			throw "ResourceManager: Couldn't add asset!\n";
-	//		}
-
-	//		return mesh;
-	//	}
-
-	//	return found->second;
-	//}
+	Mesh* GetMeshInternal(const std::string& key);
 
 protected:
 	UINT referenceCount;
@@ -69,12 +52,17 @@ public:
 		return rv;
 	}
 
-	//static ID3D11Texture2D* GetMesh(const std::string& key)
-	//{
-	//	ID3D11Texture2D* rv = instance->GetMeshInternal(key);
+	static Mesh* GetMesh(const std::string& key)
+	{
+		Mesh* rv = instance->GetMeshInternal(key);
 
-	//	return rv;
-	//}
+		if (rv == nullptr)
+		{
+			std::cout << "Resource is nullptr!" << std::endl;
+		}
+
+		return rv;
+	}
 
 	static UINT GetReferenceCount();
 

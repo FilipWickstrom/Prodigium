@@ -6,10 +6,10 @@ GameObject::GameObject()
 	this->scale = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	this->modelMatrixBuffer = nullptr;
-	this->modelMatrix = DirectX::XMFLOAT4X4(0.0f, 0.0f, 0.0f, 0.0f,
-											0.0f, 0.0f, 0.0f, 0.0f,
-											0.0f, 0.0f, 0.0f, 0.0f,
-											0.0f, 0.0f, 0.0f, 0.0f);
+	this->modelMatrix = DirectX::XMFLOAT4X4(1.0f, 0.0f, 0.0f, 0.0f,
+											0.0f, 1.0f, 0.0f, 0.0f,
+											0.0f, 0.0f, 1.0f, 0.0f,
+											0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 GameObject::~GameObject()
@@ -18,7 +18,7 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-bool GameObject::BuildMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
+bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -35,7 +35,7 @@ bool GameObject::BuildMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, Direc
 	desc.ByteWidth = sizeof(this->modelMatrix);
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = &this->modelMatrix;
-	HRESULT result = device->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
+	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
 	return !FAILED(result);
 }
 

@@ -133,7 +133,7 @@ bool Mesh::LoadFile(std::string filename)
         return false;
     }
 
-	return false;
+	return true;
 }
 
 void Mesh::Render()
@@ -141,7 +141,7 @@ void Mesh::Render()
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
     Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-    Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    //Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);    ***REMOVE LATER, SHOULD BE IN THE GEOMETRY PASS***
     Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R16_UINT, 0);
     Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
 }

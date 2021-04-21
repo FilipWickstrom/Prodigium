@@ -22,7 +22,8 @@ private:
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
 
-	MeshObject testMeshObj;
+	MeshObject testMeshObj;		//DELETE LATER***
+	MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
 	bool SetupBackBuffer();

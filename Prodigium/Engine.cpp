@@ -53,13 +53,15 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
-	this->testMeshObj.Render();
-
 	this->gPass.RenderGPass(Graphics::GetContext());
 	Graphics::GetContext()->RSSetViewports(1, &viewPort);
 	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
 	Graphics::GetContext()->OMSetRenderTargets(1, &backBufferView, depthView);
+
+	this->testMeshObj.Render();		//DELETE LATER***
+	this->testMeshObj2.Render();	//DELETE LATER***
+
 	this->lightPass.Render(Graphics::GetContext());
 
 	Graphics::GetSwapChain()->Present(0, 0);
@@ -97,9 +99,15 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (this->testMeshObj.Initialize("drawing_OBJ.obj"))
+	if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
 	{
-		std::cout << "Book failed" << std::endl;
+		std::cout << "Object1 failed" << std::endl;
+		return false;
+	}
+
+	if (!this->testMeshObj2.Initialize("mask_OBJ.obj", "mask_albedo.png", "", {5.0f,0.0f,0.0f}))
+	{
+		std::cout << "Object2 failed" << std::endl;
 		return false;
 	}
 

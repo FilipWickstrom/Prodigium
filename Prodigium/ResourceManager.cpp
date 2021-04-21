@@ -19,7 +19,6 @@ ResourceManager::~ResourceManager()
 	{
 		if (it->second)
 		{
-			std::cout << "DELETED" << std::endl;
 			delete it->second;
 		}
 	}
@@ -123,6 +122,27 @@ ID3D11Texture2D* ResourceManager::GetTextureInternal(const std::string& key)
 	}
 
 	return dynamic_cast<Texture*>(found->second)->getTexture2D();
+}
+
+Mesh* ResourceManager::GetMeshInternal(const std::string& key)
+{
+	auto found = instance->meshes.find(key);
+
+	if (found == instance->meshes.end())
+	{
+		Mesh* mesh = new Mesh();
+		if (!mesh->LoadFile(key))
+		{
+			delete mesh;
+			return nullptr;
+		}
+
+		AddResource(key, mesh);
+
+		return mesh;
+	}
+
+	return dynamic_cast<Mesh*>(found->second);
 }
 
 UINT ResourceManager::GetReferenceCount()
