@@ -12,6 +12,9 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GeometryPass.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="LightPass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="RenderPass.cpp" />
@@ -21,7 +24,6 @@
     <ClCompile Include="SceneHandler.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraObject.h" />
@@ -29,6 +31,9 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GeometryPass.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="LightPass.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="RenderPass.h" />
