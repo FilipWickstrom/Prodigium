@@ -2,10 +2,7 @@
 
 Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
-	this->backBufferView = nullptr;
-	this->depthView = nullptr;
-	this->rasterState = nullptr;
-	this->viewPort = {};
+	this->RedirectIoToConsole();
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -13,17 +10,10 @@ Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 		exit(-1);
 	}
 
-	this->RedirectIoToConsole();
 }
 
 Engine::~Engine()
 {
-	if (this->depthView)
-		this->depthView->Release();
-	if (this->rasterState)
-		this->rasterState->Release();
-	if (this->backBufferView)
-		this->backBufferView->Release();
 	ResourceManager::Destroy();
 	Graphics::Destroy();
 }
@@ -43,31 +33,17 @@ void Engine::RedirectIoToConsole()
 
 void Engine::ClearDisplay()
 {
-	float color[4];
-
-	// Red
-	color[0] = 0.25;
-
-	// Green
-	color[1] = 0.25;
-
-	// Blue
-	color[2] = 1;
-
-	// Alpha
-	color[3] = 0.75;
-
-	Graphics::GetContext()->ClearRenderTargetView(this->backBufferView, color);
+	Graphics::ClearDisplay();
 }
 
 void Engine::Render()
 {
-	Graphics::GetContext()->RSSetViewports(1, &viewPort);
 	this->gPass.Prepare();
 	this->gPass.Clear();
-	Graphics::GetContext()->OMSetRenderTargets(1, &backBufferView, depthView);
+	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
+	Graphics::UnbindBackBuffer();
 
 	//this->testMeshObj.Render();		//DELETE LATER***
 	//this->testMeshObj2.Render();	//DELETE LATER***
@@ -88,14 +64,9 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (!this->SetupBackBuffer())
-	{
-		return false;
-	}
-
 	ResourceManager::Initialize();
 
-	this->SetupViewPort();
+	Graphics::SetMainWindowViewport();
 
 	if (!this->gPass.Initialize())
 	{
@@ -121,30 +92,4 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	//}
 
 	return true;
-}
-
-bool Engine::SetupBackBuffer()
-{
-	HRESULT hr;
-
-	ID3D11Texture2D* tempTexture = nullptr;
-	if (FAILED(Graphics::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTexture))))
-	{
-		return false;
-	}
-
-	hr = Graphics::GetDevice()->CreateRenderTargetView(tempTexture, 0, &this->backBufferView);
-	tempTexture->Release();
-
-	return !FAILED(hr);
-}
-
-void Engine::SetupViewPort()
-{
-	this->viewPort.Width = (float)window.GetWindowWidth();
-	this->viewPort.Height = (float)window.GetWindowHeight();
-	this->viewPort.TopLeftX = 0.f;
-	this->viewPort.TopLeftY = 0.f;
-	this->viewPort.MinDepth = 0.f;
-	this->viewPort.MaxDepth = 1.0f;
 }

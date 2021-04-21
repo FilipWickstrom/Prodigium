@@ -11,21 +11,14 @@
 class Engine
 {
 private:
-	ID3D11RasterizerState* rasterState;
-	D3D11_VIEWPORT viewPort;
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
-
-	ID3D11RenderTargetView* backBufferView;
-	ID3D11DepthStencilView* depthView;
 
 	MeshObject testMeshObj;		//DELETE LATER***
 	MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
-	bool SetupBackBuffer();
-	void SetupViewPort();
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
     void RedirectIoToConsole();
 

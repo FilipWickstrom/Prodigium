@@ -16,12 +16,18 @@ private:
 	ID3D11Device* device;
 	ID3D11DeviceContext* context;
 	IDXGISwapChain* swapChain;
+	ID3D11RenderTargetView* backBufferView;
+	ID3D11DepthStencilView* depthView;
 	ID3D11DepthStencilState* zBufferOn;
 	ID3D11DepthStencilState* zBufferOff;
+	ID3D11RasterizerState* rasterState;
+	D3D11_VIEWPORT viewport;
 	UINT windowWidth;
 	UINT windowHeight;
 	bool CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight);
 	bool CreateZBufferStates();
+	void CreateViewPort();
+	bool CreateBackBuffer();
 
 public:
 	DELETE_COPY_ASSIGNMENT(Graphics);
@@ -35,4 +41,8 @@ public:
 	static void Destroy();
 	static void EnableZBuffer();
 	static void DisableZBuffer();
+	static void SetMainWindowViewport();
+	static void BindBackBuffer();
+	static void UnbindBackBuffer();
+	static void ClearDisplay();
 };
