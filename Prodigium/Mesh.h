@@ -31,5 +31,4 @@ public:
 
 	bool LoadFile(std::string filename);
 	void Render();
-
 };

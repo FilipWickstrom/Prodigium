@@ -50,9 +50,9 @@ Mesh::Mesh()
 Mesh::~Mesh()
 {
 	if (this->vertexBuffer)
-		this->vertexBuffer = nullptr;
-	if (this->indexBuffer)
-		this->indexBuffer = nullptr;
+		this->vertexBuffer->Release();
+    if (this->indexBuffer)
+        this->indexBuffer->Release();
 }
 
 bool Mesh::LoadFile(std::string filename)

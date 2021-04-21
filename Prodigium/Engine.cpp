@@ -99,6 +99,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
+	
 	if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
 	{
 		std::cout << "Object1 failed" << std::endl;

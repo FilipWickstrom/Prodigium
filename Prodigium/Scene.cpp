@@ -9,18 +9,23 @@ Scene::~Scene()
 {
 }
 
-void Scene::Add(std::string filePath, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
+void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
+	XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale)	
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 
 	MeshObject* newObject = new MeshObject;
-	newObject->BuildMatrix(pos, scale, rotation);
-	//newObject->Initialize(device, filePath + ".obj");
-
-	this->objects.push_back(newObject);
-	this->currentObject = (int)objects.size() - 1;
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, position, rotation, scale))
+	{
+		this->objects.push_back(newObject);
+		this->currentObject = (int)objects.size() - 1;
+	}
+	else
+	{
+		std::cout << "Failed to add object" << std::endl;
+	}
 }
 
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
