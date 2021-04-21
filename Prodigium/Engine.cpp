@@ -53,6 +53,8 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
+	this->testMeshObj.Render();
+
 	this->gPass.RenderGPass(Graphics::GetContext());
 	Graphics::GetContext()->RSSetViewports(1, &viewPort);
 	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
@@ -92,6 +94,12 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 
 	if (!this->lightPass.Initialize(Graphics::GetDevice(), width, height))
 	{
+		return false;
+	}
+
+	if (this->testMeshObj.Initialize("drawing_OBJ.obj"))
+	{
+		std::cout << "Book failed" << std::endl;
 		return false;
 	}
 

@@ -8,6 +8,8 @@
 #include "ResourceManager.h"
 #include "Graphics.h"
 
+#include "MeshObject.h"
+
 class Engine
 {
 private:
@@ -19,6 +21,8 @@ private:
 
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
+
+	MeshObject testMeshObj;
 
 private:
 	bool SetupBackBuffer();

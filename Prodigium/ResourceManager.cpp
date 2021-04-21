@@ -1,7 +1,7 @@
 #include "ResourceManager.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb/stb_image.h>
 
 ResourceManager* ResourceManager::instance = nullptr;
 

@@ -2,12 +2,7 @@
 
 MeshObject::MeshObject()
 {
-    this->vertexCount = 0;
-    this->vertexBuffer = nullptr;
-    this->diffuseMap = nullptr;
-    this->normalMap = nullptr;
-    this->normalMapResourceView = nullptr;
-    this->diffuseMapResourceView = nullptr;
+
 
     this->isPickUp = false;
     this->isVisible = false;
@@ -15,17 +10,16 @@ MeshObject::MeshObject()
 
 MeshObject::~MeshObject()
 {
-    if (this->vertexBuffer)
-        this->vertexBuffer->Release();
+}
 
-    if (this->diffuseMap)
-        this->diffuseMap->Release();
+bool MeshObject::Initialize(std::string meshObject)
+{
+    if (!this->mesh.LoadFile(meshObject))
+    {
+        return false;
+    }
 
-    if (this->normalMapResourceView)
-        this->normalMapResourceView->Release();
-
-    if (this->diffuseMapResourceView)
-        this->diffuseMapResourceView->Release();
+    return true;
 }
 
 void MeshObject::SetVisible(bool toggle)
@@ -38,36 +32,10 @@ void MeshObject::SetPickUp(bool toggle)
     this->isPickUp = toggle;
 }
 
-bool MeshObject::LoadMesh(ID3D11Device* device, std::string filePath)
+void MeshObject::Render()
 {
-    /*
-        Here to update vertexCount and VertexBuffer.
-    */
-    return false;
-}
+    //Set this objects modelmatrix
+    Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 
-bool MeshObject::LoadDiffuseTexture(ID3D11Device* device, std::string filePath)
-{
-    /*
-        Update diffuseMap and Shader View associate with it.
-    */
-    return false;
-}
-
-bool MeshObject::LoadNormalTexture(ID3D11Device* device, std::string filePath)
-{
-    /*
-       Update normalMap and Shader View associate with it.
-    */
-    return false;
-}
-
-void MeshObject::Render(ID3D11DeviceContext*& context)
-{
-    /*
-        Set vertexBuffer as IASET...vertexbuffer,
-        Anything more needed before rendering then add.
-    */
-
-    context->Draw(this->vertexCount, 0);
+    this->mesh.Render();
 }
