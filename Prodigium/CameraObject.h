@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include <iostream>
-#include "SimpleMath.h"
+#include <SimpleMath.h>
 
 	constexpr float ROTATION_SPEED = 4.f;
 	constexpr float FULL_CIRCLE = 360.f;
