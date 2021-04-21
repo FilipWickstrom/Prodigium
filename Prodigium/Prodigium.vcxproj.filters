@@ -60,15 +60,20 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="Singleton.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeometryPass.cpp">
       <Filter>Rendering\Geometry Pass</Filter>
     </ClCompile>
     <ClCompile Include="LightPass.cpp">
       <Filter>Rendering\Light Pass</Filter>
     </ClCompile>
+    <ClCompile Include="RenderPass.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files</Filter>
     <ClCompile Include="CameraObject.cpp">
       <Filter>Header Files\Objects</Filter>
     </ClCompile>
@@ -116,17 +121,28 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeometryPass.h">
       <Filter>Rendering\Geometry Pass</Filter>
     </ClInclude>
     <ClInclude Include="LightPass.h">
       <Filter>Rendering\Light Pass</Filter>
     </ClInclude>
+    <ClInclude Include="RenderPass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files</Filter>
     <ClInclude Include="CameraObject.h">
       <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="UsefulHeader.h">
+      <Filter>Header Files\Helper Includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -142,5 +158,10 @@
     <FxCompile Include="VertexShaderLightPass.hlsl">
       <Filter>Rendering\Light Pass</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CPP.HINT">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
