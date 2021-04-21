@@ -1,4 +1,5 @@
 #include "MeshObject.h"
+#include "Graphics.h"
 
 bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
 {
