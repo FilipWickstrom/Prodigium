@@ -147,6 +147,9 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GeometryPass.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="LightPass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshObject.cpp" />
@@ -164,6 +167,9 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GeometryPass.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="LightPass.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="ParticleSystem.h" />
