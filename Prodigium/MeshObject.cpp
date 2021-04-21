@@ -74,9 +74,10 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
         }
     }
 
-    if (BuildMatrix(pos, scl, rot))
+    if (!BuildMatrix(pos, scl, rot))
     {
-
+        std::cout << "Build matrix failed..." << std::endl;
+        return false;
     }
 
     //EXTRA: Material
