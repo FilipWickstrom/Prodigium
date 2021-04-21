@@ -52,16 +52,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	Game game;
+	Game game(hInstance, 1280, 1024);
 	float currentFrame, lastFrame, deltaTime = 0;
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
-	const int WIDTH = 1280;
-	const int HEIGHT = 1024;
 
-	game.Run(hInstance, WIDTH, HEIGHT);
-	// FOR TESTING
+	/*game.Run(hInstance, WIDTH, HEIGHT);*/
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)

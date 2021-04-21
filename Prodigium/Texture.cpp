@@ -18,13 +18,13 @@ Texture::~Texture()
 
 bool Texture::Initialize(std::string filename, UINT width, UINT height, D3D11_SUBRESOURCE_DATA* data)
 {
+	this->filename = filename;
+
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = width;
 	textureDesc.Height = height;
 	textureDesc.MiscFlags = 0;
-	// We only see one quad no need for more miplevels, use the first in the pyramid
 	textureDesc.MipLevels = 1;
-	// We only have 1 texture in the array of textures.
 	textureDesc.ArraySize = 1;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
@@ -39,7 +39,7 @@ bool Texture::Initialize(std::string filename, UINT width, UINT height, D3D11_SU
 		HRESULT hr = Graphics::GetDevice()->CreateTexture2D(&textureDesc, data, &texture);
 		if (FAILED(hr))
 		{
-			std::cout << "WTF!?" << std::endl;
+			std::cout << "Failed to create Texture2D!" << std::endl;
 		}
 	}
 	else
@@ -55,7 +55,17 @@ bool Texture::Initialize(std::string filename, UINT width, UINT height, D3D11_SU
 	return true;
 }
 
-ID3D11Texture2D* Texture::getTexture2D() const
+ID3D11Texture2D* Texture::GetTexture2D() const
 {
 	return this->texture;
+}
+
+ID3D11Texture2D*& Texture::GetTexture2DAddr()
+{
+	return this->texture;
+}
+
+void Texture::SetTexture(ID3D11Texture2D* texture)
+{
+	this->texture = texture;
 }

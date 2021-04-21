@@ -18,6 +18,8 @@ private:
 	IDXGISwapChain* swapChain;
 	ID3D11DepthStencilState* zBufferOn;
 	ID3D11DepthStencilState* zBufferOff;
+	UINT windowWidth;
+	UINT windowHeight;
 	bool CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight);
 	bool CreateZBufferStates();
 
@@ -27,6 +29,8 @@ public:
 	static ID3D11Device*& GetDevice();
 	static ID3D11DeviceContext* GetContext();
 	static IDXGISwapChain*& GetSwapChain();
+	static const UINT& GetWindowWidth();
+	static const UINT& GetWindowHeight();
 	static bool Initialize(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight);
 	static void Destroy();
 	static void EnableZBuffer();

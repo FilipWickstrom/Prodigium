@@ -16,6 +16,8 @@ public:
 	Texture();
 	virtual ~Texture();
 
-	bool Initialize(std::string filename, UINT width = 1280, UINT height = 1024, D3D11_SUBRESOURCE_DATA* data = nullptr);
-	ID3D11Texture2D* getTexture2D()const;
+	bool Initialize(std::string filename, UINT width = Graphics::GetWindowWidth(), UINT height = Graphics::GetWindowHeight(), D3D11_SUBRESOURCE_DATA* data = nullptr);
+	ID3D11Texture2D* GetTexture2D()const;
+	ID3D11Texture2D*& GetTexture2DAddr();
+	void SetTexture(ID3D11Texture2D* texture);
 };

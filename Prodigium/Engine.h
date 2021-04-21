@@ -1,12 +1,10 @@
 #pragma once
 #include "Window.h"
 #include <d3d11.h>
-#include "GeometryPass.h"
-#include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
 #include "ResourceManager.h"
-#include "Graphics.h"
+#include "RenderPass.h"
 
 #include "MeshObject.h"
 
@@ -28,14 +26,17 @@ private:
 private:
 	bool SetupBackBuffer();
 	void SetupViewPort();
+	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
+    void RedirectIoToConsole();
 
 public:
-	Engine();
+	Engine(HINSTANCE& instance, UINT width, UINT height);
 	virtual ~Engine();
 	DELETE_COPY_ASSIGNMENT(Engine)
 
-    void RedirectIoToConsole();
-	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
-	void PresentScene();
+	void Render();
+
+	virtual bool OnFrame(const float& deltaTime) = 0;
+	virtual bool OnStart() = 0;
 };
