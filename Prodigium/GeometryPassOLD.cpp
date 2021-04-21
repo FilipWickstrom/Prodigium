@@ -1,8 +1,9 @@
-#include "GeometryPass.h"
+#include "GeometryPassOLD.h"
 #include <iostream>
 #include <fstream>
+#include "RenderPass.h"
 
-bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
+bool GeometryPassOLD::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
 {
 	HRESULT hr;
 
@@ -34,16 +35,16 @@ bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
-		ID3D11Texture2D* texture = ResourceManager::GetTexture(std::string(std::to_string(i)));
+		gBuffer.textures[i]->GetTexture2DAddr() = ResourceManager::GetTexture(std::string(std::to_string(i)));
 
-		hr = device->CreateRenderTargetView(texture, &renderTargetDesc, &gBuffer.renderTargets[i]);
+		hr = device->CreateRenderTargetView(gBuffer.textures[i]->GetTexture2D(), &renderTargetDesc, &gBuffer.renderTargets[i]);
 
 		if (FAILED(hr))
 		{
 			return false;
 		}
 
-		hr = device->CreateShaderResourceView(texture, &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
+		hr = device->CreateShaderResourceView(gBuffer.textures[i]->GetTexture2D(), &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
 
 		if (FAILED(hr))
 		{
@@ -54,7 +55,7 @@ bool GeometryPass::CreateGBuffers(ID3D11Device*& device, const UINT& windowWidth
 	return true;
 }
 
-bool GeometryPass::CreateDepthBuffer(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
+bool GeometryPassOLD::CreateDepthBuffer(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
 {
 	HRESULT hr;
 
@@ -94,7 +95,7 @@ bool GeometryPass::CreateDepthBuffer(ID3D11Device*& device, const UINT& windowWi
 	return true;
 }
 
-bool GeometryPass::CreateSamplerState(ID3D11Device*& device)
+bool GeometryPassOLD::CreateSamplerState(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -120,7 +121,7 @@ bool GeometryPass::CreateSamplerState(ID3D11Device*& device)
 	return true;
 }
 
-bool GeometryPass::LoadShaders(ID3D11Device*& device)
+bool GeometryPassOLD::LoadShaders(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -175,7 +176,7 @@ bool GeometryPass::LoadShaders(ID3D11Device*& device)
 	return true;
 }
 
-bool GeometryPass::CreateInputLayout(ID3D11Device*& device)
+bool GeometryPassOLD::CreateInputLayout(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -196,7 +197,7 @@ bool GeometryPass::CreateInputLayout(ID3D11Device*& device)
 	return true;
 }
 
-bool GeometryPass::CreateQuad(ID3D11Device*& device)
+bool GeometryPassOLD::CreateQuad(ID3D11Device*& device)
 {
 	Vertex quad[] =
 	{
@@ -228,7 +229,7 @@ bool GeometryPass::CreateQuad(ID3D11Device*& device)
 	return true;
 }
 
-GeometryPass::GeometryPass()
+GeometryPassOLD::GeometryPassOLD()
 {
 	this->depthTexture = nullptr;
 	this->depthStencilView = nullptr;
@@ -241,11 +242,11 @@ GeometryPass::GeometryPass()
 	{
 		gBuffer.renderTargets[i] = nullptr;
 		gBuffer.shaderResourceViews[i] = nullptr;
-		gBuffer.textures[i] = nullptr;
+		gBuffer.textures[i] = new Texture();
 	}
 }
 
-GeometryPass::~GeometryPass()
+GeometryPassOLD::~GeometryPassOLD()
 {
 	if (this->depthStencilView)
 		this->depthStencilView->Release();
@@ -271,7 +272,7 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight)
+bool GeometryPassOLD::Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight)
 {
 	if (!LoadShaders(device))
 	{
@@ -306,7 +307,7 @@ bool GeometryPass::Initialize(ID3D11Device* device, const UINT& windowWidth, con
 	return true;
 }
 
-void GeometryPass::RenderGPass(ID3D11DeviceContext* context)
+void GeometryPassOLD::RenderGPass(ID3D11DeviceContext* context)
 {
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	UINT stride = sizeof(Vertex);

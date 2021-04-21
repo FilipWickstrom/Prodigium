@@ -61,7 +61,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	const int HEIGHT = 1024;
 
 	game.Run(hInstance, WIDTH, HEIGHT);
-	// FOR TESTING
 
 	MSG state = {};
 	while (!(GetKeyState(VK_ESCAPE) & 0x80) && state.message != WM_QUIT)

@@ -4,7 +4,7 @@
 #include "UsefulStructuresHeader.h"
 #include "ResourceManager.h"
 
-class GeometryPass
+class GeometryPassOLD
 {
 private:
 	TextureRenderTargets gBuffer;
@@ -27,8 +27,8 @@ private:
 	bool CreateQuad(ID3D11Device*& devices);
 
 public:
-	GeometryPass();
-	~GeometryPass();
+	GeometryPassOLD();
+	~GeometryPassOLD();
 
 	bool Initialize(ID3D11Device* device, const UINT& windowWidth, const UINT& windowHeight);
 	void RenderGPass(ID3D11DeviceContext* context);

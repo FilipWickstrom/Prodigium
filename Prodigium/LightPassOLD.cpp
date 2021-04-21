@@ -1,7 +1,6 @@
-#include "LightPass.h"
-#include "LightPass.h"
+#include "LightPassOLD.h"
 
-bool LightPass::LoadShaders(ID3D11Device*& device)
+bool LightPassOLD::LoadShaders(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -56,12 +55,12 @@ bool LightPass::LoadShaders(ID3D11Device*& device)
 	return true;
 }
 
-bool LightPass::CreateRenderTarget(ID3D11Device*& device)
+bool LightPassOLD::CreateRenderTarget(ID3D11Device*& device)
 {
 	return false;
 }
 
-bool LightPass::CreateFullScreenQuad(ID3D11Device*& device)
+bool LightPassOLD::CreateFullScreenQuad(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -112,7 +111,7 @@ bool LightPass::CreateFullScreenQuad(ID3D11Device*& device)
 	return true;
 }
 
-bool LightPass::CreateInputLayout(ID3D11Device*& device)
+bool LightPassOLD::CreateInputLayout(ID3D11Device*& device)
 {
 	HRESULT hr;
 
@@ -132,7 +131,7 @@ bool LightPass::CreateInputLayout(ID3D11Device*& device)
 	return true;
 }
 
-LightPass::LightPass()
+LightPassOLD::LightPassOLD()
 {
 	this->pShader = nullptr;
 	this->vShader = nullptr;
@@ -144,7 +143,7 @@ LightPass::LightPass()
 	this->inputLayout = nullptr;
 }
 
-LightPass::~LightPass()
+LightPassOLD::~LightPassOLD()
 {
 	if (this->pShader)
 		this->pShader->Release();
@@ -164,7 +163,7 @@ LightPass::~LightPass()
 		this->inputLayout->Release();
 }
 
-bool LightPass::Initialize(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
+bool LightPassOLD::Initialize(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight)
 {
 	if (!LoadShaders(device))
 	{
@@ -184,7 +183,7 @@ bool LightPass::Initialize(ID3D11Device*& device, const UINT& windowWidth, const
 	return true;
 }
 
-void LightPass::Render(ID3D11DeviceContext* context)
+void LightPassOLD::Render(ID3D11DeviceContext* context)
 {
 	context->VSSetShader(vShader, NULL, 0);
 	context->PSSetShader(pShader, NULL, 0);

@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-class LightPass
+class LightPassOLD
 {
 private:
 	ID3D11Buffer* vBuffer;
@@ -23,8 +23,8 @@ private:
 	bool CreateInputLayout(ID3D11Device*& device);
 
 public:
-	LightPass();
-	virtual ~LightPass();
+	LightPassOLD();
+	virtual ~LightPassOLD();
 
 	bool Initialize(ID3D11Device*& device, const UINT& windowWidth, const UINT& windowHeight);
 	void Render(ID3D11DeviceContext* context);

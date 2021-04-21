@@ -1,12 +1,10 @@
 #pragma once
 #include "Window.h"
 #include <d3d11.h>
-#include "GeometryPass.h"
-#include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
 #include "ResourceManager.h"
-#include "Graphics.h"
+#include "RenderPass.h"
 
 class Engine
 {

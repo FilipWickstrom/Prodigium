@@ -19,7 +19,6 @@ ResourceManager::~ResourceManager()
 	{
 		if (it->second)
 		{
-			std::cout << "DELETED" << std::endl;
 			delete it->second;
 		}
 	}
@@ -119,10 +118,10 @@ ID3D11Texture2D* ResourceManager::GetTextureInternal(const std::string& key)
 
 		AddResource(key, texture);
 
-		return texture->getTexture2D();
+		return texture->GetTexture2D();
 	}
 
-	return dynamic_cast<Texture*>(found->second)->getTexture2D();
+	return dynamic_cast<Texture*>(found->second)->GetTexture2D();
 }
 
 UINT ResourceManager::GetReferenceCount()

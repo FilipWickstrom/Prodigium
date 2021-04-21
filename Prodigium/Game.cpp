@@ -7,7 +7,6 @@ Game::Game()
 
 Game::~Game()
 {
-	ResourceManager::Destroy();
 }
 
 void Game::Run(HINSTANCE& instance, UINT width, UINT height)

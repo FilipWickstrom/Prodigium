@@ -16,6 +16,7 @@ Engine::~Engine()
 		this->rasterState->Release();
 	if (this->backBufferView)
 		this->backBufferView->Release();
+	ResourceManager::Destroy();
 	Graphics::Destroy();
 }
 
@@ -53,12 +54,12 @@ void Engine::ClearDisplay()
 
 void Engine::PresentScene()
 {
-	this->gPass.RenderGPass(Graphics::GetContext());
+	this->gPass.Prepare();
 	Graphics::GetContext()->RSSetViewports(1, &viewPort);
 	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
 	Graphics::GetContext()->OMSetRenderTargets(1, &backBufferView, depthView);
-	this->lightPass.Render(Graphics::GetContext());
+	this->lightPass.Prepare();
 
 	Graphics::GetSwapChain()->Present(0, 0);
 }
@@ -85,12 +86,12 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 
 	this->SetupViewPort();
 
-	if (!this->gPass.Initialize(Graphics::GetDevice(), width, height))
+	if (!this->gPass.Initialize())
 	{
 		return false;
 	}
 
-	if (!this->lightPass.Initialize(Graphics::GetDevice(), width, height))
+	if (!this->lightPass.Initialize())
 	{
 		return false;
 	}

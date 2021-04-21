@@ -9,6 +9,8 @@ Graphics::Graphics()
 	this->swapChain = nullptr;
 	this->zBufferOn = nullptr;
 	this->zBufferOff = nullptr;
+	this->windowWidth = 0;
+	this->windowHeight = 0;
 }
 
 Graphics::~Graphics()
@@ -139,11 +141,23 @@ IDXGISwapChain*& Graphics::GetSwapChain()
 	return Graphics::instance->swapChain;
 }
 
+const UINT& Graphics::GetWindowWidth()
+{
+	return Graphics::instance->windowWidth;
+}
+
+const UINT& Graphics::GetWindowHeight()
+{
+	return Graphics::instance->windowHeight;
+}
+
 bool Graphics::Initialize(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
 {
 	if (Graphics::instance == nullptr)
 	{
 		Graphics::instance = new Graphics;
+		Graphics::instance->windowWidth = windowWidth;
+		Graphics::instance->windowHeight = windowWidth;
 
 		if (!Graphics::instance->CreateDeviceAndSwapChain(windowHandler, windowWidth, windowHeight))
 		{
