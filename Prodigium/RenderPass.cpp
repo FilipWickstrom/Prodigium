@@ -275,11 +275,17 @@ bool GeometryPass::Initialize()
 void GeometryPass::Clear()
 {
 	ID3D11RenderTargetView* nullRenderTargets[BUFFER_COUNT] = { nullptr };
+	ID3D11Buffer* vBufferNull = nullptr;
+	ID3D11VertexShader* vShaderNull = nullptr;
+	ID3D11PixelShader* pShaderNull = nullptr;
+	ID3D11InputLayout* inputLayoutNull = nullptr;
+	UINT stride = 0;
+	UINT offset = 0;
 
-	Graphics::GetContext()->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
-	Graphics::GetContext()->VSSetShader(nullptr, nullptr, 0);
-	Graphics::GetContext()->PSSetShader(nullptr, nullptr, 0);
-	Graphics::GetContext()->IASetInputLayout(nullptr);
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
+	Graphics::GetContext()->VSSetShader(vShaderNull, NULL, 0);
+	Graphics::GetContext()->PSSetShader(pShaderNull, NULL, 0);
+	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, nullptr);
 }
 
@@ -481,6 +487,19 @@ bool LightPass::Initialize()
 
 void LightPass::Clear()
 {
+	ID3D11VertexShader* vShaderNull = nullptr;
+	ID3D11PixelShader* pShaderNull = nullptr;
+	ID3D11InputLayout* inputLayoutNull = nullptr;
+	ID3D11Buffer* vBufferNull = nullptr;
+	ID3D11Buffer* iBufferNull = nullptr;
+	UINT stride = 0;
+	UINT offset = 0;
+
+	Graphics::GetContext()->VSSetShader(vShaderNull, nullptr, 0);
+	Graphics::GetContext()->PSSetShader(pShaderNull, nullptr, 0);
+	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
+	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 }
 
 void LightPass::Prepare()

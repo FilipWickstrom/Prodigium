@@ -1,7 +1,9 @@
 #include "Game.h"
 #include <iostream>
 
-Game::Game()
+
+Game::Game(HINSTANCE& instance, UINT width, UINT height)
+	:Engine(instance, width, height)
 {
 }
 
@@ -9,19 +11,17 @@ Game::~Game()
 {
 }
 
-void Game::Run(HINSTANCE& instance, UINT width, UINT height)
-{
-	engine.RedirectIoToConsole();
-	if (!engine.StartUp(instance, width, height))
-	{
-		std::cout << "Couldn't initialize engine, aborting!" << std::endl;
-	}
-}
-
 bool Game::OnFrame(const float& deltaTime)
 {
-	engine.ClearDisplay();
-	engine.PresentScene();
+	Engine::ClearDisplay();
+	Engine::Render();
+
+	return true;
+}
+
+bool Game::OnStart()
+{
+
 
 	return true;
 }

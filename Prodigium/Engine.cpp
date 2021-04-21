@@ -1,11 +1,19 @@
 #include "Engine.h"
 
-Engine::Engine()
+Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
 	this->backBufferView = nullptr;
 	this->depthView = nullptr;
 	this->rasterState = nullptr;
 	this->viewPort = {};
+
+	if (!this->StartUp(instance, width, height))
+	{
+		std::cout << "Failed to initialize Engine!" << std::endl;
+		exit(-1);
+	}
+
+	this->RedirectIoToConsole();
 }
 
 Engine::~Engine()
@@ -52,21 +60,20 @@ void Engine::ClearDisplay()
 	Graphics::GetContext()->ClearRenderTargetView(this->backBufferView, color);
 }
 
-void Engine::PresentScene()
+void Engine::Render()
 {
-	this->gPass.Prepare();
 	Graphics::GetContext()->RSSetViewports(1, &viewPort);
-	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
+	this->gPass.Prepare();
+	this->gPass.Clear();
 	Graphics::GetContext()->OMSetRenderTargets(1, &backBufferView, depthView);
 	this->lightPass.Prepare();
+	this->lightPass.Clear();
 
 	Graphics::GetSwapChain()->Present(0, 0);
 }
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
-
 	if (!this->window.SetupWindow(instance, width, height))
 	{
 		return false;
