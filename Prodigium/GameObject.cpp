@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Graphics.h"
 
 GameObject::GameObject()
 {
@@ -18,7 +19,7 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-bool GameObject::BuildMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
+bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -35,7 +36,7 @@ bool GameObject::BuildMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, Direc
 	desc.ByteWidth = sizeof(this->modelMatrix);
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = &this->modelMatrix;
-	HRESULT result = device->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
+	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
 	return !FAILED(result);
 }
 

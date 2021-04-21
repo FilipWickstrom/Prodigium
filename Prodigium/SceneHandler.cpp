@@ -44,7 +44,7 @@ int SceneHandler::GetNrOfScenes() const
 	return (int)scenes.size();
 }
 
-void SceneHandler::Render(ID3D11DeviceContext*& context)
+void SceneHandler::Render()
 {
-	this->scenes[this->currentScene].Render(context);
+	this->scenes[this->currentScene].Render();
 }

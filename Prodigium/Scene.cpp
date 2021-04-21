@@ -9,21 +9,21 @@ Scene::~Scene()
 {
 }
 
-void Scene::Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
+void Scene::Add(std::string filePath, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 
 	MeshObject* newObject = new MeshObject;
-	newObject->BuildMatrix(device, pos, scale, rotation);
+	newObject->BuildMatrix(pos, scale, rotation);
 	//newObject->Initialize(device, filePath + ".obj");
 
 	this->objects.push_back(newObject);
 	this->currentObject = (int)objects.size() - 1;
 }
 
-void Scene::UpdateMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
+void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
 {
 	/*
 		Update the Matrix with input.
@@ -49,11 +49,11 @@ int Scene::GetNumberOfObjects() const
 	return (int)this->objects.size();
 }
 
-void Scene::Render(ID3D11DeviceContext*& context)
+void Scene::Render()
 {
 	for (int i = 0; i < (int)this->objects.size(); i++)
 	{
-		this->objects[i]->Render(context);
+		this->objects[i]->Render();
 	}
 }
 

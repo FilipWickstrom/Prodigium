@@ -26,5 +26,5 @@ public:
 	bool LoadMesh(ID3D11Device* device, std::string filePath);
 	bool LoadDiffuseTexture(ID3D11Device* device, std::string filePath);
 	bool LoadNormalTexture(ID3D11Device* device, std::string filePath);
-	void Render(ID3D11DeviceContext*& context);
+	void Render();
 };

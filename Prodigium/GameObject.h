@@ -21,7 +21,7 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	bool BuildMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot);
+	bool BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot);
 
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetScale() const;

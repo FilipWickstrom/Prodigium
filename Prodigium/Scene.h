@@ -20,11 +20,11 @@ public:
 	virtual ~Scene();
 
 	// add only the name of the file in filePath since "Models/" and ".obj" will be added in the function.
-	void Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	void Add(std::string filePath, DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	// update the object matrix buffer of object.
-	void UpdateMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+	void UpdateMatrix(DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
@@ -37,6 +37,6 @@ public:
 	int GetNumberOfObjects() const;
 
 	// loop through all objects and call their render function.
-	void Render(ID3D11DeviceContext*& context);
+	void Render();
 
 };

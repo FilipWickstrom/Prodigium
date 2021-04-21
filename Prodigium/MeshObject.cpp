@@ -1,4 +1,5 @@
 #include "MeshObject.h"
+#include "Graphics.h"
 
 MeshObject::MeshObject()
 {
@@ -62,12 +63,12 @@ bool MeshObject::LoadNormalTexture(ID3D11Device* device, std::string filePath)
     return false;
 }
 
-void MeshObject::Render(ID3D11DeviceContext*& context)
+void MeshObject::Render()
 {
     /*
         Set vertexBuffer as IASET...vertexbuffer,
         Anything more needed before rendering then add.
     */
 
-    context->Draw(this->vertexCount, 0);
+    Graphics::GetContext()->Draw(this->vertexCount, 0);
 }

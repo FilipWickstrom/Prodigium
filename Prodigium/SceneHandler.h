@@ -1,5 +1,7 @@
 #pragma once
 #include "Scene.h"
+#include "Graphics.h"
+
 class SceneHandler
 {
 private:
@@ -36,5 +38,5 @@ public:
 	int GetNrOfScenes() const;
 
 	// render the currently selected scene.
-	void Render(ID3D11DeviceContext*& context);
+	void Render();
 };
