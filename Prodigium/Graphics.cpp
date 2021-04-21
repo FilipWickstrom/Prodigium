@@ -13,6 +13,8 @@ Graphics::Graphics()
 	this->windowHeight = 0;
 	this->viewport = {};
 	this->backBufferView = nullptr;
+	this->depthView = nullptr;
+	this->rasterState = nullptr;
 }
 
 Graphics::~Graphics()
@@ -29,6 +31,10 @@ Graphics::~Graphics()
 		this->zBufferOff->Release();
 	if (this->backBufferView)
 		this->backBufferView->Release();
+	if (this->depthView)
+		this->depthView->Release();
+	if (this->rasterState)
+		this->rasterState->Release();
 }
 
 bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
