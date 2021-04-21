@@ -1,5 +1,5 @@
 #include "Window.h"
-
+#include "InputHandler.h"
 bool Window::SetupWindow(HINSTANCE& instance, UINT width, UINT height)
 {
 	this->WIDTH = width;
@@ -12,7 +12,7 @@ bool Window::SetupWindow(HINSTANCE& instance, UINT width, UINT height)
 	WNDCLASS wc = { };
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.lpfnWndProc = Window::WindowProc;
+	wc.lpfnWndProc = InputHandler::WindowProc;
 	wc.hInstance = instance;
 	wc.lpszClassName = CLASS_NAME;
 
@@ -73,26 +73,3 @@ const UINT& Window::GetWindowHeight() const
 	return HEIGHT;
 }
 
-LRESULT Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	// Sort through and find what code to run for the message given
-	switch (message)
-	{
-		// This message is read when the window is closed
-	case WM_DESTROY:
-		// Tell calling thread to terminate
-		PostQuitMessage(0);
-		return 0;
-	case WM_KEYDOWN:
-		break;
-	case WM_MOUSEMOVE:
-		break;
-	case WM_LBUTTONDOWN:
-		break;
-	case WM_RBUTTONDOWN:
-		break;
-	}
-
-	// Handle any messages the switch statement didn't by using default methodology
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
