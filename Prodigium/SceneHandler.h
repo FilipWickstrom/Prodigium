@@ -6,26 +6,35 @@ private:
 
 	std::vector<Scene> scenes;
 
-	// Initializer for Forest Scene/Level
-	void ForestScene();
+	// "Points" Towards the currently selected scene.
+	int currentScene;
 
 public:
 
+	/*
+		Creates a handler for scenes within the game. Within is a "pointer" which takes care of which scene to call on
+		EditScene() call, to change it simply call SwitchScene('wanted scene') to switch which scene is currently active.
+		Remember on RemoveScene() that vector<> starts at spot 0. On declaration a new scene will be added to the vector<> so
+		no need to call AddScene() at the beginning since ONE already exists.
+	*/
 	SceneHandler();
 	virtual ~SceneHandler();
 
-	// Adds a new fresh scene into the vector<> call this when you want to init a new scene.
+	// Adds a new fresh scene into the vector<> call this when you want to init a new scene. currentScene pointer will point towards the newely created scene.
 	void AddScene();
 
-	// removes the scene at the indexed begin() + index spot.
+	// removes the scene at the indexed begin() + index spot. This resets the currentScene pointer to first element.
 	void RemoveScene(int index);
 
-	// Get access to the indexed scene to edit it.
-	Scene& EditScene(int index);
+	// get access to the currentScene pointer which points to current selected scene.
+	Scene& EditScene();
+
+	// switch where the currentScene pointer is going to point.
+	void SwitchScene(int index);
 
 	// return the number of Scenes currently existing in the game.
 	int GetNrOfScenes() const;
 
-	// Render the scene with the sceneIndex.
-	void Render(ID3D11DeviceContext*& context, int sceneIndex);
+	// render the currently selected scene.
+	void Render(ID3D11DeviceContext*& context);
 };

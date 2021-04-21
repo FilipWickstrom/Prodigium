@@ -12,6 +12,8 @@ private:
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
 
+	int currentObject;
+
 public:
 
 	Scene();
@@ -21,8 +23,15 @@ public:
 	void Add(ID3D11Device*& device, std::string filePath, DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 
 		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
-	// the vector will erase whatever item was at begin() + index
+	// update the object matrix buffer of object.
+	void UpdateMatrix(ID3D11Device*& device, DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
+		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+
+	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
 	void Remove(int index);
+
+	// switches the to indexed object if it is within the scope of the vector! else nothing changes.
+	void SwitchObject(int index);
 
 	// return the number of objects inside the scene.
 	int GetNumberOfObjects() const;

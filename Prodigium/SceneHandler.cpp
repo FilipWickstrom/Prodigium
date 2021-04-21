@@ -2,31 +2,41 @@
 
 SceneHandler::SceneHandler()
 {
-
+	this->AddScene();
 }
 
 SceneHandler::~SceneHandler()
 {
-	for (int i = 0; i < (int)this->scenes.size(); i++)
-	{
-		this->scenes.pop_back();
-	}
 }
 
 void SceneHandler::AddScene()
 {
 	Scene newScene;
 	scenes.push_back(newScene);
+	this->currentScene = (int)scenes.size() - 1;
 }
 
 void SceneHandler::RemoveScene(int index)
 {
+	this->currentScene = 0;
 	this->scenes.erase(this->scenes.begin() + index);
 }
 
-Scene& SceneHandler::EditScene(int index)
+Scene& SceneHandler::EditScene()
 {
-	return this->scenes[index];
+	return this->scenes[this->currentScene];
+}
+
+void SceneHandler::SwitchScene(int index)
+{
+	if (index < (int)scenes.size() && index >= 0)
+	{
+		this->currentScene = index;
+	}
+	else
+	{
+		printf("You went too far %d is above %d\n", index, (int)scenes.size() - 1);
+	}
 }
 
 int SceneHandler::GetNrOfScenes() const
@@ -34,7 +44,7 @@ int SceneHandler::GetNrOfScenes() const
 	return (int)scenes.size();
 }
 
-void SceneHandler::Render(ID3D11DeviceContext*& context, int sceneIndex)
+void SceneHandler::Render(ID3D11DeviceContext*& context)
 {
-	scenes[sceneIndex].Render(context);
+	this->scenes[this->currentScene].Render(context);
 }
