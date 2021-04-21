@@ -17,5 +17,4 @@ public:
 	const HWND& GetWindowHandler()const;
 	const UINT& GetWindowWidth()const;
 	const UINT& GetWindowHeight()const;
-	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };

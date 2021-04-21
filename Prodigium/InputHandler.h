@@ -10,5 +10,6 @@ private:
 	static InputHandler* instance;
 public:
 	DELETE_COPY_ASSIGNMENT(InputHandler);
+	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 
