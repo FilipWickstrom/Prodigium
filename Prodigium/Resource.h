@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 enum class ResourceType
 {
@@ -17,6 +18,4 @@ public:
 	virtual ~Resource();
 
 	ResourceType GetType()const;
-
-	virtual bool Load() = 0;
 };

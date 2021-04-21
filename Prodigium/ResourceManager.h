@@ -1,11 +1,10 @@
 #pragma once
 #include <unordered_map>
-#include "Resource.h"
-#include <string>
 #include <iostream>
 #include <memory>
 #include "UsefulStructuresHeader.h"
-#include "Test.h"
+#include "UsefulHeader.h"
+#include "Texture.h"
 
 // The resourceManager will manage all the resources(Assets) in the game. 
 // Remember to inherit from Resource.h for every type of asset. 
@@ -13,7 +12,6 @@
 // Example Below:
 // Test()
 // :Resource(ResourceType::TEXTURE)
-// Using GetResource() will give you the requested resource. 
 // If it doesn't exist it will load it in otherwise it will directly return it.
 
 class ResourceManager
@@ -28,29 +26,11 @@ private:
 
 	static ResourceManager* instance;
 
-	bool AddResource(std::string key, Resource* resource);
+	void AddResource(std::string key, Resource* resource);
 
-	template <typename T>
-	T* GetTexture(const std::string& key)
-	{
-		auto found = instance->textures.find(key);
+	ID3D11Texture2D* GetTextureInternal(const std::string& key);
 
-		if (found == instance->textures.end())
-		{
-			Test* texture = nullptr;
-
-			if (!AddResource(key, texture = new Test()))
-			{
-				throw "resourcemanager: couldn't add asset!\n";
-			}
-
-			return dynamic_cast<T*>(texture);
-		}
-		return dynamic_cast<T*>(found->second);
-	}
-
-	//template <typename T>
-	//T* GetMesh(const std::string& key)
+	//Mesh* GetMeshInternal(const std::string& key)
 	//{
 
 	//	auto found = instance->meshes.find(key);
@@ -63,10 +43,10 @@ private:
 	//			throw "ResourceManager: Couldn't add asset!\n";
 	//		}
 
-	//		return dynamic_cast<T*>(mesh);
+	//		return mesh;
 	//	}
 
-	//	return dynamic_cast<T*>(found->second);
+	//	return found->second;
 	//}
 
 protected:
@@ -75,45 +55,28 @@ protected:
 public:
 	DELETE_COPY_ASSIGNMENT(ResourceManager);
 
-	static bool Initialize();
+	static void Initialize();
 
-	// GetResource return a pointer to a resource
-	template <typename T>
-	T* GetResource(const std::string& key)
+	static ID3D11Texture2D* GetTexture(const std::string& key)
 	{
-		T* rv = nullptr;
+		ID3D11Texture2D* rv = instance->GetTextureInternal(key);
 
-		if (std::is_same<T, Test>::value)
+		if (rv == nullptr)
 		{
-			rv = instance->GetTexture<T>(key);
+			std::cout << "Resource is nullptr!" << std::endl;
 		}
-		//else if (std::is_same<T, Mesh>::value)
-		//{
-		//	rv = instance->GetMesh<T>(key);
-		//}
-		//else if (std::is_same<T, Audio>::value)
-		//{
-		//	rv = instance->GetAudio<T>(key);
-		//}
-		else
-		{
-			throw "Type is not supported!\n";
-		}
-
-		// More datatypes to add if we add more assets
 
 		return rv;
 	}
 
-	static ResourceManager* Instance()
-	{
-		if (instance == nullptr)
-		{
-			instance = new ResourceManager;
-		}
+	//static ID3D11Texture2D* GetMesh(const std::string& key)
+	//{
+	//	ID3D11Texture2D* rv = instance->GetMeshInternal(key);
 
-		return instance;
-	}
+	//	return rv;
+	//}
 
-	const UINT GetReferenceCount() const;
+	static UINT GetReferenceCount();
+
+	static void Destroy();
 };

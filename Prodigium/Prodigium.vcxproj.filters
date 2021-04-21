@@ -54,12 +54,6 @@
     <ClCompile Include="SceneHandler.cpp">
       <Filter>Header Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Resource.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -72,8 +66,22 @@
     <ClCompile Include="LightPass.cpp">
       <Filter>Rendering\Light Pass</Filter>
     </ClCompile>
-    <ClCompile Include="Test.cpp">
+    <ClCompile Include="RenderPass.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files</Filter>
+    <ClCompile Include="CameraObject.cpp">
+      <Filter>Header Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Header Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshObject.cpp">
+      <Filter>Header Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,8 +127,22 @@
     <ClInclude Include="LightPass.h">
       <Filter>Rendering\Light Pass</Filter>
     </ClInclude>
-    <ClInclude Include="Test.h">
+    <ClInclude Include="RenderPass.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>Header Files</Filter>
+    <ClInclude Include="CameraObject.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="UsefulHeader.h">
+      <Filter>Header Files\Helper Includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -136,5 +158,10 @@
     <FxCompile Include="VertexShaderLightPass.hlsl">
       <Filter>Rendering\Light Pass</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CPP.HINT">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

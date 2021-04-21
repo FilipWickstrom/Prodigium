@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <string>
 #include "UsefulStructuresHeader.h"
+#include "ResourceManager.h"
 
 class GeometryPass
 {
