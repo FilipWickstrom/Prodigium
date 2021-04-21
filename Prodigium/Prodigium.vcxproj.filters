@@ -48,10 +48,8 @@
     <ClInclude Include="UsefulStructuresHeader.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="SimpleMath.h" />
-    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT" />
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
