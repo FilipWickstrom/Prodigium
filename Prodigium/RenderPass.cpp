@@ -451,6 +451,33 @@ bool LightPass::CreateInputLayout()
 	return true;
 }
 
+bool LightPass::CreateSamplerState()
+{
+	HRESULT hr;
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+
+	// Create the texture sampler state.
+	hr = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 LightPass::LightPass()
 {
 	this->iBuffer = nullptr;
@@ -462,6 +489,7 @@ LightPass::LightPass()
 	this->vBuffer = nullptr;
 	this->vShader = nullptr;
 	this->pShader = nullptr;
+	this->sampler = nullptr;
 }
 
 LightPass::~LightPass()
@@ -482,6 +510,8 @@ LightPass::~LightPass()
 		this->vShader->Release();
 	if (this->pShader)
 		this->pShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
 }
 
 bool LightPass::Initialize()
@@ -501,6 +531,11 @@ bool LightPass::Initialize()
 		return false;
 	}
 
+	if (!CreateSamplerState())
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -511,6 +546,7 @@ void LightPass::Clear()
 	ID3D11InputLayout* inputLayoutNull = nullptr;
 	ID3D11Buffer* vBufferNull = nullptr;
 	ID3D11Buffer* iBufferNull = nullptr;
+	ID3D11SamplerState* samplerStateNull = nullptr;
 	UINT stride = 0;
 	UINT offset = 0;
 
@@ -519,6 +555,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 }
 
 void LightPass::Prepare()
@@ -530,6 +567,7 @@ void LightPass::Prepare()
 	UINT offset = 0;
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }
