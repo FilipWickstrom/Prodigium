@@ -28,13 +28,14 @@ private:
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
 	ID3D11RenderTargetView* renderTarget;
-	ID3D11ShaderResourceView* shaderResource;
+	ID3D11ShaderResourceView* shaderResources[BUFFER_COUNT];
 	ID3D11Texture2D* renderedImage;
 	ID3D11SamplerState* sampler;
 	std::string vShaderByteCode;
 
 	bool LoadShaders();
 	//bool CreateRenderTarget();
+	bool CreateShaderResources();
 	bool CreateFullScreenQuad();
 	bool CreateInputLayout();
 	bool CreateSamplerState();

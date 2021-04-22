@@ -41,17 +41,17 @@ void Engine::Render()
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
 	this->gPass.Clear();
-	Graphics::BindBackBuffer();
 
 	
 	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->testCamera.GetModelMatrixBuffer());		//PUT IN BETTER PLACE LATER****
 	this->testMeshObj.Render();		//DELETE LATER***
 	//this->testMeshObj2.Render();	//DELETE LATER***
 
+	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
+	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
 	Graphics::UnbindBackBuffer();
-	Graphics::GetSwapChain()->Present(0, 0);
 }
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)

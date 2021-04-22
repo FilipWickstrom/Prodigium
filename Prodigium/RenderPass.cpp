@@ -380,6 +380,30 @@ bool LightPass::LoadShaders()
 	return true;
 }
 
+bool LightPass::CreateShaderResources()
+{
+	HRESULT hr;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
+
+	shaderResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	shaderResourceDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceDesc.Texture2D.MipLevels = 1;
+	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
+
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		hr = Graphics::GetDevice()->CreateShaderResourceView(ResourceManager::GetTexture(std::string(std::to_string(i))), &shaderResourceDesc, &shaderResources[i]);
+
+		if (FAILED(hr))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool LightPass::CreateFullScreenQuad()
 {
 	HRESULT hr;
@@ -485,11 +509,14 @@ LightPass::LightPass()
 	this->pShader = nullptr;
 	this->renderedImage = nullptr;
 	this->renderTarget = nullptr;
-	this->shaderResource = nullptr;
 	this->vBuffer = nullptr;
 	this->vShader = nullptr;
 	this->pShader = nullptr;
 	this->sampler = nullptr;
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		this->shaderResources[i] = nullptr;
+	}
 }
 
 LightPass::~LightPass()
@@ -502,8 +529,6 @@ LightPass::~LightPass()
 		this->renderedImage->Release();
 	if (this->renderTarget)
 		this->renderTarget->Release();
-	if (this->shaderResource)
-		this->shaderResource->Release();
 	if (this->vBuffer)
 		this->vBuffer->Release();
 	if (this->vShader)
@@ -512,11 +537,21 @@ LightPass::~LightPass()
 		this->pShader->Release();
 	if (this->sampler)
 		this->sampler->Release();
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (this->shaderResources[i])
+			this->shaderResources[i]->Release();
+	}
 }
 
 bool LightPass::Initialize()
 {
 	if (!LoadShaders())
+	{
+		return false;
+	}
+
+	if (!CreateShaderResources())
 	{
 		return false;
 	}
@@ -536,6 +571,7 @@ bool LightPass::Initialize()
 		return false;
 	}
 
+
 	return true;
 }
 
@@ -547,6 +583,7 @@ void LightPass::Clear()
 	ID3D11Buffer* vBufferNull = nullptr;
 	ID3D11Buffer* iBufferNull = nullptr;
 	ID3D11SamplerState* samplerStateNull = nullptr;
+	ID3D11ShaderResourceView* shaderResourceNull[BUFFER_COUNT] = { nullptr };
 	UINT stride = 0;
 	UINT offset = 0;
 
@@ -556,6 +593,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
+	Graphics::GetContext()->PSGetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
 }
 
 void LightPass::Prepare()
@@ -568,6 +606,7 @@ void LightPass::Prepare()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, this->shaderResources);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }
