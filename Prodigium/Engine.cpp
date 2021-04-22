@@ -39,14 +39,10 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
+	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 	Graphics::BindBackBuffer();
-
-	
-	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->testCamera.GetModelMatrixBuffer());		//PUT IN BETTER PLACE LATER****
-	this->testMeshObj.Render();		//DELETE LATER***
-	//this->testMeshObj2.Render();	//DELETE LATER***
 
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
@@ -79,27 +75,15 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-	
-	if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
+
+	// Testing.
+	DirectX::XMVECTOR eyePos = { 0.0f, 0.0f, -5.0f };
+	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, (float)(width / height), eyePos))
 	{
-		std::cout << "Object1 failed" << std::endl;
 		return false;
 	}
 
-	//Måste kolla så att kameran blir rätt. Kan vara jag som fyllt i fel värden...
-	/*XMVECTOR camPos = { 0.0f, 0.0f, -5.0f };
-	if (!this->testCamera.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 
-		0.1f, 1000.0f, XM_PI * 0.5f, (float)(16.0f / 9.0f), camPos))
-	{
-		std::cout << "Camera failed..." << std::endl;
-		return false;
-	}*/
-
-	//if (!this->testMeshObj2.Initialize("mask_OBJ.obj", "mask_albedo.png", "", {5.0f,0.0f,0.0f}))
-	//{
-	//	std::cout << "Object2 failed" << std::endl;
-	//	return false;
-	//}
+	this->sceneHandler.EditScene().Add("necklace.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
 
 	return true;
 }
