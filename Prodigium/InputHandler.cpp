@@ -2,7 +2,7 @@
 InputHandler* InputHandler::instance = nullptr;
 InputHandler::InputHandler()
 {
-	lol = 0;
+	state = {};
 }
 InputHandler::~InputHandler()
 {
@@ -20,6 +20,10 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 		InputHandler::instance->keyboard = std::make_unique<DirectX::Keyboard>();
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
 		InputHandler::instance->mouse->SetWindow(windowHandle);
+		if (InputHandler::instance->keyboard->IsConnected())
+		{
+			std::cout << "HEJSANSVEJSAN\n";
+		}
 	}
 	else
 	{
@@ -29,14 +33,23 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 
 }
 
-Keyboard::State InputHandler::getKBState()
+Keyboard::State InputHandler::GetKBState()
 {
 	return InputHandler::instance->keyboard->GetState();
 }
 
-Mouse::State InputHandler::getMouseState()
+Mouse::State InputHandler::GetMouseState()
 {
 	return InputHandler::instance->mouse->GetState();
+}
+
+void InputHandler::HandleMessages()
+{
+	if (PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&InputHandler::instance->state);
+		DispatchMessage(&InputHandler::instance->state);
+	}
 }
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -54,6 +67,8 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		PostQuitMessage(0);
 		return 0;
 	case WM_KEYDOWN:
+		std::cout << "what the fuck\n";
+		Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
 		break;

@@ -63,7 +63,10 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
+	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	ResourceManager::Initialize();
 
 	Graphics::SetMainWindowViewport();

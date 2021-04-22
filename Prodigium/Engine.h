@@ -5,7 +5,7 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
-
+#include "InputHandler.h"
 #include "MeshObject.h"
 
 class Engine
