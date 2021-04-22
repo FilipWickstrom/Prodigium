@@ -54,8 +54,29 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 
 void Scene::Remove(int index)
 {
-	this->currentObject = 0;
-	this->objects.erase(objects.begin() + index);
+	if (index < (int)this->objects.size() - 1 && index >= 0)
+	{
+		if (this->objects[index] != nullptr)
+		{
+			this->currentObject = 0;
+			delete this->objects[index];
+			this->objects.erase(objects.begin() + index);
+		}
+		else
+		{
+#ifdef _DEBUG
+			std::cout << "Object was a nullptr!\n";
+#endif
+		}
+	}
+	else
+	{
+#ifdef _DEBUG
+
+		std::cout << "index is outside of vector scope!\n";
+		std::cout << "index was: " << index << ". Scope is: " << 0 << " to " << (int)this->objects.size() - 1 << "\n";
+#endif
+	}
 }
 
 void Scene::SwitchObject(int index)
@@ -65,34 +86,43 @@ void Scene::SwitchObject(int index)
 	else
 	{
 #ifdef _DEBUG
-		std::cout << "Index is outside of vector scope!\n";
+		std::cout << "index is outside of vector scope!\n";
 #endif
 	}
 }
 
 int Scene::GetNumberOfObjects() const
 {
-	return (int)this->objects.size();
+	return (unsigned int)this->objects.size();
 }
 
 void Scene::RemoveAllObjects()
 {
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
+		delete this->objects[(unsigned int)this->objects.size() - 1];
 		this->objects.pop_back();
 	}
+	this->Pop();
 }
 
 void Scene::Pop()
 {
-	this->objects.pop_back();
+	if ((int)this->objects.size() > 0)
+	{
+		delete this->objects[(unsigned int)this->objects.size() - 1];
+		this->objects.pop_back();
+	}
 }
 
 void Scene::Render()
 {
-	for (int i = 0; i < (int)this->objects.size(); i++)
+	if ((int)this->objects.size() > 0)
 	{
-		this->objects[i]->Render();
+		for (int i = 0; i < (int)this->objects.size(); i++)
+		{
+			this->objects[i]->Render();
+		}
 	}
 }
 
