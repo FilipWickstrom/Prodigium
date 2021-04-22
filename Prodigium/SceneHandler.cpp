@@ -44,6 +44,19 @@ int SceneHandler::GetNrOfScenes() const
 	return (int)scenes.size();
 }
 
+void SceneHandler::RemoveAllScenes()
+{
+	for (int i = 0; i < (int)scenes.size(); i++)
+	{
+		scenes.pop_back();
+	}
+}
+
+void SceneHandler::Pop()
+{
+	this->scenes.pop_back();
+}
+
 void SceneHandler::Render()
 {
 	this->scenes[this->currentScene].Render();

@@ -15,7 +15,6 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	/*
 		Create a new MeshObject from input.
 	*/
-
 	MeshObject* newObject = new MeshObject;
 	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, position, rotation, scale))
 	{
@@ -33,7 +32,7 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 	/*
 		Update the Matrix with input.
 	*/
-
+	this->objects[this->currentObject]->UpdateMatrix(pos, scale, rotation);
 
 }
 
@@ -47,11 +46,30 @@ void Scene::SwitchObject(int index)
 {
 	if (index < (int)this->objects.size() && index >= 0)
 		this->currentObject = index;
+
+#ifdef _DEBUG
+
+	std::cout << "Index is outside of the vector scope!" << "\n";
+
+#endif
 }
 
 int Scene::GetNumberOfObjects() const
 {
 	return (int)this->objects.size();
+}
+
+void Scene::RemoveAllObjects()
+{
+	for (int i = 0; i < (int)objects.size(); i++)
+	{
+		this->objects.pop_back();
+	}
+}
+
+void Scene::Pop()
+{
+	this->objects.pop_back();
 }
 
 void Scene::Render()

@@ -40,6 +40,23 @@ bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, Direc
 	return !FAILED(result);
 }
 
+bool GameObject::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
+{
+	this->position = pos;
+	this->scale = scl;
+	this->rotation = rot;
+
+	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z));
+
+	D3D11_MAPPED_SUBRESOURCE submap;
+	Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &this->modelMatrix, sizeof(this->modelMatrix));
+	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
+
+	return true;
+}
+
 DirectX::XMFLOAT3 GameObject::GetPosition() const
 {
 	return this->position;

@@ -37,6 +37,12 @@ public:
 	// return the number of Scenes currently existing in the game.
 	int GetNrOfScenes() const;
 
+	// will cycle through all scenes and pop them from the vector.
+	void RemoveAllScenes();
+
+	// runs a simple pop_back if so is desired.
+	void Pop();
+
 	// render the currently selected scene.
 	void Render();
 };
