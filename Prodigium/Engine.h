@@ -16,6 +16,7 @@ private:
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
+	CameraObject gameCam;
 
 	MeshObject testMeshObj;		//DELETE LATER***
 	//CameraObject testCamera;	//DELETE LATER***

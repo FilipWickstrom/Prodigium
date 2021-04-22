@@ -39,15 +39,17 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 	this->fieldOfView = fov;
 	this->upDir = { 0.f,1.f,0.f,0.f };
 	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
-	this->viewProjMatrix.projectionMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(this->fieldOfView, this->aspectRatio, this->nearPlane, this->farPlane));
+	this->viewProjMatrix.projectionMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
 	D3D11_BUFFER_DESC buffDesc = {};
 	buffDesc.ByteWidth = sizeof(viewProjectionMatrix);
 	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
 
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = &this->viewProjMatrix;
 
-	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, NULL, &matrixBuffer);
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, &data, &matrixBuffer);
 
 	if (FAILED(hr))
 	{
