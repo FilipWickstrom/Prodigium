@@ -39,6 +39,7 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
+	this->sceneHandler.Render();
 	this->gPass.Clear();
 	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
@@ -77,7 +78,6 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
 	
 	//if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
 	//{
