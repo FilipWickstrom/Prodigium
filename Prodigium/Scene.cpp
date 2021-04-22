@@ -7,6 +7,11 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+	// Delete the allocated memory from vector.
+	for (int i = 0; i < (int)objects.size(); i++)
+	{
+		delete this->objects[i];
+	}
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
@@ -15,7 +20,6 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	/*
 		Create a new MeshObject from input.
 	*/
-
 	MeshObject* newObject = new MeshObject;
 	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, position, rotation, scale))
 	{
@@ -24,7 +28,9 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 	else
 	{
+#ifdef _DEBUG
 		std::cout << "Failed to add object" << std::endl;
+#endif
 	}
 }
 
@@ -33,32 +39,90 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 	/*
 		Update the Matrix with input.
 	*/
+	if (!this->objects[this->currentObject]->UpdateMatrix(pos, scale, rotation))
+	{
+#ifdef _DEBUG
+		std::cout << "Error lol noob" << "\n";
+#endif
+	}
 
+#ifdef _DEBUG
+	std::cout << "Matrix was updated for object on index " << this->currentObject << ". \n";
+#endif
 
 }
 
 void Scene::Remove(int index)
 {
-	this->currentObject = 0;
-	this->objects.erase(objects.begin() + index);
+	if (index < (int)this->objects.size() - 1 && index >= 0)
+	{
+		if (this->objects[index] != nullptr)
+		{
+			this->currentObject = 0;
+			delete this->objects[index];
+			this->objects.erase(objects.begin() + index);
+		}
+		else
+		{
+#ifdef _DEBUG
+			std::cout << "Object was a nullptr!\n";
+#endif
+		}
+	}
+	else
+	{
+#ifdef _DEBUG
+
+		std::cout << "index is outside of vector scope!\n";
+		std::cout << "index was: " << index << ". Scope is: " << 0 << " to " << (int)this->objects.size() - 1 << "\n";
+#endif
+	}
 }
 
 void Scene::SwitchObject(int index)
 {
 	if (index < (int)this->objects.size() && index >= 0)
 		this->currentObject = index;
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "index is outside of vector scope!\n";
+#endif
+	}
 }
 
 int Scene::GetNumberOfObjects() const
 {
-	return (int)this->objects.size();
+	return (unsigned int)this->objects.size();
+}
+
+void Scene::RemoveAllObjects()
+{
+	for (int i = 0; i < (int)objects.size(); i++)
+	{
+		delete this->objects[(unsigned int)this->objects.size() - 1];
+		this->objects.pop_back();
+	}
+	this->Pop();
+}
+
+void Scene::Pop()
+{
+	if ((int)this->objects.size() > 0)
+	{
+		delete this->objects[(unsigned int)this->objects.size() - 1];
+		this->objects.pop_back();
+	}
 }
 
 void Scene::Render()
 {
-	for (int i = 0; i < (int)this->objects.size(); i++)
+	if ((int)this->objects.size() > 0)
 	{
-		this->objects[i]->Render();
+		for (int i = 0; i < (int)this->objects.size(); i++)
+		{
+			this->objects[i]->Render();
+		}
 	}
 }
 
