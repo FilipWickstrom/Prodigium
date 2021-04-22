@@ -1,8 +1,8 @@
 
 cbuffer CameraViewProj : register(b0)
 {
-    row_major float4x4 view;
-    row_major float4x4 projection;
+    float4x4 view;
+    float4x4 projection;
 };
 
 cbuffer ModelMatrix : register(b1)

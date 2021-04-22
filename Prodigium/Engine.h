@@ -6,7 +6,8 @@
 #include "ResourceManager.h"
 #include "RenderPass.h"
 
-#include "MeshObject.h"
+#include "MeshObject.h"		//DELETE LATER***
+#include "CameraObject.h"	//DELETE LATER***
 
 class Engine
 {
@@ -16,6 +17,7 @@ private:
 	LightPass lightPass;
 
 	MeshObject testMeshObj;		//DELETE LATER***
+	//CameraObject testCamera;	//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 
 private:

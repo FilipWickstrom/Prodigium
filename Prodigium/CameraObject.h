@@ -32,13 +32,12 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	bool Initialize(ID3D11Device*& device, int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& eyePosition);
+	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& eyePosition);
 	XMMATRIX GetViewMatrix() const;
 	XMMATRIX GetProjectionMatrix() const;
 	void Move(float x, float y);
 	void Rotate(float pitchAmount, float yawAmount);
 	void SetPosition(float xPos, float yPos);
-	
 	ID3D11Buffer*& GetViewProjMatrix();
 };
 

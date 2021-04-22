@@ -30,7 +30,7 @@ CameraObject::~CameraObject()
 	matrixBuffer->Release();
 }
 
-bool CameraObject::Initialize(ID3D11Device*& device, int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& position)
+bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& position)
 {
 	this->eyePos = position;
 	this->targetPos = { 0.f,0.f,0.f,0.f };
@@ -47,7 +47,7 @@ bool CameraObject::Initialize(ID3D11Device*& device, int windowWidth, int window
 	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
 
 
-	HRESULT hr = device->CreateBuffer(&buffDesc, NULL, &matrixBuffer);
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, NULL, &matrixBuffer);
 
 	if (FAILED(hr))
 	{
