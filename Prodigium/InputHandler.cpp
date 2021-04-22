@@ -17,7 +17,6 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 	if (!InputHandler::instance)
 	{
 		InputHandler::instance = new InputHandler;
-		InputHandler::instance->lol = 1;
 		InputHandler::instance->keyboard = std::make_unique<DirectX::Keyboard>();
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
 		InputHandler::instance->mouse->SetWindow(windowHandle);
@@ -27,6 +26,17 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 		std::cerr << "InputHandler already Initialized\n";
 	}
 	return true;
+
+}
+
+Keyboard::State InputHandler::getKBState()
+{
+	return InputHandler::instance->keyboard->GetState();
+}
+
+Mouse::State InputHandler::getMouseState()
+{
+	return InputHandler::instance->mouse->GetState();
 }
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -34,6 +44,10 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	// Sort through and find what code to run for the message given
 	switch (message)
 	{
+	case WM_ACTIVATEAPP:
+		Keyboard::ProcessMessage(message, wParam, lParam);
+		Mouse::ProcessMessage(message, wParam, lParam);
+		break;
 		// This message is read when the window is closed
 	case WM_DESTROY:
 		// Tell calling thread to terminate
@@ -47,6 +61,13 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		break;
 	case WM_RBUTTONDOWN:
 		break;
+	case WM_MOUSEHOVER:
+		Mouse::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_SYSKEYDOWN:
+		Keyboard::ProcessMessage(message, wParam, lParam);
+		break;
+
 	}
 
 	// Handle any messages the switch statement didn't by using default methodology
