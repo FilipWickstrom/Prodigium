@@ -42,6 +42,7 @@
     <ClInclude Include="UsefulHeader.h" />
     <ClInclude Include="UsefulStructuresHeader.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
