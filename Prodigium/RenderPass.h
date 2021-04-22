@@ -59,14 +59,11 @@ private:
 	ID3D11InputLayout* inputLayout;
 	std::string vShaderByteCode;
 
-	// TESTING ENVIRONMENT
-	ID3D11Buffer* vBuffer;
-	bool CreateQuad();
-	// TESTING ENDS
 	bool CreateGBuffer();
 	bool CreateDepthBuffer();
 	bool CreateInputLayout();
 	bool LoadShaders();
+	bool CreateSamplerState();
 
 public:
 	GeometryPass();
