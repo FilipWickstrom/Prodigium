@@ -45,9 +45,9 @@ void Engine::Render()
 	Graphics::BindBackBuffer();
 
 	this->lightPass.Prepare();
+	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
 	Graphics::UnbindBackBuffer();
-	Graphics::GetSwapChain()->Present(0, 0);
 }
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
