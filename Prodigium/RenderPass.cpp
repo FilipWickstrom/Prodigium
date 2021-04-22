@@ -301,6 +301,8 @@ void GeometryPass::Clear()
 	ID3D11VertexShader* vShaderNull = nullptr;
 	ID3D11PixelShader* pShaderNull = nullptr;
 	ID3D11InputLayout* inputLayoutNull = nullptr;
+	ID3D11SamplerState* samplerStateNull = nullptr;
+
 	UINT stride = 0;
 	UINT offset = 0;
 
@@ -309,6 +311,7 @@ void GeometryPass::Clear()
 	Graphics::GetContext()->PSSetShader(pShaderNull, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, nullptr);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 }
 
 void GeometryPass::Prepare()
@@ -319,6 +322,7 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 
 bool LightPass::LoadShaders()
