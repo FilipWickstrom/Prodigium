@@ -1,24 +1,33 @@
+
+Texture2D diffuseTexture : register(t0);
+Texture2D normalTexture  : register(t1);
+SamplerState anisotropic : register(s0);
+
 struct PixelShaderInput
 {
-    float4 position : SV_Position;
-    float2 texCoord : TEXCOORD;
-    float3 normal : NORMAL;
+    float4 positionCS : SV_Position;
+    float4 positionWS : POSITIONWS;
+    float2 texCoord   : TEXCOORD;
+    float3 normalWS   : NORMAL;
 };
 
 struct PixelShaderOutput
 {
-    float3 position : SV_Target0;
-    float2 texCoord : SV_Target1;
-    float3 normal : SV_Target2;
+    float4 positionWS : SV_Target0;
+    float4 colour     : SV_Target1;
+    float4 normalWS   : SV_Target2;
 };
 
 PixelShaderOutput main(PixelShaderInput input)
 {
     PixelShaderOutput output;
     
-    output.position = input.position.xyz;
-    output.texCoord = input.texCoord;
-    output.normal = input.normal;
+    output.positionWS = input.positionWS;
+    
+    output.colour = diffuseTexture.Sample(anisotropic, input.texCoord);
+
+    //LATER FIX: implement normalmap calculations here
+    output.normalWS = float4(input.normalWS, 1.0f);
     
     return output;
 }

@@ -41,14 +41,13 @@ void Engine::Render()
 	this->gPass.Prepare();
 	this->gPass.Clear();
 	Graphics::BindBackBuffer();
+
+	this->testMeshObj.Render();		//DELETE LATER***
+	//this->testMeshObj2.Render();	//DELETE LATER***
+
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 	Graphics::UnbindBackBuffer();
-
-	//this->testMeshObj.Render();		//DELETE LATER***
-	//this->testMeshObj2.Render();	//DELETE LATER***
-
-
 	Graphics::GetSwapChain()->Present(0, 0);
 }
 
@@ -79,11 +78,11 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	}
 
 	
-	//if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
-	//{
-	//	std::cout << "Object1 failed" << std::endl;
-	//	return false;
-	//}
+	if (!this->testMeshObj.Initialize("mask_OBJ.obj", "mask_albedo.png"))
+	{
+		std::cout << "Object1 failed" << std::endl;
+		return false;
+	}
 
 	//if (!this->testMeshObj2.Initialize("mask_OBJ.obj", "mask_albedo.png", "", {5.0f,0.0f,0.0f}))
 	//{

@@ -82,8 +82,13 @@ void CameraObject::Rotate(float pitchAmount, float yawAmount)
 	this->UpdateViewProjection();
 }
 
-void CameraObject::setPosition(float xPos, float yPos)
+void CameraObject::SetPosition(float xPos, float yPos)
 {
 	this->eyePos = { xPos,yPos, 1.f };
 	this->UpdateViewProjection();
+}
+
+ID3D11Buffer*& CameraObject::GetViewProjMatrix()
+{
+	return this->matrixBuffer;
 }

@@ -25,7 +25,7 @@ GeometryPass::GeometryPass()
 	}
 
 	//TESTING 
-	this->vBuffer = nullptr;
+	//this->vBuffer = nullptr;
 }
 
 GeometryPass::~GeometryPass()
@@ -42,8 +42,8 @@ GeometryPass::~GeometryPass()
 		this->vShader->Release();
 	if (this->sampler)
 		this->sampler->Release();
-	if (this->vBuffer)
-		this->vBuffer->Release();
+	/*if (this->vBuffer)
+		this->vBuffer->Release();*/
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (this->gBuffer.renderTargets[i])
@@ -53,7 +53,7 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-bool GeometryPass::CreateQuad()
+/*bool GeometryPass::CreateQuad()
 {
 	Vertex quad[] =
 	{
@@ -83,7 +83,7 @@ bool GeometryPass::CreateQuad()
 	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bufferDesc, &data, &vBuffer);
 
 	return true;
-}
+}*/
 
 bool GeometryPass::CreateGBuffer()
 {
@@ -264,10 +264,10 @@ bool GeometryPass::Initialize()
 		return false;
 	}
 
-	if (!CreateQuad())
+	/*if (!CreateQuad())
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -291,10 +291,12 @@ void GeometryPass::Clear()
 
 void GeometryPass::Prepare()
 {
-	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	UINT stride = sizeof(Vertex);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	/*UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);*/
+
 	Graphics::GetContext()->VSSetShader(vShader, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShader, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
@@ -302,7 +304,7 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 
 	// TEST
-	Graphics::GetContext()->Draw(6, 0);
+	//Graphics::GetContext()->Draw(6, 0);
 	// TEST END
 }
 

@@ -16,7 +16,7 @@ private:
 	LightPass lightPass;
 
 	MeshObject testMeshObj;		//DELETE LATER***
-	MeshObject testMeshObj2;	//DELETE LATER***
+	//MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);

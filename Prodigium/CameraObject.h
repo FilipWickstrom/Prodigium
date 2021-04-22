@@ -35,6 +35,8 @@ public:
 	XMMATRIX GetProjectionMatrix() const;
 	void Move(float x, float y);
 	void Rotate(float pitchAmount, float yawAmount);
-	void setPosition(float xPos, float yPos);
+	void SetPosition(float xPos, float yPos);
+	
+	ID3D11Buffer*& GetViewProjMatrix();
 };
 

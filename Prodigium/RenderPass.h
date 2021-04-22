@@ -60,8 +60,8 @@ private:
 	std::string vShaderByteCode;
 
 	// TESTING ENVIRONMENT
-	ID3D11Buffer* vBuffer;
-	bool CreateQuad();
+	//ID3D11Buffer* vBuffer;
+	//bool CreateQuad();
 	// TESTING ENDS
 	bool CreateGBuffer();
 	bool CreateDepthBuffer();
