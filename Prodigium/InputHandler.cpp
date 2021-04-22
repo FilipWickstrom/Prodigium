@@ -2,10 +2,7 @@
 InputHandler* InputHandler::instance = nullptr;
 InputHandler::InputHandler()
 {
-	if (!InputHandler::instance)
-	{
-		InputHandler::instance = new InputHandler;
-	}
+	lol = 0;
 }
 InputHandler::~InputHandler()
 {
@@ -13,6 +10,23 @@ InputHandler::~InputHandler()
 	{
 		delete InputHandler::instance;
 	}
+}
+
+bool InputHandler::Initialize(const HWND& windowHandle)
+{
+	if (!InputHandler::instance)
+	{
+		InputHandler::instance = new InputHandler;
+		InputHandler::instance->lol = 1;
+		InputHandler::instance->keyboard = std::make_unique<DirectX::Keyboard>();
+		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
+		InputHandler::instance->mouse->SetWindow(windowHandle);
+	}
+	else
+	{
+		std::cerr << "InputHandler already Initialized\n";
+	}
+	return true;
 }
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
