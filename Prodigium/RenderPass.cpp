@@ -23,9 +23,6 @@ GeometryPass::GeometryPass()
 		this->gBuffer.shaderResourceViews[i] = nullptr;
 		this->gBuffer.textures[i] = new Texture();
 	}
-
-	//TESTING 
-	//this->vBuffer = nullptr;
 }
 
 GeometryPass::~GeometryPass()
@@ -42,8 +39,6 @@ GeometryPass::~GeometryPass()
 		this->vShader->Release();
 	if (this->sampler)
 		this->sampler->Release();
-	/*if (this->vBuffer)
-		this->vBuffer->Release();*/
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (this->gBuffer.renderTargets[i])
@@ -53,37 +48,37 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-/*bool GeometryPass::CreateQuad()
-{
-	Vertex quad[] =
-	{
-		{ { -0.5f, -0.5f, 0.0 }, { 0.0f, 1.0f }, { 0.f, 0.f, -1.0f} },
-		{ {-0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f} },
-		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-
-		{ { -0.5f, -0.5f, 0.0f}, { 0.0, 1.0f }, { 0.f, 0.f, -1.0f} },
-		{ { 0.5f, 0.5f, 0.0f}, { 1.0, 0.0f }, { 0.f, 0.f, -1.0f} },
-		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
-	};
-
-	D3D11_BUFFER_DESC bufferDesc = {};
-	bufferDesc.ByteWidth = sizeof quad;
-	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.CPUAccessFlags = 0;
-	bufferDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA data = {};
-	data.pSysMem = quad;
-	// Default to 0, only used by textures
-	data.SysMemPitch = 0;
-	// Only used in 3D for depth level to the next
-	data.SysMemSlicePitch = 0;
-
-	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bufferDesc, &data, &vBuffer);
-
-	return true;
-}*/
+//bool GeometryPass::CreateQuad()
+//{
+//	Vertex quad[] =
+//	{
+//		{ { -0.5f, -0.5f, 0.0 }, { 0.0f, 1.0f }, { 0.f, 0.f, -1.0f} },
+//		{ {-0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f} },
+//		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
+//
+//		{ { -0.5f, -0.5f, 0.0f}, { 0.0, 1.0f }, { 0.f, 0.f, -1.0f} },
+//		{ { 0.5f, 0.5f, 0.0f}, { 1.0, 0.0f }, { 0.f, 0.f, -1.0f} },
+//		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
+//	};
+//
+//	D3D11_BUFFER_DESC bufferDesc = {};
+//	bufferDesc.ByteWidth = sizeof quad;
+//	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+//	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+//	bufferDesc.CPUAccessFlags = 0;
+//	bufferDesc.MiscFlags = 0;
+//
+//	D3D11_SUBRESOURCE_DATA data = {};
+//	data.pSysMem = quad;
+//	// Default to 0, only used by textures
+//	data.SysMemPitch = 0;
+//	// Only used in 3D for depth level to the next
+//	data.SysMemSlicePitch = 0;
+//
+//	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bufferDesc, &data, &vBuffer);
+//
+//	return true;
+//}
 
 bool GeometryPass::CreateGBuffer()
 {
@@ -242,6 +237,33 @@ bool GeometryPass::LoadShaders()
 	return true;
 }
 
+bool GeometryPass::CreateSamplerState()
+{
+	HRESULT hr;
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+
+	// Create the texture sampler state.
+	hr = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool GeometryPass::Initialize()
 {
 	if (!LoadShaders())
@@ -264,7 +286,7 @@ bool GeometryPass::Initialize()
 		return false;
 	}
 
-	/*if (!CreateQuad())
+	if (!CreateSamplerState())
 	{
 		return false;
 	}*/
@@ -291,21 +313,12 @@ void GeometryPass::Clear()
 
 void GeometryPass::Prepare()
 {
-	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
-	/*UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);*/
-
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Graphics::GetContext()->VSSetShader(vShader, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShader, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-
-	// TEST
-	//Graphics::GetContext()->Draw(6, 0);
-	// TEST END
 }
 
 bool LightPass::LoadShaders()

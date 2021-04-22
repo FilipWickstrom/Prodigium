@@ -6,7 +6,7 @@ class SceneHandler
 {
 private:
 
-	std::vector<Scene> scenes;
+	std::vector<Scene*> scenes;
 
 	// "Points" Towards the currently selected scene.
 	int currentScene;
@@ -36,6 +36,12 @@ public:
 
 	// return the number of Scenes currently existing in the game.
 	int GetNrOfScenes() const;
+
+	// will cycle through all scenes and pop them from the vector.
+	void RemoveAllScenes();
+
+	// runs a simple pop_back if so is desired. Resets the currentScene to 0.
+	void Pop();
 
 	// render the currently selected scene.
 	void Render();
