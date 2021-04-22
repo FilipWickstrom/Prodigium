@@ -19,11 +19,11 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	// add only the name of the file in filePath since "Models/" and ".obj" will be added in the function.
+	// adds an object to the scene, current selected object will point towards this new object.
 	void Add(std::string objFile, std::string diffuseTxt = "", std::string normalTxt = "", 
 			XMFLOAT3 position = {0.0f, 0.0f, 0.0f}, XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f}, XMFLOAT3 scale = {1.0f, 1.0f, 1.0f});
 
-	// update the object matrix buffer of object, as in update the position, rotation and scale.
+	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
 	void UpdateMatrix(DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 

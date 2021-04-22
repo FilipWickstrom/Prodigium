@@ -5,6 +5,7 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
+#include "SceneHandler.h"
 
 #include "MeshObject.h"
 
@@ -22,7 +23,13 @@ private:
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
     void RedirectIoToConsole();
 
+protected:
+
+	SceneHandler sceneHandler;
+
 public:
+
+
 	Engine(HINSTANCE& instance, UINT width, UINT height);
 	virtual ~Engine();
 	DELETE_COPY_ASSIGNMENT(Engine)

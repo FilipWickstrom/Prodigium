@@ -7,6 +7,11 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+	// Delete the allocated memory from vector.
+	for (int i = 0; i < (int)objects.size(); i++)
+	{
+		delete this->objects[i];
+	}
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
@@ -23,7 +28,9 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 	else
 	{
+#ifdef _DEBUG
 		std::cout << "Failed to add object" << std::endl;
+#endif
 	}
 }
 
@@ -32,7 +39,16 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 	/*
 		Update the Matrix with input.
 	*/
-	this->objects[this->currentObject]->UpdateMatrix(pos, scale, rotation);
+	if (!this->objects[this->currentObject]->UpdateMatrix(pos, scale, rotation))
+	{
+#ifdef _DEBUG
+		std::cout << "Error lol noob" << "\n";
+#endif
+	}
+
+#ifdef _DEBUG
+	std::cout << "Matrix was updated for object on index " << this->currentObject << ". \n";
+#endif
 
 }
 
@@ -46,12 +62,12 @@ void Scene::SwitchObject(int index)
 {
 	if (index < (int)this->objects.size() && index >= 0)
 		this->currentObject = index;
-
+	else
+	{
 #ifdef _DEBUG
-
-	std::cout << "Index is outside of the vector scope!" << "\n";
-
+		std::cout << "Index is outside of vector scope!\n";
 #endif
+	}
 }
 
 int Scene::GetNumberOfObjects() const
