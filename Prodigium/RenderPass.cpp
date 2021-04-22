@@ -289,7 +289,7 @@ bool GeometryPass::Initialize()
 	if (!CreateSamplerState())
 	{
 		return false;
-	}*/
+	}
 
 	return true;
 }
