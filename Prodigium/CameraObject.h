@@ -13,8 +13,8 @@ private:
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Matrix projectionMatrix;
 	};
-	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
-	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
+	const DirectX::SimpleMath::Vector4 defaultUp = { 0.f, 1.f, 0.f,0.f };
+	const DirectX::SimpleMath::Vector4 defaultForward = { 0.f, 0.f, 1.f,0.f };
 	viewProjectionMatrix viewProjMatrix;
 	DirectX::SimpleMath::Vector3 eyePos;
 	DirectX::SimpleMath::Vector3 targetPos;
