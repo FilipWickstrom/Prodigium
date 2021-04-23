@@ -593,7 +593,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
-	Graphics::GetContext()->PSGetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
 }
 
 void LightPass::Prepare()
