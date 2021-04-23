@@ -19,7 +19,7 @@ public:
 	static bool Initialize(const HWND& windowHandle);
 	static Keyboard::State GetKBState();
 	static Mouse::State GetMouseState();
-	static Keyboard::KeyboardStateTracker GetKBStateTracker();
+	static Keyboard::KeyboardStateTracker* GetKBStateTracker();
 	static void HandleMessages();
 	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };

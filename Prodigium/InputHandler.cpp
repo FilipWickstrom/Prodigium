@@ -34,7 +34,7 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 
 Keyboard::State InputHandler::GetKBState()
 {
-	return InputHandler::instance->keyboard->GetState();
+	return InputHandler::instance->keyboard.get()->GetState();
 }
 
 Mouse::State InputHandler::GetMouseState()
@@ -42,9 +42,9 @@ Mouse::State InputHandler::GetMouseState()
 	return InputHandler::instance->mouse->GetState();
 }
 
-Keyboard::KeyboardStateTracker InputHandler::GetKBStateTracker()
+Keyboard::KeyboardStateTracker* InputHandler::GetKBStateTracker()
 {
-	return *InputHandler::instance->kBTracker;
+	return InputHandler::instance->kBTracker.get();
 }
 
 void InputHandler::HandleMessages()
@@ -71,10 +71,12 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		PostQuitMessage(0);
 		return 0;
 	case WM_KEYDOWN:
-		Keyboard::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
+		//Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_KEYUP:
-		Keyboard::ProcessMessage(message, wParam, lParam);
+		//Keyboard::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
 		Mouse::ProcessMessage(message, wParam, lParam);
