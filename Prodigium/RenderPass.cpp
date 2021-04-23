@@ -48,38 +48,6 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-//bool GeometryPass::CreateQuad()
-//{
-//	Vertex quad[] =
-//	{
-//		{ { -0.5f, -0.5f, 0.0 }, { 0.0f, 1.0f }, { 0.f, 0.f, -1.0f} },
-//		{ {-0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f} },
-//		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-//
-//		{ { -0.5f, -0.5f, 0.0f}, { 0.0, 1.0f }, { 0.f, 0.f, -1.0f} },
-//		{ { 0.5f, 0.5f, 0.0f}, { 1.0, 0.0f }, { 0.f, 0.f, -1.0f} },
-//		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
-//	};
-//
-//	D3D11_BUFFER_DESC bufferDesc = {};
-//	bufferDesc.ByteWidth = sizeof quad;
-//	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-//	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-//	bufferDesc.CPUAccessFlags = 0;
-//	bufferDesc.MiscFlags = 0;
-//
-//	D3D11_SUBRESOURCE_DATA data = {};
-//	data.pSysMem = quad;
-//	// Default to 0, only used by textures
-//	data.SysMemPitch = 0;
-//	// Only used in 3D for depth level to the next
-//	data.SysMemSlicePitch = 0;
-//
-//	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bufferDesc, &data, &vBuffer);
-//
-//	return true;
-//}
-
 bool GeometryPass::CreateGBuffer()
 {
 	HRESULT hr;
@@ -93,7 +61,7 @@ bool GeometryPass::CreateGBuffer()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
 
 	shaderResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	shaderResourceDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
@@ -317,7 +285,7 @@ void GeometryPass::Clear()
 
 void GeometryPass::Prepare()
 {
-	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Graphics::GetContext()->VSSetShader(vShader, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShader, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
@@ -388,7 +356,7 @@ bool LightPass::CreateShaderResources()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
 
 	shaderResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	shaderResourceDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 

@@ -34,7 +34,6 @@ private:
 	std::string vShaderByteCode;
 
 	bool LoadShaders();
-	//bool CreateRenderTarget();
 	bool CreateShaderResources();
 	bool CreateFullScreenQuad();
 	bool CreateInputLayout();

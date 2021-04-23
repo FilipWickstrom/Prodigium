@@ -19,7 +19,7 @@ private:
 	CameraObject gameCam;
 
 	MeshObject testMeshObj;		//DELETE LATER***
-	//CameraObject testCamera;	//DELETE LATER***
+	CameraObject testCamera;	//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
