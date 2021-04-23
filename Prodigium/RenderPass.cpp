@@ -302,6 +302,7 @@ void GeometryPass::Clear()
 	ID3D11PixelShader* pShaderNull = nullptr;
 	ID3D11InputLayout* inputLayoutNull = nullptr;
 	ID3D11SamplerState* samplerStateNull = nullptr;
+	ID3D11DepthStencilView* dsViewNull = nullptr;
 
 	UINT stride = 0;
 	UINT offset = 0;
@@ -310,7 +311,7 @@ void GeometryPass::Clear()
 	Graphics::GetContext()->VSSetShader(vShaderNull, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShaderNull, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, nullptr);
+	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, dsViewNull);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 }
 
@@ -593,7 +594,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
-	Graphics::GetContext()->PSGetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
 }
 
 void LightPass::Prepare()
