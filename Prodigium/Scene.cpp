@@ -3,6 +3,8 @@
 Scene::Scene()
 {
 	this->currentObject = 0;
+	this->currentLight = 0;
+	this->lights = new LightObject();
 }
 
 Scene::~Scene()
@@ -12,6 +14,7 @@ Scene::~Scene()
 	{
 		delete this->objects[i];
 	}
+	delete this->lights;
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
@@ -32,6 +35,21 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 		std::cout << "Failed to add object" << std::endl;
 #endif
 	}
+}
+
+void Scene::AddLight(DirectionalLight dirL)
+{
+	this->lights->AddDirLight(dirL);
+}
+
+void Scene::AddLight(SpotLight spotL)
+{
+	this->lights->AddSpotLight(spotL);
+}
+
+void Scene::AddLight(PointLight pointL)
+{
+	this->lights->AddPointLight(pointL);
 }
 
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)

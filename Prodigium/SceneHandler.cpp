@@ -9,7 +9,8 @@ SceneHandler::~SceneHandler()
 {
 	for (int i = 0; i < (int)this->scenes.size(); i++)
 	{
-		delete this->scenes[i];
+		if(this->scenes[i])
+			delete this->scenes[i];
 	}
 }
 

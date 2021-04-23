@@ -50,3 +50,34 @@ struct TextureRenderTargets
 	ID3D11ShaderResourceView* shaderResourceViews[BUFFER_COUNT];
 	Texture* textures[BUFFER_COUNT];
 };
+
+/*
+	Structure for use of directional light, it only contains one
+	XMFLOAT4 for which direction is should light up.
+*/
+struct DirectionalLight
+{
+	DirectX::XMFLOAT4 direction;
+};
+
+/*
+	Structure for the use of Spotlight type of lighting. Contains
+	Position, direction and attenuation.
+*/
+struct SpotLight
+{
+	DirectX::XMFLOAT4 position; // position.w is range.
+	DirectX::XMFLOAT4 direction; // direction.w is Spot.
+	DirectX::XMFLOAT4 attentuate;
+};
+
+/*
+	Structure to simulate a Pointlight type of lighting. Contains
+	position, range and attenuation.
+*/
+struct PointLight
+{
+	DirectX::XMFLOAT3 position;
+	float range;
+	DirectX::XMFLOAT4 attentuate;
+};
