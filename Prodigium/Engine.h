@@ -8,7 +8,7 @@
 #include "InputHandler.h"
 #include "MeshObject.h"
 #include "SceneHandler.h"
-
+#include "CameraObject.h"
 class Engine
 {
 private:

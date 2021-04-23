@@ -28,6 +28,10 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		running = false;
 	}
+	if (kb_keys.pressed.Tab)
+	{
+		std::cout << "pls fucking work\n";
+	}
 	if (kb_keys.IsKeyPressed(Keyboard::W))
 	{
 		std::cout << "Hello!\n";

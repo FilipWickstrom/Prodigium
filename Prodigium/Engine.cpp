@@ -86,7 +86,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	this->sceneHandler.EditScene().Add("necklace.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
+	this->sceneHandler.EditScene().Add("necklace_OBJ.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
 
 	return true;
 }
