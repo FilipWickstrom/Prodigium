@@ -1,4 +1,3 @@
-#define MAX_AMOUNT 25
 //Gbuffers
 Texture2D G_positionWS   : register(t0);
 Texture2D G_colour       : register(t1);
@@ -14,22 +13,20 @@ Cbuffer with camera position?
 Cbuffer with lights?
 */
 
+struct lightBuffer
+{
+    float4 position; // positions.w is range.
+    float4 direction; // direction.w is spot.
+    float4 att; // att.w is type.
+};
+
 // Contains the information of how many lights are present.
 cbuffer LightsInfo : register(b1)
 {
     float4 info;
 }
 
-// Allocates memory for use of lights.
-cbuffer Lights : register(b2)
-{
-    struct lightBuffer
-    {
-        float4 position; // positions.w is range.
-        float4 direction; // direction.w is spot.
-        float4 att; // att.w is type.
-    }lights[MAX_AMOUNT];
-}
+StructuredBuffer<lightBuffer> lights : register(t3);
 
 //Easier to handle
 struct GBuffers

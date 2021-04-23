@@ -17,7 +17,7 @@ class Light
 private:
 
 	LightType type;
-	ID3D11Buffer* lightBuffer;
+	LightStruct lightSt;
 
 public:
 
@@ -28,7 +28,5 @@ public:
 		Initalizes the buffer as a directional light
 	*/
 	bool MakeLight(LightStruct L);
-
-	ID3D11Buffer*& GetBuffer();
 };
 
