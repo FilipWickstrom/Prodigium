@@ -3,8 +3,8 @@
 #include <iostream>
 #include <SimpleMath.h>
 
-	constexpr float ROTATION_SPEED = 4.f;
-	constexpr float FULL_CIRCLE = 360.f;
+constexpr float ROTATION_SPEED = 4.f;
+constexpr float FULL_CIRCLE = 360.f;
 class CameraObject :
 	public GameObject
 {
@@ -15,7 +15,7 @@ private:
 		XMMATRIX projectionMatrix;
 	};
 	const XMVECTOR defaultUp = { 0.f, 1.f, 0.f, 0.f };
-	const XMVECTOR defaultForward = { 0.f, 0.f, 1.f, 0.f }; 
+	const XMVECTOR defaultForward = { 0.f, 0.f, 1.f, 0.f };
 	viewProjectionMatrix viewProjMatrix;
 	XMVECTOR eyePos;
 	XMVECTOR targetPos;

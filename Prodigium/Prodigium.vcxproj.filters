@@ -12,6 +12,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="RenderPass.cpp" />
@@ -29,6 +30,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="RenderPass.h" />
@@ -47,5 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

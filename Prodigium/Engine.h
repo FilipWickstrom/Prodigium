@@ -5,11 +5,10 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
+#include "InputHandler.h"
+#include "MeshObject.h"
 #include "SceneHandler.h"
-
-#include "MeshObject.h"		//DELETE LATER***
-#include "CameraObject.h"	//DELETE LATER***
-
+#include "CameraObject.h"
 class Engine
 {
 private:
