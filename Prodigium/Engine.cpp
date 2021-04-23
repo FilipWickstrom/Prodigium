@@ -84,12 +84,12 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, (float)(width / height), {0.f,0.f,-5.f}))
+	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
 	{
 		return false;
 	}
 
-	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
+	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 
 	return true;
 }
