@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include <iostream>
 #include <SimpleMath.h>
-
 constexpr float ROTATION_SPEED = 4.f;
 constexpr float FULL_CIRCLE = 360.f;
 class CameraObject :
@@ -11,17 +10,17 @@ class CameraObject :
 private:
 	struct viewProjectionMatrix
 	{
-		XMMATRIX viewMatrix;
-		XMMATRIX projectionMatrix;
+		DirectX::SimpleMath::Matrix viewMatrix;
+		DirectX::SimpleMath::Matrix projectionMatrix;
 	};
-	const XMVECTOR defaultUp = { 0.f, 1.f, 0.f, 0.f };
-	const XMVECTOR defaultForward = { 0.f, 0.f, 1.f, 0.f };
+	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
+	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
 	viewProjectionMatrix viewProjMatrix;
-	XMVECTOR eyePos;
-	XMVECTOR targetPos;
-	XMVECTOR upDir;
-	XMMATRIX rotationMatrix;
-	XMVECTOR rotation;
+	DirectX::SimpleMath::Vector3 eyePos;
+	DirectX::SimpleMath::Vector3 targetPos;
+	DirectX::SimpleMath::Vector3 upDir;
+	DirectX::SimpleMath::Matrix rotationMatrix;
+	DirectX::SimpleMath::Vector3 rotation;
 	float pitch, yaw;
 	float fieldOfView;
 	float aspectRatio;
@@ -32,9 +31,9 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& eyePosition);
-	XMMATRIX GetViewMatrix() const;
-	XMMATRIX GetProjectionMatrix() const;
+	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, DirectX::SimpleMath::Vector3 eyePosition);
+	DirectX::SimpleMath::Matrix GetViewMatrix() const;
+	DirectX::SimpleMath::Matrix GetProjectionMatrix() const;
 	void Move(float x, float y);
 	void Rotate(float pitchAmount, float yawAmount);
 	void SetPosition(float xPos, float yPos);
