@@ -30,7 +30,7 @@ void Game::HandleInput()
 	{
 		this->running = false;
 	}
-
+	
 	if (InputHandler::IsKeyPressed(Keyboard::W))
 	{
 		std::cout << "Hello!\n";
@@ -48,8 +48,8 @@ void Game::HandleInput()
 bool Game::OnFrame(const float& deltaTime)
 {
 	Engine::ClearDisplay();
-	HandleInput();
 	Engine::Render();
+	HandleInput();
 
 	return true;
 }

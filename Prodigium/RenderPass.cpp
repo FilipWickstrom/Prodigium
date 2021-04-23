@@ -290,7 +290,25 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->PSSetShader(pShader, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
-	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		float color[4];
+
+		// Red
+		color[0] = 0.25;
+
+		// Green
+		color[1] = 0.25;
+
+		// Blue
+		color[2] = 1;
+
+		// Alpha
+		color[3] = 0.75;
+
+		Graphics::GetContext()->ClearRenderTargetView(gBuffer.renderTargets[i], color);
+	}
+	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 
