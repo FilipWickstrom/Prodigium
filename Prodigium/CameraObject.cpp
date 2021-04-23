@@ -31,13 +31,14 @@ CameraObject::~CameraObject()
 		this->matrixBuffer->Release();
 }
 
-bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, Vector3 position)
+bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, Vector3 position)
 {
 	this->eyePos = position;
 	this->targetPos = { 0.f,0.f,0.f };
 	this->nearPlane = nearPlane;
 	this->farPlane = farPlane;
 	this->fieldOfView = fov;
+	this->aspectRatio = float(windowWidth) / float(windowHeight);
 	this->upDir = { 0.f,1.f,0.f };
 	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
 	//this->viewProjMatrix.viewMatrix.CreateLookAt(this->eyePos, this->targetPos, this->upDir);

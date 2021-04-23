@@ -31,7 +31,7 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, DirectX::SimpleMath::Vector3 eyePosition);
+	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, DirectX::SimpleMath::Vector3 eyePosition);
 	DirectX::SimpleMath::Matrix GetViewMatrix() const;
 	DirectX::SimpleMath::Matrix GetProjectionMatrix() const;
 	void Move(float x, float y);
