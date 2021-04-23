@@ -37,19 +37,9 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 }
 
-void Scene::AddLight(DirectionalLight dirL)
+void Scene::AddLight(LightStruct L)
 {
-	this->lights->AddDirLight(dirL);
-}
-
-void Scene::AddLight(SpotLight spotL)
-{
-	this->lights->AddSpotLight(spotL);
-}
-
-void Scene::AddLight(PointLight pointL)
-{
-	this->lights->AddPointLight(pointL);
+	this->lights->AddLight(L);
 }
 
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
@@ -70,7 +60,7 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 
 }
 
-void Scene::Remove(int index)
+void Scene::RemoveObject(int index)
 {
 	if (index < (int)this->objects.size() - 1 && index >= 0)
 	{

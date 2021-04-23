@@ -16,7 +16,10 @@ private:
 	// Contains information for each light and also functionality.
 	LightObject* lights;
 
+	// points to the current selected object.
 	int currentObject;
+
+	// points to the current selected light.
 	int currentLight;
 
 public:
@@ -28,21 +31,18 @@ public:
 	void Add(std::string objFile, std::string diffuseTxt = "", std::string normalTxt = "", 
 			XMFLOAT3 position = {0.0f, 0.0f, 0.0f}, XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f}, XMFLOAT3 scale = {1.0f, 1.0f, 1.0f});
 
-	// adds a directional light in the scene, used for lights like the moon. current light will point toward newely created.
-	void AddLight(DirectionalLight dirL);
-
-	// adds a spot Light in the scene, needs a position and direction to light up. current light will point toward newely created.
-	void AddLight(SpotLight spotL);
-
-	// adds a point light into the scene, will light up all sides so it needs a position. current light will point toward newely created.
-	void AddLight(PointLight pointL);
+	/* 
+	* adds a light into the scene, the behavior of this light is defined by the struct input.
+	* for more information about this struct go into UsefulStructureHeader.h
+	*/
+	void AddLight(LightStruct L);
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
 	void UpdateMatrix(DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
 		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
 
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
-	void Remove(int index);
+	void RemoveObject(int index);
 
 	// switches the to indexed object if it is within the scope of the vector! else nothing changes.
 	void SwitchObject(int index);

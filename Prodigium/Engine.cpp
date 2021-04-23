@@ -85,8 +85,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	}
 
 	this->sceneHandler.EditScene().Add("necklace_OBJ.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
-	DirectionalLight dirL = {};
-	this->sceneHandler.EditScene().AddLight(dirL);
+	LightStruct dirL = {};
 	this->sceneHandler.EditScene().AddLight(dirL);
 
 	return true;

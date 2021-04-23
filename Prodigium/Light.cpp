@@ -1,8 +1,8 @@
 #include "Light.h"
 
-Light::Light(LightType type)
+Light::Light()
 {
-	this->type = type;
+	this->type = LightType::NONE;
 	this->lightBuffer = nullptr;
 }
 
@@ -12,44 +12,16 @@ Light::~Light()
 		this->lightBuffer->Release();
 }
 
-bool Light::MakeDirectional(DirectionalLight dirL)
+bool Light::MakeLight(LightStruct L)
 {
 	D3D11_BUFFER_DESC desc;
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.MiscFlags = 0;
-	desc.ByteWidth = sizeof(DirectionalLight);
+	desc.ByteWidth = sizeof(LightStruct);
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &dirL;
-	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->lightBuffer);
-	return !FAILED(result);
-}
-
-bool Light::MakeSpotLight(SpotLight spot)
-{
-	D3D11_BUFFER_DESC desc;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-	desc.ByteWidth = sizeof(SpotLight);
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &spot;
-	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->lightBuffer);
-	return !FAILED(result);
-}
-
-bool Light::MakePointLight(PointLight point)
-{
-	D3D11_BUFFER_DESC desc;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-	desc.ByteWidth = sizeof(PointLight);
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &point;
+	data.pSysMem = &L;
 	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->lightBuffer);
 	return !FAILED(result);
 }

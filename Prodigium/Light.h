@@ -21,15 +21,13 @@ private:
 
 public:
 
-	Light(LightType type);
+	Light();
 	virtual ~Light();
 
 	/*
 		Initalizes the buffer as a directional light
 	*/
-	bool MakeDirectional(DirectionalLight dirL);
-	bool MakeSpotLight(SpotLight spot);
-	bool MakePointLight(PointLight point);
+	bool MakeLight(LightStruct L);
 
 	ID3D11Buffer*& GetBuffer();
 };

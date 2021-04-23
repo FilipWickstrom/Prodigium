@@ -52,31 +52,12 @@ struct TextureRenderTargets
 };
 
 /*
-	Structure for use of directional light, it only contains one
-	XMFLOAT4 for which direction is should light up.
+* Use this structure when making a new light. It containts three 
+* XMFLOAT4 used for position, direction and attenuation.
 */
-struct DirectionalLight
-{
-	DirectX::XMFLOAT4 direction;
-};
-
-/*
-	Structure for the use of Spotlight type of lighting. Contains
-	Position, direction and attenuation.
-*/
-struct SpotLight
+struct LightStruct
 {
 	DirectX::XMFLOAT4 position; // position.w is range.
 	DirectX::XMFLOAT4 direction; // direction.w is Spot.
-	DirectX::XMFLOAT4 attentuate;
-};
-
-/*
-	Structure to simulate a Pointlight type of lighting. Contains
-	position, range and attenuation.
-*/
-struct PointLight
-{
-	DirectX::XMFLOAT4 position; // position.w is range.
-	DirectX::XMFLOAT4 attentuate;
+	DirectX::XMFLOAT4 attentuate; // attentuate.w is LightType.
 };
