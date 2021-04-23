@@ -43,6 +43,9 @@ public:
 	// runs a simple pop_back if so is desired. Resets the currentScene to 0.
 	void Pop();
 
-	// render the currently selected scene.
+	// render the objects in current selected scene.
 	void Render();
+
+	// render the lights in the current selected scene.
+	void RenderLights();
 };

@@ -77,7 +77,6 @@ struct SpotLight
 */
 struct PointLight
 {
-	DirectX::XMFLOAT3 position;
-	float range;
+	DirectX::XMFLOAT4 position; // position.w is range.
 	DirectX::XMFLOAT4 attentuate;
 };

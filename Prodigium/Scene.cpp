@@ -124,6 +124,11 @@ void Scene::RemoveAllObjects()
 	this->Pop();
 }
 
+LightObject& Scene::GetLights()
+{
+	return *this->lights;
+}
+
 void Scene::Pop()
 {
 	if ((int)this->objects.size() > 0)

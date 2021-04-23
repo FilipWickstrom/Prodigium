@@ -53,6 +53,9 @@ public:
 	// will cycle through vector and pop_back() through all elements.
 	void RemoveAllObjects();
 
+	// return the lights exisiting within the scene.
+	LightObject& GetLights();
+
 	// runs a simple pop_back if so is desired.
 	void Pop();
 

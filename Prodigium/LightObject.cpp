@@ -16,27 +16,45 @@ LightObject::~LightObject()
 void LightObject::AddSpotLight(SpotLight spotL)
 {
 	Light* newL = new Light(LightType::SPOTLIGHT);
-	if (!newL->MakeSpotLight(spotL))
+	if (newL->MakeSpotLight(spotL))
 	{
-
+		lights.push_back(newL);
+	}
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "Loading Spot light failed.\n";
+#endif
 	}
 }
 
 void LightObject::AddDirLight(DirectionalLight dirL)
 {
 	Light* newL = new Light(LightType::DIRECTIONAL);
-	if (!newL->MakeDirectional(dirL))
+	if (newL->MakeDirectional(dirL))
 	{
-
+		lights.push_back(newL);
+	}
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "Loading Directional light failed.\n";
+#endif
 	}
 }
 
 void LightObject::AddPointLight(PointLight pointL)
 {
 	Light* newL = new Light(LightType::POINTLIGHT);
-	if (!newL->MakePointLight(pointL))
+	if (newL->MakePointLight(pointL))
 	{
-
+		lights.push_back(newL);
+	}
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "Loading Point light failed.\n";
+#endif
 	}
 }
 

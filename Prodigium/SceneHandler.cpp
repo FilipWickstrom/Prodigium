@@ -96,3 +96,8 @@ void SceneHandler::Render()
 		this->scenes[this->currentScene]->Render();
 	}
 }
+
+void SceneHandler::RenderLights()
+{
+	this->scenes[this->currentScene]->GetLights().Render();
+}
