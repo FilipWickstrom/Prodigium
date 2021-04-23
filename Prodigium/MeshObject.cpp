@@ -1,13 +1,20 @@
 #include "MeshObject.h"
+#include "Graphics.h"
+
+bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
+{
+    HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(texture, nullptr, &srv);
+    return !FAILED(hr);
+}
 
 MeshObject::MeshObject()
 {
-    this->vertexCount = 0;
-    this->vertexBuffer = nullptr;
-    this->diffuseMap = nullptr;
-    this->normalMap = nullptr;
-    this->normalMapResourceView = nullptr;
-    this->diffuseMapResourceView = nullptr;
+    this->mesh = nullptr;
+
+    for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+    {
+        this->shaderResourceViews[i] = nullptr;
+    }
 
     this->isPickUp = false;
     this->isVisible = false;
@@ -15,17 +22,67 @@ MeshObject::MeshObject()
 
 MeshObject::~MeshObject()
 {
-    if (this->vertexBuffer)
-        this->vertexBuffer->Release();
+    for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+    {
+        if (this->shaderResourceViews[i])
+            this->shaderResourceViews[i]->Release();
+    }
+}
 
-    if (this->diffuseMap)
-        this->diffuseMap->Release();
+bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT3 scl)
+{
+    //Get the mesh from the resource manager if it exist or creates a new mesh
+    this->mesh = ResourceManager::GetMesh(meshObject);
+    if (this->mesh == nullptr)
+    {
+        std::cout << "Failed to get a mesh from resourceManager..." << std::endl;
+        return false;
+    }
 
-    if (this->normalMapResourceView)
-        this->normalMapResourceView->Release();
+    //Load in the diffuse texture
+    if (diffuseTxt != "")
+    {
+        //To avoid writing long paths to textures
+        diffuseTxt = "Textures/" + diffuseTxt;
 
-    if (this->diffuseMapResourceView)
-        this->diffuseMapResourceView->Release();
+        ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuseTxt);
+        if (diffTexture == nullptr)
+        {
+            std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+            return false;
+        }
+        if (!BindTextureToSRV(diffTexture, this->shaderResourceViews[0]))
+        {
+            std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
+            return false;
+        }
+    }
+
+    //Load in the normal map
+    if (normalTxt != "")
+    {
+        ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalTxt);
+        if (normTexture == nullptr)
+        {
+            std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+            return false;
+        }
+        if (!BindTextureToSRV(normTexture, this->shaderResourceViews[1]))
+        {
+            std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
+            return false;
+        }
+    }
+
+    if (!BuildMatrix(pos, scl, rot))
+    {
+        std::cout << "Build matrix failed..." << std::endl;
+        return false;
+    }
+
+    //EXTRA: Material
+
+    return true;
 }
 
 void MeshObject::SetVisible(bool toggle)
@@ -38,36 +95,16 @@ void MeshObject::SetPickUp(bool toggle)
     this->isPickUp = toggle;
 }
 
-bool MeshObject::LoadMesh(ID3D11Device* device, std::string filePath)
+void MeshObject::Render()
 {
-    /*
-        Here to update vertexCount and VertexBuffer.
-    */
-    return false;
-}
+    //Set this objects modelmatrix
+    Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+    
+    //Set all the textures to the geometry pass pixelshader
+    for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+    {
+        Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
+    }
 
-bool MeshObject::LoadDiffuseTexture(ID3D11Device* device, std::string filePath)
-{
-    /*
-        Update diffuseMap and Shader View associate with it.
-    */
-    return false;
-}
-
-bool MeshObject::LoadNormalTexture(ID3D11Device* device, std::string filePath)
-{
-    /*
-       Update normalMap and Shader View associate with it.
-    */
-    return false;
-}
-
-void MeshObject::Render(ID3D11DeviceContext*& context)
-{
-    /*
-        Set vertexBuffer as IASET...vertexbuffer,
-        Anything more needed before rendering then add.
-    */
-
-    context->Draw(this->vertexCount, 0);
+    this->mesh->Render();
 }

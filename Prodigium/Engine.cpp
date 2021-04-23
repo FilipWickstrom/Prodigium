@@ -1,21 +1,20 @@
 #include "Engine.h"
 
-Engine::Engine()
+Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
-	this->backBufferView = nullptr;
-	this->depthView = nullptr;
-	this->rasterState = nullptr;
-	this->viewPort = {};
+	this->RedirectIoToConsole();
+
+	if (!this->StartUp(instance, width, height))
+	{
+		std::cout << "Failed to initialize Engine!" << std::endl;
+		exit(-1);
+	}
+
 }
 
 Engine::~Engine()
 {
-	if (this->depthView)
-		this->depthView->Release();
-	if (this->rasterState)
-		this->rasterState->Release();
-	if (this->backBufferView)
-		this->backBufferView->Release();
+	ResourceManager::Destroy();
 	Graphics::Destroy();
 }
 
@@ -34,38 +33,29 @@ void Engine::RedirectIoToConsole()
 
 void Engine::ClearDisplay()
 {
-	float color[4];
-
-	// Red
-	color[0] = 0.25;
-
-	// Green
-	color[1] = 0.25;
-
-	// Blue
-	color[2] = 1;
-
-	// Alpha
-	color[3] = 0.75;
-
-	Graphics::GetContext()->ClearRenderTargetView(this->backBufferView, color);
+	Graphics::ClearDisplay();
 }
 
-void Engine::PresentScene()
+void Engine::Render()
 {
-	this->gPass.RenderGPass(Graphics::GetContext());
-	Graphics::GetContext()->RSSetViewports(1, &viewPort);
-	ID3D11RenderTargetView* clearRenderTargets[BUFFER_COUNT] = { nullptr };
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, clearRenderTargets, nullptr);
-	Graphics::GetContext()->OMSetRenderTargets(1, &backBufferView, depthView);
-	this->lightPass.Render(Graphics::GetContext());
+	this->gPass.Prepare();
+	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
+	this->sceneHandler.Render();
+	this->gPass.Clear();
 
+	Graphics::BindBackBuffer();
+	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
+	this->lightPass.Clear();
+	Graphics::UnbindBackBuffer();
 }
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
-
+	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	if (!this->window.SetupWindow(instance, width, height))
 	{
 		return false;
@@ -75,51 +65,28 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
-	if (!this->SetupBackBuffer())
-	{
-		return false;
-	}
-
 	ResourceManager::Initialize();
 
-	this->SetupViewPort();
+	Graphics::SetMainWindowViewport();
 
-	if (!this->gPass.Initialize(Graphics::GetDevice(), width, height))
+	if (!this->gPass.Initialize())
 	{
 		return false;
 	}
 
-	if (!this->lightPass.Initialize(Graphics::GetDevice(), width, height))
+	if (!this->lightPass.Initialize())
 	{
 		return false;
 	}
+
+	// Testing.
+	DirectX::XMVECTOR eyePos = { 0.0f, 0.0f, -5.0f };
+	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, (float)(width / height), eyePos))
+	{
+		return false;
+	}
+
+	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
 
 	return true;
-}
-
-bool Engine::SetupBackBuffer()
-{
-	HRESULT hr;
-
-	ID3D11Texture2D* tempTexture = nullptr;
-	if (FAILED(Graphics::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTexture))))
-	{
-		return false;
-	}
-
-	hr = Graphics::GetDevice()->CreateRenderTargetView(tempTexture, 0, &this->backBufferView);
-	tempTexture->Release();
-
-	return !FAILED(hr);
-}
-
-void Engine::SetupViewPort()
-{
-	this->viewPort.Width = (float)window.GetWindowWidth();
-	this->viewPort.Height = (float)window.GetWindowHeight();
-	this->viewPort.TopLeftX = 0.f;
-	this->viewPort.TopLeftY = 0.f;
-	this->viewPort.MinDepth = 0.f;
-	this->viewPort.MaxDepth = 1.0f;
 }

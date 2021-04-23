@@ -1,30 +1,19 @@
 #pragma once
 #include "Engine.h"
 
-/*
-	#include should be inside .cpp file for better start up perfomance?
-*/
-
-class Game
+class Game:public Engine
 {
 private:
-	Engine engine;
-	/*
-		General Window and Game start up values.
-	*/
-
-
 	/*
 		Setups
 	*/
-
+	bool running;
 public:
-	Game();
+	Game(HINSTANCE& instance, UINT windowWidth, UINT windowHeight);
 	~Game();
-
-	// Main loop of the game.
-	void Run(HINSTANCE& instance, UINT width, UINT height);
-
-	// Start up for device. Run only once outside of loop.
-	bool OnFrame(const float& deltaTime);
+	bool IsRunning() const;
+	void HandleInput();
+	// Inherited via Engine
+	virtual bool OnFrame(const float& deltaTime) override;
+	virtual bool OnStart() override;
 };

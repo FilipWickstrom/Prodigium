@@ -1,30 +1,37 @@
 #pragma once
-#include "GameObject.h"
 #include <string>
+#include "GameObject.h"
+#include "Mesh.h"
+#include "Texture.h"
+#include "ResourceManager.h"
+
+#define MAXNROFTEXTURES 2
 
 class MeshObject : public GameObject
 {
 private:
+	Mesh* mesh;
 
-	UINT vertexCount;
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Texture2D* diffuseMap;
-	ID3D11Texture2D* normalMap;
-	ID3D11ShaderResourceView* normalMapResourceView;
-	ID3D11ShaderResourceView* diffuseMapResourceView;
+	//Holds all the views of the textures:
+	//1. Diffuse texture
+	//2. Normal map
+	ID3D11ShaderResourceView* shaderResourceViews[MAXNROFTEXTURES];
 
 	bool isPickUp;
 	bool isVisible;
+
+private:
+	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
 
 public:
 
 	MeshObject();
 	virtual ~MeshObject();
 
+	bool Initialize(std::string meshObject, std::string diffuseTxt = "", std::string normalTxt = "",
+					XMFLOAT3 pos = {0.0f,0.0f,0.0f}, XMFLOAT3 rot = { 0.0f,0.0f,0.0f }, XMFLOAT3 scl= {1.0f,1.0f,1.0f});
+
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
-	bool LoadMesh(ID3D11Device* device, std::string filePath);
-	bool LoadDiffuseTexture(ID3D11Device* device, std::string filePath);
-	bool LoadNormalTexture(ID3D11Device* device, std::string filePath);
-	void Render(ID3D11DeviceContext*& context);
+	void Render();
 };

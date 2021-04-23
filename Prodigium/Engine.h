@@ -1,36 +1,44 @@
 #pragma once
 #include "Window.h"
 #include <d3d11.h>
-#include "GeometryPass.h"
-#include "LightPass.h"
 #include <fcntl.h>
 #include <io.h>
 #include "ResourceManager.h"
-#include "Graphics.h"
-
+#include "RenderPass.h"
+#include "InputHandler.h"
+#include "MeshObject.h"
+#include "SceneHandler.h"
+#include "CameraObject.h"
 class Engine
 {
 private:
-	ID3D11RasterizerState* rasterState;
-	D3D11_VIEWPORT viewPort;
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
+	CameraObject gameCam;
 
-	ID3D11RenderTargetView* backBufferView;
-	ID3D11DepthStencilView* depthView;
+	MeshObject testMeshObj;		//DELETE LATER***
+	CameraObject testCamera;	//DELETE LATER***
+	//MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
-	bool SetupBackBuffer();
-	void SetupViewPort();
+	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
+    void RedirectIoToConsole();
+
+protected:
+
+	SceneHandler sceneHandler;
 
 public:
-	Engine();
+
+
+	Engine(HINSTANCE& instance, UINT width, UINT height);
 	virtual ~Engine();
 	DELETE_COPY_ASSIGNMENT(Engine)
 
-    void RedirectIoToConsole();
-	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void ClearDisplay();
-	void PresentScene();
+	void Render();
+
+	virtual bool OnFrame(const float& deltaTime) = 0;
+	virtual bool OnStart() = 0;
 };

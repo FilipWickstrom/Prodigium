@@ -9,6 +9,12 @@ Graphics::Graphics()
 	this->swapChain = nullptr;
 	this->zBufferOn = nullptr;
 	this->zBufferOff = nullptr;
+	this->windowWidth = 0;
+	this->windowHeight = 0;
+	this->viewport = {};
+	this->backBufferView = nullptr;
+	this->depthView = nullptr;
+	this->rasterState = nullptr;
 }
 
 Graphics::~Graphics()
@@ -23,6 +29,12 @@ Graphics::~Graphics()
 		this->zBufferOn->Release();
 	if (this->zBufferOff)
 		this->zBufferOff->Release();
+	if (this->backBufferView)
+		this->backBufferView->Release();
+	if (this->depthView)
+		this->depthView->Release();
+	if (this->rasterState)
+		this->rasterState->Release();
 }
 
 bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
@@ -124,6 +136,37 @@ bool Graphics::CreateZBufferStates()
 	return true;
 }
 
+void Graphics::CreateViewPort()
+{
+	this->viewport.Width = (float)this->windowWidth;
+	this->viewport.Height = (float)this->windowHeight;
+	this->viewport.TopLeftX = 0.f;
+	this->viewport.TopLeftY = 0.f;
+	this->viewport.MinDepth = 0.f;
+	this->viewport.MaxDepth = 1.0f;
+}
+
+bool Graphics::CreateBackBuffer()
+{
+	HRESULT hr;
+
+	ID3D11Texture2D* tempTexture = nullptr;
+	if (FAILED(Graphics::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTexture))))
+	{
+		return false;
+	}
+
+	hr = Graphics::GetDevice()->CreateRenderTargetView(tempTexture, 0, &this->backBufferView);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	tempTexture->Release();
+
+	return true;
+}
+
 ID3D11Device*& Graphics::GetDevice()
 {
 	return Graphics::instance->device;
@@ -139,16 +182,31 @@ IDXGISwapChain*& Graphics::GetSwapChain()
 	return Graphics::instance->swapChain;
 }
 
+const UINT& Graphics::GetWindowWidth()
+{
+	return Graphics::instance->windowWidth;
+}
+
+const UINT& Graphics::GetWindowHeight()
+{
+	return Graphics::instance->windowHeight;
+}
+
 bool Graphics::Initialize(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
 {
 	if (Graphics::instance == nullptr)
 	{
 		Graphics::instance = new Graphics;
+		Graphics::instance->windowWidth = windowWidth;
+		Graphics::instance->windowHeight = windowWidth;
 
 		if (!Graphics::instance->CreateDeviceAndSwapChain(windowHandler, windowWidth, windowHeight))
 		{
 			return false;
 		}
+		Graphics::instance->CreateViewPort();
+		Graphics::instance->CreateBackBuffer();
+
 	}
 
 	return true;
@@ -170,4 +228,40 @@ void Graphics::EnableZBuffer()
 void Graphics::DisableZBuffer()
 {
 	Graphics::instance->context->OMSetDepthStencilState(Graphics::instance->zBufferOff, 1);
+}
+
+void Graphics::SetMainWindowViewport()
+{
+	Graphics::instance->context->RSSetViewports(1, &Graphics::instance->viewport);
+}
+
+void Graphics::BindBackBuffer()
+{
+	Graphics::instance->context->OMSetRenderTargets(1, &Graphics::instance->backBufferView, Graphics::instance->depthView);
+}
+
+void Graphics::UnbindBackBuffer()
+{
+	ID3D11RenderTargetView* unbindedBackBuffer = nullptr;
+
+	Graphics::instance->context->OMSetRenderTargets(1, &unbindedBackBuffer, nullptr);
+}
+
+void Graphics::ClearDisplay()
+{
+	float color[4];
+
+	// Red
+	color[0] = 0.25;
+
+	// Green
+	color[1] = 0.25;
+
+	// Blue
+	color[2] = 1;
+
+	// Alpha
+	color[3] = 0.75;
+
+	Graphics::instance->context->ClearRenderTargetView(Graphics::instance->backBufferView, color);
 }

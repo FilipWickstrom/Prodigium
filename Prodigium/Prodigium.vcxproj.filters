@@ -1,167 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\Helper Includes">
-      <UniqueIdentifier>{0a9cf4e6-1e69-4984-8591-d5e0afa9e627}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Techniques">
-      <UniqueIdentifier>{7ce04cc5-359b-41c6-a2ed-1d5d7fbf7cbe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Scene">
-      <UniqueIdentifier>{49fc7895-2b72-4084-a201-007538ba36b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Objects">
-      <UniqueIdentifier>{919d79aa-3046-4251-a3bc-c4702498737b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering">
-      <UniqueIdentifier>{2e46a888-da47-4f2c-b2fb-a83d41b6e4e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Geometry Pass">
-      <UniqueIdentifier>{fa8bf416-c0a9-4cfd-ab18-de3c28c115d9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering\Light Pass">
-      <UniqueIdentifier>{efcc7285-a386-4b17-a9ef-5a6aac4100fb}</UniqueIdentifier>
-    </Filter>
+    <FxCompile Include="PixelShaderGPass.hlsl" />
+    <FxCompile Include="PixelShaderLightPass.hlsl" />
+    <FxCompile Include="VertexShaderGPass.hlsl" />
+    <FxCompile Include="VertexShaderLightPass.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Header Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneHandler.cpp">
-      <Filter>Header Files\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryPass.cpp">
-      <Filter>Rendering\Geometry Pass</Filter>
-    </ClCompile>
-    <ClCompile Include="LightPass.cpp">
-      <Filter>Rendering\Light Pass</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>Source Files</Filter>
-    <ClCompile Include="CameraObject.cpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshObject.cpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClCompile>
+    <ClCompile Include="CameraObject.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MeshObject.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneHandler.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UsefulStructuresHeader.h">
-      <Filter>Header Files\Helper Includes</Filter>
-    </ClInclude>
-    <ClInclude Include="SSAO.h">
-      <Filter>Header Files\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files\Techniques</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneHandler.h">
-      <Filter>Header Files\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshObject.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeometryPass.h">
-      <Filter>Rendering\Geometry Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="LightPass.h">
-      <Filter>Rendering\Light Pass</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>Header Files</Filter>
-    <ClInclude Include="CameraObject.h">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="UsefulHeader.h">
-      <Filter>Header Files\Helper Includes</Filter>
-    </ClInclude>
+    <ClInclude Include="CameraObject.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="MeshObject.h" />
+    <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneHandler.h" />
+    <ClInclude Include="SSAO.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="UsefulHeader.h" />
+    <ClInclude Include="UsefulStructuresHeader.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="SimpleMath.h" />
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShaderGPass.hlsl">
-      <Filter>Rendering\Geometry Pass</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderGPass.hlsl">
-      <Filter>Rendering\Geometry Pass</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShaderLightPass.hlsl">
-      <Filter>Rendering\Light Pass</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderLightPass.hlsl">
-      <Filter>Rendering\Light Pass</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CPP.HINT">
-      <Filter>Header Files</Filter>
-    </None>
+    <None Include="CPP.HINT" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
