@@ -2,9 +2,9 @@
 using namespace DirectX::SimpleMath;
 void CameraObject::UpdateViewProjection()
 {
-	this->targetPos = XMVectorAdd(XMVector3TransformCoord(this->defaultForward, this->rotationMatrix), this->eyePos);
-	this->upDir = XMVector3TransformCoord(this->defaultUp, this->rotationMatrix);
-	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
+	//this->targetPos = XMVectorAdd(XMVector3TransformCoord(this->defaultForward, this->rotationMatrix), this->eyePos);
+	//this->upDir = XMVector3TransformCoord(this->defaultUp, this->rotationMatrix);
+	//this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
 }
 
 CameraObject::CameraObject()
@@ -39,12 +39,14 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 	this->farPlane = farPlane;
 	this->fieldOfView = fov;
 	this->upDir = { 0.f,1.f,0.f };
-	//this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
-	this->viewProjMatrix.viewMatrix.CreateLookAt(this->eyePos, this->targetPos, this->upDir);
-	this->viewProjMatrix.viewMatrix.Transpose();
-	this->viewProjMatrix.projectionMatrix.CreatePerspectiveFieldOfView(this->fieldOfView, this->aspectRatio, this->nearPlane, this->farPlane);
-	this->viewProjMatrix.projectionMatrix.Transpose();
-	//this->viewProjMatrix.projectionMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
+	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
+	//this->viewProjMatrix.viewMatrix.CreateLookAt(this->eyePos, this->targetPos, this->upDir);
+
+	//this->viewProjMatrix.viewMatrix.Transpose();
+	this->viewProjMatrix.projectionMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
+	//this->viewProjMatrix.projectionMatrix.CreatePerspectiveFieldOfView(this->fieldOfView,((float)windowWidth / windowHeight), this->nearPlane, this->farPlane);
+	//this->viewProjMatrix.projectionMatrix.Transpose();
+
 	D3D11_BUFFER_DESC buffDesc = {};
 	buffDesc.ByteWidth = sizeof(viewProjectionMatrix);
 	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
