@@ -50,12 +50,12 @@ void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, Dire
 	if (!this->objects[this->currentObject]->UpdateMatrix(pos, scale, rotation))
 	{
 #ifdef _DEBUG
-		std::cout << "Error lol noob" << "\n";
+		std::cout << "Error with updating the Matrix of object: " << this->currentObject << "\n";
 #endif
 	}
 
 #ifdef _DEBUG
-	std::cout << "Matrix was updated for object on index " << this->currentObject << ". \n";
+	//std::cout << "Matrix was updated for object on index " << this->currentObject << ". \n";
 #endif
 
 }
