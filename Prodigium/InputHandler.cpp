@@ -18,19 +18,18 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 	{
 		InputHandler::instance = new InputHandler;
 		InputHandler::instance->keyboard = std::make_unique<DirectX::Keyboard>();
+		InputHandler::instance->kBTracker = std::make_unique<Keyboard::KeyboardStateTracker>();
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
 		InputHandler::instance->mouse->SetWindow(windowHandle);
-		if (InputHandler::instance->keyboard->IsConnected())
-		{
-			std::cout << "HEJSANSVEJSAN\n";
-		}
+		InputHandler::instance->mouse->SetMode(Mouse::MODE_ABSOLUTE);
+		
 	}
 	else
 	{
 		std::cerr << "InputHandler already Initialized\n";
 }
 	return true;
-
+	
 }
 
 Keyboard::State InputHandler::GetKBState()
@@ -41,6 +40,11 @@ Keyboard::State InputHandler::GetKBState()
 Mouse::State InputHandler::GetMouseState()
 {
 	return InputHandler::instance->mouse->GetState();
+}
+
+Keyboard::KeyboardStateTracker InputHandler::GetKBStateTracker()
+{
+	return *InputHandler::instance->kBTracker;
 }
 
 void InputHandler::HandleMessages()
@@ -67,12 +71,19 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		PostQuitMessage(0);
 		return 0;
 	case WM_KEYDOWN:
-		std::cout << "what the fuck\n";
+		Keyboard::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_KEYUP:
 		Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
+		Mouse::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_LBUTTONDOWN:
+		Mouse::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_LBUTTONUP:
+		Mouse::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_RBUTTONDOWN:
 		break;
@@ -80,6 +91,9 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		Mouse::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_SYSKEYDOWN:
+		Keyboard::ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_SYSKEYUP:
 		Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 
