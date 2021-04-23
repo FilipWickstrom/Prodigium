@@ -31,6 +31,11 @@ void Engine::RedirectIoToConsole()
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 }
 
+SceneHandler* Engine::SceneHandle()
+{
+	return &sceneHandler;
+}
+
 void Engine::ClearDisplay()
 {
 	Graphics::ClearDisplay();
