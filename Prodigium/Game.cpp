@@ -17,33 +17,38 @@ bool Game::IsRunning() const
 	return this->running;
 }
 
-bool Game::OnFrame(const float& deltaTime)
+void Game::HandleInput()
 {
-	Engine::ClearDisplay();
-	auto kb = InputHandler::GetKBState();
-	auto kb_keys = InputHandler::GetKBStateTracker();
-	kb_keys->Update(kb);
-	auto mouse = InputHandler::GetMouseState();
-	if (kb_keys->pressed.Escape)
+	//Example of how the keyboard and mouse input is gathered and used.
+ 
+	
+	//Updates the keyboard and mouse with new info about their current state.
+	InputHandler::UpdateKeyboardAndMouse();
+
+	//TODO: Make the engine cleanly shutdown
+	if (InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
-		running = false;
+		this->running = false;
 	}
-	if (kb_keys->pressed.Tab)
-	{
-		std::cout << "pls fucking work\n";
-	}
-	if (kb_keys->IsKeyPressed(Keyboard::W))
+
+	if (InputHandler::IsKeyPressed(Keyboard::W))
 	{
 		std::cout << "Hello!\n";
 	}
-	if (kb_keys->IsKeyReleased(Keyboard::W))
+	if (InputHandler::IsKeyHeld(Keyboard::E))
 	{
-		std::cout << "Goodbye!\n";
+		std::cout << "Holding key!\n";
 	}
-	if (mouse.leftButton)
+	if (InputHandler::IsLMBPressed())
 	{
-		std::cout << "X: " << mouse.x << " Y: " << mouse.y << "\n";
+		std::cout << "X: " << InputHandler::GetMouseX()<< " Y: " << InputHandler::GetMouseY() << "\n";
 	}
+}
+
+bool Game::OnFrame(const float& deltaTime)
+{
+	Engine::ClearDisplay();
+	HandleInput();
 	Engine::Render();
 
 	return true;

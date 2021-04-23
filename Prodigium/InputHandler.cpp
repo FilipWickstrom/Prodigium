@@ -2,7 +2,10 @@
 InputHandler* InputHandler::instance = nullptr;
 InputHandler::InputHandler()
 {
+	kbState = {};
+	mouseState = {};
 	state = {};
+	
 }
 InputHandler::~InputHandler()
 {
@@ -22,6 +25,7 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
 		InputHandler::instance->mouse->SetWindow(windowHandle);
 		InputHandler::instance->mouse->SetMode(Mouse::MODE_ABSOLUTE);
+		InputHandler::instance->mouseTracker = std::make_unique<Mouse::ButtonStateTracker>();
 		
 	}
 	else
@@ -32,20 +36,75 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 	
 }
 
-Keyboard::State InputHandler::GetKBState()
+int InputHandler::GetMouseX()
 {
-	return InputHandler::instance->keyboard.get()->GetState();
+	return InputHandler::instance->mouseState.x;
 }
 
-Mouse::State InputHandler::GetMouseState()
+int InputHandler::GetMouseY()
 {
-	return InputHandler::instance->mouse->GetState();
+	return InputHandler::instance->mouseState.y;
+}
+
+
+void InputHandler::UpdateKeyboardAndMouse()
+{
+	InputHandler::instance->kbState = InputHandler::instance->keyboard->GetState();
+	InputHandler::instance->kBTracker->Update(InputHandler::instance->kbState);
+	InputHandler::instance->mouseState = InputHandler::instance->mouse->GetState();
+	InputHandler::instance->mouseTracker->Update(InputHandler::instance->mouseState);
 }
 
 Keyboard::KeyboardStateTracker* InputHandler::GetKBStateTracker()
 {
 	return InputHandler::instance->kBTracker.get();
 }
+
+Mouse::ButtonStateTracker* InputHandler::getMouseStateTracker()
+{
+	return InputHandler::instance->mouseTracker.get();
+}
+
+bool InputHandler::IsKeyPressed(Keyboard::Keys key)
+{
+	return InputHandler::instance->kBTracker->IsKeyPressed(key);
+}
+
+bool InputHandler::IsKeyHeld(Keyboard::Keys key)
+{
+	return InputHandler::instance->kbState.IsKeyDown(key);
+}
+
+bool InputHandler::IsLMBPressed()
+{
+	return InputHandler::instance->mouseTracker->leftButton == InputHandler::instance->mouseTracker->PRESSED;
+}
+
+bool InputHandler::IsLMBHeld()
+{
+	return  InputHandler::instance->mouseTracker->leftButton == InputHandler::instance->mouseTracker->HELD;
+}
+
+bool InputHandler::IsRMBPressed()
+{
+	return  InputHandler::instance->mouseTracker->rightButton == InputHandler::instance->mouseTracker->PRESSED;
+}
+
+bool InputHandler::IsRMBHeld()
+{
+	return  InputHandler::instance->mouseTracker->rightButton == InputHandler::instance->mouseTracker->HELD;
+}
+
+bool InputHandler::IsMMBPressed()
+{
+	return  InputHandler::instance->mouseTracker->middleButton == InputHandler::instance->mouseTracker->PRESSED;
+}
+
+bool InputHandler::IsMMBHeld()
+{
+	return InputHandler::instance->mouseTracker->middleButton == InputHandler::instance->mouseTracker->HELD;
+}
+
 
 void InputHandler::HandleMessages()
 {
@@ -62,41 +121,52 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	switch (message)
 	{
 	case WM_ACTIVATEAPP:
-		Keyboard::ProcessMessage(message, wParam, lParam);
-		Mouse::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
-		// This message is read when the window is closed
 	case WM_DESTROY:
+		// This message is read when the window is closed
 		// Tell calling thread to terminate
 		PostQuitMessage(0);
 		return 0;
 	case WM_KEYDOWN:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
-		//Keyboard::ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_KEYUP:
-		//Keyboard::ProcessMessage(message, wParam, lParam);
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_MOUSEMOVE:
-		Mouse::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_MBUTTONDBLCLK:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_MBUTTONUP:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_MBUTTONDOWN:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_LBUTTONDOWN:
-		Mouse::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_LBUTTONUP:
-		Mouse::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_RBUTTONDOWN:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
+		break;
+	case WM_RBUTTONUP:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_MOUSEHOVER:
-		Mouse::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_SYSKEYDOWN:
-		Keyboard::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_SYSKEYUP:
-		Keyboard::ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
 
 	}

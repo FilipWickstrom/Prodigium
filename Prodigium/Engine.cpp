@@ -52,16 +52,16 @@ void Engine::Render()
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
+	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	if (!this->window.SetupWindow(instance, width, height))
 	{
 		return false;
 	}
 
 	if (!Graphics::Initialize(this->window.GetWindowHandler(), width, height))
-	{
-		return false;
-	}
-	if (!InputHandler::Initialize(window.GetWindowHandler()))
 	{
 		return false;
 	}
