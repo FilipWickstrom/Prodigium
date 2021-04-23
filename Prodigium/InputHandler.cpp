@@ -27,7 +27,7 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 	else
 	{
 		std::cerr << "InputHandler already Initialized\n";
-}
+	}
 	return true;
 	
 }
