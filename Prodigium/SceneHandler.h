@@ -43,9 +43,9 @@ public:
 	// runs a simple pop_back if so is desired. Resets the currentScene to 0.
 	void Pop();
 
-	// render the objects in current selected scene.
+	// render the objects in current selected scene. if you're in Game.h dont touch this!
 	void Render();
 
-	// render the lights in the current selected scene.
+	// render the lights in the current selected scene. if you're in Game.h dont touch this!
 	void RenderLights();
 };
