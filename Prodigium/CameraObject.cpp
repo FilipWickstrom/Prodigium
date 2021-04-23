@@ -27,7 +27,8 @@ CameraObject::CameraObject()
 
 CameraObject::~CameraObject()
 {
-	matrixBuffer->Release();
+	if (this->matrixBuffer)
+		this->matrixBuffer->Release();
 }
 
 bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, XMVECTOR& position)
