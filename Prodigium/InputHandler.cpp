@@ -5,7 +5,7 @@ InputHandler::InputHandler()
 	kbState = {};
 	mouseState = {};
 	state = {};
-	
+	isRunning = true;	
 }
 InputHandler::~InputHandler()
 {
@@ -115,11 +115,21 @@ void InputHandler::HandleMessages()
 	}
 }
 
+bool InputHandler::IsRunning()
+{
+	return InputHandler::instance->isRunning;
+}
+
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// Sort through and find what code to run for the message given
 	switch (message)
 	{
+	case WM_QUIT:
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		return 0;
 	case WM_ACTIVATEAPP:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
@@ -128,7 +138,8 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		// This message is read when the window is closed
 		// Tell calling thread to terminate
 		PostQuitMessage(0);
-		return 0;
+		InputHandler::instance->isRunning = false;
+		break;
 	case WM_KEYDOWN:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
@@ -168,7 +179,6 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	case WM_SYSKEYUP:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		break;
-
 	}
 
 	// Handle any messages the switch statement didn't by using default methodology

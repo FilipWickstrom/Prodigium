@@ -17,6 +17,8 @@ private:
 	Mouse::State mouseState;
 	static InputHandler* instance;
 	MSG state;
+	bool isRunning;
+
 public:
 	DELETE_COPY_ASSIGNMENT(InputHandler);
 	static bool Initialize(const HWND& windowHandle);
@@ -34,6 +36,7 @@ public:
 	static bool IsMMBPressed();
 	static bool IsMMBHeld();
 	static void HandleMessages();
+	static bool IsRunning();
 	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 
