@@ -5,11 +5,10 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
+#include "InputHandler.h"
+#include "MeshObject.h"
 #include "SceneHandler.h"
-
-#include "MeshObject.h"		//DELETE LATER***
-#include "CameraObject.h"	//DELETE LATER***
-
+#include "CameraObject.h"
 class Engine
 {
 private:
@@ -18,25 +17,25 @@ private:
 	LightPass lightPass;
 	CameraObject gameCam;
 
+	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
-	//CameraObject testCamera;	//DELETE LATER***
+	CameraObject testCamera;	//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 
 private:
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
-    void RedirectIoToConsole();
+	void RedirectIoToConsole();
 
 protected:
 
-	SceneHandler sceneHandler;
 
 public:
-
+	DELETE_COPY_ASSIGNMENT(Engine)
 
 	Engine(HINSTANCE& instance, UINT width, UINT height);
 	virtual ~Engine();
-	DELETE_COPY_ASSIGNMENT(Engine)
 
+	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
 

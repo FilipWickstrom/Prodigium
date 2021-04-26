@@ -32,7 +32,7 @@ StructuredBuffer<lightBuffer> lights : register(t3);
 struct GBuffers
 {
     float4 positionWS;
-    float4 colourTexture;
+    float4 diffuseColor;
     float4 normalWS;
 };
 
@@ -40,7 +40,7 @@ GBuffers GetGBuffers(float2 texCoords)
 {
     GBuffers output;
     output.positionWS    = G_positionWS.Sample(anisotropic, texCoords);
-    output.colourTexture = G_colour.Sample(anisotropic, texCoords);
+    output.diffuseColor = G_colour.Sample(anisotropic, texCoords);
     output.normalWS      = G_normalWS.Sample(anisotropic, texCoords);
     return output;
 }
@@ -65,5 +65,5 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     
     
     //Returns the texture colour for now
-    return gbuffers.colourTexture;   
+    return gbuffers.diffuseColor;
 }

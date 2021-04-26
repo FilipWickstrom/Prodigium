@@ -64,9 +64,10 @@ bool Mesh::LoadFile(std::string filename)
     const aiScene* scene = importer.ReadFile("Models/" + filename,
                                             aiProcess_Triangulate |               //Triangulate every surface
                                             aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
-                                            aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models
+                                            aiProcess_MakeLeftHanded |            //Use a lefthanded system for the models
+                                            aiProcess_FlipUVs);                   //Flips the textures to fir directX-style                                   
                                             //aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
-                                            //aiProcess_FlipUVs                   //If textures gets in the wrong direction...
+                                            
 
     //Reading file: Success
     if (scene != nullptr)

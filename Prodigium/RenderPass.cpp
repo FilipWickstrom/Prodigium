@@ -48,38 +48,6 @@ GeometryPass::~GeometryPass()
 	}
 }
 
-//bool GeometryPass::CreateQuad()
-//{
-//	Vertex quad[] =
-//	{
-//		{ { -0.5f, -0.5f, 0.0 }, { 0.0f, 1.0f }, { 0.f, 0.f, -1.0f} },
-//		{ {-0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f, -1.0f} },
-//		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } },
-//
-//		{ { -0.5f, -0.5f, 0.0f}, { 0.0, 1.0f }, { 0.f, 0.f, -1.0f} },
-//		{ { 0.5f, 0.5f, 0.0f}, { 1.0, 0.0f }, { 0.f, 0.f, -1.0f} },
-//		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 0.0f, -1.0f } },
-//	};
-//
-//	D3D11_BUFFER_DESC bufferDesc = {};
-//	bufferDesc.ByteWidth = sizeof quad;
-//	bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-//	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-//	bufferDesc.CPUAccessFlags = 0;
-//	bufferDesc.MiscFlags = 0;
-//
-//	D3D11_SUBRESOURCE_DATA data = {};
-//	data.pSysMem = quad;
-//	// Default to 0, only used by textures
-//	data.SysMemPitch = 0;
-//	// Only used in 3D for depth level to the next
-//	data.SysMemSlicePitch = 0;
-//
-//	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bufferDesc, &data, &vBuffer);
-//
-//	return true;
-//}
-
 bool GeometryPass::CreateGBuffer()
 {
 	HRESULT hr;
@@ -93,7 +61,7 @@ bool GeometryPass::CreateGBuffer()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
 
 	shaderResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	shaderResourceDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
@@ -302,6 +270,7 @@ void GeometryPass::Clear()
 	ID3D11PixelShader* pShaderNull = nullptr;
 	ID3D11InputLayout* inputLayoutNull = nullptr;
 	ID3D11SamplerState* samplerStateNull = nullptr;
+	ID3D11DepthStencilView* dsViewNull = nullptr;
 
 	UINT stride = 0;
 	UINT offset = 0;
@@ -310,18 +279,36 @@ void GeometryPass::Clear()
 	Graphics::GetContext()->VSSetShader(vShaderNull, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShaderNull, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, nullptr);
+	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullRenderTargets, dsViewNull);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 }
 
 void GeometryPass::Prepare()
 {
-	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	Graphics::GetContext()->VSSetShader(vShader, NULL, 0);
 	Graphics::GetContext()->PSSetShader(pShader, NULL, 0);
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
-	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		float color[4];
+
+		// Red
+		color[0] = 0.25;
+
+		// Green
+		color[1] = 0.25;
+
+		// Blue
+		color[2] = 1;
+
+		// Alpha
+		color[3] = 0.75;
+
+		Graphics::GetContext()->ClearRenderTargetView(gBuffer.renderTargets[i], color);
+	}
+	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 
@@ -387,7 +374,7 @@ bool LightPass::CreateShaderResources()
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
 
 	shaderResourceDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	shaderResourceDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
@@ -593,7 +580,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
-	Graphics::GetContext()->PSGetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
 }
 
 void LightPass::Prepare()

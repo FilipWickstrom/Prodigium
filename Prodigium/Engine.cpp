@@ -31,6 +31,11 @@ void Engine::RedirectIoToConsole()
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 }
 
+SceneHandler* Engine::SceneHandle()
+{
+	return &sceneHandler;
+}
+
 void Engine::ClearDisplay()
 {
 	Graphics::ClearDisplay();
@@ -42,9 +47,8 @@ void Engine::Render()
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->sceneHandler.Render();
 	this->gPass.Clear();
-	Graphics::BindBackBuffer();
 
-	this->sceneHandler.RenderLights();
+	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
@@ -53,6 +57,10 @@ void Engine::Render()
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
+	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	if (!this->window.SetupWindow(instance, width, height))
 	{
 		return false;
@@ -62,7 +70,6 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
 	ResourceManager::Initialize();
 
 	Graphics::SetMainWindowViewport();
@@ -77,16 +84,12 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	// Testing.
-	DirectX::XMVECTOR eyePos = { 0.0f, 0.0f, -5.0f };
-	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, (float)(width / height), eyePos))
+	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
 	{
 		return false;
 	}
 
-	this->sceneHandler.EditScene().Add("necklace_OBJ.obj", "mask_albedo.png", "", {0.0f, 0.0f, 5.0f});
-	LightStruct dirL = {};
-	this->sceneHandler.EditScene().AddLight(dirL);
+	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 
 	return true;
 }
