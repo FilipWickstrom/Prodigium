@@ -13,6 +13,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	Game game(hInstance, 1280, 1024);
+	game.OnStart();
 	float currentFrame, lastFrame, deltaTime = 0;
 	/*
 		Width and Height of presented window, Can be changed in options?

@@ -7,11 +7,11 @@ class Player:public GameObject
 {
 private:
 	float speed;
-	CameraObject playerCam;
 
 public:
 	Player();
 	virtual ~Player();
 
 	void Update();
+	CameraObject playerCam;
 };
