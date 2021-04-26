@@ -14,14 +14,18 @@ Game::~Game()
 
 bool Game::IsRunning() const
 {
-	return this->running;
+	if (this->running == false || InputHandler::IsRunning() == false)
+	{
+		return false;
+	}
+	
+	return true;
 }
 
 void Game::HandleInput()
 {
 	//Example of how the keyboard and mouse input is gathered and used.
  
-	
 	//Updates the keyboard and mouse with new info about their current state.
 	InputHandler::UpdateKeyboardAndMouse();
 
