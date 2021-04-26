@@ -27,7 +27,7 @@ private:
 	float nearPlane;
 	float farPlane;
 	ID3D11Buffer* matrixBuffer;
-	void UpdateViewProjection();
+	void UpdateViewMatrix();
 public:
 	CameraObject();
 	virtual ~CameraObject();

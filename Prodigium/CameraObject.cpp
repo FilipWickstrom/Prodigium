@@ -1,6 +1,6 @@
 #include "CameraObject.h"
 using namespace DirectX::SimpleMath;
-void CameraObject::UpdateViewProjection()
+void CameraObject::UpdateViewMatrix()
 {
 	//this->targetPos = XMVectorAdd(XMVector3TransformCoord(this->defaultForward, this->rotationMatrix), this->eyePos);
 	//this->upDir = XMVector3TransformCoord(this->defaultUp, this->rotationMatrix);
@@ -82,20 +82,20 @@ Matrix CameraObject::GetProjectionMatrix() const
 void CameraObject::Move(float x, float y)
 {
 	this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, y, 1.f }, this->rotationMatrix));
-	this->UpdateViewProjection();
+	this->UpdateViewMatrix();
 }
 
 void CameraObject::Rotate(float pitchAmount, float yawAmount)
 {
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
-	this->UpdateViewProjection();
+	this->UpdateViewMatrix();
 }
 
 void CameraObject::SetPosition(float xPos, float yPos)
 {
 	this->eyePos = { xPos,yPos, 1.f };
-	this->UpdateViewProjection();
+	this->UpdateViewMatrix();
 }
 
 ID3D11Buffer*& CameraObject::GetViewProjMatrix()
