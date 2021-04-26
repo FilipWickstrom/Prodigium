@@ -25,16 +25,16 @@ bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, Direc
 	this->scale = scl;
 	this->rotation = rot;
 
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z));
-	
-	D3D11_BUFFER_DESC desc;
+	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)));
+
+	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.MiscFlags = 0;
 	desc.ByteWidth = sizeof(this->modelMatrix);
-	D3D11_SUBRESOURCE_DATA data;
+	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->modelMatrix;
 	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
 	return !FAILED(result);
@@ -46,8 +46,8 @@ bool GameObject::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, Dire
 	this->scale = scl;
 	this->rotation = rot;
 
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z));
+	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)));
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;

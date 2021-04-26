@@ -19,7 +19,6 @@ private:
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
-
 private:
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();
@@ -28,6 +27,7 @@ protected:
 
 
 public:
+	CameraObject gameCam;
 	DELETE_COPY_ASSIGNMENT(Engine)
 
 	Engine(HINSTANCE& instance, UINT width, UINT height);

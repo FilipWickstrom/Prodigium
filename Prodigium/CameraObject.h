@@ -13,15 +13,14 @@ private:
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Matrix projectionMatrix;
 	};
-	const DirectX::SimpleMath::Vector4 defaultUp = { 0.f, 1.f, 0.f,0.f };
-	const DirectX::SimpleMath::Vector4 defaultForward = { 0.f, 0.f, 1.f,0.f };
+	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
+	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
 	viewProjectionMatrix viewProjMatrix;
 	DirectX::SimpleMath::Vector3 eyePos;
 	DirectX::SimpleMath::Vector3 targetPos;
 	DirectX::SimpleMath::Vector3 upDir;
 	DirectX::SimpleMath::Matrix rotationMatrix;
-	DirectX::SimpleMath::Vector3 rotation;
-	float pitch, yaw;
+	float pitch, yaw, roll;
 	float fieldOfView;
 	float aspectRatio;
 	float nearPlane;
@@ -34,9 +33,12 @@ public:
 	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, DirectX::SimpleMath::Vector3 eyePosition);
 	DirectX::SimpleMath::Matrix GetViewMatrix() const;
 	DirectX::SimpleMath::Matrix GetProjectionMatrix() const;
-	void Move(float x, float y);
+	void Move(float x, float z);
+	void Move(float x, float y, float z);
 	void Rotate(float pitchAmount, float yawAmount);
 	void SetPosition(float xPos, float yPos);
+	DirectX::SimpleMath::Vector3 getPos() const;
+	void Update();
 	ID3D11Buffer*& GetViewProjMatrix();
 };
 
