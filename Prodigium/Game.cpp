@@ -48,6 +48,7 @@ void Game::HandleInput()
 bool Game::OnFrame(const float& deltaTime)
 {
 	Engine::ClearDisplay();
+	HandleInput();
 	Engine::Render();
 	HandleInput();
 

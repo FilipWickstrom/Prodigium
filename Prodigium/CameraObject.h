@@ -13,8 +13,8 @@ private:
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Matrix projectionMatrix;
 	};
-	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
-	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
+	const DirectX::SimpleMath::Vector4 defaultUp = { 0.f, 1.f, 0.f,0.f };
+	const DirectX::SimpleMath::Vector4 defaultForward = { 0.f, 0.f, 1.f,0.f };
 	viewProjectionMatrix viewProjMatrix;
 	DirectX::SimpleMath::Vector3 eyePos;
 	DirectX::SimpleMath::Vector3 targetPos;
@@ -31,7 +31,7 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, float aspectRatio, DirectX::SimpleMath::Vector3 eyePosition);
+	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, DirectX::SimpleMath::Vector3 eyePosition);
 	DirectX::SimpleMath::Matrix GetViewMatrix() const;
 	DirectX::SimpleMath::Matrix GetProjectionMatrix() const;
 	void Move(float x, float y);
