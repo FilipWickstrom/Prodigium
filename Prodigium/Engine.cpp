@@ -44,9 +44,10 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
+	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
+	gameCam.Update();
 	this->sceneHandler.Render();
 	this->gPass.Clear();
-
 	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
@@ -83,8 +84,9 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
+	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, 5.f }))
 	{
+		std::cout << "FUCK OFF CASM\n";
 		return false;
 	}
 

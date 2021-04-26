@@ -7,7 +7,7 @@ cbuffer CameraViewProj : register(b0)
 
 cbuffer ModelMatrix : register(b1)
 {
-    row_major float4x4 world;
+    float4x4 world;
 };
 
 struct VertexShaderInput

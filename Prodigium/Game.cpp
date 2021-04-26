@@ -25,7 +25,7 @@ bool Game::IsRunning() const
 	return true;
 }
 
-void Game::HandleInput()
+void Game::HandleInput(float deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 
@@ -38,19 +38,21 @@ void Game::HandleInput()
 		this->running = false;
 	}
 
+	if (InputHandler::IsKeyPressed(Keyboard::W))
+	{
+		//std::cout << "Hello!\n";
+	}
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		std::cout << "Moving forwards!" << std::endl;
-		this->player->playerCam.Move(1.0f, 0.0f);
-	}
+		//std::cout << "Holding key!\n";
+		//std::cout << Engine::gameCam.getPos().x << " " << Engine::gameCam.getPos().y << " "<< Engine::gameCam.getPos().z << std::endl;
+		Engine::gameCam.Move(0, 0.4f * deltaTime);
+
+	}	
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
-		std::cout << "Moving backwards!" << std::endl;
-		this->player->playerCam.Move(-1.0f, 0.0f);
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::E))
-	{
-		std::cout << "Holding key!\n";
+		//std::cout << "Holding key!\n";
+		Engine::gameCam.Move(0,-0.4f * deltaTime);
 	}
 	if (InputHandler::IsLMBPressed())
 	{
@@ -62,6 +64,7 @@ bool Game::OnFrame(const float& deltaTime)
 {
 	HandleInput();
 	Engine::ClearDisplay();
+	HandleInput(deltaTime);
 	Engine::Render();
 
 	return true;
@@ -69,7 +72,12 @@ bool Game::OnFrame(const float& deltaTime)
 
 bool Game::OnStart()
 {
-	this->player = new Player();
+
+	//if (!this->tempCam.Initialize(1280, 1024, 0.1f, 10000.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
+	//{
+	//	std::cout << "CAMERA ERROR\n";
+	//	return false;
+	//}
 
 	return true;
 }

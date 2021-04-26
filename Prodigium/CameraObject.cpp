@@ -1,10 +1,13 @@
 #include "CameraObject.h"
 using namespace DirectX::SimpleMath;
-void CameraObject::UpdateViewProjection()
+void CameraObject::UpdateViewMatrix()
 {
+	this->targetPos.Transform(defaultForward, rotationMatrix);
+	this->targetPos += this->eyePos;
 	//this->targetPos = XMVectorAdd(XMVector3TransformCoord(this->defaultForward, this->rotationMatrix), this->eyePos);
+	this->upDir.Transform(defaultUp, rotationMatrix);
 	//this->upDir = XMVector3TransformCoord(this->defaultUp, this->rotationMatrix);
-	//this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
+	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
 }
 
 CameraObject::CameraObject()
@@ -16,12 +19,12 @@ CameraObject::CameraObject()
 	this->targetPos = {};
 	this->viewProjMatrix.projectionMatrix = {};
 	this->rotationMatrix = {};
-	this->rotation = {};
 	this->upDir = {};
 	this->viewProjMatrix.viewMatrix = {};
 	this->eyePos = { 0.f, 0.f, 0.f };
 	this->pitch = 0.f;
 	this->yaw = 0.f;
+	this->roll = 0.f;
 	this->matrixBuffer = nullptr;
 }
 
@@ -34,7 +37,7 @@ CameraObject::~CameraObject()
 bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, Vector3 position)
 {
 	this->eyePos = position;
-	this->targetPos = { 0.f,0.f,0.f };
+	this->targetPos = { 0.f,0.f,1.f };
 	this->nearPlane = nearPlane;
 	this->farPlane = farPlane;
 	this->fieldOfView = fov;
@@ -79,23 +82,50 @@ Matrix CameraObject::GetProjectionMatrix() const
 	return this->viewProjMatrix.projectionMatrix;
 }
 
-void CameraObject::Move(float x, float y)
+void CameraObject::Move(float x, float z)
 {
-	this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, y, 1.f }, this->rotationMatrix));
-	this->UpdateViewProjection();
+	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
+
+	//std::cout << eyePos.x << " " << eyePos.y << " " << eyePos.z << std::endl;
+	//this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, 1.f, z }, this->rotationMatrix));
+	this->UpdateViewMatrix();
+}
+
+void CameraObject::Move(float x, float y, float z)
+{
+	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->eyePos.Transform({ x,y,z }, this->rotationMatrix);
+	//this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, 1.f, z }, this->rotationMatrix));
+	this->UpdateViewMatrix();
 }
 
 void CameraObject::Rotate(float pitchAmount, float yawAmount)
 {
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
-	this->UpdateViewProjection();
+	this->UpdateViewMatrix();
 }
 
 void CameraObject::SetPosition(float xPos, float yPos)
 {
 	this->eyePos = { xPos,yPos, 1.f };
-	this->UpdateViewProjection();
+	this->UpdateViewMatrix();
+}
+
+Vector3 CameraObject::getPos() const
+{
+	return this->eyePos;
+}
+
+void CameraObject::Update()
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
+
+	Graphics::GetContext()->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &viewProjMatrix, sizeof(viewProjMatrix));
+	Graphics::GetContext()->Unmap(matrixBuffer, 0);
+
 }
 
 ID3D11Buffer*& CameraObject::GetViewProjMatrix()

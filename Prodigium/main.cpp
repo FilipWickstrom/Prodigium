@@ -20,7 +20,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	*/
 
 	/*game.Run(hInstance, WIDTH, HEIGHT);*/
-
+	game.OnStart();
 	while (game.IsRunning())
 	{
 		InputHandler::HandleMessages();
