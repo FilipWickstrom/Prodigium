@@ -27,7 +27,6 @@ protected:
 
 
 public:
-	CameraObject gameCam;
 	DELETE_COPY_ASSIGNMENT(Engine)
 
 	Engine(HINSTANCE& instance, UINT width, UINT height);

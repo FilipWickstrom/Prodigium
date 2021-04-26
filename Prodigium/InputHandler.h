@@ -1,7 +1,7 @@
 #pragma once
 #include "UsefulHeader.h"
 #include "Graphics.h"
-#include <keyboard.h>
+#include <Keyboard.h>
 #include <Mouse.h>
 using namespace DirectX;
 class InputHandler

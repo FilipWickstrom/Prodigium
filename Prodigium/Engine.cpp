@@ -44,8 +44,8 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
-	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
-	gameCam.Update();
+	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
+	//gameCam.Update();
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 	Graphics::BindBackBuffer();
@@ -84,11 +84,11 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, 5.f }))
-	{
-		std::cout << "FUCK OFF CASM\n";
-		return false;
-	}
+	//if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, 5.f }))
+	//{
+	//	std::cout << "FUCK OFF CASM\n";
+	//	return false;
+	//}
 
 	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 

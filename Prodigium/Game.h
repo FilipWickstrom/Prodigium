@@ -16,7 +16,7 @@ public:
 	Game(HINSTANCE& instance, UINT windowWidth, UINT windowHeight);
 	~Game();
 	bool IsRunning() const;
-	void HandleInput(float deltaTime);
+	void HandleInput(const float& deltaTime);
 	// Inherited via Engine
 	virtual bool OnFrame(const float& deltaTime) override;
 	virtual bool OnStart() override;
