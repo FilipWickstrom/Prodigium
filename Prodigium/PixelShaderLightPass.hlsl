@@ -21,7 +21,7 @@ struct lightBuffer
 };
 
 // Contains the information of how many lights are present.
-cbuffer LightsInfo : register(b1)
+cbuffer LightsInfo : register(b0)
 {
     float4 info;
 }

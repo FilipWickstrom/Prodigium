@@ -148,7 +148,6 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -168,7 +167,6 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="Light.h" />
     <ClInclude Include="LightObject.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshObject.h" />

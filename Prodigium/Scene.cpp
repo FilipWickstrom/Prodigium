@@ -1,12 +1,79 @@
 #include "Scene.h"
 
+bool Scene::SetupLightBuffer()
+{
+	// Remove any traces of old light buffer information.
+	if (this->lightBuffer)
+	{
+		this->lightBuffer->Release();
+		this->lightBuffer = nullptr;
+	}
+	if (this->lightShaderView)
+	{
+		this->lightShaderView->Release();
+		this->lightShaderView = nullptr;
+	}
+
+	HRESULT hr, shr;
+
+	// Description for the buffer containing all the light information.
+	D3D11_BUFFER_DESC desc;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.ByteWidth = sizeof(LightStruct) * (UINT)this->lights.size();
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.StructureByteStride = sizeof(LightStruct);
+	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = &(this->lights)[0];
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->lightBuffer);
+
+	if (!(FAILED(hr)))
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+		srvDesc.BufferEx.FirstElement = 0;
+		srvDesc.BufferEx.Flags = 0;
+		srvDesc.BufferEx.NumElements = (UINT)this->lights.size();
+
+		shr = Graphics::GetDevice()->CreateShaderResourceView(this->lightBuffer, &srvDesc, &this->lightShaderView);
+
+		return !FAILED(shr);
+	}
+
+	return false;
+}
+
+bool Scene::SetupInfoBuffer()
+{
+	HRESULT hr;
+	// Description for the info buffer containing amount of lights.
+	D3D11_BUFFER_DESC infoDesc;
+	infoDesc.Usage = D3D11_USAGE_DEFAULT;
+	infoDesc.ByteWidth = sizeof(InfoStruct);
+	infoDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	infoDesc.CPUAccessFlags = 0;
+	infoDesc.MiscFlags = 0;
+
+	hr = Graphics::GetDevice()->CreateBuffer(&infoDesc, NULL, &this->infoBuffer);
+	return !FAILED(hr);
+}
+
+bool Scene::UpdateInfoBuffer()
+{
+	return false;
+}
+
 Scene::Scene()
 {
 	this->currentObject = 0;
 	this->currentLight = 0;
-	this->lights = new LightObject();
 	this->lightBuffer = nullptr;
 	this->lightShaderView = nullptr;
+	this->infoBuffer = nullptr;
+	this->firstTime = true;
 }
 
 Scene::~Scene()
@@ -17,12 +84,14 @@ Scene::~Scene()
 	if (this->lightBuffer)
 		this->lightBuffer->Release();
 
+	if (this->infoBuffer)
+		this->infoBuffer->Release();
+
 	// Delete the allocated memory from vector.
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
 		delete this->objects[i];
 	}
-	delete this->lights;
 
 }
 
@@ -46,9 +115,10 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 }
 
-void Scene::AddLight(LightStruct L)
+void Scene::AddLight(LightStruct& L)
 {
-	this->lights->AddLight(L);
+	this->lights.push_back(L);
+	this->firstTime = true;
 }
 
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
@@ -115,17 +185,15 @@ int Scene::GetNumberOfObjects() const
 
 void Scene::RemoveAllObjects()
 {
-	for (int i = 0; i < (int)objects.size(); i++)
+#ifdef _DEBUG
+	std::cout << "Amount of objects deleted: " << (int)objects.size() << "\n";
+#endif
+	while ((int)objects.size() > 0)
 	{
-		delete this->objects[(unsigned int)this->objects.size() - 1];
+		delete this->objects[(int)this->objects.size() - 1];
 		this->objects.pop_back();
 	}
 	this->Pop();
-}
-
-LightObject& Scene::GetLights()
-{
-	return *this->lights;
 }
 
 void Scene::Pop()
@@ -145,6 +213,25 @@ void Scene::Render()
 		{
 			this->objects[i]->Render();
 		}
+	}
+}
+
+void Scene::RenderLights()
+{
+	if (this->lights.size() > 0)
+	{
+		if (this->firstTime)
+		{
+			this->firstTime = false;
+			if (!this->SetupLightBuffer())
+			{
+				std::cout << "Error making light" << "\n";
+				return;
+			}
+		}
+
+		Graphics::GetContext()->PSSetConstantBuffers(0, 1, &this->infoBuffer);
+		Graphics::GetContext()->PSSetShaderResources(3, 1, &this->lightShaderView);
 	}
 }
 

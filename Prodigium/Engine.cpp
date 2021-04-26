@@ -2,6 +2,7 @@
 
 Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
+	srand(time(NULL));
 	this->RedirectIoToConsole();
 
 	if (!this->StartUp(instance, width, height))
@@ -49,6 +50,7 @@ void Engine::Render()
 	this->gPass.Clear();
 
 	Graphics::BindBackBuffer();
+	this->sceneHandler.RenderLights();
 	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
@@ -88,6 +90,8 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
+
+	this->sceneHandler.AddScene();
 
 	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 

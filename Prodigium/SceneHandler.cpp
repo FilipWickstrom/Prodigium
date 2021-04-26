@@ -2,7 +2,7 @@
 
 SceneHandler::SceneHandler()
 {
-	this->AddScene();
+	this->currentScene = 0;
 }
 
 SceneHandler::~SceneHandler()
@@ -19,6 +19,7 @@ void SceneHandler::AddScene()
 	Scene* newScene = new Scene;
 	scenes.push_back(newScene);
 	this->currentScene = (int)scenes.size() - 1;
+	this->scenes[this->currentScene]->SetupInfoBuffer();
 }
 
 void SceneHandler::RemoveScene(int index)
@@ -61,7 +62,9 @@ void SceneHandler::SwitchScene(int index)
 	}
 	else
 	{
+#ifdef _DEBUG
 		printf("You went too far %d is above %d\n", index, (int)scenes.size() - 1);
+#endif
 	}
 }
 
@@ -94,5 +97,13 @@ void SceneHandler::Render()
 	if ((int)this->scenes.size() > 0)
 	{
 		this->scenes[this->currentScene]->Render();
+	}
+}
+
+void SceneHandler::RenderLights()
+{
+	if ((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderLights();
 	}
 }

@@ -16,8 +16,7 @@ public:
 	/*
 		Creates a handler for scenes within the game. Within is a "pointer" which takes care of which scene to call on
 		EditScene() call, to change it simply call SwitchScene('wanted scene') to switch which scene is currently active.
-		Remember on RemoveScene() that vector<> starts at spot 0. On declaration a new scene will be added to the vector<> so
-		no need to call AddScene() at the beginning since ONE already exists.
+		Remember on RemoveScene() that vector<> starts at spot 0. One AddScene() already exists in Engine.h
 	*/
 	SceneHandler();
 	virtual ~SceneHandler();
@@ -45,4 +44,7 @@ public:
 
 	// render the objects in current selected scene. if you're in Game.h dont touch this!
 	void Render();
+
+	// render the lights in the current selected scene.
+	void RenderLights();
 };

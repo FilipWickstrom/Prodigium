@@ -61,7 +61,6 @@
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightObject.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -125,7 +124,6 @@
     <ClInclude Include="Game.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h" />
     <ClInclude Include="LightObject.h" />
   </ItemGroup>
   <ItemGroup>
