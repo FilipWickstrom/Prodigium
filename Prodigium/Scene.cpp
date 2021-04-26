@@ -5,16 +5,25 @@ Scene::Scene()
 	this->currentObject = 0;
 	this->currentLight = 0;
 	this->lights = new LightObject();
+	this->lightBuffer = nullptr;
+	this->lightShaderView = nullptr;
 }
 
 Scene::~Scene()
 {
+	if (this->lightShaderView)
+		this->lightShaderView->Release();
+
+	if (this->lightBuffer)
+		this->lightBuffer->Release();
+
 	// Delete the allocated memory from vector.
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
 		delete this->objects[i];
 	}
 	delete this->lights;
+
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,

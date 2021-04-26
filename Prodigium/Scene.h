@@ -22,6 +22,11 @@ private:
 	// points to the current selected light.
 	int currentLight;
 
+	// contains information of all the lights.
+	ID3D11Buffer* lightBuffer;
+
+	ID3D11ShaderResourceView* lightShaderView;
+
 public:
 
 	Scene();

@@ -11,10 +11,7 @@ class LightObject
 private:
 
 	// Flytta till sina egna klasser
-	std::vector<Light*> lights;
-
-	// Contains the amount of lights present in the scene.
-	ID3D11Buffer* infoBuffer;
+	std::vector<LightStruct> lights;
 
 public:
 
@@ -22,9 +19,8 @@ public:
 	virtual ~LightObject();
 
 	// adds a spot light into the scene at input position, pointing towards input.
-	void AddLight(LightStruct L);
+	void AddLight(LightStruct& L);
 
-	// render any type of lighting that may exist.
-	void Render();
+	std::vector<LightStruct> GetLights() const;
 };
 

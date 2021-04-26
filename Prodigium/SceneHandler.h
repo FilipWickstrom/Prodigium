@@ -45,7 +45,4 @@ public:
 
 	// render the objects in current selected scene. if you're in Game.h dont touch this!
 	void Render();
-
-	// render the lights in the current selected scene. if you're in Game.h dont touch this!
-	void RenderLights();
 };
