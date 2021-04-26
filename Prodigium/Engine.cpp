@@ -44,7 +44,6 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
-	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 
