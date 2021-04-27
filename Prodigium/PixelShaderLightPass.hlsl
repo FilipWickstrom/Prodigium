@@ -52,18 +52,52 @@ struct PixelShaderInput
     float2 texCoord : TEXCOORD;
 };
 
+float4 doSpotlight()
+{
+    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    return color;
+}
 
+float4 doDirectional()
+{
+    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    return color;
+}
+
+float4 doPointLight()
+{
+    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    return color;
+}
 
 float4 main( PixelShaderInput input ) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
+    if (info.a == 0)
+    {
+        //Returns the texture colour for now
+        return gbuffers.normalWS;
+    }
     
     /*
     Do light calculations
     */
+    float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
+    for (int i = 0; i < info.a; i++)
+    {
+        switch (lights[i].att.w)
+        {
+            case 0:
+                lightColor += doDirectional();
+                break;
+            case 1:
+                lightColor += doPointLight();
+                break;
+            case 2:
+                lightColor += doSpotlight();
+                break;
+        }
+    }
     
-    
-    
-    //Returns the texture colour for now
-    return gbuffers.diffuseColor;
+    return saturate(lightColor) * gbuffers.diffuseColor;
 }
