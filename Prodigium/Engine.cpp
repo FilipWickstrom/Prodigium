@@ -50,6 +50,12 @@ void Engine::Render()
 
 	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
+	
+	//Right place if I can get the depthbuffer and not draw on places where depth has been used****
+	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
+	this->skyboxPass.Prepare();
+	this->skyboxPass.Clear();
+
 	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
 	Graphics::UnbindBackBuffer();
@@ -84,12 +90,17 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
+	if (!this->skyboxPass.Initialize())
+	{
+		return false;
+	}
+
 	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
 	{
 		return false;
 	}
 
-	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
+	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f }, { -XM_PI * 0.5f,0, XM_PI * 0.5f });
 
 	return true;
 }

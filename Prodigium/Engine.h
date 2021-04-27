@@ -5,6 +5,7 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
+#include "SkyboxPass.h"
 #include "InputHandler.h"
 #include "MeshObject.h"
 #include "SceneHandler.h"
@@ -15,8 +16,9 @@ private:
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
-	CameraObject gameCam;
+	SkyboxPass skyboxPass;
 
+	CameraObject gameCam;
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
 	CameraObject testCamera;	//DELETE LATER***
