@@ -52,19 +52,19 @@ struct PixelShaderInput
     float2 texCoord : TEXCOORD;
 };
 
-float4 doSpotlight()
+float4 doSpotlight(float index)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     return color;
 }
 
-float4 doDirectional()
+float4 doDirectional(float index)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     return color;
 }
 
-float4 doPointLight()
+float4 doPointLight(float index)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
     return color;
@@ -88,13 +88,13 @@ float4 main( PixelShaderInput input ) : SV_TARGET
         switch (lights[i].att.w)
         {
             case 0:
-                lightColor += doDirectional();
+                lightColor += doDirectional(i);
                 break;
             case 1:
-                lightColor += doPointLight();
+                lightColor += doPointLight(i);
                 break;
             case 2:
-                lightColor += doSpotlight();
+                lightColor += doSpotlight(i);
                 break;
         }
     }
