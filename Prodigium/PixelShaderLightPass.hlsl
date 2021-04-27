@@ -61,12 +61,38 @@ float4 doSpotlight()
 float4 doDirectional()
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	//float3 DirToLight = normalize(position.xyz - material.position.xyz); //Vektorn från objektet/materialet till ljuset
+
+		//Diffuse light calculations
+	//float NDotL = dot(DirToLight, material.normal); //Dot-produkten av objektets/materialets normal och vektorn från objektet/materialet till ljuset
+	//float3 finalColor = DirLightColor.rgb * saturate(NDotL); //Lägger till diffuse light på ljusets färg
+
+		//Specular light calculations
+	//float3 toEye = EyePosition.xyz - position; //Vektor från objektet/materialet till kameran
+	//toEye = normalize(toEye); //Normaliserar vektorn
+	//float3 halfway = normalize(toEye + DirToLight); //Vet inte vad denna är till för
+	//float NDotH = saturate(dot(halfway, material.normal)); //Dot-produkten av objektets/materialets normal och vektorn halfway
+	//finalColor += DirLightColor.rgb * pow(NDotH, material.specExp) * material.specIntensity; //Lägger till specular light på ljusets färg
+
+		//Final light calculations
+	//finalColor * material.diffuseColor.rgb; //Lägger in ljusets färg på materialet
+
     return color;
 }
 
 float4 doPointLight()
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	//float3 lightDir = normalize(input.WorldPos - LightPosition);
+
+		//Diffuse light calculations
+
+
+		//Specular light calculations
+
+
     return color;
 }
 
