@@ -51,6 +51,8 @@ public:
 	* for more information about this struct go into UsefulStructureHeader.h
 	*/
 	void AddLight(LightStruct& L);
+	void PopLight();
+	void PopAllLights();
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
 	void UpdateMatrix(DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),

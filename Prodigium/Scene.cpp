@@ -82,6 +82,12 @@ Scene::Scene()
 	this->lightShaderView = nullptr;
 	this->infoBuffer = nullptr;
 	this->firstTime = true;
+
+	LightStruct filler;
+	filler.position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	filler.direction = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	filler.attentuate = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, -1.0f);
+	lights.push_back(filler);
 }
 
 Scene::~Scene()
@@ -127,6 +133,24 @@ void Scene::AddLight(LightStruct& L)
 {
 	this->lights.push_back(L);
 	this->firstTime = true;
+}
+
+void Scene::PopLight()
+{
+	if ((int)this->lights.size() > 1)
+	{
+		this->lights.pop_back();
+		this->firstTime = true;
+	}
+}
+
+void Scene::PopAllLights()
+{
+	while((int)this->lights.size() > 1)
+	{
+		this->lights.pop_back();
+		this->firstTime = true;
+	}
 }
 
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
@@ -226,7 +250,7 @@ void Scene::Render()
 
 void Scene::RenderLights()
 {
-	if (this->lights.size() > 0)
+	if ((int)this->lights.size() > 0)
 	{
 		if (this->firstTime)
 		{
