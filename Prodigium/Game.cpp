@@ -44,6 +44,11 @@ void Game::HandleInput()
 		SceneHandle()->EditScene().AddLight(L);
 		std::cout << "Light Added!\n";
 	}
+	if (InputHandler::IsKeyPressed(Keyboard::S))
+	{
+		SceneHandle()->EditScene().PopAllLights();
+		std::cout << "Lights Removed!\n";
+	}
 	if (InputHandler::IsKeyHeld(Keyboard::E))
 	{
 		std::cout << "Holding key!\n";
