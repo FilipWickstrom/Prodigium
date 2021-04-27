@@ -40,19 +40,19 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		this->player->Move(0, 0.4f * deltaTime);
+		this->player->Move(0, 2.f * deltaTime);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
-		this->player->Move(0, -0.4f * deltaTime);
+		this->player->Move(0, -2.f * deltaTime);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::A))
 	{
-		this->player->Move(-0.4f * deltaTime, 0);
+		this->player->Move(-2.f * deltaTime, 0);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::D))
 	{
-		this->player->Move(0.4f * deltaTime, 0);
+		this->player->Move(2.f * deltaTime, 0);
 	}
 	if (InputHandler::IsLMBPressed())
 	{
@@ -60,7 +60,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE)
 	{
-		//this->player->Rotate(InputHandler::GetMouseY(), InputHandler::GetMouseX());
+		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
 }
