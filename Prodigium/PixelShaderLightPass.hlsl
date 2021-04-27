@@ -76,7 +76,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     if (info.a == 0)
     {
         //Returns the texture colour for now
-        return gbuffers.normalWS;
+        return gbuffers.diffuseColor;
     }
     
     /*
