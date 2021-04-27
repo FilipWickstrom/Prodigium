@@ -85,7 +85,10 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 void CameraObject::Move(float x, float z)
 {
 	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
+	Vector3 temp = { x,0.f,z };
+	temp.Transform(temp, rotationMatrix);
+	this->eyePos += temp;
+	//this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
 
 	//std::cout << eyePos.x << " " << eyePos.y << " " << eyePos.z << std::endl;
 	//this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, 1.f, z }, this->rotationMatrix));
@@ -95,13 +98,17 @@ void CameraObject::Move(float x, float z)
 void CameraObject::Move(float x, float y, float z)
 {
 	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos.Transform({ x,y,z }, this->rotationMatrix);
+	Vector3 temp = { x,y,z };
+	temp.Transform(temp, rotationMatrix);
+	this->eyePos += temp;
+	//this->eyePos.Transform({ x,y,z }, this->rotationMatrix);
 	//this->eyePos = XMVectorAdd(this->eyePos, XMVector3TransformCoord({ x, 1.f, z }, this->rotationMatrix));
 	this->UpdateViewMatrix();
 }
 
 void CameraObject::Rotate(float pitchAmount, float yawAmount)
 {
+	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
 	this->UpdateViewMatrix();

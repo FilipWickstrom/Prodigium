@@ -57,7 +57,7 @@ void Engine::Render()
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
-	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	if (!InputHandler::Initialize())
 	{
 		return false;
 	}
@@ -65,7 +65,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
+	InputHandler::setWindow(window.GetWindowHandler());
 	if (!Graphics::Initialize(this->window.GetWindowHandler(), width, height))
 	{
 		return false;
@@ -90,7 +90,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	//	return false;
 	//}
 
-	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
+	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 
 	return true;
 }

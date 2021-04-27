@@ -21,12 +21,14 @@ private:
 
 public:
 	DELETE_COPY_ASSIGNMENT(InputHandler);
-	static bool Initialize(const HWND& windowHandle);
+	static bool Initialize();
+	static void setWindow(const HWND& windowHandle);
 	static int GetMouseX();
 	static int GetMouseY();
 	static void UpdateKeyboardAndMouse();
 	static Keyboard::KeyboardStateTracker* GetKBStateTracker();
 	static Mouse::ButtonStateTracker* getMouseStateTracker();
+	static Mouse::Mode getMouseMode();
 	static bool IsKeyPressed(Keyboard::Keys key);
 	static bool IsKeyHeld(Keyboard::Keys key);
 	static bool IsLMBPressed();

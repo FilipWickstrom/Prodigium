@@ -38,23 +38,31 @@ void Game::HandleInput(const float& deltaTime)
 		this->running = false;
 	}
 
-	if (InputHandler::IsKeyPressed(Keyboard::W))
-	{
-		//std::cout << "Hello!\n";
-	}
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		//std::cout << "Holding key!\n";
 		this->player->Move(0, 0.4f * deltaTime);
-	}	
+	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
 		this->player->Move(0, -0.4f * deltaTime);
+	}
+	if (InputHandler::IsKeyHeld(Keyboard::A))
+	{
+		this->player->Move(-0.4f * deltaTime, 0);
+	}
+	if (InputHandler::IsKeyHeld(Keyboard::D))
+	{
+		this->player->Move(0.4f * deltaTime, 0);
 	}
 	if (InputHandler::IsLMBPressed())
 	{
 		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
 	}
+	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE)
+	{
+		//this->player->Rotate(InputHandler::GetMouseY(), InputHandler::GetMouseX());
+	}
+
 }
 
 bool Game::OnFrame(const float& deltaTime)

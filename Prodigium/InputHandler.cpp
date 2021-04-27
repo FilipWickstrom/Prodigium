@@ -15,7 +15,7 @@ InputHandler::~InputHandler()
 	}
 }
 
-bool InputHandler::Initialize(const HWND& windowHandle)
+bool InputHandler::Initialize()
 {
 	if (!InputHandler::instance)
 	{
@@ -23,8 +23,6 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 		InputHandler::instance->keyboard = std::make_unique<DirectX::Keyboard>();
 		InputHandler::instance->kBTracker = std::make_unique<Keyboard::KeyboardStateTracker>();
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
-		InputHandler::instance->mouse->SetWindow(windowHandle);
-		InputHandler::instance->mouse->SetMode(Mouse::MODE_ABSOLUTE);
 		InputHandler::instance->mouseTracker = std::make_unique<Mouse::ButtonStateTracker>();
 		
 	}
@@ -34,6 +32,12 @@ bool InputHandler::Initialize(const HWND& windowHandle)
 	}
 	return true;
 	
+}
+
+void InputHandler::setWindow(const HWND& windowHandle)
+{
+	InputHandler::instance->mouse->SetWindow(windowHandle);
+	InputHandler::instance->mouse->SetMode(Mouse::MODE_RELATIVE);
 }
 
 int InputHandler::GetMouseX()
@@ -63,6 +67,11 @@ Keyboard::KeyboardStateTracker* InputHandler::GetKBStateTracker()
 Mouse::ButtonStateTracker* InputHandler::getMouseStateTracker()
 {
 	return InputHandler::instance->mouseTracker.get();
+}
+
+Mouse::Mode InputHandler::getMouseMode()
+{
+	return InputHandler::instance->mouseState.positionMode;
 }
 
 bool InputHandler::IsKeyPressed(Keyboard::Keys key)
@@ -139,6 +148,9 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		// Tell calling thread to terminate
 		PostQuitMessage(0);
 		InputHandler::instance->isRunning = false;
+		break;
+	case WM_INPUT:
+		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
 		break;
 	case WM_KEYDOWN:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);

@@ -21,3 +21,8 @@ void Player::Move(float x, float z)
 {
 	this->playerCam.Move(x, z);
 }
+
+void Player::Rotate(const float& pitch, const float& yaw)
+{
+	this->playerCam.Rotate(pitch, yaw);
+}
