@@ -63,7 +63,14 @@ bool Scene::SetupInfoBuffer()
 
 bool Scene::UpdateInfoBuffer()
 {
-	return false;
+	InfoStruct newInfo;
+	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)lights.size(), (float)lights.size(), (float)lights.size());
+	D3D11_MAPPED_SUBRESOURCE submap;
+	HRESULT hr;
+	hr = Graphics::GetContext()->Map(this->infoBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &newInfo, sizeof(DirectX::XMFLOAT4X4));
+	Graphics::GetContext()->Unmap(this->infoBuffer, 0);
+	return !FAILED(hr);
 }
 
 Scene::Scene()
@@ -225,8 +232,18 @@ void Scene::RenderLights()
 			this->firstTime = false;
 			if (!this->SetupLightBuffer())
 			{
+#ifdef _DEBUG
 				std::cout << "Error making light" << "\n";
+#endif
 				return;
+			}
+			else
+			{
+				/*
+				* If new light setup did not fail we update the info buffer also 
+				* sent to GPU.
+				*/
+				this->UpdateInfoBuffer();
 			}
 		}
 
