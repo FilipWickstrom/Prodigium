@@ -72,15 +72,15 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 	return true;
 }
 
-Matrix CameraObject::GetViewMatrix() const
-{
-	return this->viewProjMatrix.viewMatrix;
-}
+//Matrix CameraObject::GetViewMatrix() const
+//{
+//	return this->viewProjMatrix.viewMatrix;
+//}
 
-Matrix CameraObject::GetProjectionMatrix() const
-{
-	return this->viewProjMatrix.projectionMatrix;
-}
+//Matrix CameraObject::GetProjectionMatrix() const
+//{
+//	return this->viewProjMatrix.projectionMatrix;
+//}
 
 void CameraObject::Move(float x, float z)
 {
@@ -118,6 +118,11 @@ Vector3 CameraObject::getPos() const
 	return this->eyePos;
 }
 
+void CameraObject::Bind()
+{
+	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);
+}
+
 void CameraObject::Update()
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
@@ -125,10 +130,9 @@ void CameraObject::Update()
 	Graphics::GetContext()->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	memcpy(mappedResource.pData, &viewProjMatrix, sizeof(viewProjMatrix));
 	Graphics::GetContext()->Unmap(matrixBuffer, 0);
-
 }
 
-ID3D11Buffer*& CameraObject::GetViewProjMatrix()
-{
-	return this->matrixBuffer;
-}
+//ID3D11Buffer*& CameraObject::GetViewProjMatrix()
+//{
+//	return this->matrixBuffer;
+//}
