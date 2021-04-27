@@ -54,6 +54,10 @@ struct TextureRenderTargets
 /*
 * Use this structure when making a new light. It containts three 
 * XMFLOAT4 used for position, direction and attenuation.
+* --LightTypes--
+* 0 = Directional Light.
+* 1 = Point Light.
+* 2 = Spot Light.
 */
 struct LightStruct
 {
