@@ -13,5 +13,6 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Update();
+	void Update(const float& deltaTime);
+	void Move(float x, float z);
 };
