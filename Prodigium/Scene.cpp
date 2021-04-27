@@ -51,10 +51,10 @@ bool Scene::SetupInfoBuffer()
 	HRESULT hr;
 	// Description for the info buffer containing amount of lights.
 	D3D11_BUFFER_DESC infoDesc;
-	infoDesc.Usage = D3D11_USAGE_DEFAULT;
+	infoDesc.Usage = D3D11_USAGE_DYNAMIC;
 	infoDesc.ByteWidth = sizeof(InfoStruct);
 	infoDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	infoDesc.CPUAccessFlags = 0;
+	infoDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	infoDesc.MiscFlags = 0;
 
 	hr = Graphics::GetDevice()->CreateBuffer(&infoDesc, NULL, &this->infoBuffer);
@@ -65,10 +65,11 @@ bool Scene::UpdateInfoBuffer()
 {
 	InfoStruct newInfo;
 	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)lights.size(), (float)lights.size(), (float)lights.size());
+
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
 	hr = Graphics::GetContext()->Map(this->infoBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
-	memcpy(submap.pData, &newInfo, sizeof(DirectX::XMFLOAT4X4));
+	memcpy(submap.pData, &newInfo, sizeof(DirectX::XMFLOAT4));
 	Graphics::GetContext()->Unmap(this->infoBuffer, 0);
 	return !FAILED(hr);
 }

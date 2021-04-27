@@ -37,7 +37,12 @@ void Game::HandleInput()
 	
 	if (InputHandler::IsKeyPressed(Keyboard::W))
 	{
-		std::cout << "Hello!\n";
+		LightStruct L;
+		L.position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+		L.attentuate = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+		L.direction = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+		SceneHandle()->EditScene().AddLight(L);
+		std::cout << "Light Added!\n";
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::E))
 	{
