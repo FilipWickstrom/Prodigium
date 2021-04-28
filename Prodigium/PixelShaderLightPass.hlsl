@@ -99,7 +99,7 @@ float4 doPointLight(float index)
 float4 main( PixelShaderInput input ) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
-    if (info.a == 0)
+    if (info.a == 1)
     {
         //Returns the texture colour for now
         return gbuffers.diffuseColor;
@@ -109,10 +109,11 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     Do light calculations
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
-    for (int i = 0; i < info.a; i++)
+    for (int i = 1; i < info.a; i++)
     {
         switch (lights[i].att.w)
         {
+            // break; might close down the loop? switch to continue; maybe
             case 0:
                 lightColor += doDirectional(i);
                 break;
@@ -121,6 +122,8 @@ float4 main( PixelShaderInput input ) : SV_TARGET
                 break;
             case 2:
                 lightColor += doSpotlight(i);
+                break;
+            default:
                 break;
         }
     }
