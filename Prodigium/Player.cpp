@@ -10,7 +10,7 @@ Player::Player()
 	this->speed = 5.f;
 	this->playerModel = new MeshObject();
 	this->playerModel->Initialize("LowPoly_Character.obj", "", "", position);
-	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, XM_PI * 0.5f, position + cameraOffset, cameraForward);
+	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, position + cameraOffset, cameraForward);
 }
 
 Player::~Player()
