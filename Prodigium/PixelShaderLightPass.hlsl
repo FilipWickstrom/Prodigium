@@ -54,9 +54,6 @@ struct PixelShaderInput
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-    float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
-    float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
     float3 lightVector = lights[index].position - buff.positionWS;
     float d = length(lightVector);
     
@@ -66,6 +63,9 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         lightVector /= d;
         float diffuse = dot(lightVector, normals);
         
+        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+        float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
+        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
         [flatten]
         if (diffuse > 0.0f)
         {
@@ -169,7 +169,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     // If no lighting is reaching the pixel then apply default ambient lighting.
     if (lightColor.x <= 0)
     {
-        lightColor = gbuffers.diffuseColor * ambient;
+        return gbuffers.diffuseColor * ambient;
     }
     
     return saturate(lightColor) * gbuffers.diffuseColor + saturate(specular);

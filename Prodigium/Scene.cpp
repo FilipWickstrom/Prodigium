@@ -146,6 +146,9 @@ void Scene::PopLight()
 
 void Scene::PopAllLights()
 {
+#ifdef _DEBUG
+	std::cout << "Number of Lights removed: " << (int)this->lights.size() - 1 << "\n";
+#endif
 	while((int)this->lights.size() > 1)
 	{
 		this->lights.pop_back();
