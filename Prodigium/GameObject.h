@@ -24,10 +24,15 @@ public:
 
 	bool BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot);
 	bool UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot);
+	bool UpdateMatrix();
 
 	DirectX::XMFLOAT3 GetPosition() const;
 	DirectX::XMFLOAT3 GetScale() const;
 	DirectX::XMFLOAT3 GetRotation() const;
+
+	void SetPosition(DirectX::XMFLOAT3 newPos);
+	void SetScale(DirectX::XMFLOAT3 newScale);
+	void SetRotation(DirectX::XMFLOAT3 newRotation);
 
 	// Returns the float4x4 of the modelMatrix.
 	DirectX::XMFLOAT4X4 GetModelMatrix() const;

@@ -34,6 +34,15 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 }
 
+void Scene::Add(MeshObject* object)
+{
+	if (object != nullptr)
+	{
+		this->objects.push_back(object);
+		this->currentObject = (int)objects.size() - 1;
+	}
+}
+
 void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
 {
 	/*

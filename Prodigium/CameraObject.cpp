@@ -5,7 +5,7 @@ void CameraObject::UpdateViewMatrix()
 	this->targetPos = this->targetPos.Transform(defaultForward, rotationMatrix);
 	this->targetPos += this->eyePos;
 	this->upDir = this->upDir.Transform(defaultUp, rotationMatrix);
-	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
+	this->viewProjMatrix.viewMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(this->eyePos, this->targetPos, this->upDir));
 }
 
 CameraObject::CameraObject()
@@ -41,9 +41,8 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 	this->fieldOfView = fov;
 	this->aspectRatio = float(windowWidth) / float(windowHeight);
 	this->upDir = { 0.f,1.f,0.f };
-	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookAtLH(eyePos, targetPos, upDir));
-	//this->viewProjMatrix.viewMatrix.Transpose();
-	this->viewProjMatrix.projectionMatrix = XMMatrixTranspose(XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
+	this->viewProjMatrix.viewMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(eyePos, targetPos, upDir));
+	this->viewProjMatrix.projectionMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
 
 
 	D3D11_BUFFER_DESC buffDesc = {};
@@ -70,8 +69,6 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 void CameraObject::Move(float x, float z)
 {
 	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-
-
 	this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
 
 	this->UpdateViewMatrix();
@@ -80,18 +77,16 @@ void CameraObject::Move(float x, float z)
 void CameraObject::Move(float x, float y, float z)
 {
 	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	Vector3 temp = { x,y,z };
-	temp.Transform(temp, rotationMatrix);
-	this->eyePos += temp;
+	this->eyePos += eyePos.Transform({ x, y, z }, rotationMatrix);
 
 	this->UpdateViewMatrix();
 }
 
 void CameraObject::Rotate(float pitchAmount, float yawAmount)
 {
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
+	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->UpdateViewMatrix();
 }
 

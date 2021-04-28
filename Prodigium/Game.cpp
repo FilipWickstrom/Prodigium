@@ -67,8 +67,15 @@ void Game::HandleInput(const float& deltaTime)
 
 bool Game::OnFrame(const float& deltaTime)
 {
+	// Game loop
+	// 1. Handle all inputs
+	// 2. Update the game assets and logic
+	// 3. Render
+
 	HandleInput(deltaTime);
+
 	player->Update(deltaTime);
+
 	Engine::ClearDisplay();
 	Engine::Render();
 
@@ -78,6 +85,7 @@ bool Game::OnFrame(const float& deltaTime)
 bool Game::OnStart()
 {
 	this->player = new Player();
+	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
 
 	return true;
 }
