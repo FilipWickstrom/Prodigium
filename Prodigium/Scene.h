@@ -2,7 +2,6 @@
 #include <d3d11.h>
 #include <vector>
 #include <string>
-#include <DirectXMath.h>
 #include "MeshObject.h"
 
 class Scene
@@ -21,7 +20,7 @@ public:
 
 	// adds an object to the scene, current selected object will point towards this new object.
 	void Add(std::string objFile, std::string diffuseTxt = "", std::string normalTxt = "", 
-			XMFLOAT3 position = {0.0f, 0.0f, 0.0f}, XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f}, XMFLOAT3 scale = {1.0f, 1.0f, 1.0f});
+		DirectX::XMFLOAT3 position = {0.0f, 0.0f, 0.0f}, DirectX::XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f}, DirectX::XMFLOAT3 scale = {1.0f, 1.0f, 1.0f});
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);

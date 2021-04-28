@@ -58,9 +58,17 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
 	}
+	if (InputHandler::IsKeyPressed(Keyboard::E))
+	{
+		this->player->Rotate(0.f, DirectX::XM_PI / 8);
+	}
+	if (InputHandler::IsKeyPressed(Keyboard::T))
+	{
+		this->player->Rotate( DirectX::XM_PI / 8, 0.f);
+	}
 	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE)
 	{
-		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
+		//this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
 }

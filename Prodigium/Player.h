@@ -9,6 +9,9 @@ private:
 	float speed;
 	CameraObject playerCam;
 	MeshObject* playerModel;
+	DirectX::SimpleMath::Vector3 cameraDistance;
+	DirectX::SimpleMath::Vector3 forwardVector;
+	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
 
 public:
 	Player();

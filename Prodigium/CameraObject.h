@@ -20,6 +20,7 @@ private:
 	DirectX::SimpleMath::Vector3 targetPos;
 	DirectX::SimpleMath::Vector3 upDir;
 	DirectX::SimpleMath::Matrix rotationMatrix;
+	DirectX::SimpleMath::Vector3 forwardVector;
 	float pitch, yaw, roll;
 	float fieldOfView;
 	float aspectRatio;
@@ -34,8 +35,13 @@ public:
 
 	void Move(float x, float z);
 	void Move(float x, float y, float z);
+	void Move(DirectX::SimpleMath::Vector3 translation);
 	void Rotate(float pitchAmount, float yawAmount);
 	void SetPosition(float xPos, float yPos);
+	void SetPosition(float xPos, float yPos, float zPos);
+	void SetPosition(DirectX::SimpleMath::Vector3 newPos);
+	void SetRotation(float roll, float pitch, float yaw);
+	DirectX::SimpleMath::Vector3 GetForward() const;
 	DirectX::SimpleMath::Vector3 getPos() const;
 	void Bind();
 	void Update();
