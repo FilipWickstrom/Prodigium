@@ -35,7 +35,7 @@ public:
 	void SetRotation(DirectX::XMFLOAT3 newRotation);
 
 	// Returns the float4x4 of the modelMatrix.
-	DirectX::XMFLOAT4X4 GetModelMatrix() const;
+	const DirectX::XMFLOAT4X4& GetModelMatrix();
 
 	// Returns the transposed XMMATRIX of modelMatrix.
 	DirectX::XMMATRIX GetTransposedMatrix() const;

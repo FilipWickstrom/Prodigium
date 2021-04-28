@@ -64,13 +64,19 @@ bool GameObject::UpdateMatrix()
 	DirectX::XMFLOAT3 scl = this->scale;
 	DirectX::XMFLOAT3 rot = this->rotation;
 
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)));
+	DirectX::XMMATRIX XMtransformedCPU = DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+	DirectX::XMMATRIX XMtransformedGPU = DirectX::XMMatrixTranspose(XMtransformedCPU);
+	
+	DirectX::XMStoreFloat4x4(&this->modelMatrix, XMtransformedCPU);
+	DirectX::XMFLOAT4X4 transformedGPU;
+	DirectX::XMStoreFloat4x4(&transformedGPU, XMtransformedGPU);
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
 	hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
-	memcpy(submap.pData, &this->modelMatrix, sizeof(DirectX::XMFLOAT4X4));
+	memcpy(submap.pData, &transformedGPU, sizeof(DirectX::XMFLOAT4X4));
 	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
 
 	if (FAILED(hr))
@@ -111,7 +117,7 @@ void GameObject::SetRotation(DirectX::XMFLOAT3 newRotation)
 	this->rotation = newRotation;
 }
 
-DirectX::XMFLOAT4X4 GameObject::GetModelMatrix() const
+const DirectX::XMFLOAT4X4& GameObject::GetModelMatrix()
 {
 	return this->modelMatrix;
 }
