@@ -52,10 +52,47 @@ struct PixelShaderInput
     float2 texCoord : TEXCOORD;
 };
 
-float4 doSpotlight(float index)
+float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    return color;
+    float3 lightVector = lights[index].position - buff.positionWS;
+    float d = length(lightVector);
+    
+    if (d <= lights[index].position.w)
+    {
+        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+        lightVector /= d;
+        float diffuse = dot(lightVector, normals);
+        
+        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+        float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
+        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+        [flatten]
+        if (diffuse > 0.0f)
+        {
+            float3 reflection = reflect(-lightVector, normals);
+            // --change to camera pos--
+            float3 toEye = float4(0, 0, 0, 0) - buff.positionWS;
+            toEye = normalize(toEye);
+            float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
+
+            diff = diff * diffuse;
+            spec = spec * specular;
+        }
+        
+        float3 direction = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
+
+        float spot = pow(max(dot(-lightVector, direction), 0.0f), 1.0f);
+
+        float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
+        d, d * d));
+
+        s += spec;
+        return (amb + diff);
+    }
+    else
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
 
 float4 doDirectional(float index)
@@ -117,7 +154,7 @@ float4 doPointLight(float index, GBuffers buff)
 float4 main( PixelShaderInput input ) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
-    if (info.a == 0)
+    if (info.a == 1)
     {
         //Returns the texture colour for now
         return gbuffers.diffuseColor;
@@ -127,7 +164,9 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     Do light calculations
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
-    for (int i = 0; i < info.a; i++)
+    float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
+    float4 ambient = float4(0.5f, 0.5f, 0.5f, 0.5f);
+    for (int i = 1; i < info.a; i++)
     {
         switch (lights[i].att.w)
         {
@@ -138,10 +177,18 @@ float4 main( PixelShaderInput input ) : SV_TARGET
                 lightColor += doPointLight(i, gbuffers);
                 break;
             case 2:
-                lightColor += doSpotlight(i);
+                lightColor += doSpotlight(i, gbuffers, specular);
+                break;
+            default:
                 break;
         }
     }
     
-    return saturate(lightColor) * gbuffers.diffuseColor;
+    // If no lighting is reaching the pixel then apply default ambient lighting.
+    if (lightColor.x <= 0)
+    {
+        return gbuffers.diffuseColor * ambient;
+    }
+    
+    return saturate(lightColor) * gbuffers.diffuseColor + saturate(specular);
 }

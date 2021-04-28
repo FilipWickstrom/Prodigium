@@ -93,7 +93,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 
 	this->sceneHandler.AddScene();
 
-	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
+	this->sceneHandler.EditScene().Add("terrain_flat.obj", "mask_albedo.png", "", { 0.0f, -10.0f, 10.0f });
 
 	return true;
 }
