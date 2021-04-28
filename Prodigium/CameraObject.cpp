@@ -23,7 +23,6 @@ CameraObject::CameraObject()
 	this->pitch = 0.f;
 	this->yaw = 0.f;
 	this->roll = 0.f;
-	this->forwardVector = {};
 	this->matrixBuffer = nullptr;
 }
 
@@ -78,16 +77,16 @@ void CameraObject::Move(float x, float z)
 	this->UpdateViewMatrix();
 }
 
-void CameraObject::Move(float x, float y, float z, XMFLOAT3 lookAt)
-{
-	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos += eyePos.Transform({ x, y, z }, rotationMatrix);
-	this->targetPos = lookAt;
-	this->camForward = this->eyePos - this->targetPos;
-	this->camForward.Normalize();
-
-	this->UpdateViewMatrix();
-}
+//void CameraObject::Move(float x, float y, float z, XMFLOAT3 lookAt)
+//{
+//	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+//	this->eyePos += eyePos.Transform({ x, y, z }, rotationMatrix);
+//	this->targetPos = lookAt;
+//	this->camForward = this->eyePos - this->targetPos;
+//	this->camForward.Normalize();
+//
+//	this->UpdateViewMatrix();
+//}
 
 void CameraObject::Move(DirectX::SimpleMath::Vector3 translation)
 {
@@ -132,24 +131,19 @@ void CameraObject::SetRotation(float roll, float pitch, float yaw)
 	this->UpdateViewMatrix();
 }
 
-Vector3 CameraObject::GetForward() const
-{
-	return this->forwardVector;
-}
-
 Vector3 CameraObject::getPos() const
 {
 	return this->eyePos;
 }
 
-void CameraObject::SetPosition(Vector3 newPos, Vector3 lookAt)
-{
-	this->eyePos = newPos;
-	this->targetPos = lookAt;
-	this->camForward = (this->eyePos - this->targetPos);
-	this->camForward.Normalize();
-	this->UpdateViewMatrix();
-}
+//void CameraObject::SetPosition(Vector3 newPos, Vector3 lookAt)
+//{
+//	this->eyePos = newPos;
+//	this->targetPos = lookAt;
+//	this->camForward = (this->eyePos - this->targetPos);
+//	this->camForward.Normalize();
+//	this->UpdateViewMatrix();
+//}
 
 void CameraObject::BindCameraToPipeline()
 {

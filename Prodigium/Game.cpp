@@ -68,7 +68,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE)
 	{
-		//this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
+		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
 }
