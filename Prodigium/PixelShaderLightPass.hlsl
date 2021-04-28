@@ -81,7 +81,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         
         float3 direction = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
 
-        float spot = pow(max(dot(-lightVector, direction), 0.0f), 1.0f);
+        float spot = pow(max(dot(-lightVector, direction), 0.0f), lights[index].direction.w);
 
         float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
         d, d * d));
@@ -136,10 +136,12 @@ float4 doPointLight(float index)
 float4 main( PixelShaderInput input ) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
+    float4 ambient = float4(0.5f, 0.5f, 0.5f, 0.5f);
+    
+    // This is for if no lights are present in the scene.
     if (info.a == 1)
     {
-        //Returns the texture colour for now
-        return gbuffers.diffuseColor;
+        return gbuffers.diffuseColor * ambient;
     }
     
     /*
@@ -147,7 +149,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
     float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
-    float4 ambient = float4(0.5f, 0.5f, 0.5f, 0.5f);
+    
     for (int i = 1; i < info.a; i++)
     {
         switch (lights[i].att.w)
