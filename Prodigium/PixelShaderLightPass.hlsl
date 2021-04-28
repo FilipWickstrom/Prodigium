@@ -52,10 +52,46 @@ struct PixelShaderInput
     float2 texCoord : TEXCOORD;
 };
 
-float4 doSpotlight(float index)
+float4 doSpotlight(float index, GBuffers buff)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    return color;
+    float4 diff = float4(0.5f, 0.5f, 0.5f, 0.5f);
+    float4 spec = float4(0.2f, 0.2f, 0.2f, 0.2f);
+    float4 amb = float4(0.1f, 0.1f, 0.1f, 0.1f);
+    float3 lightVector = lights[index].position - buff.positionWS;
+    float d = length(lightVector);
+    
+    if (d <= lights[index].position.w)
+    {
+        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+        lightVector /= d;
+        float diffuse = dot(lightVector, normals);
+        
+        if (diffuse > 0.0f)
+        {
+            float3 reflection = reflect(-lightVector, normals);
+            // --change to camera pos--
+            float3 toEye = float4(0, 0, 0, 0) - buff.positionWS;
+            toEye = normalize(toEye);
+            float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
+
+            diff = diff * diffuse;
+            spec = spec * specular;
+        }
+        
+        float3 direction = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
+
+        float spot = pow(max(dot(-lightVector, direction), 0.0f), 1.0f);
+
+        float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
+        d, d * d));
+
+        return buff.diffuseColor * (amb + diff) + spec;
+    }
+    else
+    {
+        return buff.diffuseColor * amb;
+    }
 }
 
 float4 doDirectional(float index)
@@ -121,12 +157,12 @@ float4 main( PixelShaderInput input ) : SV_TARGET
                 lightColor += doPointLight(i);
                 break;
             case 2:
-                lightColor += doSpotlight(i);
+                lightColor += doSpotlight(i, gbuffers);
                 break;
             default:
                 break;
         }
     }
     
-    return saturate(lightColor) * gbuffers.diffuseColor;
+    return saturate(lightColor);
 }
