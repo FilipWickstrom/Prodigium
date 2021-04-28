@@ -62,7 +62,7 @@ float4 doDirectional(float index)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//float3 DirToLight = normalize(position.xyz - material.position.xyz); //Vektorn från objektet/materialet till ljuset
+	//float3 DirToLight = normalize(lights[index].position.xyz - material.position.xyz); //Vektorn från objektet/materialet till ljuset
 
 		//Diffuse light calculations
 	//float NDotL = dot(DirToLight, material.normal); //Dot-produkten av objektets/materialets normal och vektorn från objektet/materialet till ljuset
@@ -81,17 +81,35 @@ float4 doDirectional(float index)
     return color;
 }
 
-float4 doPointLight(float index)
+float4 doPointLight(float index, GBuffers buff)
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//float3 lightDir = normalize(input.WorldPos - LightPosition);
+	float3 vecToLight = normalize(lights[index].position.xyz - buff.positionWS.xyz);
+    float distance = length(vecToLight);
 
+   if(distance > lights[index].position.w)
+    {
+        color = ambient; //ambient är materialets färg
+        return color;
+    }
+ 
 		//Diffuse light calculations
+    
+    //float intensity = dot(vecToLight, normal);
+    //float4 diffuse = materialCol * lightCol * intensity;
 
+    //color += diffuse;
 
 		//Specular light calculations
+    
+    //float4 toEye = normalize(EyePosition - position);
+    //float4 reflection = normalize(2 * dot(normal, vecToLight) * normal - vecToLight);
 
+    //float4 specular = lightCol * pow(max(dot(reflection, toEye), 0), shininess); //Shininess är hur reflektivt materialet är
+
+    //color += specular;
 
     return color;
 }
@@ -117,7 +135,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
                 lightColor += doDirectional(i);
                 break;
             case 1:
-                lightColor += doPointLight(i);
+                lightColor += doPointLight(i, gbuffers);
                 break;
             case 2:
                 lightColor += doSpotlight(i);
