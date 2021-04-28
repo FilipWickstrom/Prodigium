@@ -52,12 +52,11 @@ struct PixelShaderInput
     float2 texCoord : TEXCOORD;
 };
 
-float4 doSpotlight(float index, GBuffers buff)
+float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 diff = float4(0.5f, 0.5f, 0.5f, 0.5f);
-    float4 spec = float4(0.2f, 0.2f, 0.2f, 0.2f);
-    float4 amb = float4(0.1f, 0.1f, 0.1f, 0.1f);
+    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+    float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
+    float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
     float3 lightVector = lights[index].position - buff.positionWS;
     float d = length(lightVector);
     
@@ -67,6 +66,7 @@ float4 doSpotlight(float index, GBuffers buff)
         lightVector /= d;
         float diffuse = dot(lightVector, normals);
         
+        [flatten]
         if (diffuse > 0.0f)
         {
             float3 reflection = reflect(-lightVector, normals);
@@ -86,11 +86,12 @@ float4 doSpotlight(float index, GBuffers buff)
         float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
         d, d * d));
 
-        return buff.diffuseColor * (amb + diff) + spec;
+        s += spec;
+        return (amb + diff);
     }
     else
     {
-        return buff.diffuseColor * amb;
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 }
 
@@ -145,11 +146,12 @@ float4 main( PixelShaderInput input ) : SV_TARGET
     Do light calculations
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
+    float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
+    float4 ambient = float4(0.5f, 0.5f, 0.5f, 0.5f);
     for (int i = 1; i < info.a; i++)
     {
         switch (lights[i].att.w)
         {
-            // break; might close down the loop? switch to continue; maybe
             case 0:
                 lightColor += doDirectional(i);
                 break;
@@ -157,12 +159,18 @@ float4 main( PixelShaderInput input ) : SV_TARGET
                 lightColor += doPointLight(i);
                 break;
             case 2:
-                lightColor += doSpotlight(i, gbuffers);
+                lightColor += doSpotlight(i, gbuffers, specular);
                 break;
             default:
                 break;
         }
     }
     
-    return saturate(lightColor);
+    // If no lighting is reaching the pixel then apply default ambient lighting.
+    if (lightColor.x <= 0)
+    {
+        lightColor = gbuffers.diffuseColor * ambient;
+    }
+    
+    return saturate(lightColor) * gbuffers.diffuseColor + saturate(specular);
 }
