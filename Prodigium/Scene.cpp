@@ -15,7 +15,7 @@ Scene::~Scene()
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
-	XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale)	
+	DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
 {
 	/*
 		Create a new MeshObject from input.

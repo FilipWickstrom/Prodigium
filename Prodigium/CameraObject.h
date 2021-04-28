@@ -35,10 +35,14 @@ public:
 	virtual ~CameraObject();
 	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, const DirectX::SimpleMath::Vector3& eyePosition, const DirectX::SimpleMath::Vector3& lookTo);
 	void Move(float x, float z);
-	void Move(float x, float y, float z, XMFLOAT3 lookAt);
+	void Move(float x, float y, float z);
+	void Move(DirectX::SimpleMath::Vector3 translation);
 	void Rotate(float pitchAmount, float yawAmount);
 	void SetPosition(float xPos, float yPos);
-	void SetPosition(DirectX::SimpleMath::Vector3 newPos, DirectX::SimpleMath::Vector3 lookAt);
+	void SetPosition(float xPos, float yPos, float zPos);
+	void SetPosition(DirectX::SimpleMath::Vector3 newPos);
+	void SetRotation(float roll, float pitch, float yaw);
+	DirectX::SimpleMath::Vector3 GetForward() const;
 	DirectX::SimpleMath::Vector3 getPos() const;
 	void Update();
 	void SetTransform(const DirectX::SimpleMath::Matrix& transform);

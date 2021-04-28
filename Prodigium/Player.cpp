@@ -1,5 +1,4 @@
 #include "Player.h"
-
 using namespace DirectX::SimpleMath;
 
 Player::Player()

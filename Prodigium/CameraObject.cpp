@@ -23,6 +23,7 @@ CameraObject::CameraObject()
 	this->pitch = 0.f;
 	this->yaw = 0.f;
 	this->roll = 0.f;
+	this->forwardVector = {};
 	this->matrixBuffer = nullptr;
 }
 
@@ -88,6 +89,14 @@ void CameraObject::Move(float x, float y, float z, XMFLOAT3 lookAt)
 	this->UpdateViewMatrix();
 }
 
+void CameraObject::Move(DirectX::SimpleMath::Vector3 translation)
+{
+	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->eyePos += eyePos.Transform(translation, rotationMatrix);
+
+	this->UpdateViewMatrix();
+}
+
 void CameraObject::Rotate(float pitchAmount, float yawAmount)
 {
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
@@ -100,6 +109,32 @@ void CameraObject::SetPosition(float xPos, float yPos)
 {
 	this->eyePos = { xPos,yPos, 1.f };
 	this->UpdateViewMatrix();
+}
+
+void CameraObject::SetPosition(float xPos, float yPos, float zPos)
+{
+	this->eyePos = { xPos,yPos, zPos };
+	this->UpdateViewMatrix();
+}
+
+void CameraObject::SetPosition(Vector3 newPos)
+{
+	this->eyePos = newPos;
+	this->UpdateViewMatrix();
+}
+
+void CameraObject::SetRotation(float roll, float pitch, float yaw)
+{
+	this->roll = roll;
+	this->pitch = pitch;
+	this->yaw = yaw;
+	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->UpdateViewMatrix();
+}
+
+Vector3 CameraObject::GetForward() const
+{
+	return this->forwardVector;
 }
 
 Vector3 CameraObject::getPos() const

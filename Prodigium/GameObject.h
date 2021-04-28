@@ -1,8 +1,7 @@
 #pragma once
 #include <d3d11.h>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
 #include "Graphics.h"
-using namespace DirectX;
 class GameObject
 {
 private:

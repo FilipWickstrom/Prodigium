@@ -29,7 +29,7 @@ MeshObject::~MeshObject()
     }
 }
 
-bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, XMFLOAT3 pos, XMFLOAT3 rot, XMFLOAT3 scl)
+bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rot, DirectX::XMFLOAT3 scl)
 {
     //Get the mesh from the resource manager if it exist or creates a new mesh
     this->mesh = ResourceManager::GetMesh(meshObject);
