@@ -77,4 +77,6 @@ public:
 	virtual void Clear() override;
 
 	virtual void Prepare() override;
+
+	ID3D11DepthStencilView*& GetDepthStencilView();
 };

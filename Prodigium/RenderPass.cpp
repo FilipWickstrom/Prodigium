@@ -295,21 +295,26 @@ void GeometryPass::Prepare()
 		float color[4];
 
 		// Red
-		color[0] = 0.25;
+		color[0] = 0.0f;
 
 		// Green
-		color[1] = 0.25;
+		color[1] = 0.0f;
 
 		// Blue
-		color[2] = 1;
+		color[2] = 0.0f;
 
 		// Alpha
-		color[3] = 0.75;
+		color[3] = 0.0f;
 
 		Graphics::GetContext()->ClearRenderTargetView(gBuffer.renderTargets[i], color);
 	}
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
+}
+
+ID3D11DepthStencilView*& GeometryPass::GetDepthStencilView()
+{
+	return this->depthStencilView;
 }
 
 bool LightPass::LoadShaders()
