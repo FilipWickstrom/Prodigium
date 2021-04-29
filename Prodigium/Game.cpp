@@ -28,9 +28,10 @@ bool Game::IsRunning() const
 void Game::HandleInput(const float& deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
-
 	//Updates the keyboard and mouse with new info about their current state.
 	InputHandler::UpdateKeyboardAndMouse();
+
+	DirectX::SimpleMath::Vector3 direction(0.f, 0.f, 0.f);
 
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
@@ -40,19 +41,19 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		this->player->Move(0, 2.f * deltaTime);
+		direction.z += 1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
-		this->player->Move(0, -2.f * deltaTime);
+		direction.z += -1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::A))
 	{
-		this->player->Move(-2.f * deltaTime, 0);
+		direction.x += -1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::D))
 	{
-		this->player->Move(2.f * deltaTime, 0);
+		direction.x += 1.f;
 	}
 	if (InputHandler::IsLMBPressed())
 	{
@@ -71,6 +72,7 @@ void Game::HandleInput(const float& deltaTime)
 		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
+	this->player->Move(direction, deltaTime);
 }
 
 bool Game::OnFrame(const float& deltaTime)
