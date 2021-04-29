@@ -7,9 +7,10 @@ Player::Player()
 	Vector3 cameraOffset(0.0f, 2.5f, -8.f);
 	Vector3 cameraForward = position - cameraOffset;
 	cameraForward.Normalize();
-	this->speed = 5.f;
+	this->speed = 10.f;
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("cube.obj", "", "", position);
+	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Normal.jpg", "", position);
+	this->playerModel->SetRotation({ 0, DirectX::XM_PI, 0 });
 	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, position + cameraOffset, cameraForward);
 }
 
@@ -23,11 +24,10 @@ void Player::Update(const float& deltaTime)
 	this->playerCam.Update();
 }
 
-void Player::Move(float x, float z, const float& deltaTime)
+void Player::Move(Vector3& direction, const float& deltaTime)
 {
-	Vector3 direction(x, 0, z);
 	direction.Normalize();
-	direction = direction * speed * deltaTime;
+	direction = direction * speed * deltaTime * -1;
 	DirectX::SimpleMath::Matrix rotation = {};
 	rotation = rotation.CreateFromYawPitchRoll(this->playerModel->GetRotation().y, this->playerModel->GetRotation().x, this->playerModel->GetRotation().z);
 	Vector3 currentPos = this->playerModel->GetPosition();
@@ -47,13 +47,6 @@ void Player::Rotate(const float& pitch, const float& yaw)
 	float newYawY = fmod(yawY + yaw, FULL_CIRCLE);
 	this->playerModel->SetRotation({ 0, newYawY, 0 });
 	this->playerModel->UpdateMatrix();
-
-	pitchX = pitch;
-
-	if (pitchX > 0.85f)
-		pitchX = 0.85f;
-	if (pitchX < -0.85f)
-		pitchX = -0.85f;
 
 	this->playerCam.Rotate(pitch, yaw, 0);
 }

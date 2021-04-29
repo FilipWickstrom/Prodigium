@@ -103,7 +103,11 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	this->roll = fmod(this->roll + rollAmount, FULL_CIRCLE);
 
 	//GameObject::SetRotation(DirectX::XMFLOAT3(this->pitch, this->yaw, this->roll));
-
+	
+	if (this->pitch > 1.2f)
+		this->pitch = 1.2f;
+	if (this->pitch < -1.5f)
+		this->pitch = -1.5f;
 
 	/*this->UpdateViewMatrix();*/
 }

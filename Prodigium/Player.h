@@ -19,7 +19,7 @@ public:
 	virtual ~Player();
 
 	void Update(const float& deltaTime);
-	void Move(float x, float z, const float& deltaTime);
+	void Move(DirectX::SimpleMath::Vector3& direction, const float& deltaTime);
 	void Rotate(const float& pitch, const float& yaw);
 	MeshObject* GetMeshObject()const;
 };
