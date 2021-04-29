@@ -6,16 +6,19 @@
 #include <io.h>
 #include "ResourceManager.h"
 #include "RenderPass.h"
+#include "SkyboxPass.h"
 #include "InputHandler.h"
 #include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
+
 class Engine
 {
 private:
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
+	SkyboxPass skyboxPass;
 
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***

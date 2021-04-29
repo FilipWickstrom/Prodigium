@@ -61,7 +61,7 @@ struct TextureRenderTargets
 */
 struct LightStruct
 {
-	DirectX::XMFLOAT4 position; // position.w is range.
-	DirectX::XMFLOAT4 direction; // direction.w is Spot.
-	DirectX::XMFLOAT4 attentuate; // attentuate.w is LightType.
+	DirectX::SimpleMath::Vector4 position; // position.w is range.
+	DirectX::SimpleMath::Vector4 direction; // direction.w is Spot.
+	DirectX::SimpleMath::Vector4 attentuate; // attentuate.w is LightType.
 };
