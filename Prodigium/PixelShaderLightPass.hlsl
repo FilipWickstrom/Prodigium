@@ -98,27 +98,31 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 float4 doDirectional(float index, GBuffers buff, inout float4 s)
 {
     float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+    float3 lightVec = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
 
     float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
     float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
     float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
-
-	float3 DirToLight = normalize(lights[index].position.xyz - buff.positionWS.xyz); 
-
-		//Diffuse light calculations
-	float NDotL = dot(DirToLight, normals); 
-    float4 diffuse = diff * NDotL;
-
-
-		//Specular light calculations
-    float4 toEye = normalize(float4(0, 0, 0, 0) - buff.positionWS); //camera pos behövs här
-	float4 halfway = normalize(toEye + float4(DirToLight, 0)); //Vet inte vad denna är till för
-	float NDotH = saturate(dot(halfway, normals)); 
-    float4 specular = spec * pow(max(NDotH, 0), 32.0f);
     
-    s += specular;
-		
-    return (amb + diffuse);
+    float diffuseFactor = dot(lightVec, normals);
+
+    [flatten]
+    if (diffuseFactor > 0.0f)
+    {
+        
+        float3 v = reflect(-lightVec, normals);
+        float3 toEye = float3(0.0f, 0.0f, 0.0f); //Kamera pos ska in här
+        float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
+
+        diff *= diffuseFactor;
+        spec *= specFactor;
+
+        s += spec;
+
+        return (amb + diff);
+    }
+    else
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
@@ -133,14 +137,14 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     {
        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
 
-       float4 diff = float4(0.5f, 0.5f, 0.5f, 0.8f);
+       float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
        float4 spec = float4(0.1f, 0.1f, 0.1f, 1.0f);
        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
        
             //Diffuse light calculations
        float diffuse = dot(vecToLight, normals);
        
-
+       [flatten]
        if (diffuse > 0.0f)
        {
            //Specular light calculations
@@ -156,7 +160,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 
        s += spec;
 
-       return (amb + diff + spec) /*/ (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)))*/;
+       return (amb + diff);
 
     }
 
