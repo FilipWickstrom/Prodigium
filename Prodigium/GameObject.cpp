@@ -1,16 +1,16 @@
 #include "GameObject.h"
 #include "Graphics.h"
-
+using namespace DirectX::SimpleMath;
 GameObject::GameObject()
 {
-	this->position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	this->scale = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	this->rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	this->position = { 0.0f, 0.0f, 0.0f };
+	this->scale = { 0.0f, 0.0f, 0.0f };
+	this->rotation = { 0.0f, 0.0f, 0.0f };
 	this->modelMatrixBuffer = nullptr;
-	this->modelMatrix = DirectX::XMFLOAT4X4(1.0f, 0.0f, 0.0f, 0.0f,
+	this->modelMatrix = { 1.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 1.0f, 0.0f, 0.0f,
 											0.0f, 0.0f, 1.0f, 0.0f,
-											0.0f, 0.0f, 0.0f, 1.0f);
+											0.0f, 0.0f, 0.0f, 1.0f };
 }
 
 GameObject::~GameObject()
@@ -19,14 +19,12 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
+bool GameObject::BuildMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
 {
 	this->position = pos;
 	this->scale = scl;
 	this->rotation = rot;
-
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)));
+	modelMatrix = Matrix(Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position)).Transpose();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -40,19 +38,19 @@ bool GameObject::BuildMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, Direc
 	return !FAILED(result);
 }
 
-bool GameObject::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, DirectX::XMFLOAT3 rot)
+bool GameObject::UpdateMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
 {
 	this->position = pos;
 	this->scale = scl;
 	this->rotation = rot;
 
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z)));
+	modelMatrix = Matrix(Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position)).Transpose();
 
 	D3D11_MAPPED_SUBRESOURCE submap;
-	HRESULT hr;
-	hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
-	memcpy(submap.pData, &this->modelMatrix, sizeof(DirectX::XMFLOAT4X4));
+
+	HRESULT hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &this->modelMatrix, sizeof(Matrix));
+
 	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
 
 	return !FAILED(hr);
@@ -60,23 +58,19 @@ bool GameObject::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 scl, Dire
 
 bool GameObject::UpdateMatrix()
 {
-	DirectX::XMFLOAT3 pos = this->position;
-	DirectX::XMFLOAT3 scl = this->scale;
-	DirectX::XMFLOAT3 rot = this->rotation;
 
-	DirectX::XMMATRIX XMtransformedCPU = DirectX::XMMatrixScaling(scl.x, scl.y, scl.z) * DirectX::XMMatrixRotationRollPitchYaw(rot.x, rot.y, rot.z) *
-		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
 
-	DirectX::XMMATRIX XMtransformedGPU = DirectX::XMMatrixTranspose(XMtransformedCPU);
-	
-	DirectX::XMStoreFloat4x4(&this->modelMatrix, XMtransformedCPU);
-	DirectX::XMFLOAT4X4 transformedGPU;
-	DirectX::XMStoreFloat4x4(&transformedGPU, XMtransformedGPU);
+
+	this->modelMatrix = transformedCPU;
+	Matrix transformedGPU = Matrix(transformedCPU).Transpose();
+
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
 	hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
-	memcpy(submap.pData, &transformedGPU, sizeof(DirectX::XMFLOAT4X4));
+	memcpy(submap.pData, &transformedGPU, sizeof(Matrix));
+
 	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
 
 	if (FAILED(hr))
@@ -87,45 +81,45 @@ bool GameObject::UpdateMatrix()
 	return true;
 }
 
-DirectX::XMFLOAT3 GameObject::GetPosition() const
+Vector3 GameObject::GetPosition() const
 {
 	return this->position;
 }
 
-DirectX::XMFLOAT3 GameObject::GetScale() const
+Vector3 GameObject::GetScale() const
 {
 	return this->scale;
 }
 
-DirectX::XMFLOAT3 GameObject::GetRotation() const
+Vector3 GameObject::GetRotation() const
 {
 	return this->rotation;
 }
 
-void GameObject::SetPosition(DirectX::XMFLOAT3 newPos)
+void GameObject::SetPosition(Vector3 newPos)
 {
 	this->position = newPos;
 }
 
-void GameObject::SetScale(DirectX::XMFLOAT3 newScale)
+void GameObject::SetScale(Vector3 newScale)
 {
 	this->scale = newScale;
 }
 
-void GameObject::SetRotation(DirectX::XMFLOAT3 newRotation)
+void GameObject::SetRotation(Vector3 newRotation)
 {
 	this->rotation = newRotation;
 }
 
-const DirectX::XMFLOAT4X4& GameObject::GetModelMatrix()
+const Matrix& GameObject::GetModelMatrix()
 {
 	return this->modelMatrix;
 }
 
-DirectX::XMMATRIX GameObject::GetTransposedMatrix() const
+Matrix GameObject::GetTransposedMatrix() const
 {
-	DirectX::XMMATRIX toBeReturned = DirectX::XMLoadFloat4x4(&this->modelMatrix);
-	return DirectX::XMMatrixTranspose(toBeReturned);
+	Matrix toBeReturned = this->modelMatrix;
+	return toBeReturned.Transpose();
 }
 
 ID3D11Buffer*& GameObject::GetModelMatrixBuffer()
@@ -135,17 +129,10 @@ ID3D11Buffer*& GameObject::GetModelMatrixBuffer()
 
 float GameObject::GetDistance(GameObject otherObject) const
 {
-	DirectX::XMVECTOR dist = DirectX::XMVector3Length(
-		DirectX::XMVectorSubtract(
-			DirectX::XMLoadFloat3(&otherObject.position), 
-			DirectX::XMLoadFloat3(&this->position)));
-	DirectX::XMFLOAT3 dist_fl;
-	DirectX::XMStoreFloat3(&dist_fl, dist);
+	float dist = Vector3(otherObject.position - this->position).Length();
 
-	float ret = dist_fl.x;
+	if (dist < 0)
+		dist *= -1;
 
-	if (ret < 0)
-		ret *= -1;
-
-	return ret;
+	return dist;
 }

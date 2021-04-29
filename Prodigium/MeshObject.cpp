@@ -1,6 +1,6 @@
 #include "MeshObject.h"
 #include "Graphics.h"
-
+using namespace DirectX::SimpleMath;
 bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
 {
     HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(texture, nullptr, &srv);
@@ -29,7 +29,7 @@ MeshObject::~MeshObject()
     }
 }
 
-bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rot, DirectX::XMFLOAT3 scl)
+bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt,Vector3 pos, Vector3 rot,Vector3 scl)
 {
     //Get the mesh from the resource manager if it exist or creates a new mesh
     this->mesh = ResourceManager::GetMesh(meshObject);

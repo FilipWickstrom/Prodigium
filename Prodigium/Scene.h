@@ -20,14 +20,14 @@ public:
 
 	// adds an object to the scene, current selected object will point towards this new object.
 	void Add(std::string objFile, std::string diffuseTxt = "", std::string normalTxt = "", 
-		DirectX::XMFLOAT3 position = {0.0f, 0.0f, 0.0f}, DirectX::XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f}, DirectX::XMFLOAT3 scale = {1.0f, 1.0f, 1.0f});
+		DirectX::SimpleMath::Vector3 position = {0.0f, 0.0f, 0.0f}, DirectX::SimpleMath::Vector3 rotation = {0.0f, 0.0f, 0.0f}, DirectX::SimpleMath::Vector3 scale = {1.0f, 1.0f, 1.0f});
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
-	void UpdateMatrix(DirectX::XMFLOAT3 pos = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f),
-		DirectX::XMFLOAT3 rotation = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3 scale = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f));
+	void UpdateMatrix(DirectX::SimpleMath::Vector3 pos = { 0.0f, 0.0f, 0.0f },
+		DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f }, DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f });
 
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
 	void Remove(int index);
