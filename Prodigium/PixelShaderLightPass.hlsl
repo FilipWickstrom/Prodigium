@@ -1,13 +1,10 @@
 //Gbuffers
-Texture2D G_positionWS   : register(t0);
-Texture2D G_colour       : register(t1);
-Texture2D G_normalWS     : register(t2);
+Texture2D G_positionWS : register(t0);
+Texture2D G_colour : register(t1);
+Texture2D G_normalWS : register(t2);
 
 SamplerState anisotropic : register(s0);
 
-/*
-Cbuffer with camera position?
-*/
 
 /*
 Cbuffer with lights?
@@ -26,6 +23,11 @@ cbuffer LightsInfo : register(b0)
     float4 info;
 }
 
+cbuffer Camera : register(b1)
+{
+    float4 camPos;
+}
+
 StructuredBuffer<lightBuffer> lights : register(t3);
 
 //Easier to handle
@@ -39,9 +41,9 @@ struct GBuffers
 GBuffers GetGBuffers(float2 texCoords)
 {
     GBuffers output;
-    output.positionWS    = G_positionWS.Sample(anisotropic, texCoords);
+    output.positionWS = G_positionWS.Sample(anisotropic, texCoords);
     output.diffuseColor = G_colour.Sample(anisotropic, texCoords);
-    output.normalWS      = G_normalWS.Sample(anisotropic, texCoords);
+    output.normalWS = G_normalWS.Sample(anisotropic, texCoords);
     return output;
 }
 
@@ -54,66 +56,66 @@ struct PixelShaderInput
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float3 lightVector = (lights[index].position - buff.positionWS).xyz;
+    float3 lightVector = lights[index].position.xyz - buff.positionWS.xyz;
     float d = length(lightVector);
     
+    // Check if pixel is within the range of the spotlight
     [flatten]
     if (d <= lights[index].position.w)
     {
-        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+        float3 normals = normalize(buff.normalWS.xyz);
         lightVector /= d;
-        float diffuse = dot(lightVector, normals);
+        float diffuse = max(dot(normals, lightVector), 0.0f);
         
-        float4 diff = float4(1.0f, 1.0f, 1.0f, 1.0f);
-        float4 spec = float4(0.0f, 0.0f, 0.0f, 1.0f);
-        float4 amb = float4(0.6f, 0.6f, 0.6f, 0.6f);
+        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+        float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
+        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
         [flatten]
         if (diffuse > 0.0f)
         {
             float3 reflection = reflect(-lightVector, normals);
             // --change to camera pos--
-            float3 toEye = (float4(0, 0, 0, 0) - buff.positionWS).xyz;
-            toEye = normalize(toEye);
+            float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
             float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
 
             diff = diff * diffuse;
             spec = spec * specular;
-        }
+            float3 direction = normalize(lights[index].direction.xyz);
+
+            // Nice effect to fade the lgiht at the rim of the cone
+            float minCos = cos(lights[index].direction.w);
+            float maxCos = (minCos + 1.0f) * 0.5f;
+            float cosAngle = dot(direction, -lightVector);
+            float spot = smoothstep(minCos, maxCos, cosAngle);
+
+            float att = 1 / dot(lights[index].att.xyz, float3(1.0f, d, d * d));
         
-        float3 direction = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
-
-        float spot = pow(max(dot(-lightVector, direction), 0.0f), lights[index].direction.w);
-
-        float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
-        d, d * d));
-
-        s += spec * att;
-        diff *= att;
-        return (amb + diff);
+            s += spec * att * spot;
+            diff *= att * spot;
+            
+            return (amb + diff);
+        }
     }
-    else
-    {
-        return float4(0.0f, 0.0f, 0.0f, 0.0f);
-    }
+    
+    return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 float4 doDirectional(float index, GBuffers buff, inout float4 s)
 {
-    float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
-    float3 lightVec = -float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
+    float3 normals = normalize(buff.normalWS.xyz);
+    float3 lightVec = -normalize(lights[index].direction.xyz);
 
     float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-    float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
+    float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
     float4 amb = float4(0.3f, 0.3f, 0.5f, 0.3f);
 
-    float diffuseFactor = dot(lightVec, normals);
+    float diffuseFactor = max(dot(lightVec, normals), 0.0f);
 
     [flatten]
     if (diffuseFactor > 0.0f)
     {
-
         float3 v = reflect(-lightVec, normals);
-        float3 toEye = float3(0.0f, 0.0f, 0.0f); //Kamera pos ska in här
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
         float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
 
         diff *= diffuseFactor;
@@ -124,7 +126,9 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
         return (amb + diff);
     }
     else
+    {
         return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
@@ -169,7 +173,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     }
 }
 
-float4 main( PixelShaderInput input ) : SV_TARGET
+float4 main(PixelShaderInput input) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
     float4 ambient = float4(0.25f, 0.25f, 0.25f, 0.25f);

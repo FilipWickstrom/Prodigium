@@ -18,6 +18,7 @@ private:
 	DirectX::SimpleMath::Vector3 defaultPosition;
 	viewProjectionMatrix viewProjMatrix;
 	DirectX::SimpleMath::Vector3 eyePos;
+	DirectX::SimpleMath::Vector4 eyePosGPU;
 	DirectX::SimpleMath::Vector3 targetPos;
 	DirectX::SimpleMath::Vector3 upDir;
 	DirectX::SimpleMath::Matrix rotationMatrix;
@@ -28,6 +29,7 @@ private:
 	float nearPlane;
 	float farPlane;
 	ID3D11Buffer* matrixBuffer;
+	ID3D11Buffer* camPosBuffer;
 	void UpdateViewMatrix();
 public:
 	CameraObject();
