@@ -18,9 +18,9 @@ private:
 	IDXGISwapChain* swapChain;
 	ID3D11RenderTargetView* backBufferView;
 	ID3D11DepthStencilView* depthView;
-	ID3D11DepthStencilState* zBufferOn;
-	ID3D11DepthStencilState* zBufferOff;
-	ID3D11RasterizerState* rasterState;
+	ID3D11DepthStencilState* zBufferOn;		//Not in use for now
+	ID3D11DepthStencilState* zBufferOff;	//Not in use for now
+	ID3D11RasterizerState* rasterState;		//Not in use for now
 	D3D11_VIEWPORT viewport;
 	UINT windowWidth;
 	UINT windowHeight;
@@ -43,6 +43,7 @@ public:
 	static void DisableZBuffer();
 	static void SetMainWindowViewport();
 	static void BindBackBuffer();
+	static void BindBackBuffer(ID3D11DepthStencilView*& depthStencilView);
 	static void UnbindBackBuffer();
 	static void ClearDisplay();
 };

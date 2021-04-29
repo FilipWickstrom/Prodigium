@@ -2,7 +2,7 @@
 
 Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	this->RedirectIoToConsole();
 
 	if (!this->StartUp(instance, width, height))
@@ -44,14 +44,23 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
+	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
 	this->gPass.Clear();
+
+	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
 	this->lightPass.Prepare();
-	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
+
+	//Render the skybox on the places where there is no objects visible from depthstencil
+	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
+	this->skyboxPass.Prepare();
+	this->skyboxPass.Clear();
+
+	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
 }
 
@@ -80,6 +89,11 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	}
 
 	if (!this->lightPass.Initialize())
+	{
+		return false;
+	}
+
+	if (!this->skyboxPass.Initialize())
 	{
 		return false;
 	}
