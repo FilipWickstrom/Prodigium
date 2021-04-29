@@ -61,6 +61,7 @@
     <ClCompile Include="Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -129,6 +130,7 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="LightObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">

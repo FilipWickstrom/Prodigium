@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.h"
 #include <d3d11.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <io.h>
 #include "ResourceManager.h"

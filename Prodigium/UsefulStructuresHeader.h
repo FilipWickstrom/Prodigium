@@ -50,3 +50,18 @@ struct TextureRenderTargets
 	ID3D11ShaderResourceView* shaderResourceViews[BUFFER_COUNT];
 	Texture* textures[BUFFER_COUNT];
 };
+
+/*
+* Use this structure when making a new light. It containts three 
+* XMFLOAT4 used for position, direction and attenuation.
+* --LightTypes--
+* 0 = Directional Light.
+* 1 = Point Light.
+* 2 = Spot Light.
+*/
+struct LightStruct
+{
+	DirectX::XMFLOAT4 position; // position.w is range.
+	DirectX::XMFLOAT4 direction; // direction.w is Spot.
+	DirectX::XMFLOAT4 attentuate; // attentuate.w is LightType.
+};

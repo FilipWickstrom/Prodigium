@@ -2,6 +2,7 @@
 
 Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
+	srand(time(NULL));
 	this->RedirectIoToConsole();
 
 	if (!this->StartUp(instance, width, height))
@@ -47,6 +48,7 @@ void Engine::Render()
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 	Graphics::BindBackBuffer();
+	this->sceneHandler.RenderLights();
 	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
 	this->lightPass.Clear();
@@ -82,6 +84,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
+	this->sceneHandler.AddScene();
 	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 
 	return true;
