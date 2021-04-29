@@ -64,9 +64,9 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         lightVector /= d;
         float diffuse = dot(lightVector, normals);
         
-        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-        float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
-        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+        float4 diff = float4(1.0f, 1.0f, 1.0f, 1.0f);
+        float4 spec = float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float4 amb = float4(0.6f, 0.6f, 0.6f, 0.6f);
         [flatten]
         if (diffuse > 0.0f)
         {
@@ -87,7 +87,8 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
         d, d * d));
 
-        s += spec;
+        s += spec * att;
+        diff *= att;
         return (amb + diff);
     }
     else
