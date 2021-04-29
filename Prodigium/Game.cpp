@@ -42,7 +42,7 @@ void Game::HandleInput()
 		float z = (float)(rand() % 50);
 		float size = (float)(rand() % 40 + 10);
 		L.position = DirectX::XMFLOAT4(10.0f, 5.0f, 10.0f, 50.0f);
-		L.attentuate = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 2.0f);
+		L.attentuate = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 		L.direction = DirectX::XMFLOAT4(0.0f, -1.0f, 0.0f, 1.0f);
 		SceneHandle()->EditScene().AddLight(L);
 		std::cout << "Light Added!\n";

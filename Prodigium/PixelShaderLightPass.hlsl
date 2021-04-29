@@ -97,7 +97,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     }
 }
 
-float4 doDirectional(float index)
+float4 doDirectional(float index, GBuffers buff, inout float4 s)
 {
     float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
     float3 lightVec = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
@@ -190,7 +190,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
         switch (lights[i].att.w)
         {
             case 0:
-                lightColor += doDirectional(i);
+                lightColor += doDirectional(i, gbuffers, specular);
                 break;
             case 1:
                 lightColor += doPointLight(i, gbuffers, specular);
