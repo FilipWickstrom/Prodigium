@@ -29,7 +29,6 @@ private:
 	float farPlane;
 	ID3D11Buffer* matrixBuffer;
 	void UpdateViewMatrix();
-	void BindCameraToPipeline();
 public:
 	CameraObject();
 	virtual ~CameraObject();
