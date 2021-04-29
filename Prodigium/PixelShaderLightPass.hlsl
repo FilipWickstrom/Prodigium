@@ -99,25 +99,32 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 
 float4 doDirectional(float index)
 {
-    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+    float3 lightVec = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
 
-	//float3 DirToLight = normalize(lights[index].position.xyz - material.position.xyz); //Vektorn från objektet/materialet till ljuset
+    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+    float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
+    float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
 
-		//Diffuse light calculations
-	//float NDotL = dot(DirToLight, material.normal); //Dot-produkten av objektets/materialets normal och vektorn från objektet/materialet till ljuset
-	//float3 finalColor = DirLightColor.rgb * saturate(NDotL); //Lägger till diffuse light på ljusets färg
+    float diffuseFactor = dot(lightVec, normals);
 
-		//Specular light calculations
-	//float3 toEye = EyePosition.xyz - position; //Vektor från objektet/materialet till kameran
-	//toEye = normalize(toEye); //Normaliserar vektorn
-	//float3 halfway = normalize(toEye + DirToLight); //Vet inte vad denna är till för
-	//float NDotH = saturate(dot(halfway, material.normal)); //Dot-produkten av objektets/materialets normal och vektorn halfway
-	//finalColor += DirLightColor.rgb * pow(NDotH, material.specExp) * material.specIntensity; //Lägger till specular light på ljusets färg
+    [flatten]
+    if (diffuseFactor > 0.0f)
+    {
 
-		//Final light calculations
-	//finalColor * material.diffuseColor.rgb; //Lägger in ljusets färg på materialet
+        float3 v = reflect(-lightVec, normals);
+        float3 toEye = float3(0.0f, 0.0f, 0.0f); //Kamera pos ska in här
+        float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
 
-    return color;
+        diff *= diffuseFactor;
+        spec *= specFactor;
+
+        s += spec;
+
+        return (amb + diff);
+    }
+    else
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
