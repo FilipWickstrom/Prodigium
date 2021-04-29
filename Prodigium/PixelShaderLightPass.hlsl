@@ -100,11 +100,11 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 float4 doDirectional(float index, GBuffers buff, inout float4 s)
 {
     float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
-    float3 lightVec = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
+    float3 lightVec = -float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
 
     float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
     float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
-    float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+    float4 amb = float4(0.3f, 0.3f, 0.5f, 0.3f);
 
     float diffuseFactor = dot(lightVec, normals);
 
