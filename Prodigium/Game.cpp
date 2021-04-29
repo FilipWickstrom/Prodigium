@@ -40,9 +40,10 @@ void Game::HandleInput()
 		LightStruct L;
 		float x = (float)(rand() % 10 - rand() % 10);
 		float z = (float)(rand() % 50);
-		L.position = DirectX::XMFLOAT4(x, 10.0f, z, 50.0f);
+		float size = (float)(rand() % 40 + 10);
+		L.position = DirectX::XMFLOAT4(5.0f, 5.0f, z, size);
 		L.attentuate = DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 2.0f);
-		L.direction = DirectX::XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+		L.direction = DirectX::XMFLOAT4(0.0f, -1.0f, 0.0f, 0.5f);
 		SceneHandle()->EditScene().AddLight(L);
 		std::cout << "Light Added!\n";
 	}
