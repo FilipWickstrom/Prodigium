@@ -96,7 +96,7 @@ bool SkyboxPass::CreateVertIndBuffers()
 		3, 2, 0,
 		//Back
 		5, 4, 6,
-		5, 7, 5,
+		6, 7, 5,
 		//Left
 		4, 0, 2, 
 		2, 6, 4,
