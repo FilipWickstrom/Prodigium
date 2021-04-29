@@ -43,21 +43,24 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
+	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.Prepare();
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 
+	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
-	
-	//Right place if I can get the depthbuffer and not draw on places where depth has been used****
+	this->lightPass.Clear();
+
+	//Render the skybox on the places where there is no objects visible from depthstencil
+	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
 	Graphics::GetSwapChain()->Present(0, 0);
-	this->lightPass.Clear();
 	Graphics::UnbindBackBuffer();
 }
 
@@ -101,6 +104,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	}
 
 	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f }, { -XM_PI * 0.5f,0, XM_PI * 0.5f });
+	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 10.0f, 0.0f, 5.0f }, { -XM_PI * 0.5f,0, XM_PI * 0.5f });
 
 	return true;
 }

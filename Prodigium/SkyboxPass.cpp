@@ -58,7 +58,7 @@ bool SkyboxPass::CreateVertIndBuffers()
 {
 	//Load in a quads vertices and indices. Only need position.
 	//UV and normals not interesting, therefore no mesh import
-	float scale = 2.0f;
+	float scale = 1.0f;
 	DirectX::SimpleMath::Vector3 vertices[] =
 	{
 		//Frontside
@@ -88,47 +88,27 @@ bool SkyboxPass::CreateVertIndBuffers()
 		return false;
 	}
 
-	//Will be used to make faces. 
+	//Will be used to make faces 
 	unsigned short indices[] =
 	{
+		//Front
 		0, 1, 3,
 		3, 2, 0,
-		
+		//Back
 		5, 4, 6,
 		5, 7, 5,
-
+		//Left
 		4, 0, 2, 
 		2, 6, 4,
-
+		//Right
 		1, 5, 7,
 		7, 3, 1,
-
+		//Top
 		4, 5, 1,
 		1, 0, 4,
-
+		//Bottom
 		2, 3, 7,
 		7, 6, 2
-
-		//OLD REMOVE LATER***
-		// Should use counter clockwise winding, inside of a cube
-		//Frontside		
-		//0, 2, 3,
-		//3, 1, 0,
-		////Backside	
-		//5, 7, 6,
-		//6, 4, 5,
-		////Left side	
-		//4, 6, 2,
-		//2, 0, 4,
-		////Right side	
-		//1, 3, 7,
-		//7, 5, 1,
-		////Top		
-		//4, 0, 1,
-		//1, 5, 4,
-		////Bottom
-		//2, 6, 7,
-		//7, 3, 2	
 	};
 
 	this->nrOfIndices = sizeof(indices) / sizeof(unsigned short);
@@ -191,6 +171,13 @@ bool SkyboxPass::CreateTexture()
 	}
 
 	HRESULT hr = Graphics::GetDevice()->CreateTexture2D(&desc, data, &this->combinedTextures);
+	
+	//Freeing up the images
+	for (int i = 0; i < SKYBOXSIDES; i++)
+	{
+		stbi_image_free(image[i]);
+	}
+
 	if (FAILED(hr))
 	{
 		std::cout << "Failed to create texture 2d for skybox..." << std::endl;
@@ -227,7 +214,7 @@ bool SkyboxPass::CreateSampler()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 4;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -256,43 +243,43 @@ bool SkyboxPass::CreateInputLayout()
 	return true;
 }
 
-bool SkyboxPass::CreateDepthState()
+bool SkyboxPass::CreateRasterizer()
 {
-	D3D11_DEPTH_STENCIL_DESC desc = {};
-	desc.DepthEnable = true;
-	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	D3D11_RASTERIZER_DESC desc = {};
+	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+	desc.FrontCounterClockwise = false;
+	desc.DepthBias = 0;
+	desc.DepthBiasClamp = 0.0f;
+	desc.SlopeScaledDepthBias = 0.0f;
+	desc.DepthClipEnable = true;
+	desc.ScissorEnable = false;
+	desc.MultisampleEnable = false;
+	desc.AntialiasedLineEnable = false;
+	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
 
-	HRESULT hr = Graphics::GetDevice()->CreateDepthStencilState(&desc, &this->lessEqualDepthState);
+	HRESULT hr = Graphics::GetDevice()->CreateRasterizerState(&desc, &this->noCullingRasterizer);
 	if (FAILED(hr))
 	{
 		return false;
 	}
+
 	return true;
 }
 
-//bool SkyboxPass::CreateRasterizer()
-//{
-//	D3D11_RASTERIZER_DESC desc = {};
-//	desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-//	desc.FrontCounterClockwise = false;
-//	desc.DepthBias = 0;
-//	desc.DepthBiasClamp = 0.0f;
-//	desc.SlopeScaledDepthBias = 0.0f;
-//	desc.DepthClipEnable = true;
-//	desc.ScissorEnable = false;
-//	desc.MultisampleEnable = false;
-//	desc.AntialiasedLineEnable = false;
-//	desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-//
-//	HRESULT hr = Graphics::GetDevice()->CreateRasterizerState(&desc, &this->noCullingRasterizer);
-//	if (FAILED(hr))
-//	{
-//		return false;
-//	}
-//
-//	return true;
-//}
+bool SkyboxPass::CreateDepthState()
+{
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc = {};
+
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	HRESULT hr = Graphics::GetDevice()->CreateDepthStencilState(&depthStencilDesc, &this->lessEqualState);
+	if (FAILED(hr))
+		return false;
+	else
+		return true;
+}
 
 SkyboxPass::SkyboxPass()
 {
@@ -306,9 +293,8 @@ SkyboxPass::SkyboxPass()
 	this->combinedTextures = nullptr;
 	this->shaderResourceView = nullptr;
 	this->vertexShaderByteCode = "";
-
-	this->lessEqualDepthState = nullptr;
-	//this->noCullingRasterizer = nullptr;
+	this->noCullingRasterizer = nullptr;
+	this->lessEqualState = nullptr;
 }
 
 SkyboxPass::~SkyboxPass()
@@ -329,11 +315,10 @@ SkyboxPass::~SkyboxPass()
 		this->combinedTextures->Release();
 	if (this->shaderResourceView)
 		this->shaderResourceView->Release();
-
-	if (this->lessEqualDepthState)
-		this->lessEqualDepthState->Release();
-	/*if (this->noCullingRasterizer)
-		this->noCullingRasterizer->Release();*/
+	if (this->noCullingRasterizer)
+		this->noCullingRasterizer->Release();
+	if (this->lessEqualState)
+		this->lessEqualState->Release();
 }
 
 bool SkyboxPass::Initialize()
@@ -368,15 +353,15 @@ bool SkyboxPass::Initialize()
 		return false;
 	}
 
-	if (!CreateDepthState())
+	if (!CreateRasterizer())
 	{
 		return false;
 	}
 
-	/*if (!CreateRasterizer())
+	if (!CreateDepthState())
 	{
 		return false;
-	}*/
+	}
 
 	return true;
 }
@@ -395,38 +380,29 @@ void SkyboxPass::Clear()
 
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vertexBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(indexBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
+	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 	Graphics::GetContext()->VSSetShader(vertexShaderNull, nullptr, 0);
+	Graphics::GetContext()->RSSetState(nullptr);
 	Graphics::GetContext()->PSSetShader(pixelShaderNull, nullptr, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
-	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 	Graphics::GetContext()->PSSetShaderResources(0, 1, &shaderResourceViewNull);
-
-
-	//Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
-	Graphics::GetContext()->RSSetState(nullptr);
+	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 1);
 }
 
 void SkyboxPass::Prepare()
-{
-	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-	Graphics::GetContext()->PSSetShader(this->pixelShader, nullptr, 0);
+{	
 	Graphics::GetContext()->IASetInputLayout(this->inputLayout);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	UINT stride = sizeof(DirectX::SimpleMath::Vector3);
 	UINT offset = 0;
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R16_UINT, offset);
-	
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->PSSetShader(this->pixelShader, nullptr, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->shaderResourceView);
-
-
-
-	Graphics::GetContext()->OMSetDepthStencilState(this->lessEqualDepthState, 0); //Have to make it possible to take those that is 1.0f in depth
-
-	//Bind the backbuffer with a new depthbuffer or use the old one after geometry pass????																							
-	//Graphics::GetContext()->OMSetRenderTargets(1, /*current render target*/, specialdepthview )
-
+	Graphics::GetContext()->RSSetState(this->noCullingRasterizer);
+	Graphics::GetContext()->OMSetDepthStencilState(this->lessEqualState, 1);
 
 	Graphics::GetContext()->DrawIndexed(this->nrOfIndices, 0, 0);
 }

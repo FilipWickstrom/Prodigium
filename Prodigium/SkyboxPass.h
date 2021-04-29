@@ -6,6 +6,12 @@
 #include "RenderPass.h"
 #define SKYBOXSIDES 6
 
+/*
+Skybox made with cubemapping
+Follows the camera and should not be possible
+"walk" outside of the cube
+*/
+
 class SkyboxPass : public RenderPass
 {
 private:
@@ -14,14 +20,13 @@ private:
 	int nrOfIndices;
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
-	ID3D11SamplerState* sampler;		//Does not have to be anisotropic. MIN_MAG_MIP_LINEAR, WRAP
+	ID3D11SamplerState* sampler;
 	ID3D11Texture2D* combinedTextures;
 	ID3D11ShaderResourceView* shaderResourceView;
 	ID3D11InputLayout* inputLayout;
 	std::string vertexShaderByteCode;
-
-	ID3D11DepthStencilState* lessEqualDepthState;
-	//ID3D11RasterizerState* noCullingRasterizer;
+	ID3D11RasterizerState* noCullingRasterizer;
+	ID3D11DepthStencilState* lessEqualState;
 
 	bool LoadShaders();
 	bool CreateVertIndBuffers();
@@ -29,8 +34,8 @@ private:
 	bool CreateShaderResourceView();
 	bool CreateSampler();
 	bool CreateInputLayout();
+	bool CreateRasterizer();
 	bool CreateDepthState();
-	//bool CreateRasterizer();
 
 public:
 	SkyboxPass();

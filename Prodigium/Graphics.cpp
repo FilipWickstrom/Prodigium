@@ -95,7 +95,7 @@ bool Graphics::CreateZBufferStates()
 
 	depthStencilDesc.DepthEnable = true;
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
 	depthStencilDesc.StencilEnable = true;
 	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
@@ -205,7 +205,10 @@ bool Graphics::Initialize(const HWND& windowHandler, const UINT& windowWidth, co
 			return false;
 		}
 		Graphics::instance->CreateViewPort();
-		Graphics::instance->CreateBackBuffer();
+		if (!Graphics::instance->CreateBackBuffer())
+		{
+			return false;
+		}
 
 	}
 
@@ -238,6 +241,11 @@ void Graphics::SetMainWindowViewport()
 void Graphics::BindBackBuffer()
 {
 	Graphics::instance->context->OMSetRenderTargets(1, &Graphics::instance->backBufferView, Graphics::instance->depthView);
+}
+
+void Graphics::BindBackBuffer(ID3D11DepthStencilView*& depthStencilView)
+{
+	Graphics::instance->context->OMSetRenderTargets(1, &Graphics::instance->backBufferView, depthStencilView);
 }
 
 void Graphics::UnbindBackBuffer()
