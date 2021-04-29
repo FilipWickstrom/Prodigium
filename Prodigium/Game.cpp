@@ -40,19 +40,19 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		this->player->Move(0, 2.f * deltaTime);
+		this->player->Move(0, 1.f, deltaTime);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
-		this->player->Move(0, -2.f * deltaTime);
+		this->player->Move(0, -1.f, deltaTime);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::A))
 	{
-		this->player->Move(-2.f * deltaTime, 0);
+		this->player->Move(-1.f, 0, deltaTime);
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::D))
 	{
-		this->player->Move(2.f * deltaTime, 0);
+		this->player->Move(1.f, 0, deltaTime);
 	}
 	if (InputHandler::IsLMBPressed())
 	{

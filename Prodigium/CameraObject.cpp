@@ -4,7 +4,7 @@ void CameraObject::UpdateViewMatrix()
 {
 	//this->targetPos = this->targetPos.Transform(defaultForward, rotationMatrix);
 	//this->targetPos += this->eyePos;
-	this->upDir = this->upDir.Transform(defaultUp, rotationMatrix);
+	//this->upDir = this->upDir.Transform(defaultUp, rotationMatrix);
 	this->viewProjMatrix.viewMatrix = XMMatrixTranspose(XMMatrixLookToLH(this->eyePos, this->camForward, this->defaultUp));
 }
 
@@ -96,12 +96,16 @@ void CameraObject::Move(DirectX::SimpleMath::Vector3 translation)
 	this->UpdateViewMatrix();
 }
 
-void CameraObject::Rotate(float pitchAmount, float yawAmount)
+void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, const float& rollAmount)
 {
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->UpdateViewMatrix();
+	this->roll = fmod(this->roll + rollAmount, FULL_CIRCLE);
+
+	//GameObject::SetRotation(DirectX::XMFLOAT3(this->pitch, this->yaw, this->roll));
+
+
+	/*this->UpdateViewMatrix();*/
 }
 
 void CameraObject::SetPosition(float xPos, float yPos)
@@ -127,7 +131,8 @@ void CameraObject::SetRotation(float roll, float pitch, float yaw)
 	this->roll = roll;
 	this->pitch = pitch;
 	this->yaw = yaw;
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, 0.15f, this->roll);
+
 	this->UpdateViewMatrix();
 }
 
@@ -152,8 +157,6 @@ void CameraObject::BindCameraToPipeline()
 
 void CameraObject::Update()
 {
-	this->UpdateViewMatrix();
-
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
 	Graphics::GetContext()->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -163,11 +166,23 @@ void CameraObject::Update()
 	this->BindCameraToPipeline();
 }
 
-void CameraObject::SetTransform(const Matrix& transform)
+void CameraObject::SetTransform(const Matrix& transform, const Vector3& playerPos)
 {
-	this->eyePos = Vector3::Transform(this->defaultPosition, transform);
-	Vector4 temp;
-	temp = std::move(Vector4::Transform(Vector4(this->defaultForward.x, this->defaultForward.y, this->defaultForward.z, 0.0f), transform));
-	this->camForward = std::move(Vector3(temp.x, temp.y, temp.z));
+	this->rotationMatrix = Matrix::CreateFromYawPitchRoll(this->yaw, this->pitch, 0);
+
+	this->eyePos = Vector3::TransformNormal(-this->defaultForward, this->rotationMatrix);
+	this->eyePos.Normalize();
+	this->eyePos = (this->eyePos * 10.f) + playerPos;
+
+	this->camForward = (playerPos - eyePos);
 	this->camForward.Normalize();
+	//Vector3 offset = playerPos - eyePos;
+	//offset = Quaternion::CreateFromAxisAngle(Vector3::Up, this->pitch) * playerPos;
+	//this->eyePos = Vector3::Transform(this->defaultPosition, transform);
+	//this->eyePos = Quaternion::CreateFromRotationMatrix(this->rotationMatrix) * playerPos;
+	//this->camForward = Vector3::TransformNormal(Vector3(this->defaultForward.x, this->defaultForward.y, this->defaultForward.z), transform);
+	//this->camForward = Quaternion::CreateFromRotationMatrix(this->rotationMatrix) * (playerPos - this->eyePos);
+	//this->camForward.Normalize();
+
+	this->UpdateViewMatrix();
 }
