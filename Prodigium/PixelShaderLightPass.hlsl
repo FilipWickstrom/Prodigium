@@ -57,15 +57,16 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     float3 lightVector = lights[index].position - buff.positionWS;
     float d = length(lightVector);
     
+    [flatten]
     if (d <= lights[index].position.w)
     {
         float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
         lightVector /= d;
         float diffuse = dot(lightVector, normals);
         
-        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-        float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
-        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+        float4 diff = float4(1.0f, 1.0f, 1.0f, 1.0f);
+        float4 spec = float4(0.0f, 0.0f, 0.0f, 1.0f);
+        float4 amb = float4(0.6f, 0.6f, 0.6f, 0.6f);
         [flatten]
         if (diffuse > 0.0f)
         {
@@ -86,7 +87,8 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         float att = spot / dot(float3(lights[index].att.x, lights[index].att.y, lights[index].att.z), float3(1.0f,
         d, d * d));
 
-        s += spec;
+        s += spec * att;
+        diff *= att;
         return (amb + diff);
     }
     else
@@ -95,78 +97,68 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     }
 }
 
-float4 doDirectional(float index, GBuffers buff, inout float4 s)
+float4 doDirectional(float index)
 {
-    float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
-    float3 lightVec = float3(lights[index].direction.x, lights[index].direction.y, lights[index].direction.z);
+    float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-    float4 spec = float4(0.1f, 0.1f, 0.1f, 0.0f);
-    float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
-    
-    float diffuseFactor = dot(lightVec, normals);
+	//float3 DirToLight = normalize(lights[index].position.xyz - material.position.xyz); //Vektorn från objektet/materialet till ljuset
 
-    [flatten]
-    if (diffuseFactor > 0.0f)
-    {
-        
-        float3 v = reflect(-lightVec, normals);
-        float3 toEye = float3(0.0f, 0.0f, 0.0f); //Kamera pos ska in här
-        float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
+		//Diffuse light calculations
+	//float NDotL = dot(DirToLight, material.normal); //Dot-produkten av objektets/materialets normal och vektorn från objektet/materialet till ljuset
+	//float3 finalColor = DirLightColor.rgb * saturate(NDotL); //Lägger till diffuse light på ljusets färg
 
-        diff *= diffuseFactor;
-        spec *= specFactor;
+		//Specular light calculations
+	//float3 toEye = EyePosition.xyz - position; //Vektor från objektet/materialet till kameran
+	//toEye = normalize(toEye); //Normaliserar vektorn
+	//float3 halfway = normalize(toEye + DirToLight); //Vet inte vad denna är till för
+	//float NDotH = saturate(dot(halfway, material.normal)); //Dot-produkten av objektets/materialets normal och vektorn halfway
+	//finalColor += DirLightColor.rgb * pow(NDotH, material.specExp) * material.specIntensity; //Lägger till specular light på ljusets färg
 
-        s += spec;
+		//Final light calculations
+	//finalColor * material.diffuseColor.rgb; //Lägger in ljusets färg på materialet
 
-        return (amb + diff);
-    }
-    else
-        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    return color;
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
 {
-    
-	float3 vecToLight = lights[index].position.xyz - buff.positionWS.xyz;
+    float3 vecToLight = lights[index].position.xyz - buff.positionWS.xyz;
     float distance = length(vecToLight);
     vecToLight = normalize(vecToLight);
 
         //Distance check
-   if(distance <= lights[index].position.w)
+    if (distance <= lights[index].position.w)
     {
-       float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
 
-       float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-       float4 spec = float4(0.1f, 0.1f, 0.1f, 1.0f);
-       float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+        float4 diff = float4(1.0f, 1.0f, 255.0f, 255.0f);
+        float4 spec = float4(0.1f, 0.1f, 0.1f, 1.0f);
+        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
        
             //Diffuse light calculations
-       float diffuse = dot(vecToLight, normals);
+        float diffuse = dot(vecToLight, normals);
        
-       [flatten]
-       if (diffuse > 0.0f)
-       {
+
+        if (diffuse > 0.0f)
+        {
            //Specular light calculations
 
-           float4 toEye = normalize(float4(0, 0, 0, 0) - buff.positionWS); //camera pos behövs här
-           float4 reflection = float4(normalize(2 * dot(normals, vecToLight) * normals - vecToLight), 1);
+            float4 toEye = normalize(float4(0, 0, 0, 0) - buff.positionWS); //camera pos behövs här
+            float4 reflection = float4(normalize(2 * dot(normals, vecToLight) * normals - vecToLight), 1);
 
-           float4 specular = spec * pow(max(dot(reflection, toEye), 0), 32.0f);
+            float4 specular = spec * pow(max(dot(reflection, toEye), 0), 32.0f);
            
-           diff *= diffuse;
-           spec *= specular;
-       }
+            diff *= diffuse;
+            spec *= specular;
+        }
 
-       s += spec;
+        s += spec;
 
-       return (amb + diff);
-
+        return (amb + diff) / (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)));
     }
+    
+    return float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-   else
-       return float4(0.0f, 0.0f, 0.0f, 0.0f);
-		
 }
 
 float4 main( PixelShaderInput input ) : SV_TARGET
@@ -191,7 +183,7 @@ float4 main( PixelShaderInput input ) : SV_TARGET
         switch (lights[i].att.w)
         {
             case 0:
-                lightColor += doDirectional(i, gbuffers, specular);
+                lightColor += doDirectional(i);
                 break;
             case 1:
                 lightColor += doPointLight(i, gbuffers, specular);
