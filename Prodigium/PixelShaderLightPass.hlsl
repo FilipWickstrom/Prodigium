@@ -111,6 +111,8 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
 
     float diffuseFactor = max(dot(lightVec, normals), 0.0f);
 
+    diff *= diffuseFactor;
+    
     [flatten]
     if (diffuseFactor > 0.0f)
     {
@@ -118,7 +120,6 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
         float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
         float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
 
-        diff *= diffuseFactor;
         spec *= specFactor;
 
         s += spec;
@@ -138,39 +139,38 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     vecToLight = normalize(vecToLight);
 
         //Distance check
+    [flatten]
     if (distance <= lights[index].position.w)
     {
-        float3 normals = float3(buff.normalWS.x, buff.normalWS.y, buff.normalWS.z);
+        float3 normals = normalize(buff.normalWS.xyz);
 
-        float4 diff = float4(1.0f, 1.0f, 255.0f, 255.0f);
-        float4 spec = float4(0.1f, 0.1f, 0.1f, 1.0f);
+        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+        float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
         float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
        
             //Diffuse light calculations
-        float diffuse = dot(vecToLight, normals);
-       
-
+        float diffuse = max(dot(vecToLight, normals), 0.0f);
+        diff *= diffuse;
+        [flatten]
         if (diffuse > 0.0f)
         {
            //Specular light calculations
 
-            float4 toEye = normalize(float4(0, 0, 0, 0) - buff.positionWS); //camera pos behövs här
-            float4 reflection = float4(normalize(2 * dot(normals, vecToLight) * normals - vecToLight), 1);
+            float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+            float3 reflection = normalize(reflect(-vecToLight, normals));
 
-            float4 specular = spec * pow(max(dot(reflection, toEye), 0), 32.0f);
+            float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
            
-            diff *= diffuse;
             spec *= specular;
+            s += spec;
+
+            diff /= (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)));
         }
-
-        s += spec;
-
-        return (amb + diff) / (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)));
+        
+        return amb + diff;
     }
-    else
-    {
-        return float4(0.0f, 0.0f, 0.0f, 0.0f);
-    }
+
+    return float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 float4 main(PixelShaderInput input) : SV_TARGET

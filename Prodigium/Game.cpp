@@ -8,8 +8,8 @@ Game::Game(HINSTANCE& instance, UINT width, UINT height)
 	this->running = true;
 	this->player = nullptr;
 	LightStruct L;
-	L.direction = { 0.f, -1.0f, 0.0f, 1.2f };
-	L.attentuate = { 0.4f, 0.008f, 0.0f, 2.0f };
+	L.direction = { 1.f, -1.0f, 0.0f, 1.2f };
+	L.attentuate = { 0.4f, 0.008f, 0.0f, 1.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 }
