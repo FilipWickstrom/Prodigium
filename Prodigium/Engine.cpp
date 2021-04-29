@@ -44,10 +44,8 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	this->gPass.Prepare();
-	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->gameCam.GetViewProjMatrix());
 	this->sceneHandler.Render();
 	this->gPass.Clear();
-
 	Graphics::BindBackBuffer();
 	this->lightPass.Prepare();
 	Graphics::GetSwapChain()->Present(0, 0);
@@ -57,7 +55,7 @@ void Engine::Render()
 
 bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 {
-	if (!InputHandler::Initialize(window.GetWindowHandler()))
+	if (!InputHandler::Initialize())
 	{
 		return false;
 	}
@@ -65,7 +63,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 	{
 		return false;
 	}
-
+	InputHandler::setWindow(window.GetWindowHandler());
 	if (!Graphics::Initialize(this->window.GetWindowHandler(), width, height))
 	{
 		return false;
@@ -84,12 +82,7 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	if (!this->gameCam.Initialize(width, height, 0.1f, 100.0f, XM_PI * 0.5f, { 0.f, 0.f, -5.f }))
-	{
-		return false;
-	}
-
-	this->sceneHandler.EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", { 0.0f, 0.0f, 5.0f });
+	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f });
 
 	return true;
 }

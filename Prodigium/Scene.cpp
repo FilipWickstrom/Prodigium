@@ -1,5 +1,5 @@
 #include "Scene.h"
-
+using namespace DirectX::SimpleMath;
 Scene::Scene()
 {
 	this->currentObject = 0;
@@ -15,7 +15,7 @@ Scene::~Scene()
 }
 
 void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
-	XMFLOAT3 position, XMFLOAT3 rotation, XMFLOAT3 scale)	
+	Vector3 position, Vector3 rotation, Vector3 scale)
 {
 	/*
 		Create a new MeshObject from input.
@@ -34,7 +34,16 @@ void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalT
 	}
 }
 
-void Scene::UpdateMatrix(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 rotation, DirectX::XMFLOAT3 scale)
+void Scene::Add(MeshObject* object)
+{
+	if (object != nullptr)
+	{
+		this->objects.push_back(object);
+		this->currentObject = (int)objects.size() - 1;
+	}
+}
+
+void Scene::UpdateMatrix(Vector3 pos, Vector3 rotation, Vector3 scale)
 {
 	/*
 		Update the Matrix with input.

@@ -29,7 +29,7 @@ public:
 	virtual ~MeshObject();
 
 	bool Initialize(std::string meshObject, std::string diffuseTxt = "", std::string normalTxt = "",
-					XMFLOAT3 pos = {0.0f,0.0f,0.0f}, XMFLOAT3 rot = { 0.0f,0.0f,0.0f }, XMFLOAT3 scl= {1.0f,1.0f,1.0f});
+					DirectX::SimpleMath::Vector3 pos = {0.0f,0.0f,0.0f}, DirectX::SimpleMath::Vector3 rot = { 0.0f,0.0f,0.0f }, DirectX::SimpleMath::Vector3 scl= {1.0f,1.0f,1.0f});
 
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);

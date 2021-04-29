@@ -15,13 +15,10 @@ private:
 	Window window;
 	GeometryPass gPass;
 	LightPass lightPass;
-	CameraObject gameCam;
 
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
-	CameraObject testCamera;	//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
-
 private:
 	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();

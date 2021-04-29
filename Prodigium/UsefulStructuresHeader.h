@@ -1,6 +1,6 @@
 #pragma once
-#include <DirectXMath.h>
 #include "Texture.h"
+#include <SimpleMath.h>
 #define BUFFER_COUNT 3
 
 /*
@@ -9,9 +9,9 @@
 */
 struct Vertex
 {
-	DirectX::XMFLOAT3 position = {};
-	DirectX::XMFLOAT2 uv = {};
-	DirectX::XMFLOAT3 normal = {};
+	DirectX::SimpleMath::Vector3 position = {};
+	DirectX::SimpleMath::Vector2 uv = {};
+	DirectX::SimpleMath::Vector3 normal = {};
 };
 
 /*
@@ -20,9 +20,9 @@ struct Vertex
 */
 struct Material
 {
-	DirectX::XMFLOAT4 ambient;
-	DirectX::XMFLOAT4 diffuse;
-	DirectX::XMFLOAT4 specular;
+	DirectX::SimpleMath::Vector4 ambient;
+	DirectX::SimpleMath::Vector4 diffuse;
+	DirectX::SimpleMath::Vector4 specular;
 };
 
 /*
@@ -31,8 +31,8 @@ struct Material
 */
 struct Matrix
 {
-	DirectX::XMFLOAT4X4 view;
-	DirectX::XMFLOAT4X4 projection;
+	DirectX::SimpleMath::Matrix view;
+	DirectX::SimpleMath::Matrix projection;
 };
 
 /*
@@ -41,7 +41,7 @@ struct Matrix
 */
 struct MatrixCompact
 {
-	DirectX::XMFLOAT4X4 transform;
+	DirectX::SimpleMath::Matrix transform;
 };
 
 struct TextureRenderTargets

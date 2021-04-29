@@ -198,7 +198,7 @@ bool Graphics::Initialize(const HWND& windowHandler, const UINT& windowWidth, co
 	{
 		Graphics::instance = new Graphics;
 		Graphics::instance->windowWidth = windowWidth;
-		Graphics::instance->windowHeight = windowWidth;
+		Graphics::instance->windowHeight = windowHeight;
 
 		if (!Graphics::instance->CreateDeviceAndSwapChain(windowHandler, windowWidth, windowHeight))
 		{

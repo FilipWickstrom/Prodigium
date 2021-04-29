@@ -13,20 +13,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	Game game(hInstance, 1280, 1024);
-	float currentFrame, lastFrame, deltaTime = 0;
+	game.OnStart();
+	double currentFrame, lastFrame;
+	float deltaTime = 0;
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
 
 	/*game.Run(hInstance, WIDTH, HEIGHT);*/
-
 	while (game.IsRunning())
 	{
 		InputHandler::HandleMessages();
-		currentFrame = static_cast<float>(omp_get_wtime());
+		currentFrame = omp_get_wtime();
 		game.OnFrame(deltaTime);
-		lastFrame = static_cast<float>(omp_get_wtime());
-		deltaTime = lastFrame - currentFrame;
+		lastFrame = omp_get_wtime();
+		deltaTime = static_cast<float>(lastFrame - currentFrame);
 	}
 
 	return 0;
