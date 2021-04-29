@@ -154,7 +154,7 @@ float4 doPointLight(float index, GBuffers buff)
 float4 main( PixelShaderInput input ) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
-    float4 ambient = float4(0.5f, 0.5f, 0.5f, 0.5f);
+    float4 ambient = float4(0.25f, 0.25f, 0.25f, 0.25f);
     
     // This is for if no lights are present in the scene.
     if (info.a == 1)
