@@ -54,7 +54,7 @@ struct PixelShaderInput
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float3 lightVector = lights[index].position - buff.positionWS;
+    float3 lightVector = (lights[index].position - buff.positionWS).xyz;
     float d = length(lightVector);
     
     [flatten]
@@ -72,7 +72,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         {
             float3 reflection = reflect(-lightVector, normals);
             // --change to camera pos--
-            float3 toEye = float4(0, 0, 0, 0) - buff.positionWS;
+            float3 toEye = (float4(0, 0, 0, 0) - buff.positionWS).xyz;
             toEye = normalize(toEye);
             float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
 
@@ -163,9 +163,10 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 
         return (amb + diff) / (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)));
     }
-    
-    return float4(0.0f, 0.0f, 0.0f, 0.0f);
-
+    else
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
 }
 
 float4 main( PixelShaderInput input ) : SV_TARGET

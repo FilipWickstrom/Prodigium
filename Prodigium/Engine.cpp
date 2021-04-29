@@ -2,7 +2,7 @@
 
 Engine::Engine(HINSTANCE& instance, UINT width, UINT height)
 {
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	this->RedirectIoToConsole();
 
 	if (!this->StartUp(instance, width, height))
