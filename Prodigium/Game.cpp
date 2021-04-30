@@ -43,7 +43,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::K))
 	{
-		openConsole();
+		OpenConsole();
 	}
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
@@ -75,7 +75,6 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
-		this->player->changeCameraOffset({ 0.f,0.f,0.4 });
 		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))

@@ -36,7 +36,7 @@ public:
 	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
-	void openConsole();
+	void OpenConsole();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
 };

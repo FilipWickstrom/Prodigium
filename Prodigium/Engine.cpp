@@ -104,7 +104,7 @@ void Engine::Render()
 	Graphics::UnbindBackBuffer();
 }
 
-void Engine::openConsole()
+void Engine::OpenConsole()
 {
 	this->RedirectIoToConsole();
 }

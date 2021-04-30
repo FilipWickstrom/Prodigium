@@ -81,7 +81,7 @@ bool Mesh::LoadFile(std::string filename)
     }
 	
 	//Going through all the meshes in the file
-	for (int i = 0; i < scene->mNumMeshes; i++)
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		const aiMesh* mesh = scene->mMeshes[i];
 		std::vector<Vertex> vertices;
@@ -98,7 +98,7 @@ bool Mesh::LoadFile(std::string filename)
 		}
 		
 		std::vector<unsigned short> indices;
-		indices.reserve(mesh->mNumFaces * 3);
+		indices.reserve((size_t)mesh->mNumFaces * 3);
 		UINT tempIndexCount = mesh->mNumFaces * 3;
 		this->indexCount.push_back(tempIndexCount);
 
