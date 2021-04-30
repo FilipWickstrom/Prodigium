@@ -73,7 +73,7 @@ bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& w
 
 	// Allow our backbuffer to be manipulated by any compute shader, e.g. allows simple blur effect.
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
-	swapDesc.Windowed = false;
+	swapDesc.Windowed = true;
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapDesc.Flags = 0;
 	swapDesc.OutputWindow = windowHandler;

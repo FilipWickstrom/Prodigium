@@ -19,7 +19,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	/*
 		Width and Height of presented window, Can be changed in options?
 	*/
-
+	float targetDelta = 1 / 60.f;
+	float deltaSum = 0.f;
 	/*game.Run(hInstance, WIDTH, HEIGHT);*/
 	const float targetDelta = 1 / 120.f;
 	float deltaSum = 0.f;
