@@ -51,12 +51,13 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 
-
-
-
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
 		direction.z += 1.f;
+		SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "",
+			{ this->player->GetMeshObject()->GetPosition().x, -3.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+			{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+		std::cout << SceneHandle()->EditScene().GetNumberOfObjects() << "\r";
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
