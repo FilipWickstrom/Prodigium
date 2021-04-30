@@ -15,13 +15,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	Game game(hInstance, 1920, 1080);
 	game.OnStart();
 	double currentFrame = 0.f, lastFrame = omp_get_wtime();
-	float deltaTime = 0;
-	/*
-		Width and Height of presented window, Can be changed in options?
-	*/
-	//float targetDelta = 1 / 60.f;
-	float deltaSum = 0.f;
-	/*game.Run(hInstance, WIDTH, HEIGHT);*/
+	float deltaTime = 0.f, deltaSum = 0.f;
 	const float targetDelta = 1 / 120.f;
 
 	while (game.IsRunning())

@@ -69,7 +69,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         
         float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
         float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
-        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
+        float4 amb = float4(0.2f, 0.2f, 0.2f, 0.2f);
         [flatten]
         if (diffuse > 0.0f)
         {
@@ -105,9 +105,9 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
     float3 normals = normalize(buff.normalWS.xyz);
     float3 lightVec = -normalize(lights[index].direction.xyz);
 
-    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-    float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
-    float4 amb = float4(0.3f, 0.3f, 0.5f, 0.3f);
+    float4 diff = float4(0.35f, 0.35f, 0.35f, 0.35f);
+    float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 amb = float4(0.2f, 0.2f, 0.25f, 0.2f);
 
     float diffuseFactor = max(dot(lightVec, normals), 0.0f);
 
