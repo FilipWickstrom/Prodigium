@@ -43,8 +43,9 @@ bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& w
 
 	// Debug mode
 	UINT flags = 0;
-	if (_DEBUG)
+#ifdef _DEBUG
 		flags = D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	// Change this feature level to change DirectX version, Most stable is DirectX11
 	D3D_FEATURE_LEVEL directXfeature[] = { D3D_FEATURE_LEVEL_11_0 };
@@ -72,7 +73,7 @@ bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& w
 
 	// Allow our backbuffer to be manipulated by any compute shader, e.g. allows simple blur effect.
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_UNORDERED_ACCESS;
-	swapDesc.Windowed = true;
+	swapDesc.Windowed = false;
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapDesc.Flags = 0;
 	swapDesc.OutputWindow = windowHandler;
