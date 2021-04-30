@@ -192,7 +192,7 @@ void Scene::RemoveObject(int index)
 		{
 			this->currentObject = 0;
 			delete this->objects[index];
-			this->objects.erase(objects.begin() + index);
+			this->objects.erase(this->objects.begin() + index);
 		}
 		else
 		{

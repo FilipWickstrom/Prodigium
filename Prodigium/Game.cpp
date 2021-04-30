@@ -73,12 +73,14 @@ void Game::HandleInput(const float& deltaTime)
 		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
 
 		// Test pick up
+		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
 		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
 		{
 			SceneHandle()->EditScene().RemoveObject(1);
 			std::cout << "Picked up Book!\n";
 		}
 
+		std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
 		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
 		{
 			SceneHandle()->EditScene().RemoveObject(2);
@@ -139,8 +141,13 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Test pickups but its static lol
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 42.0f, -3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 30.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	float randX = (float)(rand() % 1000 - rand() % 1000);
+	float randZ = (float)(rand() % 1000 - rand() % 1000);
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+
+	randX = (float)(rand() % 1000 - rand() % 1000);
+	randZ = (float)(rand() % 1000 - rand() % 1000);
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", { 0.0f, -6.25f, 0.0f });
