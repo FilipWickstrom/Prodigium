@@ -39,11 +39,9 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->running = false;
 	}
-
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
 		this->player->Sprint();
-
 	}
 	if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
 	{
@@ -119,7 +117,7 @@ bool Game::LoadMap()
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
 
 	LightStruct L;
-	L.direction = { 1.f, -1.0f, 0.0f, 1.2f };
+	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
@@ -132,21 +130,48 @@ bool Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", { 0.0f, -6.25f, 0.0f });
 
-	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 100.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.008f, 0.003f, 2.0f };
-	L.position = { 100.0f, 20.0f, 0.0f, 30.0f };
+	L.position = { 130.0f, 20.0f, 0.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
-	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 50.0f, -6.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.position = { 50.0f, 20.0f, 0.0f, 30.0f };
+
+	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 30.0f, -6.5f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.position = { 30.0f, 20.0f, 0.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
-	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 190.0f, -7.0f, 90.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+
+	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 190.0f, 20.0f, 90.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
+	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.position = { 30.0f, 20.0f, 100.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.position = { 130.0f, 20.0f, 100.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { -150.0f, -6.5f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, {3.0f, 3.0f, 3.0f});
+	L.attentuate = { 0.4f, 0.008f, 0.003f, 1.0f };
+	L.position = { -80.0f, 20.0f, 50.0f, 35.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
 	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 42.0f, -3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.4f, 0.4f, 0.4f});
 	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 37.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
-	return false;
+	// Tree galore!!
+	for (int i = 0; i < 250; i++)
+	{
+		float x = (float)(rand() % 1000 - rand() % 1000);
+		while (x > -100 && x < 100)
+			x = (float)(rand() % 1000 - rand() % 1000);
+
+		float z = (float)(rand() % 1000 - rand() % 1000);
+		while (z > -100 && z < 100)
+			z = (float)(rand() % 1000 - rand() % 1000);
+		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	}
+
+	return true;
 }
