@@ -60,44 +60,39 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     float d = length(lightVector);
     
     // Check if pixel is within the range of the spotlight
-    [flatten]
-    if (d <= lights[index].position.w)
-    {
-        float3 normals = normalize(buff.normalWS.xyz);
-        lightVector /= d;
-        float diffuse = max(dot(normals, lightVector), 0.0f);
+
+    float3 normals = normalize(buff.normalWS.xyz);
+    lightVector /= d;
+    float diffuse = max(dot(normals, lightVector), 0.0f);
         
-        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-        float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
-        float4 amb = float4(0.2f, 0.2f, 0.2f, 0.2f);
+    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+    float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
+    diff = diff * diffuse;
+
         [flatten]
-        if (diffuse > 0.0f)
-        {
-            float3 reflection = reflect(-lightVector, normals);
+    if (diffuse > 0.0f)
+    {
+        float3 reflection = reflect(-lightVector, normals);
             // --change to camera pos--
-            float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-            float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+        float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
 
-            diff = diff * diffuse;
-            spec = spec * specular;
-            float3 direction = normalize(lights[index].direction.xyz);
+        spec = spec * specular;
+        float3 direction = normalize(lights[index].direction.xyz);
 
-            // Nice effect to fade the lgiht at the rim of the cone
-            float minCos = cos(lights[index].direction.w);
-            float maxCos = (minCos + 1.0f) * 0.5f;
-            float cosAngle = dot(direction, -lightVector);
-            float spot = smoothstep(minCos, maxCos, cosAngle);
-
-            float att = 1 / dot(lights[index].att.xyz, float3(1.0f, d, d * d));
+         // Nice effect to fade the lgiht at the rim of the cone
+        float minCos = cos(lights[index].direction.w);
+        float maxCos = (minCos + 1.0f) * 0.5f;
+        float cosAngle = dot(direction, -lightVector);
+        float spot = smoothstep(minCos, maxCos, cosAngle);
         
-            s += spec * att * spot;
-            diff *= att * spot;
-            
-            return (amb + diff);
-        }
+        float attenuation = 1 / (lights[index].att.x + (lights[index].att.y * d) + (lights[index].att.z * d * d));
+        
+        s += spec * attenuation * spot;
+        diff *= attenuation * spot;
     }
     
-    return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    return diff;
 }
 
 float4 doDirectional(float index, GBuffers buff, inout float4 s)
@@ -105,83 +100,77 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
     float3 normals = normalize(buff.normalWS.xyz);
     float3 lightVec = -normalize(lights[index].direction.xyz);
 
-    float4 diff = float4(0.35f, 0.35f, 0.35f, 0.35f);
+    float4 diff = float4(0.05f, 0.00f, 0.12f, 0.35f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 amb = float4(0.2f, 0.2f, 0.25f, 0.2f);
 
     float diffuseFactor = max(dot(lightVec, normals), 0.0f);
 
     diff *= diffuseFactor;
     
-    [flatten]
-    if (diffuseFactor > 0.0f)
-    {
-        float3 v = reflect(-lightVec, normals);
-        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-        float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
+    float3 v = reflect(-lightVec, normals);
+    float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+    float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
 
-        spec *= specFactor;
+    s += spec * specFactor;
 
-        s += spec;
-
-        return (amb + diff);
-    }
-    else
-    {
-        return float4(0.0f, 0.0f, 0.0f, 0.0f);
-    }
+    return diff;
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
 {
-    float3 vecToLight = lights[index].position.xyz - buff.positionWS.xyz;
-    float distance = length(vecToLight);
-    vecToLight = normalize(vecToLight);
+    float3 vecToLight = normalize(lights[index].position.xyz - buff.positionWS.xyz);
+    float distance = length(lights[index].position.xyz - buff.positionWS.xyz);
 
-        //Distance check
-    [flatten]
-    if (distance <= lights[index].position.w)
-    {
-        float3 normals = normalize(buff.normalWS.xyz);
+    //Distance check
 
-        float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
-        float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
-        float4 amb = float4(0.3f, 0.3f, 0.3f, 0.3f);
-       
-            //Diffuse light calculations
-        float diffuse = max(dot(vecToLight, normals), 0.0f);
-        diff *= diffuse;
-        [flatten]
-        if (diffuse > 0.0f)
-        {
-           //Specular light calculations
+    float3 normals = normalize(buff.normalWS.xyz);
 
-            float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-            float3 reflection = normalize(reflect(-vecToLight, normals));
-
-            float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
-           
-            spec *= specular;
-            s += spec;
-
-            diff /= (lights[index].att.x + (lights[index].att.y * distance) + (lights[index].att.z * (distance * distance)));
-        }
+    float4 diff = float4(1.0f, 1.0f, 1.0f, 0.8f);
+    float4 spec = float4(0.07f, 0.07f, 0.07f, 1.0f);
         
-        return amb + diff;
+        //Diffuse light calculations
+    float diffuse = max(dot(vecToLight, normals), 0.0f);
+    diff *= diffuse;
+    [flatten]
+    if (diffuse > 0.0f)
+    {
+        //Specular
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+        float3 reflection = normalize(reflect(-vecToLight, normals));
+        float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
+        
+        float range = lights[index].position.w;
+        float d = max(distance - range, 0);
+        
+        //Attenuate depending on distance from lightsource
+        float denom = d / range + 1.f;
+        float attenuation = 1.f / (denom * denom);
+        float cutoff = 0.01f;
+     
+        // scale and bias attenuation such that:
+        // attenuation == 0 at extent of max influence
+        // attenuation == 1 when d == 0
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = max(attenuation, 0);
+           
+        // Add upp the specular
+        s += spec * specular * attenuation;
+            
+        diff *= attenuation;
     }
-
-    return float4(0.0f, 0.0f, 0.0f, 0.0f);
+        
+    return diff;
 }
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
-    float4 ambient = float4(0.25f, 0.25f, 0.25f, 0.25f);
+    float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * gbuffers.diffuseColor;
     
     // This is for if no lights are present in the scene.
     if (info.a == 1)
     {
-        return gbuffers.diffuseColor * ambient;
+        return ambient;
     }
     
     /*
@@ -211,8 +200,8 @@ float4 main(PixelShaderInput input) : SV_TARGET
     // If no lighting is reaching the pixel then apply default ambient lighting.
     if (lightColor.x <= 0)
     {
-        return gbuffers.diffuseColor * ambient;
+        return ambient;
     }
     
-    return saturate(lightColor) * gbuffers.diffuseColor + saturate(specular);
+    return (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
 }
