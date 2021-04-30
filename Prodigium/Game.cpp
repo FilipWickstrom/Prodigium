@@ -38,7 +38,6 @@ void Game::HandleInput(const float& deltaTime)
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
-		std::cout << "Closed down." << "\n";
 		this->running = false;
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::K))
@@ -72,6 +71,28 @@ void Game::HandleInput(const float& deltaTime)
 	if (InputHandler::IsLMBPressed())
 	{
 		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+
+		// Test pick up
+		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
+		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+		{
+			SceneHandle()->EditScene().RemoveObject(1);
+			std::cout << "Picked up Book!\n";
+		}
+
+		std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
+		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+		{
+			SceneHandle()->EditScene().RemoveObject(2);
+			std::cout << "Picked up Drawing!\n";
+		}
+	}
+	if (InputHandler::IsRMBPressed())
+	{
+		// Temp -- Change to trap later
+		SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "",
+			{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+			{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
@@ -130,6 +151,15 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
+	// Test pickups but its static lol
+	float randX = (float)(rand() % 1000 - rand() % 1000);
+	float randZ = (float)(rand() % 1000 - rand() % 1000);
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+
+	randX = (float)(rand() % 1000 - rand() % 1000);
+	randZ = (float)(rand() % 1000 - rand() % 1000);
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", { 0.0f, -6.25f, 0.0f });
 
@@ -181,9 +211,7 @@ void Game::LoadMap()
 	L.position = { -80.0f, 20.0f, 50.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Test pickups but its static lol
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 42.0f, -3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.4f, 0.4f, 0.4f});
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 37.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	
 
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
