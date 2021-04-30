@@ -21,5 +21,7 @@ public:
 	void Update(const float& deltaTime);
 	void Move(DirectX::SimpleMath::Vector3& direction, const float& deltaTime);
 	void Rotate(const float& pitch, const float& yaw);
+	void Sprint();
+	void Walk();
 	MeshObject* GetMeshObject()const;
 };
