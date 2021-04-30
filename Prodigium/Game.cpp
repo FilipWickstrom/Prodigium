@@ -38,13 +38,7 @@ void Game::HandleInput(const float& deltaTime)
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
-		std::cout << "Closed down." << "\n";
 		this->running = false;
-	}
-
-	if (InputHandler::IsKeyPressed(Keyboard::Space))
-	{
-		
 	}
 
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
@@ -77,6 +71,19 @@ void Game::HandleInput(const float& deltaTime)
 	if (InputHandler::IsLMBPressed())
 	{
 		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+
+		// Test pick up
+		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+		{
+			SceneHandle()->EditScene().RemoveObject(1);
+			std::cout << "Picked up Book!\n";
+		}
+
+		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+		{
+			SceneHandle()->EditScene().RemoveObject(2);
+			std::cout << "Picked up Drawing!\n";
+		}
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
