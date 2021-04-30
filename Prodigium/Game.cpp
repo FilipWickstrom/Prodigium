@@ -65,14 +65,17 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
 	{
-		this->player->Rotate( DirectX::XM_PI / 8, 0.f);
+		this->player->Rotate(DirectX::XM_PI / 8, 0.f);
 	}
-	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE)
+	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 	{
 		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
-	this->player->Move(direction, deltaTime);
+	if (direction.Length() > 0.f)
+	{
+		this->player->Move(direction, deltaTime);
+	}
 }
 
 bool Game::OnFrame(const float& deltaTime)
