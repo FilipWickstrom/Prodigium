@@ -98,8 +98,5 @@ bool Engine::StartUp(HINSTANCE& instance, const UINT& width, const UINT& height)
 		return false;
 	}
 
-	this->sceneHandler.AddScene();
-	this->sceneHandler.EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 0.0f, 0.0f, 5.0f });
-
 	return true;
 }
