@@ -195,7 +195,7 @@ void Scene::RemoveObject(const int& index)
 		{
 			this->currentObject = 0;
 			delete this->objects[index];
-			this->objects.erase(objects.begin() + index);
+			this->objects.erase(this->objects.begin() + index);
 		}
 		else
 		{
@@ -224,6 +224,12 @@ void Scene::SwitchObject(const int& index)
 		std::cout << "index is outside of vector scope!\n";
 #endif
 	}
+}
+
+
+MeshObject& Scene::GetMeshObject(int index)
+{
+	return *this->objects[index];
 }
 
 const int Scene::GetNumberOfObjects() const

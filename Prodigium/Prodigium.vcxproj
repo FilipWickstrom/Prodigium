@@ -246,6 +246,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT" />
+    <None Include="myfile.spritefont" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

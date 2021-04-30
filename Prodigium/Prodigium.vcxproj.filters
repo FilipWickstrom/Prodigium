@@ -151,6 +151,9 @@
     <None Include="packages.config">
       <Filter>Structures</Filter>
     </None>
+    <None Include="myfile.spritefont">
+      <Filter>Engine\Graphics\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Includes">
