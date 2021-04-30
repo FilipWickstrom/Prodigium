@@ -20,13 +20,17 @@ CameraObject::CameraObject()
 	this->pitch = 0.f;
 	this->yaw = 0.f;
 	this->roll = 0.f;
+	this->eyePosGPU = {};
 	this->matrixBuffer = nullptr;
+	this->camPosBuffer = nullptr;
 }
 
 CameraObject::~CameraObject()
 {
 	if (this->matrixBuffer)
 		this->matrixBuffer->Release();
+	if (this->camPosBuffer)
+		this->camPosBuffer->Release();
 }
 
 bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, const Vector3& position, const Vector3& lookTo)
@@ -62,6 +66,23 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 		return false;
 	}
 
+	buffDesc.ByteWidth = sizeof(this->eyePosGPU);
+	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
+
+	this->eyePosGPU = Vector4(this->eyePos.x, this->eyePos.y, this->eyePos.z, 0.0f);
+
+	data.pSysMem = &eyePosGPU;
+
+	hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, &data, &camPosBuffer);
+
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create camera constant buffer" << std::endl;
+		return false;
+	}
+
 
 	return true;
 }
@@ -88,10 +109,10 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
 	this->roll = fmod(this->roll + rollAmount, FULL_CIRCLE);
 	
-	if (this->pitch > 1.2f)
-		this->pitch = 1.2f;
-	if (this->pitch < -1.5f)
-		this->pitch = -1.5f;
+	if (this->pitch > 1.0f)
+		this->pitch = 1.0f;
+	if (this->pitch < -0.8f)
+		this->pitch = -0.8f;
 }
 
 void CameraObject::SetPosition(float xPos, float yPos)
@@ -137,7 +158,13 @@ void CameraObject::Update()
 	memcpy(mappedResource.pData, &viewProjMatrix, sizeof(viewProjMatrix));
 	Graphics::GetContext()->Unmap(matrixBuffer, 0);
 
+	this->eyePosGPU = Vector4(this->eyePos.x, this->eyePos.y, this->eyePos.z, 0.0f);
+	Graphics::GetContext()->Map(camPosBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &this->eyePosGPU, sizeof(this->eyePosGPU));
+	Graphics::GetContext()->Unmap(camPosBuffer, 0);
+
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);
+	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
 }
 
 void CameraObject::SetTransform(const Matrix& transform, const Vector3& playerPos)

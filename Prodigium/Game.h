@@ -23,4 +23,5 @@ public:
 	// Inherited via Engine
 	virtual bool OnFrame(const float& deltaTime) override;
 	virtual bool OnStart() override;
+	void LoadMap();
 };

@@ -84,6 +84,11 @@ bool InputHandler::IsKeyHeld(Keyboard::Keys key)
 	return InputHandler::instance->kbState.IsKeyDown(key);
 }
 
+bool InputHandler::IsKeyReleased(const Keyboard::Keys& key)
+{
+	return InputHandler::instance->kBTracker->IsKeyReleased(key);
+}
+
 bool InputHandler::IsLMBPressed()
 {
 	return InputHandler::instance->mouseTracker->leftButton == InputHandler::instance->mouseTracker->PRESSED;
