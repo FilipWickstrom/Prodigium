@@ -24,6 +24,6 @@ public:
 	void Rotate(const float& pitch, const float& yaw);
 	void Sprint();
 	void Walk();
-	void changeCameraOffset(const DirectX::SimpleMath::Vector3& change);
+	void ChangeCameraOffset(const DirectX::SimpleMath::Vector3& change);
 	MeshObject* GetMeshObject()const;
 };
