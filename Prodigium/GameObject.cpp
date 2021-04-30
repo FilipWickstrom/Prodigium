@@ -134,7 +134,7 @@ ID3D11Buffer*& GameObject::GetModelMatrixBuffer()
 	return this->modelMatrixBuffer;
 }
 
-const float GameObject::GetDistance(GameObject otherObject) const
+float GameObject::GetDistance(const GameObject& otherObject) const
 {
 	float dist = Vector3(otherObject.position - this->position).Length();
 

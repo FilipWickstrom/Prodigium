@@ -46,7 +46,6 @@ public:
 	// Buffer for buffering buffer usage.
 	ID3D11Buffer*& GetModelMatrixBuffer();
 
-	const float GetDistance(GameObject otherObject) const;
-
+	float GetDistance(const GameObject &otherObject) const;
 	const DirectX::BoundingOrientedBox& getCollider() const;
 };
