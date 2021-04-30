@@ -62,7 +62,7 @@ void Player::Walk()
 	this->speed = 20.0f;
 }
 
-void Player::changeCameraOffset(const DirectX::SimpleMath::Vector3& change)
+void Player::ChangeCameraOffset(const DirectX::SimpleMath::Vector3& change)
 {
 	this->cameraOffset += change;
 }
