@@ -14,7 +14,7 @@ private:
 	CameraObject tempCam;
 	Player* player;
 	bool running;
-	float deltaTime, lastFrame, currentFrame;
+	//float deltaTime, lastFrame, currentFrame;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();

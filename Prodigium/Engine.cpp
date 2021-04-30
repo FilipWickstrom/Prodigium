@@ -4,9 +4,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
-#ifdef _DEBUG
-	this->RedirectIoToConsole();
-#endif
+
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -104,7 +102,7 @@ void Engine::Render()
 	Graphics::UnbindBackBuffer();
 }
 
-void Engine::openConsole()
+void Engine::OpenConsole()
 {
 	this->RedirectIoToConsole();
 }
