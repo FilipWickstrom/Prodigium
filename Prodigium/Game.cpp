@@ -38,6 +38,7 @@ void Game::HandleInput(const float& deltaTime)
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
+		std::cout << "Closed down." << "\n";
 		this->running = false;
 	}
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
@@ -180,7 +181,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 37.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
 	// Tree galore!! aka Performance test
-	for (int i = 0; i < 250; i++)
+	for (int i = 0; i < 1500; i++)
 	{
 		float x = (float)(rand() % 1000 - rand() % 1000);
 		while (x > -100 && x < 100)
