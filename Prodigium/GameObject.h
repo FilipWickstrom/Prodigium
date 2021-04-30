@@ -42,6 +42,6 @@ public:
 	// Buffer for buffering buffer usage.
 	ID3D11Buffer*& GetModelMatrixBuffer();
 
-	float GetDistance(GameObject otherObject) const;
+	float GetDistance(const GameObject& otherObject) const;
 
 };

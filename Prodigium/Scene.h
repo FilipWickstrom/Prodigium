@@ -67,6 +67,9 @@ public:
 	// switches the to indexed object if it is within the scope of the vector! else nothing changes.
 	void SwitchObject(int index);
 
+	// return the object at index
+	MeshObject& GetMeshObject(int index);
+
 	// return the number of objects inside the scene.
 	int GetNumberOfObjects() const;
 

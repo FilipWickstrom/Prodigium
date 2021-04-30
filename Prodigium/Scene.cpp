@@ -223,6 +223,11 @@ void Scene::SwitchObject(int index)
 	}
 }
 
+MeshObject& Scene::GetMeshObject(int index)
+{
+	return *this->objects[index];
+}
+
 int Scene::GetNumberOfObjects() const
 {
 	return (unsigned int)this->objects.size();

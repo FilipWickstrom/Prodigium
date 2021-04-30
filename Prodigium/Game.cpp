@@ -41,6 +41,12 @@ void Game::HandleInput(const float& deltaTime)
 		std::cout << "Closed down." << "\n";
 		this->running = false;
 	}
+
+	if (InputHandler::IsKeyPressed(Keyboard::Space))
+	{
+		
+	}
+
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
 		this->player->Sprint();
@@ -125,6 +131,10 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
+	// Test pickups but its static lol
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 42.0f, -3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 30.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", { 0.0f, -6.25f, 0.0f });
 
@@ -176,9 +186,7 @@ void Game::LoadMap()
 	L.position = { -80.0f, 20.0f, 50.0f, 35.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Test pickups but its static lol
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { 42.0f, -3.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.4f, 0.4f, 0.4f});
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { 37.0f, -3.0f, 0.0f }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	
 
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
