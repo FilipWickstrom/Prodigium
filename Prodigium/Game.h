@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "CameraObject.h"
 #include "Player.h"
+#include <thread>
+#include <omp.h>
 
 class Game:public Engine
 {
@@ -12,6 +14,7 @@ private:
 	CameraObject tempCam;
 	Player* player;
 	bool running;
+	float deltaTime, lastFrame, currentFrame;
 public:
 	Game(HINSTANCE& instance, UINT windowWidth, UINT windowHeight);
 	~Game();
