@@ -195,4 +195,7 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
+
+	//Now works loading in object-files with more than one meshes
+	SceneHandle()->EditScene().Add("Lamp2.obj", "Lampa2_Diffuse.png", "", {0,0,0}, {0,0,0}, {2.0f, 2.0f, 2.0f});
 }
