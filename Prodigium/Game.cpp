@@ -219,12 +219,14 @@ void Game::LoadMap()
 	for (int i = 0; i < 1500; i++)
 	{
 		float x = (float)(rand() % 1000 - rand() % 1000);
-		while (x > -100 && x < 100)
-			x = (float)(rand() % 1000 - rand() % 1000);
-
 		float z = (float)(rand() % 1000 - rand() % 1000);
-		while (z > -100 && z < 100)
+		while (x > -100 && x < 100 && z > -100 && z < 100)
+		{
+			x = (float)(rand() % 1000 - rand() % 1000);
 			z = (float)(rand() % 1000 - rand() % 1000);
+		}
+
+		
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 
