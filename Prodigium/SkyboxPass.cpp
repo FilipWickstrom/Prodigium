@@ -133,14 +133,15 @@ bool SkyboxPass::CreateTexture()
 	int channels = STBI_rgb_alpha;
 	unsigned char* image[SKYBOXSIDES];
 
+	std::string folder = "SkyboxLow";
 	std::string faces[SKYBOXSIDES] =
 	{
-		"Textures/Skybox/posx.png",
-		"Textures/Skybox/negx.png",
-		"Textures/Skybox/posy.png",
-		"Textures/Skybox/negy.png",
-		"Textures/Skybox/posz.png",
-		"Textures/Skybox/negz.png",
+		"Textures/" + folder + "/posx.png",
+		"Textures/" + folder + "/negx.png",
+		"Textures/" + folder + "/posy.png",
+		"Textures/" + folder + "/negy.png",
+		"Textures/" + folder + "/posz.png",
+		"Textures/" + folder + "/negz.png",
 	};
 	
 	//Load in the images
