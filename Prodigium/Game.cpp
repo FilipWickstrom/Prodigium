@@ -52,6 +52,8 @@ void Game::HandleInput(const float& deltaTime)
 
 
 
+
+
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
 		direction.z += 1.f;
@@ -86,6 +88,13 @@ void Game::HandleInput(const float& deltaTime)
 			SceneHandle()->EditScene().RemoveObject(2);
 			std::cout << "Picked up Drawing!\n";
 		}
+	}
+	if (InputHandler::IsRMBPressed())
+	{
+		// Temp -- Change to trap later
+		SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "",
+			{ this->player->GetMeshObject()->GetPosition().x, -3.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+			{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
