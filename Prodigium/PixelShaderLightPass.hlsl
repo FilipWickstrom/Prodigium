@@ -56,13 +56,12 @@ struct PixelShaderInput
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float3 lightVector = lights[index].position.xyz - buff.positionWS.xyz;
-    float d = length(lightVector);
+    float3 lightVector = normalize(lights[index].position.xyz - buff.positionWS.xyz);
+    float distance = length(lights[index].position.xyz - buff.positionWS.xyz);
     
     // Check if pixel is within the range of the spotlight
 
     float3 normals = normalize(buff.normalWS.xyz);
-    lightVector /= d;
     float diffuse = max(dot(normals, lightVector), 0.0f);
         
     float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
@@ -86,10 +85,27 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         float cosAngle = dot(direction, -lightVector);
         float spot = smoothstep(minCos, maxCos, cosAngle);
         
-        float attenuation = 1 / (lights[index].att.x + (lights[index].att.y * d) + (lights[index].att.z * d * d));
+        float range = lights[index].position.w;
+        float d = max(distance - range, 0);
+        
+        //Attenuate depending on distance from lightsource
+        float denom = d / range + 1.f;
+        float attenuation = 1.f / (denom * denom);
+        float cutoff = 0.01f;
+     
+        // scale and bias attenuation such that:
+        // attenuation == 0 at extent of max influence
+        // attenuation == 1 when d == 0
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = max(attenuation, 0);
+        
+        //float attenuation = 1 / (lights[index].att.x + (lights[index].att.y * d) + (lights[index].att.z * d * d));
         
         s += spec * attenuation * spot;
         diff *= attenuation * spot;
+        
+        //s += spec * attenuation;
+        //diff *= attenuation;
     }
     
     return diff;
