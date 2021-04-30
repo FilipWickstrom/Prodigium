@@ -51,6 +51,16 @@ void Player::Rotate(const float& pitch, const float& yaw)
 	this->playerCam.Rotate(pitch, yaw, 0);
 }
 
+void Player::Sprint()
+{
+	this->speed = 50.0f;
+}
+
+void Player::Walk()
+{
+	this->speed = 20.0f;
+}
+
 MeshObject* Player::GetMeshObject() const
 {
 	return this->playerModel;

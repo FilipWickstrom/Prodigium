@@ -31,6 +31,7 @@ public:
 	static Mouse::Mode getMouseMode();
 	static bool IsKeyPressed(Keyboard::Keys key);
 	static bool IsKeyHeld(Keyboard::Keys key);
+	static bool IsKeyReleased(const Keyboard::Keys& key);
 	static bool IsLMBPressed();
 	static bool IsLMBHeld();
 	static bool IsRMBPressed();
