@@ -11,19 +11,17 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <assimp/material.h>
-#include <assimp/cimport.h>
 
 class Mesh : public Resource
 {
 private:
-	UINT indexCount;
 	std::string objectFile;
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
+	std::vector<ID3D11Buffer*>vertexBuffers;
+	std::vector<ID3D11Buffer*>indexBuffers;
+	std::vector<UINT>indexCount;
 
 private:
-	bool CreateVertIndiBuffers(std::vector<Vertex>& vertices, std::vector<unsigned short>& indices);
+	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
 
 public:
 	Mesh();
