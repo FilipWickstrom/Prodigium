@@ -1,6 +1,15 @@
 #include "GameObject.h"
 #include "Graphics.h"
+#include <thread>
 using namespace DirectX::SimpleMath;
+void GameObject::BuildBoundingVolume()
+{
+	this->collider.Center = { this->position / 2.f };
+	this->collider.Orientation = Quaternion().CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
+	//this->collider.Extents = {}
+	//std::thread* t = new std::thread(&GameObject::UpdateMatrix, this);
+}
+
 GameObject::GameObject()
 {
 	this->position = { 0.0f, 0.0f, 0.0f };
@@ -135,4 +144,9 @@ float GameObject::GetDistance(GameObject otherObject) const
 		dist *= -1;
 
 	return dist;
+}
+
+const DirectX::BoundingOrientedBox& GameObject::getCollider() const
+{
+	return this->collider;
 }

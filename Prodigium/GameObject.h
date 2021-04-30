@@ -6,6 +6,8 @@ class GameObject
 {
 private:
 
+	DirectX::BoundingOrientedBox collider;
+
 	DirectX::SimpleMath::Vector3 position;
 	DirectX::SimpleMath::Vector3 scale;
 	DirectX::SimpleMath::Vector3 rotation;
@@ -15,6 +17,8 @@ private:
 
 	// Buffer containing world matrix, updated each time BuildMatrix is run.
 	ID3D11Buffer* modelMatrixBuffer;
+
+	void BuildBoundingVolume();
 
 public:
 
@@ -44,4 +48,5 @@ public:
 
 	float GetDistance(GameObject otherObject) const;
 
+	const DirectX::BoundingOrientedBox& getCollider() const;
 };
