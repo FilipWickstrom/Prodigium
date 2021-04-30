@@ -122,7 +122,7 @@ bool InputHandler::IsMMBHeld()
 
 void InputHandler::HandleMessages()
 {
-	if (PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
+	while(PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&InputHandler::instance->state);
 		DispatchMessage(&InputHandler::instance->state);

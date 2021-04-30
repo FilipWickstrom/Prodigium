@@ -109,10 +109,10 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
 	this->roll = fmod(this->roll + rollAmount, FULL_CIRCLE);
 	
-	if (this->pitch > 1.2f)
-		this->pitch = 1.2f;
-	if (this->pitch < -1.5f)
-		this->pitch = -1.5f;
+	if (this->pitch > 1.0f)
+		this->pitch = 1.0f;
+	if (this->pitch < -0.8f)
+		this->pitch = -0.8f;
 }
 
 void CameraObject::SetPosition(float xPos, float yPos)
