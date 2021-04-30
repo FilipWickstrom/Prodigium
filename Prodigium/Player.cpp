@@ -11,6 +11,7 @@ Player::Player()
 	this->playerModel = new MeshObject();
 	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Normal.jpg", "", position);
 	this->playerModel->SetRotation({ 0, DirectX::XM_PI, 0 });
+	this->playerModel->UpdateMatrix();
 	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, position + cameraOffset, cameraForward);
 }
 

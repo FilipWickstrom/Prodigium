@@ -149,7 +149,7 @@ void Game::LoadMap()
 	*/
 	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.008f, 0.003f, 2.0f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 1.0f };
 	L.position = { 130.0f, 20.0f, 0.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
@@ -170,15 +170,15 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.attentuate = { 0.4f, 0.008f, 0.003f, 1.0f };
-	L.position = { 325.0f, -7.0f, -75.0f, 60.0f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 1.0f };
+	L.position = { 325.0f, 7.0f, -75.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { -150.0f, -6.5f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, {3.0f, 3.0f, 3.0f});
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { 475.0f, -7.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
-	L.attentuate = { 0.4f, 0.008f, 0.003f, 1.0f };
-	L.position = { -80.0f, 20.0f, 50.0f, 35.0f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { -80.0f, 20.0f, 50.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Test pickups but its static lol
@@ -197,4 +197,7 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
+
+	//Now works loading in object-files with more than one meshes
+	SceneHandle()->EditScene().Add("Lamp2.obj", "Lampa2_Diffuse.png", "", {0,0,0}, {0,0,0}, {2.0f, 2.0f, 2.0f});
 }
