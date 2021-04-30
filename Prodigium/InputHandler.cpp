@@ -15,7 +15,7 @@ InputHandler::~InputHandler()
 	}
 }
 
-bool InputHandler::Initialize()
+const bool InputHandler::Initialize()
 {
 	if (!InputHandler::instance)
 	{
@@ -40,12 +40,11 @@ void InputHandler::setWindow(const HWND& windowHandle)
 	InputHandler::instance->mouse->SetMode(Mouse::MODE_RELATIVE);
 }
 
-int InputHandler::GetMouseX()
+const int InputHandler::GetMouseX()
 {
 	return InputHandler::instance->mouseState.x;
 }
-
-int InputHandler::GetMouseY()
+const int InputHandler::GetMouseY()
 {
 	return InputHandler::instance->mouseState.y;
 }
@@ -59,67 +58,61 @@ void InputHandler::UpdateKeyboardAndMouse()
 	InputHandler::instance->mouseTracker->Update(InputHandler::instance->mouseState);
 }
 
-Keyboard::KeyboardStateTracker* InputHandler::GetKBStateTracker()
+const Keyboard::KeyboardStateTracker* InputHandler::GetKBStateTracker()
 {
 	return InputHandler::instance->kBTracker.get();
 }
 
-Mouse::ButtonStateTracker* InputHandler::getMouseStateTracker()
+const Mouse::ButtonStateTracker* InputHandler::getMouseStateTracker()
 {
 	return InputHandler::instance->mouseTracker.get();
 }
 
-Mouse::Mode InputHandler::getMouseMode()
+const Mouse::Mode InputHandler::getMouseMode()
 {
 	return InputHandler::instance->mouseState.positionMode;
 }
 
-bool InputHandler::IsKeyPressed(Keyboard::Keys key)
+const bool InputHandler::IsKeyPressed(const Keyboard::Keys& key)
 {
 	return InputHandler::instance->kBTracker->IsKeyPressed(key);
 }
-
-bool InputHandler::IsKeyHeld(Keyboard::Keys key)
+const bool InputHandler::IsKeyHeld(const Keyboard::Keys& key)
 {
 	return InputHandler::instance->kbState.IsKeyDown(key);
 }
-
-bool InputHandler::IsKeyReleased(const Keyboard::Keys& key)
+const bool InputHandler::IsKeyReleased(const Keyboard::Keys& key)
 {
 	return InputHandler::instance->kBTracker->IsKeyReleased(key);
 }
-
-bool InputHandler::IsLMBPressed()
+const bool InputHandler::IsLMBPressed()
 {
 	return InputHandler::instance->mouseTracker->leftButton == InputHandler::instance->mouseTracker->PRESSED;
 }
-
-bool InputHandler::IsLMBHeld()
+const bool InputHandler::IsLMBHeld()
 {
 	return  InputHandler::instance->mouseTracker->leftButton == InputHandler::instance->mouseTracker->HELD;
 }
-
-bool InputHandler::IsRMBPressed()
+const bool InputHandler::IsRMBPressed()
 {
 	return  InputHandler::instance->mouseTracker->rightButton == InputHandler::instance->mouseTracker->PRESSED;
 }
-
-bool InputHandler::IsRMBHeld()
+const bool InputHandler::IsRMBHeld()
 {
 	return  InputHandler::instance->mouseTracker->rightButton == InputHandler::instance->mouseTracker->HELD;
 }
-
-bool InputHandler::IsMMBPressed()
+const bool InputHandler::IsMMBPressed()
 {
 	return  InputHandler::instance->mouseTracker->middleButton == InputHandler::instance->mouseTracker->PRESSED;
 }
-
-bool InputHandler::IsMMBHeld()
+const bool InputHandler::IsMMBHeld()
 {
 	return InputHandler::instance->mouseTracker->middleButton == InputHandler::instance->mouseTracker->HELD;
 }
-
-
+const bool InputHandler::IsRunning()
+{
+	return InputHandler::instance->isRunning;
+}
 void InputHandler::HandleMessages()
 {
 	while(PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
@@ -127,11 +120,6 @@ void InputHandler::HandleMessages()
 		TranslateMessage(&InputHandler::instance->state);
 		DispatchMessage(&InputHandler::instance->state);
 	}
-}
-
-bool InputHandler::IsRunning()
-{
-	return InputHandler::instance->isRunning;
 }
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

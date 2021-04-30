@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "InputHandler.h"
-bool Window::SetupWindow(HINSTANCE& instance, UINT width, UINT height)
+bool Window::SetupWindow(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	this->WIDTH = width;
 	this->HEIGHT = height;

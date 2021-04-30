@@ -13,6 +13,7 @@ private:
 	DirectX::SimpleMath::Vector3 cameraDistance;
 	DirectX::SimpleMath::Vector3 forwardVector;
 	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f, 0.f, 1.f };
+	DirectX::SimpleMath::Vector3 cameraOffset;
 
 public:
 	Player();
@@ -23,5 +24,6 @@ public:
 	void Rotate(const float& pitch, const float& yaw);
 	void Sprint();
 	void Walk();
+	void changeCameraOffset(const DirectX::SimpleMath::Vector3& change);
 	MeshObject* GetMeshObject()const;
 };

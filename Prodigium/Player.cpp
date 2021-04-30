@@ -4,7 +4,7 @@ using namespace DirectX::SimpleMath;
 Player::Player()
 {
 	Vector3 position(0.0f, 0.0f, 0.f);
-	Vector3 cameraOffset(0.0f, 2.5f, -8.f);
+	cameraOffset = { 0.0f, 2.5f, -8.f };
 	Vector3 cameraForward = position - cameraOffset;
 	cameraForward.Normalize();
 	this->speed = 10.f;
@@ -59,6 +59,11 @@ void Player::Sprint()
 void Player::Walk()
 {
 	this->speed = 20.0f;
+}
+
+void Player::changeCameraOffset(const DirectX::SimpleMath::Vector3& change)
+{
+	this->cameraOffset += change;
 }
 
 MeshObject* Player::GetMeshObject() const

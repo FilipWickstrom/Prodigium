@@ -62,6 +62,30 @@ void ResourceManager::Initialize()
 	}
 }
 
+ID3D11Texture2D* ResourceManager::GetTexture(const std::string& key)
+{
+	ID3D11Texture2D* rv = instance->GetTextureInternal(key);
+
+	if (rv == nullptr)
+	{
+		std::cout << "Resource is nullptr!" << std::endl;
+	}
+
+	return rv;
+}
+
+Mesh* ResourceManager::GetMesh(const std::string& key)
+{
+	Mesh* rv = instance->GetMeshInternal(key);
+
+	if (rv == nullptr)
+	{
+		std::cout << "Resource is nullptr!" << std::endl;
+	}
+
+	return rv;
+}
+
 void ResourceManager::AddResource(std::string key, Resource* resource)
 {
 	if (resource == nullptr)
@@ -145,7 +169,7 @@ Mesh* ResourceManager::GetMeshInternal(const std::string& key)
 	return dynamic_cast<Mesh*>(found->second);
 }
 
-UINT ResourceManager::GetReferenceCount()
+const UINT ResourceManager::GetReferenceCount()
 {
 	return ResourceManager::instance->referenceCount;
 }

@@ -25,16 +25,16 @@ public:
 	void AddScene();
 
 	// removes the scene at the indexed begin() + index spot. This resets the currentScene pointer to first element.
-	void RemoveScene(int index);
+	void RemoveScene(const int& index);
 
 	// get access to the currentScene pointer which points to current selected scene.
 	Scene& EditScene();
 
 	// switch where the currentScene pointer is going to point.
-	void SwitchScene(int index);
+	void SwitchScene(const int& index);
 
 	// return the number of Scenes currently existing in the game.
-	int GetNrOfScenes() const;
+	const int GetNrOfScenes() const;
 
 	// will cycle through all scenes and pop them from the vector.
 	void RemoveAllScenes();

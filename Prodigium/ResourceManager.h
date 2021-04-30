@@ -40,31 +40,11 @@ public:
 
 	static void Initialize();
 
-	static ID3D11Texture2D* GetTexture(const std::string& key)
-	{
-		ID3D11Texture2D* rv = instance->GetTextureInternal(key);
+	static ID3D11Texture2D* GetTexture(const std::string& key);
 
-		if (rv == nullptr)
-		{
-			std::cout << "Resource is nullptr!" << std::endl;
-		}
+	static Mesh* GetMesh(const std::string& key);
 
-		return rv;
-	}
-
-	static Mesh* GetMesh(const std::string& key)
-	{
-		Mesh* rv = instance->GetMeshInternal(key);
-
-		if (rv == nullptr)
-		{
-			std::cout << "Resource is nullptr!" << std::endl;
-		}
-
-		return rv;
-	}
-
-	static UINT GetReferenceCount();
+	static const UINT GetReferenceCount();
 
 	static void Destroy();
 };

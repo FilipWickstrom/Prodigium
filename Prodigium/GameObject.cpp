@@ -28,7 +28,7 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-bool GameObject::BuildMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
+const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -47,7 +47,7 @@ bool GameObject::BuildMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
 	return !FAILED(result);
 }
 
-bool GameObject::UpdateMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
+const bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -65,7 +65,7 @@ bool GameObject::UpdateMatrix(Vector3 pos, Vector3 scl, Vector3 rot)
 	return !FAILED(hr);
 }
 
-bool GameObject::UpdateMatrix()
+const bool GameObject::UpdateMatrix()
 {
 
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
@@ -90,58 +90,58 @@ bool GameObject::UpdateMatrix()
 	return true;
 }
 
-Vector3 GameObject::GetPosition() const
+const Vector3 GameObject::GetPosition() const
 {
 	return this->position;
 }
-
-Vector3 GameObject::GetScale() const
+const Vector3 GameObject::GetScale() const
 {
 	return this->scale;
 }
-
-Vector3 GameObject::GetRotation() const
+const Vector3 GameObject::GetRotation() const
 {
 	return this->rotation;
 }
 
-void GameObject::SetPosition(Vector3 newPos)
+void GameObject::SetPosition(const Vector3& newPos)
 {
 	this->position = newPos;
 }
 
-void GameObject::SetScale(Vector3 newScale)
+void GameObject::SetScale(const Vector3& newScale)
 {
 	this->scale = newScale;
 }
 
-void GameObject::SetRotation(Vector3 newRotation)
+void GameObject::SetRotation(const Vector3& newRotation)
 {
 	this->rotation = newRotation;
 }
 
-const Matrix& GameObject::GetModelMatrix()
+const Matrix& GameObject::GetModelMatrix() const
 {
 	return this->modelMatrix;
 }
 
-Matrix GameObject::GetTransposedMatrix() const
+const Matrix GameObject::GetTransposedMatrix() const
 {
 	Matrix toBeReturned = this->modelMatrix;
 	return toBeReturned.Transpose();
 }
 
-ID3D11Buffer*& GameObject::GetModelMatrixBuffer()
+ID3D11Buffer*& GameObject::GetModelMatrixBuffer() 
 {
 	return this->modelMatrixBuffer;
 }
 
-float GameObject::GetDistance(GameObject otherObject) const
+const float GameObject::GetDistance(GameObject otherObject) const
 {
 	float dist = Vector3(otherObject.position - this->position).Length();
 
 	if (dist < 0)
+	{
 		dist *= -1;
+	}
 
 	return dist;
 }

@@ -9,7 +9,7 @@ Resource::~Resource()
 {
 }
 
-ResourceType Resource::GetType() const
+const ResourceType Resource::GetType() const
 {
 	return this->type;
 }

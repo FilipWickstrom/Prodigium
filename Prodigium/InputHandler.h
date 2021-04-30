@@ -21,25 +21,25 @@ private:
 
 public:
 	DELETE_COPY_ASSIGNMENT(InputHandler);
-	static bool Initialize();
+	static const bool Initialize();
 	static void setWindow(const HWND& windowHandle);
-	static int GetMouseX();
-	static int GetMouseY();
+	static const int GetMouseX();
+	static const int GetMouseY();
 	static void UpdateKeyboardAndMouse();
-	static Keyboard::KeyboardStateTracker* GetKBStateTracker();
-	static Mouse::ButtonStateTracker* getMouseStateTracker();
-	static Mouse::Mode getMouseMode();
-	static bool IsKeyPressed(Keyboard::Keys key);
-	static bool IsKeyHeld(Keyboard::Keys key);
-	static bool IsKeyReleased(const Keyboard::Keys& key);
-	static bool IsLMBPressed();
-	static bool IsLMBHeld();
-	static bool IsRMBPressed();
-	static bool IsRMBHeld();
-	static bool IsMMBPressed();
-	static bool IsMMBHeld();
+	static const Keyboard::KeyboardStateTracker* GetKBStateTracker();
+	static const Mouse::ButtonStateTracker* getMouseStateTracker();
+	static const Mouse::Mode getMouseMode();
+	static const bool IsKeyPressed(const Keyboard::Keys& key);
+	static const bool IsKeyHeld(const Keyboard::Keys& key);
+	static const bool IsKeyReleased(const Keyboard::Keys& key);
+	static const bool IsLMBPressed();
+	static const bool IsLMBHeld();
+	static const bool IsRMBPressed();
+	static const bool IsRMBHeld();
+	static const bool IsMMBPressed();
+	static const bool IsMMBHeld();
+	static const bool IsRunning();
 	static void HandleMessages();
-	static bool IsRunning();
 	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

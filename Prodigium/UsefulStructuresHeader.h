@@ -1,8 +1,8 @@
 #pragma once
 #include "Texture.h"
 #include <SimpleMath.h>
-#define BUFFER_COUNT 3
 
+constexpr int BUFFER_COUNT = 3;
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.

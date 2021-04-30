@@ -1,6 +1,6 @@
 #include "Scene.h"
 
-bool Scene::SetupLightBuffer()
+const bool Scene::SetupLightBuffer()
 {
 	// Remove any traces of old light buffer information.
 	if (this->lightBuffer)
@@ -17,7 +17,7 @@ bool Scene::SetupLightBuffer()
 	HRESULT hr, shr;
 
 	// Description for the buffer containing all the light information.
-	D3D11_BUFFER_DESC desc;
+	D3D11_BUFFER_DESC desc = {};
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.ByteWidth = sizeof(LightStruct) * (UINT)this->lights.size();
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -25,7 +25,7 @@ bool Scene::SetupLightBuffer()
 	desc.StructureByteStride = sizeof(LightStruct);
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
-	D3D11_SUBRESOURCE_DATA data;
+	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &(this->lights)[0];
 	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->lightBuffer);
 
@@ -46,11 +46,11 @@ bool Scene::SetupLightBuffer()
 	return false;
 }
 
-bool Scene::SetupInfoBuffer()
+const bool Scene::SetupInfoBuffer()
 {
 	HRESULT hr;
 	// Description for the info buffer containing amount of lights.
-	D3D11_BUFFER_DESC infoDesc;
+	D3D11_BUFFER_DESC infoDesc = {};
 	infoDesc.Usage = D3D11_USAGE_DYNAMIC;
 	infoDesc.ByteWidth = sizeof(InfoStruct);
 	infoDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -61,9 +61,9 @@ bool Scene::SetupInfoBuffer()
 	return !FAILED(hr);
 }
 
-bool Scene::UpdateInfoBuffer()
+const bool Scene::UpdateInfoBuffer()
 {
-	InfoStruct newInfo;
+	InfoStruct newInfo = {};
 	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)lights.size(), (float)lights.size(), (float)lights.size());
 
 	D3D11_MAPPED_SUBRESOURCE submap;
@@ -94,14 +94,18 @@ Scene::Scene()
 Scene::~Scene()
 {
 	if (this->lightShaderView)
+	{
 		this->lightShaderView->Release();
+	}
 
 	if (this->lightBuffer)
+	{
 		this->lightBuffer->Release();
-
+	}
 	if (this->infoBuffer)
+	{
 		this->infoBuffer->Release();
-
+	}
 	// Delete the allocated memory from vector.
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
@@ -110,8 +114,7 @@ Scene::~Scene()
 
 }
 
-void Scene::Add(std::string objFile, std::string diffuseTxt, std::string normalTxt,
-	Vector3 position, Vector3 rotation, Vector3 scale)
+void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, const Vector3& position, const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
@@ -150,7 +153,7 @@ void Scene::PopAllLights()
 #ifdef _DEBUG
 	std::cout << "Number of Lights removed: " << (int)this->lights.size() - 1 << "\n";
 #endif
-	while((int)this->lights.size() > 1)
+	while ((int)this->lights.size() > 1)
 	{
 		this->lights.pop_back();
 		this->firstTime = true;
@@ -166,7 +169,7 @@ void Scene::Add(MeshObject* object)
 	}
 }
 
-void Scene::UpdateMatrix(Vector3 pos, Vector3 rotation, Vector3 scale)
+void Scene::UpdateMatrix(const Vector3& pos,const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Update the Matrix with input.
@@ -184,7 +187,7 @@ void Scene::UpdateMatrix(Vector3 pos, Vector3 rotation, Vector3 scale)
 
 }
 
-void Scene::RemoveObject(int index)
+void Scene::RemoveObject(const int& index)
 {
 	if (index < (int)this->objects.size() - 1 && index >= 0)
 	{
@@ -211,7 +214,7 @@ void Scene::RemoveObject(int index)
 	}
 }
 
-void Scene::SwitchObject(int index)
+void Scene::SwitchObject(const int& index)
 {
 	if (index < (int)this->objects.size() && index >= 0)
 		this->currentObject = index;
@@ -223,7 +226,7 @@ void Scene::SwitchObject(int index)
 	}
 }
 
-int Scene::GetNumberOfObjects() const
+const int Scene::GetNumberOfObjects() const
 {
 	return (unsigned int)this->objects.size();
 }
@@ -278,7 +281,7 @@ void Scene::RenderLights()
 			else
 			{
 				/*
-				* If new light setup did not fail we update the info buffer also 
+				* If new light setup did not fail we update the info buffer also
 				* sent to GPU.
 				*/
 				this->UpdateInfoBuffer();

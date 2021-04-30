@@ -22,7 +22,7 @@ void SceneHandler::AddScene()
 	this->scenes[this->currentScene]->SetupInfoBuffer();
 }
 
-void SceneHandler::RemoveScene(int index)
+void SceneHandler::RemoveScene(const int& index)
 {
 	if (index < (int)this->scenes.size() - 1 && index >= 0)
 	{
@@ -54,7 +54,7 @@ Scene& SceneHandler::EditScene()
 	return *this->scenes[this->currentScene];
 }
 
-void SceneHandler::SwitchScene(int index)
+void SceneHandler::SwitchScene(const int& index)
 {
 	if (index < (int)scenes.size() - 1 && index >= 0)
 	{
@@ -68,7 +68,7 @@ void SceneHandler::SwitchScene(int index)
 	}
 }
 
-int SceneHandler::GetNrOfScenes() const
+const int SceneHandler::GetNrOfScenes() const
 {
 	return (unsigned int)scenes.size();
 }

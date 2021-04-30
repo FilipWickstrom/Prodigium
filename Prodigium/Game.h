@@ -16,9 +16,9 @@ private:
 	bool running;
 	float deltaTime, lastFrame, currentFrame;
 public:
-	Game(HINSTANCE& instance, UINT windowWidth, UINT windowHeight);
+	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();
-	bool IsRunning() const;
+	const bool IsRunning() const;
 	void HandleInput(const float& deltaTime);
 	// Inherited via Engine
 	virtual bool OnFrame(const float& deltaTime) override;

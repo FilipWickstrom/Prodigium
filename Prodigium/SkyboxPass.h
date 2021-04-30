@@ -4,7 +4,7 @@
 #include <SimpleMath.h>
 
 #include "RenderPass.h"
-#define SKYBOXSIDES 6
+constexpr int SKYBOXSIDES = 6;
 
 /*
 Skybox made with cubemapping

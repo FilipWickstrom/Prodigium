@@ -25,28 +25,28 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
-	bool BuildMatrix(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 scl, DirectX::SimpleMath::Vector3 rot);
-	bool UpdateMatrix(DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 scl, DirectX::SimpleMath::Vector3 rot);
-	bool UpdateMatrix();
+	const bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	const bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	const bool UpdateMatrix();
 
-	DirectX::SimpleMath::Vector3 GetPosition() const;
-	DirectX::SimpleMath::Vector3 GetScale() const;
-	DirectX::SimpleMath::Vector3 GetRotation() const;
+	const DirectX::SimpleMath::Vector3 GetPosition() const;
+	const DirectX::SimpleMath::Vector3 GetScale() const;
+	const DirectX::SimpleMath::Vector3 GetRotation() const;
 
-	void SetPosition(DirectX::SimpleMath::Vector3 newPos);
-	void SetScale(DirectX::SimpleMath::Vector3 newScale);
-	void SetRotation(DirectX::SimpleMath::Vector3 newRotation);
+	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
+	void SetScale(const DirectX::SimpleMath::Vector3& newScale);
+	void SetRotation(const DirectX::SimpleMath::Vector3& newRotation);
 
 	// Returns the float4x4 of the modelMatrix.
-	const DirectX::SimpleMath::Matrix& GetModelMatrix();
+	const DirectX::SimpleMath::Matrix& GetModelMatrix() const;
 
 	// Returns the transposed XMMATRIX of modelMatrix.
-	DirectX::SimpleMath::Matrix GetTransposedMatrix() const;
+	const DirectX::SimpleMath::Matrix GetTransposedMatrix() const;
 
 	// Buffer for buffering buffer usage.
 	ID3D11Buffer*& GetModelMatrixBuffer();
 
-	float GetDistance(GameObject otherObject) const;
+	const float GetDistance(GameObject otherObject) const;
 
 	const DirectX::BoundingOrientedBox& getCollider() const;
 };

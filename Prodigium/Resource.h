@@ -17,5 +17,5 @@ public:
 	Resource(ResourceType type);
 	virtual ~Resource();
 
-	ResourceType GetType()const;
+	const ResourceType GetType()const;
 };

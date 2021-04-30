@@ -13,7 +13,7 @@ private:
 public:
 	Window();
 	~Window();
-	bool SetupWindow(HINSTANCE& instance, UINT width, UINT height);
+	bool SetupWindow(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	const HWND& GetWindowHandler()const;
 	const UINT& GetWindowWidth()const;
 	const UINT& GetWindowHeight()const;

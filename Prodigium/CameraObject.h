@@ -34,16 +34,17 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	bool Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, const DirectX::SimpleMath::Vector3& eyePosition, const DirectX::SimpleMath::Vector3& lookTo);
-	void Move(float x, float z);
-	void Move(float x, float y, float z);
-	void Move(DirectX::SimpleMath::Vector3 translation);
+	bool Initialize(const int& windowWidth,const int& windowHeight, const float& nearPlane,const float& farPlane,const float& fov, const DirectX::SimpleMath::Vector3& eyePosition, const DirectX::SimpleMath::Vector3& lookTo);
+	void Move(const float& x,const float& z);
+	void Move(const float& x, const float& y, const float& z);
+	void Move(const DirectX::SimpleMath::Vector3& translation);
 	void Rotate(const float& pitchAmount, const float& yawAmount, const float& rollAmount);
-	void SetPosition(float xPos, float yPos);
-	void SetPosition(float xPos, float yPos, float zPos);
-	void SetPosition(DirectX::SimpleMath::Vector3 newPos);
-	void SetRotation(float roll, float pitch, float yaw);
+	void SetPosition(const float& xPos, const float& yPos);
+	void SetPosition(const float& xPos, const float& yPos, const float& zPos);
+	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
+	void SetRotation(const float& roll, const float& pitch, const float& yaw);
 	DirectX::SimpleMath::Vector3 getPos() const;
 	void Update();
 	void SetTransform(const DirectX::SimpleMath::Matrix& transform, const DirectX::SimpleMath::Vector3& playerPos);
+	void changeOffset(const DirectX::SimpleMath::Vector3& offset);
 };

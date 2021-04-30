@@ -33,10 +33,10 @@ CameraObject::~CameraObject()
 		this->camPosBuffer->Release();
 }
 
-bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane, float farPlane, float fov, const Vector3& position, const Vector3& lookTo)
+bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, const float& nearPlane, const float& farPlane, const float& fov, const Vector3& eyePosition, const Vector3& lookTo)
 {
 	this->defaultForward = lookTo;
-	this->defaultPosition = position;
+	this->defaultPosition = eyePosition;
 	//this->eyePos = position;
 	this->targetPos = { 0.f,0.f,1.f };
 	this->nearPlane = nearPlane;
@@ -87,15 +87,21 @@ bool CameraObject::Initialize(int windowWidth, int windowHeight, float nearPlane
 	return true;
 }
 
-void CameraObject::Move(float x, float z)
+void CameraObject::Move(const float& x, const float& z)
 {
 	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
 
 	this->UpdateViewMatrix();
 }
+void CameraObject::Move(const float& x, const float& y, const float& z)
+{
+	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
+	this->eyePos += eyePos.Transform({ x,y,z }, this->rotationMatrix);
 
-void CameraObject::Move(DirectX::SimpleMath::Vector3 translation)
+	this->UpdateViewMatrix();
+}
+void CameraObject::Move(const Vector3& translation)
 {
 	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->eyePos += eyePos.Transform(translation, rotationMatrix);
@@ -108,32 +114,36 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	this->pitch = fmod(this->pitch + pitchAmount, FULL_CIRCLE);
 	this->yaw = fmod(this->yaw + yawAmount, FULL_CIRCLE);
 	this->roll = fmod(this->roll + rollAmount, FULL_CIRCLE);
-	
+
 	if (this->pitch > 1.0f)
+	{
 		this->pitch = 1.0f;
+	}
 	if (this->pitch < -0.8f)
+	{
 		this->pitch = -0.8f;
+	}
 }
 
-void CameraObject::SetPosition(float xPos, float yPos)
+void CameraObject::SetPosition(const float& xPos, const float& yPos)
 {
 	this->eyePos = { xPos,yPos, 1.f };
 	this->UpdateViewMatrix();
 }
 
-void CameraObject::SetPosition(float xPos, float yPos, float zPos)
+void CameraObject::SetPosition(const float& xPos, const float& yPos, const float& zPos)
 {
 	this->eyePos = { xPos,yPos, zPos };
 	this->UpdateViewMatrix();
 }
 
-void CameraObject::SetPosition(Vector3 newPos)
+void CameraObject::SetPosition(const Vector3& newPos)
 {
 	this->eyePos = newPos;
 	this->UpdateViewMatrix();
 }
 
-void CameraObject::SetRotation(float roll, float pitch, float yaw)
+void CameraObject::SetRotation(const float& roll, const float& pitch, const float& yaw)
 {
 	this->roll = roll;
 	this->pitch = pitch;
@@ -165,6 +175,10 @@ void CameraObject::Update()
 
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
+}
+
+void CameraObject::changeOffset(const Vector3& offset)
+{
 }
 
 void CameraObject::SetTransform(const Matrix& transform, const Vector3& playerPos)

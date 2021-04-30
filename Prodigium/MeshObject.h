@@ -5,7 +5,7 @@
 #include "Texture.h"
 #include "ResourceManager.h"
 
-#define MAXNROFTEXTURES 2
+constexpr int MAXNROFTEXTURES = 2;
 
 class MeshObject : public GameObject
 {

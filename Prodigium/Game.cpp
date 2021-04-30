@@ -3,8 +3,8 @@
 #include <thread>
 
 
-Game::Game(HINSTANCE& instance, UINT width, UINT height)
-	:Engine(instance, width, height)
+Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
+	:Engine(instance, windowWidth, windowHeight)
 {
 	this->running = true;
 	this->player = nullptr;
@@ -17,7 +17,7 @@ Game::~Game()
 		delete this->player;
 }
 
-bool Game::IsRunning() const
+const bool Game::IsRunning() const
 {
 	if (this->running == false || InputHandler::IsRunning() == false)
 	{
@@ -41,6 +41,10 @@ void Game::HandleInput(const float& deltaTime)
 		std::cout << "Closed down." << "\n";
 		this->running = false;
 	}
+	if (InputHandler::IsKeyPressed(Keyboard::K))
+	{
+		openConsole();
+	}
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
 		this->player->Sprint();
@@ -49,9 +53,6 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->player->Walk();
 	}
-
-
-
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
 		direction.z += 1.f;
@@ -74,7 +75,8 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
-		this->player->Rotate(0.f, DirectX::XM_PI / 8);
+		this->player->changeCameraOffset({ 0.f,0.f,0.4 });
+		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
 	{

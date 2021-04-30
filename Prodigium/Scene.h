@@ -32,19 +32,19 @@ private:
 	// contains general information of the lights, such as, amount.
 	ID3D11Buffer* infoBuffer;
 
-	bool SetupLightBuffer();
-	bool UpdateInfoBuffer();
+	const bool SetupLightBuffer();
+	const bool UpdateInfoBuffer();
 public:
 
 	Scene();
 	virtual ~Scene();
 
 	// dont worry about this if you're in game.h making the game.
-	bool SetupInfoBuffer();
+	const bool SetupInfoBuffer();
 
 	// adds an object to the scene, current selected object will point towards this new object.
-	void Add(std::string objFile, std::string diffuseTxt = "", std::string normalTxt = "", 
-		DirectX::SimpleMath::Vector3 position = {0.0f, 0.0f, 0.0f}, DirectX::SimpleMath::Vector3 rotation = {0.0f, 0.0f, 0.0f}, DirectX::SimpleMath::Vector3 scale = {1.0f, 1.0f, 1.0f});
+	void Add(const std::string& objFile,const std::string& diffuseTxt = "", const std::string& normalTxt = "", 
+		const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);
@@ -58,17 +58,17 @@ public:
 	void PopAllLights();
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
-	void UpdateMatrix(DirectX::SimpleMath::Vector3 pos = { 0.0f, 0.0f, 0.0f },
-		DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f }, DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f });
+	void UpdateMatrix(const DirectX::SimpleMath::Vector3& pos = { 0.0f, 0.0f, 0.0f },
+		const DirectX::SimpleMath::Vector3& rotation = { 0.0f, 0.0f, 0.0f }, const DirectX::SimpleMath::Vector3& scale = { 1.0f, 1.0f, 1.0f });
 
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
-	void RemoveObject(int index);
+	void RemoveObject(const int& index);
 
 	// switches the to indexed object if it is within the scope of the vector! else nothing changes.
-	void SwitchObject(int index);
+	void SwitchObject(const int& index);
 
 	// return the number of objects inside the scene.
-	int GetNumberOfObjects() const;
+	const int GetNumberOfObjects() const;
 
 	// will cycle through vector and pop_back() through all elements.
 	void RemoveAllObjects();

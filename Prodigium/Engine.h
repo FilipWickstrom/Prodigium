@@ -19,27 +19,24 @@ private:
 	GeometryPass gPass;
 	LightPass lightPass;
 	SkyboxPass skyboxPass;
-
+	bool consoleOpen;
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 private:
-	bool StartUp(HINSTANCE& instance, const UINT& width, const UINT& height);
+	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();
-
-protected:
-
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
 
-	Engine(HINSTANCE& instance, UINT width, UINT height);
+	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	virtual ~Engine();
 
 	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
-
+	void openConsole();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
 };
