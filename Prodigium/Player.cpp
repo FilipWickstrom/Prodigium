@@ -44,7 +44,7 @@ void Player::Move(Vector3& direction, const float& deltaTime)
 	Vector3 currentRotation = { 0.f, this->playerModel->GetRotation().y, 0.f };
 	Vector3 targetRotation = { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f };
 
-	if (abs(targetRotation.y - currentRotation.y) > 0.1f)
+	if (abs(targetRotation.y - currentRotation.y) > 0.01f)
 	{
 		currentRotation.y = targetRotation.y;
 	}
