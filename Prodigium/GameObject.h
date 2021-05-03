@@ -47,5 +47,5 @@ public:
 	ID3D11Buffer*& GetModelMatrixBuffer();
 
 	float GetDistance(const GameObject &otherObject) const;
-	const DirectX::BoundingOrientedBox& getCollider() const;
+	const DirectX::BoundingOrientedBox& GetCollider() const;
 };

@@ -145,7 +145,7 @@ void CameraObject::SetPosition(const Vector3& newPos)
 	this->UpdateViewMatrix();
 }
 
-Vector3 CameraObject::getPos() const
+Vector3 CameraObject::GetPos() const
 {
 	return this->eyePos;
 }
@@ -169,7 +169,7 @@ void CameraObject::Update()
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
 }
 
-void CameraObject::changeOffset(const Vector3& offset)
+void CameraObject::ChangeOffset(const Vector3& offset)
 {
 }
 

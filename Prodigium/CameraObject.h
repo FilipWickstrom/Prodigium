@@ -42,8 +42,8 @@ public:
 	void SetPosition(const float& xPos, const float& yPos);
 	void SetPosition(const float& xPos, const float& yPos, const float& zPos);
 	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
-	DirectX::SimpleMath::Vector3 getPos() const;
+	DirectX::SimpleMath::Vector3 GetPos() const;
 	void Update();
 	void SetTransform(const DirectX::SimpleMath::Matrix& transform, const DirectX::SimpleMath::Vector3& playerPos);
-	void changeOffset(const DirectX::SimpleMath::Vector3& offset);
+	void ChangeOffset(const DirectX::SimpleMath::Vector3& offset);
 };
