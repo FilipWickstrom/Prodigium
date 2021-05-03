@@ -183,6 +183,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneHandler.h" />
+    <ClInclude Include="ShadowHandler.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SkyboxPass.h" />
     <ClInclude Include="SSAO.h" />

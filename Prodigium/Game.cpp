@@ -124,12 +124,6 @@ bool Game::OnFrame(const float& deltaTime)
 
 	player->Update(deltaTime);
 
-	LightStruct L;
-	L.position = { player->GetMeshObject()->GetPosition().x, player->GetMeshObject()->GetPosition().y + 400 , player->GetMeshObject()->GetPosition().z + 200, 0.0f};
-	L.direction = { player->GetMeshObject()->GetPosition().x, player->GetMeshObject()->GetPosition().y, player->GetMeshObject()->GetPosition().z, 0.0f };
-	L.attentuate = { 0.0f, 0.0f, 0.0f, 0.0f };
-	shadower.Update(L);
-
 	Engine::ClearDisplay();
 	Engine::Render();
 

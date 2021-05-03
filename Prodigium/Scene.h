@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "MeshObject.h"
-#include "ShadowMap.h"
+#include "ShadowHandler.h"
 struct InfoStruct
 {
 	DirectX::XMFLOAT4 info;
@@ -35,6 +35,12 @@ private:
 
 	const bool SetupLightBuffer();
 	const bool UpdateInfoBuffer();
+
+	/*
+		For rendering Shadows
+	*/
+	ShadowHandler shadowHandler;
+
 public:
 
 	Scene();

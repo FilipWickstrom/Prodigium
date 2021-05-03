@@ -196,31 +196,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
         return ambient;
     }
     
-    // Shadow calculation
-    float4 lightViewPos = mul(gbuffers.positionWS, lightView);
-    lightViewPos = mul(lightViewPos, lightProj);
-    float2 shadowCoord;
-
-    shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
-    shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
-    
-    if ((saturate(shadowCoord.x) == shadowCoord.x) &&
-		(saturate(shadowCoord.y) == shadowCoord.y))
-    {
-		
-        float bias = 0.000005f;
-
-		
-        float depth = shadowMap.Sample(anisotropic, shadowCoord).r;
-
-        float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
-
-        if (lightDepth > depth)
-        {
-            return ambient;
-        }
-    }
-    
     /*
     Do light calculations
     */
@@ -245,10 +220,34 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
     
-    // If no lighting is reaching the pixel then apply default ambient lighting.
-    if (lightColor.x <= 0)
+    /*
+        Check for shadows
+    */
+    if (lightColor.x < .5f)
     {
-        return ambient;
+        float4 lightViewPos = mul(gbuffers.positionWS, lightView);
+        lightViewPos = mul(lightViewPos, lightProj);
+        float2 shadowCoord;
+
+        shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
+        shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
+    
+        if ((saturate(shadowCoord.x) == shadowCoord.x) &&
+		(saturate(shadowCoord.y) == shadowCoord.y))
+        {
+		
+            float bias = 0.000003f;
+
+		
+            float depth = shadowMap.Sample(anisotropic, shadowCoord).r;
+
+            float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
+
+            if (lightDepth > depth)
+            {
+                return (saturate(lightColor) * gbuffers.diffuseColor + ambient) * 0.5f;
+            }
+        }
     }
     
     return (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);

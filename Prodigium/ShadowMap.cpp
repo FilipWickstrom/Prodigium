@@ -225,10 +225,3 @@ void ShadowMap::RenderLightPass()
 	Graphics::GetContext()->PSSetConstantBuffers(2, 1, &this->lightBuffer);
 	Graphics::GetContext()->PSSetShaderResources(4, 1, &this->shadowResourceView);
 }
-
-void ShadowMap::test()
-{
-	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
-	ID3D11DepthStencilView* nullDepth = nullptr;
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
-}

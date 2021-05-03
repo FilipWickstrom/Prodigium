@@ -152,6 +152,9 @@
     <ClInclude Include="ShadowMap.h">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowHandler.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
