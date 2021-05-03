@@ -34,10 +34,10 @@ void Player::Move(Vector3& direction, const float& deltaTime)
 	DirectX::SimpleMath::Matrix rotation = {};
 	rotation = rotation.CreateFromYawPitchRoll(this->playerCam.GetRotation().y, 0.f, 0.f);
 	Vector3 currentPos = this->playerModel->GetPosition();
-	Vector3 newRotation = this->playerModel->GetRotation().Lerp({ 0.f, this->playerModel->GetRotation().y, 0.f }, { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f }, 0.1f);
 	Vector3 newPos = Vector3::Transform({ direction }, rotation);
 	newPos += currentPos;
-	
+
+	Vector3 newRotation = this->playerModel->GetRotation().Lerp({ 0.f, this->playerModel->GetRotation().y, 0.f }, { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f }, 0.1f);
 	this->playerModel->SetRotation({ 0, newRotation.y, 0 });
 	this->playerModel->SetPosition(newPos);
 	this->playerModel->UpdateMatrix();
@@ -53,6 +53,7 @@ void Player::Rotate(const float& pitch, const float& yaw)
 	float newYawY = fmod(yawY + yaw, FULL_CIRCLE);
 
 	this->playerCam.Rotate(pitch, yaw, 0);
+	//std::cout << this->playerCam.GetRotation().y << std::endl;
 }
 
 void Player::Sprint()
