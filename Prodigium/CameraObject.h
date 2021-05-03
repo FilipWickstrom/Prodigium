@@ -42,7 +42,6 @@ public:
 	void SetPosition(const float& xPos, const float& yPos);
 	void SetPosition(const float& xPos, const float& yPos, const float& zPos);
 	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
-	void SetRotation(const float& roll, const float& pitch, const float& yaw);
 	DirectX::SimpleMath::Vector3 getPos() const;
 	void Update();
 	void SetTransform(const DirectX::SimpleMath::Matrix& transform, const DirectX::SimpleMath::Vector3& playerPos);

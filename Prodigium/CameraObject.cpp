@@ -123,6 +123,8 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	{
 		this->pitch = -0.8f;
 	}
+
+	this->SetRotation({ this->pitch, this->yaw, this->roll });
 }
 
 void CameraObject::SetPosition(const float& xPos, const float& yPos)
@@ -140,16 +142,6 @@ void CameraObject::SetPosition(const float& xPos, const float& yPos, const float
 void CameraObject::SetPosition(const Vector3& newPos)
 {
 	this->eyePos = newPos;
-	this->UpdateViewMatrix();
-}
-
-void CameraObject::SetRotation(const float& roll, const float& pitch, const float& yaw)
-{
-	this->roll = roll;
-	this->pitch = pitch;
-	this->yaw = yaw;
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, 0.15f, this->roll);
-
 	this->UpdateViewMatrix();
 }
 
