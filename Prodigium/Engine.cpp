@@ -147,9 +147,9 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	}
 
 	LightStruct L;
-	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.direction = { 0.f, -500.0f, 250.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { 130.0f, 20.0f, 0.0f, 20.0f };
+	L.position = { 0.0f, 50.0f, 300.0f, 20.0f };
 	this->shadower.SetUp(L);
 
 	return true;

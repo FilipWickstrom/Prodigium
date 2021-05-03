@@ -67,7 +67,7 @@ bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
 		{ lightSt.direction.x, lightSt.direction.y, lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.45f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 0.1f, 100.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 6000.0f));
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -89,10 +89,10 @@ bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
 		DirectX::SimpleMath::Matrix proj;
 	}Lpos;
 
-	Lpos.view = DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
-		{ lightSt.direction.x, lightSt.direction.y, lightSt.direction.z }, { 0.0f, 1.0f, 0.0f });
+	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
+		{ lightSt.direction.x, lightSt.direction.y, lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 200.0f);
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 6000.0f));
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr = Graphics::GetContext()->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
@@ -181,6 +181,11 @@ void ShadowMap::SetUp(const LightStruct& lightSt)
 	}
 }
 
+void ShadowMap::Update(const LightStruct& lightSt)
+{
+	this->UpdateLightBuffer(lightSt);
+}
+
 void ShadowMap::RenderStatic()
 {
 	/*
@@ -196,8 +201,9 @@ void ShadowMap::RenderStatic()
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->lightBuffer);
 	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
 	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
 	Graphics::GetContext()->ClearDepthStencilView(this->shadowDepth, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
+	
 }
 
 void ShadowMap::Clean()

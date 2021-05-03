@@ -208,7 +208,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 		(saturate(shadowCoord.y) == shadowCoord.y))
     {
 		
-        float bias = 0.001f;
+        float bias = 0.000005f;
 
 		
         float depth = shadowMap.Sample(anisotropic, shadowCoord).r;

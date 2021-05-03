@@ -23,10 +23,13 @@ private:
 	SceneHandler sceneHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
-	ShadowMap shadower;
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();
+
+protected:
+
+	ShadowMap shadower;
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
