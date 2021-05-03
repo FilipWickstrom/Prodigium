@@ -2,6 +2,7 @@
 Texture2D G_positionWS : register(t0);
 Texture2D G_colour : register(t1);
 Texture2D G_normalWS : register(t2);
+Texture2D shadowMap : register(t4);
 
 SamplerState anisotropic : register(s0);
 
@@ -26,6 +27,12 @@ cbuffer LightsInfo : register(b0)
 cbuffer Camera : register(b1)
 {
     float4 camPos;
+}
+
+cbuffer LightViewProj : register(b2)
+{
+    matrix lightView;
+    matrix lightProj;
 }
 
 StructuredBuffer<lightBuffer> lights : register(t3);
@@ -187,6 +194,31 @@ float4 main(PixelShaderInput input) : SV_TARGET
     if (info.a == 1)
     {
         return ambient;
+    }
+    
+    // Shadow calculation
+    float4 lightViewPos = mul(gbuffers.positionWS, lightView);
+    lightViewPos = mul(lightViewPos, lightProj);
+    float2 shadowCoord;
+
+    shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
+    shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
+    
+    if ((saturate(shadowCoord.x) == shadowCoord.x) &&
+		(saturate(shadowCoord.y) == shadowCoord.y))
+    {
+		
+        float bias = 0.001f;
+
+		
+        float depth = shadowMap.Sample(anisotropic, shadowCoord).r;
+
+        float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
+
+        if (lightDepth > depth)
+        {
+            return ambient;
+        }
     }
     
     /*

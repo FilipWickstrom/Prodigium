@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "MeshObject.h"
+#include "ShadowMap.h"
 struct InfoStruct
 {
 	DirectX::XMFLOAT4 info;

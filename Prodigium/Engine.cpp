@@ -85,11 +85,16 @@ void Engine::Render()
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
+
+	this->shadower.RenderStatic();
+	this->sceneHandler.Render();
+	this->shadower.Clean();
 	this->gPass.Clear();
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
+	this->shadower.RenderLightPass();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 
@@ -140,6 +145,12 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
+	LightStruct L;
+	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+	L.position = { 130.0f, 20.0f, 0.0f, 20.0f };
+	this->shadower.SetUp(L);
 
 	return true;
 }

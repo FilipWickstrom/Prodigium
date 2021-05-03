@@ -8,12 +8,22 @@ class ShadowMap
 private:
 
 	ID3D11Texture2D* shadowMap;
-	ID3D11RenderTargetView* shadowRenderTarget;
+	ID3D11DepthStencilView* shadowDepth;
 	ID3D11ShaderResourceView* shadowResourceView;
+	ID3D11Buffer* lightBuffer;
+	D3D11_VIEWPORT viewPort;
+	ID3D11VertexShader* vertexShader;
 
+	// Internal setting up shadow map.
 	bool SetupShadowMap();
+	bool SetupLightBuffer(const LightStruct& lightSt);
+	bool UpdateLightBuffer(const LightStruct& lightSt);
+	bool LoadVertexShader();
 
 public:
+
+	ShadowMap();
+	virtual ~ShadowMap();
 
 	// Setup the shadow map.
 	void SetUp(const LightStruct &lightSt);
@@ -21,8 +31,14 @@ public:
 	// Render all the static objects once.
 	void RenderStatic();
 
+	void Clean();
+
 	// Render the dynamic object moving around.
 	void RenderDynamic();
+
+	void RenderLightPass();
+
+	void test();
 };
 
 /*
