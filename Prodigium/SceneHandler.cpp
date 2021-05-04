@@ -98,6 +98,7 @@ void SceneHandler::Render()
 	{
 		this->scenes[this->currentScene]->Render();
 	}
+
 }
 
 void SceneHandler::RenderLights()
@@ -106,4 +107,12 @@ void SceneHandler::RenderLights()
 	{
 		this->scenes[this->currentScene]->RenderLights();
 	}
+
+	// Shadows for light pass
+	this->scenes[this->currentScene]->GetShadows().RenderLightPass();
+}
+
+void SceneHandler::RenderShadows()
+{
+	this->scenes[this->currentScene]->RenderShadows();
 }

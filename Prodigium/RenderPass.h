@@ -71,6 +71,7 @@ public:
 	GeometryPass();
 	~GeometryPass();
 
+	void ClearScreen();
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
 

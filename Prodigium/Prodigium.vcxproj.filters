@@ -19,6 +19,9 @@
     <FxCompile Include="SkyboxPixelShader.hlsl">
       <Filter>Engine\Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="ShadowVertex.hlsl">
+      <Filter>Engine\Graphics\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -73,6 +76,12 @@
     <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowHandler.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +152,12 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="LightObject.h" />
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowHandler.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">

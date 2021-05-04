@@ -147,6 +147,16 @@ float GameObject::GetDistance(const GameObject& otherObject) const
 	return dist;
 }
 
+float GameObject::GetDistance(const DirectX::SimpleMath::Vector4& otherObject) const
+{
+	float dist = Vector3(otherObject - this->position).Length();
+	if (dist < 0)
+		dist *= -1;
+
+	return dist;
+}
+
+const DirectX::BoundingOrientedBox& GameObject::getCollider() const
 const DirectX::BoundingOrientedBox& GameObject::GetCollider() const
 {
 	return this->collider;
