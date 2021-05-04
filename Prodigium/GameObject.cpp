@@ -7,7 +7,6 @@ void GameObject::BuildBoundingVolume()
 	this->collider.Center = { this->position / 2.f };
 	this->collider.Orientation = Quaternion().CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
 	//this->collider.Extents = {}
-	//std::thread* t = new std::thread(&GameObject::UpdateMatrix, this);
 }
 
 GameObject::GameObject()
@@ -15,6 +14,8 @@ GameObject::GameObject()
 	this->position = { 0.0f, 0.0f, 0.0f };
 	this->scale = { 0.0f, 0.0f, 0.0f };
 	this->rotation = { 0.0f, 0.0f, 0.0f };
+	this->up = { 0.0f, 1.0f, 0.0f };
+	this->right = { 0.0f, 0.0f, 0.0f };
 	this->modelMatrixBuffer = nullptr;
 	this->modelMatrix = { 1.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 1.0f, 0.0f, 0.0f,
@@ -146,7 +147,7 @@ float GameObject::GetDistance(const GameObject& otherObject) const
 	return dist;
 }
 
-const DirectX::BoundingOrientedBox& GameObject::getCollider() const
+const DirectX::BoundingOrientedBox& GameObject::GetCollider() const
 {
 	return this->collider;
 }
