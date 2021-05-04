@@ -201,9 +201,9 @@ void ShadowMap::RenderStatic()
 	Graphics::GetContext()->ClearDepthStencilView(this->shadowDepth, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
-	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->lightBuffer);
+	Graphics::GetContext()->VSSetConstantBuffers(3, 1, &this->lightBuffer);
 	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
-	//Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
 }
 

@@ -149,7 +149,7 @@ void ShadowHandler::Clear()
 	/*
 		HERE IS WHERE SKYBOX IS BEING REMOVED FOR SOME REASON!!
 	*/
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
-	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
+	//Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
+	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
 	Graphics::SetMainWindowViewport();
 }

@@ -1,4 +1,4 @@
-cbuffer CameraViewProj : register(b0)
+cbuffer CameraViewProj : register(b3)
 {
     float4x4 view;
     float4x4 projection;
