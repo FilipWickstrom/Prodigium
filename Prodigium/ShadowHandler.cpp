@@ -85,10 +85,10 @@ void ShadowHandler::Add(const LightStruct& L)
 	this->shadows.push_back(map);
 
 	MatrixLight lightMatrix;
-	lightMatrix.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ L.position.x, L.position.y + 30, L.position.z },
+	lightMatrix.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ L.position.x, L.position.y + 100, L.position.z },
 		{ L.position.x - 0.001f, -1.0f , L.position.z + 0.001f }, { 0.0f, 1.0f, 0.0f }));
 
-	lightMatrix.projection = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), .25f, 200.0f));
+	lightMatrix.projection = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 85.0f, 150.0f));
 
 	structs.push_back(lightMatrix);
 

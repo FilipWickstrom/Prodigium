@@ -1,8 +1,8 @@
 #pragma once
 #include <d3d11.h>
 #include "UsefulStructuresHeader.h"
-#define SHADOWHEIGHT 2048
-#define SHADOWWIDTH 2048
+#define SHADOWHEIGHT 4096
+#define SHADOWWIDTH 4096
 class ShadowMap
 {
 private:

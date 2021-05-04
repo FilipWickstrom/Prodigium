@@ -81,7 +81,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     if ((saturate(shadowCoord.x) == shadowCoord.x) &&
 	    (saturate(shadowCoord.y) == shadowCoord.y))
     {
-        float bias = 0.0000075f;
+        float bias = 0.00003f;
         float dx = 1.0f / 2048;
         float depth = shadowMaps.Sample(anisotropic, float3(shadowCoord, shadowIndex)).r;
         float s0 = shadowMaps.Sample(anisotropic, float3(shadowCoord, shadowIndex).r) + bias;

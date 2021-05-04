@@ -35,7 +35,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		else
 		{
 			lastFrameRate = (float)frameCounter / timeCounter;
-			//printf("FPS: %f\r", lastFrameRate);
+			printf("FPS: %f\r", lastFrameRate);
 			frameCounter = 0;
 			timeCounter = 0.f;
 		}
