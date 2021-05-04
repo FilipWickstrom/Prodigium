@@ -11,6 +11,7 @@
 #include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
+#include "GUIHandler.h"
 
 class Engine
 {
@@ -21,6 +22,7 @@ private:
 	SkyboxPass skyboxPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
+	GUIHandler guiHandler;
 	MeshObject testMeshObj;		//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 private:

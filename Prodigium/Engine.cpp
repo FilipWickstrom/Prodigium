@@ -18,6 +18,7 @@ Engine::~Engine()
 {
 	ResourceManager::Destroy();
 	Graphics::Destroy();
+	this->guiHandler.Shutdown();
 }
 
 void Engine::RedirectIoToConsole()
@@ -98,6 +99,8 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
+	this->guiHandler.Render();
+
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
 }
@@ -140,6 +143,8 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
+	this->guiHandler.Initialize(window.GetWindowHandler());
 
 	return true;
 }

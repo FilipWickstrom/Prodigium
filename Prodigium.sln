@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prodigium", "Prodigium\Prodigium.vcxproj", "{533A1E69-0F5D-44EB-A10B-06702996443C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetLoader", "..\..\AssetLoader\AssetLoader.vcxproj", "{3D6B2368-73CF-4D70-B924-46D01797305D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{533A1E69-0F5D-44EB-A10B-06702996443C}.Release|x64.Build.0 = Release|x64
 		{533A1E69-0F5D-44EB-A10B-06702996443C}.Release|x86.ActiveCfg = Release|Win32
 		{533A1E69-0F5D-44EB-A10B-06702996443C}.Release|x86.Build.0 = Release|Win32
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Debug|x64.ActiveCfg = Debug|x64
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Debug|x64.Build.0 = Debug|x64
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Debug|x86.ActiveCfg = Debug|Win32
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Debug|x86.Build.0 = Debug|Win32
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Release|x64.ActiveCfg = Release|x64
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Release|x64.Build.0 = Release|x64
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Release|x86.ActiveCfg = Release|Win32
+		{3D6B2368-73CF-4D70-B924-46D01797305D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
