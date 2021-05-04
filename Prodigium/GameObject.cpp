@@ -2,12 +2,6 @@
 #include "Graphics.h"
 #include <thread>
 using namespace DirectX::SimpleMath;
-void GameObject::BuildBoundingVolume()
-{
-	this->collider.Center = { this->position / 2.f };
-	this->collider.Orientation = Quaternion().CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
-	//this->collider.Extents = {}
-}
 
 GameObject::GameObject()
 {
@@ -154,10 +148,4 @@ float GameObject::GetDistance(const DirectX::SimpleMath::Vector4& otherObject) c
 		dist *= -1;
 
 	return dist;
-}
-
-const DirectX::BoundingOrientedBox& GameObject::getCollider() const
-const DirectX::BoundingOrientedBox& GameObject::GetCollider() const
-{
-	return this->collider;
 }
