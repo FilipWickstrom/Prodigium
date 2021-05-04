@@ -83,8 +83,13 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	//Render the scene to the gbuffers - 3 render targets
+	this->gPass.ClearScreen();
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
+	this->gPass.Clear();
+
+	this->gPass.Prepare();
+	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
 
 	//Bind only 1 render target, backbuffer
@@ -140,6 +145,8 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
+	OpenConsole();
 
 	return true;
 }

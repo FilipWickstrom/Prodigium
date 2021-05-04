@@ -83,6 +83,7 @@ Scene::Scene()
 	this->lightShaderView = nullptr;
 	this->infoBuffer = nullptr;
 	this->firstTime = true;
+	this->shadowHandler = new ShadowHandler();
 
 	LightStruct filler;
 	filler.position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -106,6 +107,9 @@ Scene::~Scene()
 	{
 		this->infoBuffer->Release();
 	}
+
+	if (this->shadowHandler)
+		delete this->shadowHandler;
 	// Delete the allocated memory from vector.
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
@@ -137,6 +141,7 @@ void Scene::AddLight(LightStruct& L)
 {
 	this->lights.push_back(L);
 	this->firstTime = true;
+	this->shadowHandler->Add(L);
 }
 
 void Scene::PopLight()
@@ -232,6 +237,11 @@ MeshObject& Scene::GetMeshObject(int index)
 	return *this->objects[index];
 }
 
+ShadowHandler& Scene::GetShadows()
+{
+	return *this->shadowHandler;
+}
+
 const int Scene::GetNumberOfObjects() const
 {
 	return (unsigned int)this->objects.size();
@@ -297,5 +307,26 @@ void Scene::RenderLights()
 		Graphics::GetContext()->PSSetConstantBuffers(0, 1, &this->infoBuffer);
 		Graphics::GetContext()->PSSetShaderResources(3, 1, &this->lightShaderView);
 	}
+}
+
+void Scene::RenderShadows()
+{
+	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
+	{
+		this->shadowHandler->Render(i);
+		for (int j = 0; j < (int)objects.size(); j++)
+		{
+			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < 100.0f)
+			{
+				if (test == false)
+				{
+					std::cout << this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) << "\n";
+				}
+				this->objects[j]->Render();
+			}
+		}
+	}
+	this->shadowHandler->Clear();
+	test = true;
 }
 

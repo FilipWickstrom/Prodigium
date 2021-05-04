@@ -1,7 +1,7 @@
 #include "ShadowMap.h"
 #include <fstream>
 
-bool ShadowMap::SetupShadowMap()
+const bool ShadowMap::SetupShadowMap()
 {
 	HRESULT hr1, hr2, hr3;
 	// Set up texture to be used by DSV and RSV
@@ -56,7 +56,7 @@ bool ShadowMap::SetupShadowMap()
     return true;
 }
 
-bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
+const bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 {
 	struct lightPos
 	{
@@ -65,9 +65,9 @@ bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 	}Lpos;
 
 	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
-		{ lightSt.direction.x, lightSt.direction.y, lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
+		{ lightSt.position.x + lightSt.direction.x, lightSt.position.y + lightSt.direction.y, lightSt.position.z + lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 6000.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 300.0f));
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -81,7 +81,7 @@ bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 	return !FAILED(result);
 }
 
-bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
+const bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
 {
 	struct lightPos
 	{
@@ -92,7 +92,7 @@ bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
 	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
 		{ lightSt.direction.x, lightSt.direction.y, lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 6000.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 300.0f));
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr = Graphics::GetContext()->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
@@ -103,7 +103,7 @@ bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
 	return !FAILED(hr);
 }
 
-bool ShadowMap::LoadVertexShader()
+const bool ShadowMap::LoadVertexShader()
 {
 	HRESULT hr;
 
@@ -147,14 +147,8 @@ ShadowMap::ShadowMap()
 
 ShadowMap::~ShadowMap()
 {
-	if (this->shadowMap)
-		this->shadowMap->Release();
-
 	if (this->shadowDepth)
 		this->shadowDepth->Release();
-
-	if (this->shadowResourceView)
-		this->shadowResourceView->Release();
 
 	if (this->lightBuffer)
 		this->lightBuffer->Release();
@@ -167,18 +161,14 @@ void ShadowMap::SetUp(const LightStruct& lightSt)
 {
 	if (!this->LoadVertexShader())
 	{
-		std::cout << "Loading in Vertex Shader failed!\n";
-	}
 
-	if (!this->SetupShadowMap())
-	{
-		std::cout << "Setting up Shadow Map failed!\n";
 	}
-
 	if (!this->SetupLightBuffer(lightSt))
 	{
 		std::cout << "Setting up Light Buffer for Shadow Map failed!\n";
 	}
+
+	this->lightSt = lightSt;
 }
 
 void ShadowMap::Update(const LightStruct& lightSt)
@@ -186,22 +176,35 @@ void ShadowMap::Update(const LightStruct& lightSt)
 	this->UpdateLightBuffer(lightSt);
 }
 
+void ShadowMap::SetUpDepthView(const int index, ID3D11Texture2D*& arrayTexture)
+{
+	// Set up depth stencil
+	HRESULT hr;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthDesc;
+	depthDesc.Flags = 0;
+	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+	depthDesc.Texture2DArray.ArraySize = 1;
+	depthDesc.Texture2DArray.MipSlice = 0;
+	depthDesc.Texture2DArray.FirstArraySlice = index;
+	hr = Graphics::GetDevice()->CreateDepthStencilView(arrayTexture, &depthDesc, &this->shadowDepth);
+	assert(SUCCEEDED(hr));
+}
+
 void ShadowMap::RenderStatic()
 {
 	/*
 	* For now testing.
 	*/
-	ID3D11ShaderResourceView* nullShaderResource = nullptr;
-	Graphics::GetContext()->PSSetShaderResources(4, 1, &nullShaderResource);
 	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
 	ID3D11DepthStencilView* nullDepth = nullptr;
-	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
+
+	Graphics::GetContext()->ClearDepthStencilView(this->shadowDepth, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->lightBuffer);
 	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
-	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-	Graphics::GetContext()->ClearDepthStencilView(this->shadowDepth, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
 	
 }
@@ -223,5 +226,10 @@ void ShadowMap::RenderDynamic()
 void ShadowMap::RenderLightPass()
 {
 	Graphics::GetContext()->PSSetConstantBuffers(2, 1, &this->lightBuffer);
-	Graphics::GetContext()->PSSetShaderResources(4, 1, &this->shadowResourceView);
+	//Graphics::GetContext()->PSSetShaderResources(4, 1, &this->shadowResourceView);
+}
+
+const DirectX::SimpleMath::Vector4& ShadowMap::GetPos() const
+{
+	return this->lightSt.position;
 }

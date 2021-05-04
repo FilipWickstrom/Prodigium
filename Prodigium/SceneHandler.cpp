@@ -107,3 +107,8 @@ void SceneHandler::RenderLights()
 		this->scenes[this->currentScene]->RenderLights();
 	}
 }
+
+void SceneHandler::RenderShadows()
+{
+	this->scenes[this->currentScene]->RenderShadows();
+}

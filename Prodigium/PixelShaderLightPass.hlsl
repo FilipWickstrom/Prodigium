@@ -2,7 +2,7 @@
 Texture2D G_positionWS : register(t0);
 Texture2D G_colour : register(t1);
 Texture2D G_normalWS : register(t2);
-Texture2D shadowMap : register(t4);
+//Texture2D shadowMap : register(t4);
 
 SamplerState anisotropic : register(s0);
 
@@ -223,6 +223,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     /*
         Check for shadows
     */
+    /*
     if (lightColor.x < .5f)
     {
         float4 lightViewPos = mul(gbuffers.positionWS, lightView);
@@ -249,6 +250,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
             }
         }
     }
+*/
     
     return (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
 }

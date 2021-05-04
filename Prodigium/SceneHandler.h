@@ -47,4 +47,6 @@ public:
 
 	// render the lights in the current selected scene.
 	void RenderLights();
+
+	void RenderShadows();
 };

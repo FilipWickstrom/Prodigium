@@ -80,6 +80,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowHandler.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">

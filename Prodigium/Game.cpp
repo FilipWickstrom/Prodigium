@@ -216,7 +216,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test
-	for (int i = 0; i < 1500; i++)
+	for (int i = 0; i < 500; i++)
 	{
 		float x = (float)(rand() % 1000 - rand() % 1000);
 		float z = (float)(rand() % 1000 - rand() % 1000);
@@ -225,7 +225,6 @@ void Game::LoadMap()
 			x = (float)(rand() % 1000 - rand() % 1000);
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
-
 		
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}

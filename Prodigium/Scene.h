@@ -36,10 +36,12 @@ private:
 	const bool SetupLightBuffer();
 	const bool UpdateInfoBuffer();
 
+	bool test = false;
+
 	/*
 		For rendering Shadows
 	*/
-	ShadowHandler shadowHandler;
+	ShadowHandler* shadowHandler;
 
 public:
 
@@ -77,6 +79,8 @@ public:
 	// return the object at index
 	MeshObject& GetMeshObject(int index);
 
+	ShadowHandler& GetShadows();
+
 	// return the number of objects inside the scene.
 	const int GetNumberOfObjects() const;
 
@@ -89,5 +93,9 @@ public:
 	// loop through all objects and call their render function.
 	void Render();
 
+	// loop through all lights are bind them to the light pass
 	void RenderLights();
+
+	// render all shadows to be prepared for the light pass
+	void RenderShadows();
 };
