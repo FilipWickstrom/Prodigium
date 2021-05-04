@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include "MeshObject.h"
 
-class Player:public MeshObject
+class Player
 {
 private:
 	float speed;
@@ -15,7 +15,7 @@ public:
 	virtual ~Player();
 
 	void Update(const float& deltaTime);
-	void Move(DirectX::SimpleMath::Vector3& direction, const float& deltaTime);
+	void Move(const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 	void Rotate(const float& pitch, const float& yaw);
 	void Sprint();
 	void Walk();

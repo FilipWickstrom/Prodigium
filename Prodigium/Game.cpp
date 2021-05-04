@@ -33,7 +33,7 @@ void Game::HandleInput(const float& deltaTime)
 	//Updates the keyboard and mouse with new info about their current state.
 	InputHandler::UpdateKeyboardAndMouse();
 
-	DirectX::SimpleMath::Vector3 direction(0.f, 0.f, 0.f);
+	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
@@ -54,19 +54,19 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::W))
 	{
-		direction.z += 1.f;
+		direction.x = 1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::S))
 	{
-		direction.z += -1.f;
+		direction.x = -1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::A))
 	{
-		direction.x += -1.f;
+		direction.y = -1.f;
 	}
 	if (InputHandler::IsKeyHeld(Keyboard::D))
 	{
-		direction.x += 1.f;
+		direction.y = 1.f;
 	}
 	if (InputHandler::IsLMBPressed())
 	{
@@ -100,14 +100,14 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
 	{
-		this->player->Rotate(DirectX::XM_PI / 8, 0.f);
+		//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
 	}
 	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 	{
 		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 
-	if (direction.Length() > 0.f)
+	if (direction.Length() > 0.0f)
 	{
 		this->player->Move(direction, deltaTime);
 	}

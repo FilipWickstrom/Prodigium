@@ -8,10 +8,6 @@ private:
 
 	DirectX::BoundingOrientedBox collider;
 
-	DirectX::SimpleMath::Vector3 position;
-	DirectX::SimpleMath::Vector3 scale;
-	DirectX::SimpleMath::Vector3 rotation;
-
 	// World Matrix, Pos, Scale, Rotation
 	DirectX::SimpleMath::Matrix modelMatrix;
 
@@ -25,10 +21,17 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
+	DirectX::SimpleMath::Vector3 position;
+	DirectX::SimpleMath::Vector3 scale;
+	DirectX::SimpleMath::Vector3 rotation;
+	DirectX::SimpleMath::Vector3 forward;
+	DirectX::SimpleMath::Vector3 right;
+	DirectX::SimpleMath::Vector3 up;
+
 	const bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	const bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	const bool UpdateMatrix();
-
+	
 	const DirectX::SimpleMath::Vector3 GetPosition() const;
 	const DirectX::SimpleMath::Vector3 GetScale() const;
 	const DirectX::SimpleMath::Vector3 GetRotation() const;

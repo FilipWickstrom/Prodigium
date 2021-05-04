@@ -14,6 +14,8 @@ GameObject::GameObject()
 	this->position = { 0.0f, 0.0f, 0.0f };
 	this->scale = { 0.0f, 0.0f, 0.0f };
 	this->rotation = { 0.0f, 0.0f, 0.0f };
+	this->up = { 0.0f, 1.0f, 0.0f };
+	this->right = { 0.0f, 0.0f, 0.0f };
 	this->modelMatrixBuffer = nullptr;
 	this->modelMatrix = { 1.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 1.0f, 0.0f, 0.0f,
