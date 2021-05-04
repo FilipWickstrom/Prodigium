@@ -6,8 +6,6 @@ Texture2DArray shadowMaps : register(t4);
 
 SamplerState anisotropic : register(s0);
 
-#define TEMPCOUNT 9
-
 /*
 Cbuffer with lights?
 */
@@ -20,10 +18,13 @@ struct lightBuffer
 };
 
 // Contains the information of how many lights are present.
+// How many shadows should be rendered.
 cbuffer LightsInfo : register(b0)
 {
     float4 info;
 }
+
+#define TEMPCOUNT 9
 
 cbuffer Camera : register(b1)
 {
@@ -192,7 +193,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * gbuffers.diffuseColor;
     
     // This is for if no lights are present in the scene.
-    if (info.a == 1)
+    if (info.x == 1)
     {
         return ambient;
     }
@@ -203,7 +204,8 @@ float4 main(PixelShaderInput input) : SV_TARGET
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
     float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
     
-    for (int i = 1; i < info.a; i++)
+
+    for (int i = 1; i < info.x; i++)
     {
         switch (lights[i].att.w)
         {
@@ -220,35 +222,31 @@ float4 main(PixelShaderInput input) : SV_TARGET
                 break;
         }
     }
+
+    
     
     /*
         Check for shadows
     */
-    for (int j = 0; j < TEMPCOUNT; j++)
+    [unroll(9)]
+    for (int j = 0; j < info.y; j++)
     {
-        if (lightColor.x < .5f)
-        {
-            float4 lightViewPos = mul(gbuffers.positionWS, lightView);
-            lightViewPos = mul(lightViewPos, lightProj);
-            float2 shadowCoord;
+        float4 lightViewPos = mul(gbuffers.positionWS, lightView);
+        lightViewPos = mul(lightViewPos, lightProj);
+        float2 shadowCoord;
 
-            shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
-            shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
+        shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
+        shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
     
-            if ((saturate(shadowCoord.x) == shadowCoord.x) &&
+        if ((saturate(shadowCoord.x) == shadowCoord.x) &&
 		    (saturate(shadowCoord.y) == shadowCoord.y))
+        {
+            float bias = 0.00001f;
+            float depth = shadowMaps.Sample(anisotropic, float3(shadowCoord, 0)).r;
+            float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
+            if (lightDepth > depth)
             {
-		
-                float bias = 0.000003f;
-                float depth = shadowMaps.Sample(anisotropic, float3(shadowCoord, j)).r;
-
-                float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
-
-                if (lightDepth > depth)
-                {
-                    return float4(1.0f, 1.0f, 1.0f, 1.0f);
-                    return (saturate(lightColor) * gbuffers.diffuseColor + ambient) * 0.5f;
-                }
+                return (saturate(lightColor) * gbuffers.diffuseColor + ambient) * 0.5f;
             }
         }
     }

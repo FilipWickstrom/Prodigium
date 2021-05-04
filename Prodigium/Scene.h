@@ -2,6 +2,7 @@
 #include <vector>
 #include "MeshObject.h"
 #include "ShadowHandler.h"
+#define SHADOWRANGE 125.0f
 struct InfoStruct
 {
 	DirectX::XMFLOAT4 info;

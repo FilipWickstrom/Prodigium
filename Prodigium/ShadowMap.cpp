@@ -46,13 +46,6 @@ const bool ShadowMap::SetupShadowMap()
 		return false;
 	}
 
-	this->viewPort.TopLeftX = 0.0f;
-	this->viewPort.TopLeftY = 0.0f;
-	this->viewPort.Width = static_cast<float>(SHADOWWIDTH);
-	this->viewPort.Height = static_cast<float>(SHADOWHEIGHT);
-	this->viewPort.MinDepth = 0.0f;
-	this->viewPort.MaxDepth = 1.0f;
-
     return true;
 }
 
@@ -64,10 +57,10 @@ const bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 		DirectX::SimpleMath::Matrix proj;
 	}Lpos;
 
-	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
-		{ lightSt.position.x + lightSt.direction.x, lightSt.position.y + lightSt.direction.y, lightSt.position.z + lightSt.direction.z }, { 0.0f, 1.0f, 0.0f }));
+	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 20, lightSt.position.z },
+		{ lightSt.position.x - 0.001f, -1.0f , lightSt.position.z + 0.001f}, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.6f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 1.0f, 300.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.75f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), .25f, 200.0f));
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -164,6 +157,13 @@ void ShadowMap::SetUp(const LightStruct& lightSt)
 	{
 		std::cout << "Setting up Light Buffer for Shadow Map failed!\n";
 	}
+
+	this->viewPort.TopLeftX = 0.0f;
+	this->viewPort.TopLeftY = 0.0f;
+	this->viewPort.Width = static_cast<float>(SHADOWWIDTH);
+	this->viewPort.Height = static_cast<float>(SHADOWHEIGHT);
+	this->viewPort.MinDepth = 0.0f;
+	this->viewPort.MaxDepth = 1.0f;
 
 	this->lightSt = lightSt;
 }

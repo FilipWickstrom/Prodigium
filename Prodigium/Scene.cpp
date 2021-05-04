@@ -64,7 +64,7 @@ const bool Scene::SetupInfoBuffer()
 const bool Scene::UpdateInfoBuffer()
 {
 	InfoStruct newInfo = {};
-	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)lights.size(), (float)lights.size(), (float)lights.size());
+	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)this->shadowHandler->NrOfShadows(), 0.0f, 0.0f);
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
@@ -316,7 +316,7 @@ void Scene::RenderShadows()
 		this->shadowHandler->Render(i);
 		for (int j = 0; j < (int)objects.size(); j++)
 		{
-			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < 100.0f)
+			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE)
 			{
 				if (test == false)
 				{
