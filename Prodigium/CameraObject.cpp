@@ -11,9 +11,7 @@ CameraObject::CameraObject()
 	this->nearPlane = 0.f;
 	this->farPlane = 0.f;
 	this->fieldOfView = 0.f;
-	this->targetPos = {};
 	this->viewProjMatrix.projectionMatrix = {};
-	this->rotationMatrix = {};
 	this->upDir = {};
 	this->viewProjMatrix.viewMatrix = {};
 	this->eyePos = { 0.f, 0.f, 0.f };
@@ -37,15 +35,14 @@ bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, c
 {
 	this->defaultForward = lookTo;
 	this->defaultPosition = eyePosition;
-	//this->eyePos = position;
-	this->targetPos = { 0.f,0.f,1.f };
+	this->eyePos = eyePosition;
 	this->nearPlane = nearPlane;
 	this->farPlane = farPlane;
 	this->fieldOfView = fov;
 	this->aspectRatio = float(windowWidth) / float(windowHeight);
 	this->upDir = { 0.f,1.f,0.f };
-	//this->camForward = lookTo;
-	this->viewProjMatrix.viewMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(eyePos, targetPos, upDir));
+	this->camForward = lookTo;
+	this->viewProjMatrix.viewMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(eyePos, camForward, upDir));
 	this->viewProjMatrix.projectionMatrix = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane));
 
 
@@ -83,30 +80,7 @@ bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, c
 		return false;
 	}
 
-
 	return true;
-}
-
-void CameraObject::Move(const float& x, const float& z)
-{
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos += eyePos.Transform({ x,0.f,z }, this->rotationMatrix);
-
-	this->UpdateViewMatrix();
-}
-void CameraObject::Move(const float& x, const float& y, const float& z)
-{
-	this->rotationMatrix = this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos += eyePos.Transform({ x,y,z }, this->rotationMatrix);
-
-	this->UpdateViewMatrix();
-}
-void CameraObject::Move(const Vector3& translation)
-{
-	this->rotationMatrix.CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
-	this->eyePos += eyePos.Transform(translation, rotationMatrix);
-
-	this->UpdateViewMatrix();
 }
 
 void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, const float& rollAmount)
@@ -119,33 +93,15 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	{
 		this->pitch = 1.0f;
 	}
-	if (this->pitch < -0.8f)
+	if (this->pitch < -0.49f)
 	{
-		this->pitch = -0.8f;
+		this->pitch = -0.49f;
 	}
 
 	this->SetRotation({ this->pitch, this->yaw, this->roll });
 }
 
-void CameraObject::SetPosition(const float& xPos, const float& yPos)
-{
-	this->eyePos = { xPos,yPos, 1.f };
-	this->UpdateViewMatrix();
-}
-
-void CameraObject::SetPosition(const float& xPos, const float& yPos, const float& zPos)
-{
-	this->eyePos = { xPos,yPos, zPos };
-	this->UpdateViewMatrix();
-}
-
-void CameraObject::SetPosition(const Vector3& newPos)
-{
-	this->eyePos = newPos;
-	this->UpdateViewMatrix();
-}
-
-Vector3 CameraObject::getPos() const
+Vector3 CameraObject::GetPos() const
 {
 	return this->eyePos;
 }
@@ -169,18 +125,20 @@ void CameraObject::Update()
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
 }
 
-void CameraObject::changeOffset(const Vector3& offset)
+void CameraObject::ChangeOffset(const Vector3& offset)
 {
 }
 
-void CameraObject::SetTransform(const Matrix& transform, const Vector3& playerPos)
+DirectX::SimpleMath::Vector3 CameraObject::GetForward()
 {
-	this->rotationMatrix = Matrix::CreateFromYawPitchRoll(this->yaw, this->pitch, 0);
+	return this->camForward;
+}
 
-	this->eyePos = Vector3::TransformNormal(-this->defaultForward, this->rotationMatrix);
-	this->eyePos.Normalize();
-	this->eyePos = (this->eyePos * 10.f) + playerPos;
-
-	this->camForward = (playerPos - eyePos);
+void CameraObject::SetTransform(const Matrix& transform)
+{
+	Matrix transformed = Matrix::CreateFromYawPitchRoll(this->GetRotation().y, this->GetRotation().x, this->GetRotation().z) * transform;
+	//Matrix transformed = Matrix::CreateFromYawPitchRoll(this->GetRotation().y, this->GetRotation().x, this->GetRotation().z) * transform;
+	this->eyePos = Vector3::Transform(this->defaultPosition, transformed);
+	this->camForward = Vector3::TransformNormal(this->defaultForward, transformed);
 	this->camForward.Normalize();
 }

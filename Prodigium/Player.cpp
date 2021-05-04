@@ -4,15 +4,20 @@ using namespace DirectX::SimpleMath;
 Player::Player()
 {
 	Vector3 position(0.0f, 0.0f, 0.f);
-	cameraOffset = { 0.0f, 2.5f, -8.f };
-	Vector3 cameraForward = position - cameraOffset;
+	Vector3 cameraOffset = { 0.0f, 2.5f, -15.f };
+	Vector3 cameraForward = cameraOffset * -1;
 	cameraForward.Normalize();
 	this->speed = 10.f;
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Normal.jpg", "", position);
-	this->playerModel->SetRotation({ 0, DirectX::XM_PI, 0 });
+	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Normal.jpg");
+	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
+	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
+	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
+	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
+	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
+
+	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
-	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, position + cameraOffset, cameraForward);
 }
 
 Player::~Player()
@@ -21,39 +26,44 @@ Player::~Player()
 
 void Player::Update(const float& deltaTime)
 {
-	this->playerCam.SetTransform(this->playerModel->GetModelMatrix(), this->playerModel->GetPosition());
+	DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateTranslation(this->playerModel->position);
+	this->playerCam.SetTransform(transform);
 	this->playerCam.Update();
 }
 
-void Player::Move(Vector3& direction, const float& deltaTime)
+void Player::Move(const Vector2& direction, const float& deltaTime)
 {
-	// Moves the player in the direction of the mouse and lerps between current rotation and a target rotation
-	// to avoid snapping effects.
-	direction.Normalize();
-	direction = direction * speed * deltaTime;
-	DirectX::SimpleMath::Matrix rotation = {};
-	rotation = rotation.CreateFromYawPitchRoll(this->playerCam.GetRotation().y, 0.f, 0.f);
-	Vector3 currentPos = this->playerModel->GetPosition();
-	Vector3 newPos = Vector3::Transform({ direction }, rotation);
-	newPos += currentPos;
+	DirectX::SimpleMath::Matrix rotation = DirectX::SimpleMath::Matrix::CreateRotationY(this->playerCam.GetRotation().y);
+	this->playerModel->forward = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), rotation);
+	this->playerModel->forward.Normalize();
+	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
+	this->playerModel->right.Normalize();
 
-	Vector3 newRotation = this->playerModel->GetRotation().Lerp({ 0.f, this->playerModel->GetRotation().y, 0.f }, { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f }, 0.1f);
-	this->playerModel->SetRotation({ 0, newRotation.y, 0 });
-	this->playerModel->SetPosition(newPos);
+	// Direction.x / z is a binary switch to toggle the direction, 1 or -1
+	this->playerModel->position += this->playerModel->forward * speed * deltaTime * direction.x;
+	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
+
+	Vector3 currentRotation = { 0.f, this->playerModel->rotation.y, 0.f };
+	Vector3 targetRotation = { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f };
+
+	// Not so elegant way of half-fixing the lerp issue
+	if ((currentRotation.y - targetRotation.y) > 4.5f)
+	{
+		currentRotation.y -= FULL_CIRCLE;
+	}
+	else if ((targetRotation.y - currentRotation.y) > 4.5f)
+	{
+		currentRotation.y += FULL_CIRCLE;
+	}
+
+	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
+
 	this->playerModel->UpdateMatrix();
 }
 
 void Player::Rotate(const float& pitch, const float& yaw)
 {
-	// Free look camera
-	float yawY = this->playerModel->GetRotation().y;
-	float pitchX = this->playerModel->GetRotation().x;
-
-	float newPitchX = fmod(pitchX + pitch, FULL_CIRCLE);
-	float newYawY = fmod(yawY + yaw, FULL_CIRCLE);
-
-	this->playerCam.Rotate(pitch, yaw, 0);
-	//std::cout << this->playerCam.GetRotation().y << std::endl;
+	this->playerCam.Rotate(pitch, yaw, 0.f);
 }
 
 void Player::Sprint()
@@ -64,11 +74,6 @@ void Player::Sprint()
 void Player::Walk()
 {
 	this->speed = 20.0f;
-}
-
-void Player::ChangeCameraOffset(const DirectX::SimpleMath::Vector3& change)
-{
-	this->cameraOffset += change;
 }
 
 MeshObject* Player::GetMeshObject() const
