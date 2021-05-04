@@ -57,10 +57,10 @@ const bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 		DirectX::SimpleMath::Matrix proj;
 	}Lpos;
 
-	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 20, lightSt.position.z },
+	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 30, lightSt.position.z },
 		{ lightSt.position.x - 0.001f, -1.0f , lightSt.position.z + 0.001f}, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.75f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), .25f, 200.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), .25f, 200.0f));
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;

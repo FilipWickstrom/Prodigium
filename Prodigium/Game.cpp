@@ -207,12 +207,12 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { -150.0f, -6.5f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, {3.0f, 3.0f, 3.0f});
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { 475.0f, -7.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { -80.0f, 20.0f, 50.0f, 30.0f };
+	L.position = { -75.0f, 20.0f, 45.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house 2
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { 416.0f, 25.0f, -191.0f, 30.0f };
+	L.position = { 375.0f, 25.0f, -175.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test
