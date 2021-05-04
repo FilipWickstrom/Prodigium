@@ -159,10 +159,7 @@ ShadowMap::~ShadowMap()
 
 void ShadowMap::SetUp(const LightStruct& lightSt)
 {
-	if (!this->LoadVertexShader())
-	{
-
-	}
+	this->LoadVertexShader();
 	if (!this->SetupLightBuffer(lightSt))
 	{
 		std::cout << "Setting up Light Buffer for Shadow Map failed!\n";
@@ -198,15 +195,16 @@ void ShadowMap::RenderStatic()
 	*/
 	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
 	ID3D11DepthStencilView* nullDepth = nullptr;
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	Graphics::GetContext()->PSSetShaderResources(4, 1, &nullSRV);
 
 	Graphics::GetContext()->ClearDepthStencilView(this->shadowDepth, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->lightBuffer);
 	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
-	//Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
-	
 }
 
 void ShadowMap::Clean()
@@ -226,7 +224,6 @@ void ShadowMap::RenderDynamic()
 void ShadowMap::RenderLightPass()
 {
 	Graphics::GetContext()->PSSetConstantBuffers(2, 1, &this->lightBuffer);
-	//Graphics::GetContext()->PSSetShaderResources(4, 1, &this->shadowResourceView);
 }
 
 const DirectX::SimpleMath::Vector4& ShadowMap::GetPos() const

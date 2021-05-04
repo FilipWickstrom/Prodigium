@@ -2,10 +2,11 @@
 Texture2D G_positionWS : register(t0);
 Texture2D G_colour : register(t1);
 Texture2D G_normalWS : register(t2);
-//Texture2D shadowMap : register(t4);
+Texture2DArray shadowMaps : register(t4);
 
 SamplerState anisotropic : register(s0);
 
+#define TEMPCOUNT 9
 
 /*
 Cbuffer with lights?
@@ -223,34 +224,34 @@ float4 main(PixelShaderInput input) : SV_TARGET
     /*
         Check for shadows
     */
-    /*
-    if (lightColor.x < .5f)
+    for (int j = 0; j < TEMPCOUNT; j++)
     {
-        float4 lightViewPos = mul(gbuffers.positionWS, lightView);
-        lightViewPos = mul(lightViewPos, lightProj);
-        float2 shadowCoord;
-
-        shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
-        shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
-    
-        if ((saturate(shadowCoord.x) == shadowCoord.x) &&
-		(saturate(shadowCoord.y) == shadowCoord.y))
+        if (lightColor.x < .5f)
         {
-		
-            float bias = 0.000003f;
+            float4 lightViewPos = mul(gbuffers.positionWS, lightView);
+            lightViewPos = mul(lightViewPos, lightProj);
+            float2 shadowCoord;
 
-		
-            float depth = shadowMap.Sample(anisotropic, shadowCoord).r;
-
-            float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
-
-            if (lightDepth > depth)
+            shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
+            shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
+    
+            if ((saturate(shadowCoord.x) == shadowCoord.x) &&
+		    (saturate(shadowCoord.y) == shadowCoord.y))
             {
-                return (saturate(lightColor) * gbuffers.diffuseColor + ambient) * 0.5f;
+		
+                float bias = 0.000003f;
+                float depth = shadowMaps.Sample(anisotropic, float3(shadowCoord, j)).r;
+
+                float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
+
+                if (lightDepth > depth)
+                {
+                    return float4(1.0f, 1.0f, 1.0f, 1.0f);
+                    return (saturate(lightColor) * gbuffers.diffuseColor + ambient) * 0.5f;
+                }
             }
         }
     }
-*/
     
     return (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
 }

@@ -3,7 +3,7 @@
 bool ShadowHandler::SetupMapArray()
 {
 	// to do: compile all textures into map.
-	HRESULT hr;
+	HRESULT hr, hr2;
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.Width = SHADOWWIDTH;
 	texDesc.Height = SHADOWHEIGHT;
@@ -26,9 +26,17 @@ bool ShadowHandler::SetupMapArray()
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = texDesc.Format;
+	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	srvDesc.Texture2DArray.ArraySize = (UINT)this->nrOf;
+	srvDesc.Texture2DArray.FirstArraySlice = 0;
+	srvDesc.Texture2DArray.MipLevels = 1;
+	srvDesc.Texture2DArray.MostDetailedMip = 0;
 
-	return SUCCEEDED(hr);
+	hr2 = Graphics::GetDevice()->CreateShaderResourceView(this->shadowMapArray, &srvDesc, &this->arrayView);
+	assert(SUCCEEDED(hr2));
+
+	return SUCCEEDED(hr2);
 }
 
 ShadowHandler::ShadowHandler()
@@ -84,7 +92,7 @@ const int ShadowHandler::NrOfShadows() const
 
 void ShadowHandler::RenderLightPass()
 {
-
+	Graphics::GetContext()->PSSetShaderResources(4, 1, &this->arrayView);
 }
 
 void ShadowHandler::Clear()
