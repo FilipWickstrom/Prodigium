@@ -21,8 +21,7 @@ private:
 	SkyboxPass skyboxPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	MeshObject testMeshObj;		//DELETE LATER***
-	//MeshObject testMeshObj2;	//DELETE LATER***
+
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();

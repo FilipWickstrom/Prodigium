@@ -7,6 +7,14 @@ bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourc
     return !FAILED(hr);
 }
 
+void MeshObject::BuildBoundingVolume()
+{
+    Vector3 meshCenter = (mesh->GetMax() - mesh->GetMin()) / 2.f;
+    this->collider.Center = this->position + meshCenter;
+    this->collider.Extents = (mesh->GetMax().x - this->collider.Center.x);
+    this->collider.Orientation = Quaternion::CreateFromYawPitchRoll(this->rotation.x, this->rotation.y, this->rotation.z);
+}
+
 MeshObject::MeshObject()
 {
     this->mesh = nullptr;
@@ -29,7 +37,7 @@ MeshObject::~MeshObject()
     }
 }
 
-bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt,Vector3 pos, Vector3 rot,Vector3 scl)
+bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, Vector3 pos, Vector3 rot, Vector3 scl)
 {
     //Get the mesh from the resource manager if it exist or creates a new mesh
     this->mesh = ResourceManager::GetMesh(meshObject);
@@ -80,6 +88,8 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
         return false;
     }
 
+    BuildBoundingVolume();
+
     //EXTRA: Material
 
     return true;
@@ -107,4 +117,9 @@ void MeshObject::Render()
     }
 
     this->mesh->Render();
+}
+
+const DirectX::BoundingOrientedBox& MeshObject::GetCollider()
+{
+    return this->collider;
 }

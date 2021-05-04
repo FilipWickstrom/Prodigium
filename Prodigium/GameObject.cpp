@@ -2,12 +2,6 @@
 #include "Graphics.h"
 #include <thread>
 using namespace DirectX::SimpleMath;
-void GameObject::BuildBoundingVolume()
-{
-	this->collider.Center = { this->position / 2.f };
-	this->collider.Orientation = Quaternion().CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
-	//this->collider.Extents = {}
-}
 
 GameObject::GameObject()
 {
@@ -45,6 +39,7 @@ const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->modelMatrix;
 	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
+
 	return !FAILED(result);
 }
 
@@ -87,6 +82,7 @@ const bool GameObject::UpdateMatrix()
 	{
 		return false;
 	}
+
 
 	return true;
 }
@@ -145,9 +141,4 @@ float GameObject::GetDistance(const GameObject& otherObject) const
 	}
 
 	return dist;
-}
-
-const DirectX::BoundingOrientedBox& GameObject::GetCollider() const
-{
-	return this->collider;
 }

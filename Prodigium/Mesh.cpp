@@ -2,44 +2,44 @@
 
 bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices)
 {
-    /*-----Vertexbuffer-----*/
-    D3D11_BUFFER_DESC desc = {};
-    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    desc.ByteWidth = sizeof(Vertex) * (UINT)vertices.size();
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
-    desc.StructureByteStride = 0;
-    desc.Usage = D3D11_USAGE_DEFAULT;
+	/*-----Vertexbuffer-----*/
+	D3D11_BUFFER_DESC desc = {};
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.ByteWidth = sizeof(Vertex) * (UINT)vertices.size();
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
 
-    D3D11_SUBRESOURCE_DATA data = {};
-    data.pSysMem = &vertices[0];
-    data.SysMemPitch = 0;
-    data.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA data = {};
+	data.pSysMem = &vertices[0];
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
 
 	ID3D11Buffer* vertbuffer;
-    HRESULT hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &vertbuffer);
-    if (FAILED(hr))
-    {
-        std::cout << "Failed to create vertex buffer..." << std::endl;
-        return false;
-    }
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &vertbuffer);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create vertex buffer..." << std::endl;
+		return false;
+	}
 	this->vertexBuffers.push_back(vertbuffer);
 
-    /*-----Indexbuffer-----*/
-    desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    desc.ByteWidth = sizeof(unsigned short) * nrOfIndices;
-    data.pSysMem = &indices[0];
+	/*-----Indexbuffer-----*/
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	desc.ByteWidth = sizeof(unsigned short) * nrOfIndices;
+	data.pSysMem = &indices[0];
 
 	ID3D11Buffer* indbuffer;
-    hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &indbuffer);
-    if (FAILED(hr))
-    {
-        std::cout << "Failed to create index buffer..." << std::endl;
-        return false;
-    }
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &indbuffer);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create index buffer..." << std::endl;
+		return false;
+	}
 	this->indexBuffers.push_back(indbuffer);
 
-    return true;
+	return true;
 }
 
 Mesh::Mesh()
@@ -62,30 +62,31 @@ Mesh::~Mesh()
 
 bool Mesh::LoadFile(std::string filename)
 {
-    Assimp::Importer importer;
+	Assimp::Importer importer;
 
-    //Load in the scene - can be many meshes together in one file
-    const aiScene* scene = importer.ReadFile("Models/" + filename,
-                                            aiProcess_Triangulate |               //Triangulate every surface
-                                            aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
-                                            aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
-                                            aiProcess_FlipWindingOrder |          //Makes it clockwise order
-                                            aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models                                                                             
-                                            //aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
-                                            
-    //Check if it was possible to load file
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-    {
-        std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-        return false;
-    }
-	
+	//Load in the scene - can be many meshes together in one file
+	const aiScene* scene = importer.ReadFile("Models/" + filename,
+		aiProcess_Triangulate |               //Triangulate every surface
+		aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
+		aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
+		aiProcess_FlipWindingOrder |          //Makes it clockwise order
+		aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models                                                                             
+		//aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
+
+//Check if it was possible to load file
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
+		return false;
+	}
+
 	//Going through all the meshes in the file
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		const aiMesh* mesh = scene->mMeshes[i];
 		std::vector<Vertex> vertices;
 		vertices.reserve(mesh->mNumVertices);
+
 
 		//Loading in all the vertices to the right structure
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -96,7 +97,8 @@ bool Mesh::LoadFile(std::string filename)
 			temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 			vertices.push_back(temp);
 		}
-		
+		this->maxPos = { mesh->mAABB.mMax.x, mesh->mAABB.mMax.y, mesh->mAABB.mMax.z };
+		this->minPos = { mesh->mAABB.mMin.x, mesh->mAABB.mMin.y, mesh->mAABB.mMin.z };
 		std::vector<unsigned short> indices;
 		indices.reserve((size_t)mesh->mNumFaces * 3);
 		UINT tempIndexCount = mesh->mNumFaces * 3;
@@ -114,7 +116,7 @@ bool Mesh::LoadFile(std::string filename)
 				indices.push_back(face.mIndices[2]);
 			}
 		}
-			
+
 		//Vertex and index buffer to communicate with vertexshader later
 		if (!CreateVertIndiBuffers(vertices, indices, tempIndexCount))
 		{
@@ -131,13 +133,23 @@ bool Mesh::LoadFile(std::string filename)
 
 void Mesh::Render()
 {
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 	for (int i = 0; i < this->vertexBuffers.size(); i++)
 	{
 		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);
 		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R16_UINT, 0);
 		Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
 	}
-   
+
+}
+
+const DirectX::SimpleMath::Vector3& Mesh::GetMin()
+{
+	return this->minPos;
+}
+
+const DirectX::SimpleMath::Vector3& Mesh::GetMax()
+{
+	return this->maxPos;
 }

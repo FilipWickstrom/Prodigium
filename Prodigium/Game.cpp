@@ -8,7 +8,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 {
 	this->running = true;
 	this->player = nullptr;
-	
+
 }
 
 Game::~Game()
@@ -44,7 +44,7 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		OpenConsole();
 	}
-	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
+	if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
 		this->player->Sprint();
 	}
@@ -124,6 +124,17 @@ bool Game::OnFrame(const float& deltaTime)
 
 	player->Update(deltaTime);
 
+	for (int i = 0; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
+	{
+		if (this->player->GetMeshObject() != &SceneHandle()->EditScene().GetMeshObject(i) && i != 3 && i != 1521)
+		{
+			if (this->player->GetMeshObject()->GetCollider().Intersects(SceneHandle()->EditScene().GetMeshObject(i).GetCollider()))
+			{
+				std::cout << i << std::endl;
+			}
+		}
+	}
+
 	Engine::ClearDisplay();
 	Engine::Render();
 
@@ -163,7 +174,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", { 0.0f, -6.25f, 0.0f });
 
 	// Houses around the town.
-	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", {-5.0f, -7.0f, -50.0f});
+	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", { -5.0f, -7.0f, -50.0f });
 	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", { 100.0f, -7.0f, -50.0f });
 	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1.obj", "Hus1_Diffuse.png", "", { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
@@ -204,7 +215,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house
-	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { -150.0f, -6.5f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, {3.0f, 3.0f, 3.0f});
+	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { -150.0f, -6.5f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	SceneHandle()->EditScene().Add("House2.obj", "Hus2_Diffuse.png", "", { 475.0f, -7.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -80.0f, 20.0f, 50.0f, 30.0f };
@@ -226,10 +237,10 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
 
-		
+
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 
 	//Now works loading in object-files with more than one meshes
-	SceneHandle()->EditScene().Add("Lamp2.obj", "Lampa2_Diffuse.png", "", {0,0,0}, {0,0,0}, {2.0f, 2.0f, 2.0f});
+	SceneHandle()->EditScene().Add("Lamp2.obj", "Lampa2_Diffuse.png", "", { 0,0,0 }, { 0,0,0 }, { 2.0f, 2.0f, 2.0f });
 }

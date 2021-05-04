@@ -11,6 +11,7 @@ class MeshObject : public GameObject
 {
 private:
 	Mesh* mesh;
+	DirectX::BoundingOrientedBox collider;
 
 	//Holds all the views of the textures:
 	//1. Diffuse texture
@@ -28,10 +29,12 @@ public:
 	MeshObject();
 	virtual ~MeshObject();
 
+	void BuildBoundingVolume();
 	bool Initialize(std::string meshObject, std::string diffuseTxt = "", std::string normalTxt = "",
 					DirectX::SimpleMath::Vector3 pos = {0.0f,0.0f,0.0f}, DirectX::SimpleMath::Vector3 rot = { 0.0f,0.0f,0.0f }, DirectX::SimpleMath::Vector3 scl= {1.0f,1.0f,1.0f});
 
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
 	void Render();
+	const DirectX::BoundingOrientedBox& GetCollider();
 };

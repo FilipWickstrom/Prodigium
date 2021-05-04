@@ -59,6 +59,9 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
 
 	this->playerModel->UpdateMatrix();
+	this->playerModel->BuildBoundingVolume();
+	/*std::cout << "P: " << this->playerModel->position.x << " " << this->playerModel->position.z << " C: " <<
+		this->playerModel->GetCollider().Center.x << " " << this->playerModel->GetCollider().Center.z << std::endl;*/
 }
 
 void Player::Rotate(const float& pitch, const float& yaw)
