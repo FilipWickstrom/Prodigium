@@ -151,12 +151,12 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Test pickups but its static lol
-	float randX = (float)(rand() % 1000 - rand() % 1000);
-	float randZ = (float)(rand() % 1000 - rand() % 1000);
+	float randX = (float)(rand() % 200 - rand() % 200);
+	float randZ = (float)(rand() % 200- rand() % 200);
 	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
-	randX = (float)(rand() % 1000 - rand() % 1000);
-	randZ = (float)(rand() % 1000 - rand() % 1000);
+	randX = (float)(rand() % 200 - rand() % 200);
+	randZ = (float)(rand() % 200 - rand() % 200);
 	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
 	// Terrain
@@ -220,7 +220,7 @@ void Game::LoadMap()
 	{
 		float x = (float)(rand() % 1000 - rand() % 1000);
 		float z = (float)(rand() % 1000 - rand() % 1000);
-		while (x > -100 && x < 100 && z > -100 && z < 100)
+		while (x > -300 && x < 700 && z > -300 && z < 150)
 		{
 			x = (float)(rand() % 1000 - rand() % 1000);
 			z = (float)(rand() % 1000 - rand() % 1000);
