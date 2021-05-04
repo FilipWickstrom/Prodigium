@@ -5,6 +5,8 @@
 #include <thread>
 #include <omp.h>
 
+#include "AnimatedObject.h"		//DELETE LATER***
+
 class Game:public Engine
 {
 private:
@@ -15,6 +17,9 @@ private:
 	Player* player;
 	bool running;
 	//float deltaTime, lastFrame, currentFrame;
+
+	AnimatedObject animObj;		//DELETE LATER***
+
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();

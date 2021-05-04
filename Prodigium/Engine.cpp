@@ -5,6 +5,9 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 
+	#ifdef _DEBUG
+		RedirectIoToConsole();
+	#endif 
 
 	if (!this->StartUp(instance, width, height))
 	{

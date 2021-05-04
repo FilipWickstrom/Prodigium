@@ -45,7 +45,6 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 Mesh::Mesh()
 	:Resource(ResourceType::MESH)
 {
-	this->objectFile = "";
 }
 
 Mesh::~Mesh()

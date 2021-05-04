@@ -74,6 +74,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
+    <ClCompile Include="AnimatedObject.cpp">
+      <Filter>Engine\Resources\Objects\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -143,6 +146,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="LightObject.h" />
+    <ClInclude Include="AnimatedObject.h">
+      <Filter>Engine\Resources\Objects\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">

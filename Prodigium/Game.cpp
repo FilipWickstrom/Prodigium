@@ -232,4 +232,6 @@ void Game::LoadMap()
 
 	//Now works loading in object-files with more than one meshes
 	SceneHandle()->EditScene().Add("Lamp2.obj", "Lampa2_Diffuse.png", "", {0,0,0}, {0,0,0}, {2.0f, 2.0f, 2.0f});
+
+	animObj.Initialize();	//DELETE LATER***
 }

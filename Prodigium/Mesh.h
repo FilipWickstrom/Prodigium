@@ -15,7 +15,6 @@
 class Mesh : public Resource
 {
 private:
-	std::string objectFile;
 	std::vector<ID3D11Buffer*>vertexBuffers;
 	std::vector<ID3D11Buffer*>indexBuffers;
 	std::vector<UINT>indexCount;
