@@ -68,6 +68,7 @@ void GeometryPass::ClearScreen()
 
 		Graphics::GetContext()->ClearRenderTargetView(gBuffer.renderTargets[i], color);
 	}
+	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 }
 
 bool GeometryPass::CreateGBuffer()
@@ -313,7 +314,6 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->IASetInputLayout(inputLayout);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, gBuffer.renderTargets, depthStencilView);
 	
-	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 

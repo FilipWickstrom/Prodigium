@@ -35,17 +35,8 @@ public:
 
 	void Clean();
 
-	// Render the dynamic object moving around.
-	void RenderDynamic();
-
 	void RenderLightPass();
 
 	const DirectX::SimpleMath::Vector4& GetPos() const;
 };
-
-/*
-	To do:
-Check distance between object and light. If within certain range include it into calculation.
-Only render static object once since they do not move. Player is going to be on position 0 and monster on 1.
-*/
 

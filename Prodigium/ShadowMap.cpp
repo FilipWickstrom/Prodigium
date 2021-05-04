@@ -203,7 +203,7 @@ void ShadowMap::RenderStatic()
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->lightBuffer);
 	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
-	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	//Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, this->shadowDepth);
 }
 
@@ -215,10 +215,6 @@ void ShadowMap::Clean()
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
 	Graphics::SetMainWindowViewport();
-}
-
-void ShadowMap::RenderDynamic()
-{
 }
 
 void ShadowMap::RenderLightPass()

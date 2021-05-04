@@ -146,6 +146,9 @@ void ShadowHandler::Clear()
 	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
 	ID3D11DepthStencilView* nullDepth = nullptr;
 	ID3D11Buffer* nuller = nullptr;
+	/*
+		HERE IS WHERE SKYBOX IS BEING REMOVED FOR SOME REASON!!
+	*/
 	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
 	Graphics::SetMainWindowViewport();
