@@ -12,11 +12,13 @@ class GUIHandler
 private:
 	ImGuiIO io;
 	bool trap1Active, trap2Active;
-	int trap1ImageWidth, trap1ImageHeight, trap2ImageWidth, trap2ImageHeight;
+	int imageWidth, imageHeight;
 	ID3D11ShaderResourceView* textureTrap1;
 	ID3D11ShaderResourceView* textureTrap2;
+	ID3D11ShaderResourceView* textureBrain;
 	void CreateFPSCounter();
 	void CreateTrapGUI();
+	void CreateBrainGUI();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:
 	GUIHandler();

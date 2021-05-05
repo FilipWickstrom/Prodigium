@@ -6,21 +6,21 @@ GUIHandler::GUIHandler()
 	this->io = {};
     this->trap1Active = false;
     this->trap2Active = false;
-    this->trap1ImageWidth = 0;
-    this->trap1ImageHeight = 0;
-    this->trap2ImageWidth = 0;
-    this->trap2ImageHeight = 0;
+    this->imageWidth = 0;
+    this->imageHeight = 0;
 
     this->textureTrap1 = nullptr;
     this->textureTrap2 = nullptr;
+    this->textureBrain = nullptr;
 }
 GUIHandler::~GUIHandler()
 {
     delete this->textureTrap1;
     delete this->textureTrap2;
+    delete this->textureBrain;
 }
 
-void PushGuiStyle()
+void SetUpGUIStyle()
 {
 	ImGuiStyle& style = GetStyle();
 	
@@ -33,7 +33,7 @@ void PushGuiStyle()
     style.Colors[ImGuiCol_PopupBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_Border]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_BorderShadow]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBg]                                  = ImVec4(46.f/255.f, 68.f/255.f, 138.f/255.f, 1.f);
     style.Colors[ImGuiCol_FrameBgHovered]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_FrameBgActive]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TitleBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -56,11 +56,11 @@ void PushGuiStyle()
     style.Colors[ImGuiCol_ResizeGrip]                               = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ResizeGripHovered]                        = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ResizeGripActive]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_PlotLines]                                = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotLines]                                = ImVec4(0.f, 0.f, 0.f, 1.f);
     style.Colors[ImGuiCol_PlotLinesHovered]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_PlotHistogram]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_PlotHistogramHovered]                     = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_TextSelectedBg]                           = ImVec4(0.f, 0.f, 0.f, 0.f);	
+    style.Colors[ImGuiCol_TextSelectedBg]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
 }
 
 void GUIHandler::Initialize(const HWND& window)
@@ -71,12 +71,14 @@ void GUIHandler::Initialize(const HWND& window)
 
 	ImGui_ImplDX11_Init(Graphics::GetDevice() , Graphics::GetContext());
 	ImGui_ImplWin32_Init(window);
-    PushGuiStyle();
+    SetUpGUIStyle();
 
-    bool ret = LoadTextureFromFile("Textures/ImGuiTest.png", &textureTrap1, &trap1ImageWidth, &trap1ImageHeight);
+    bool ret = LoadTextureFromFile("Textures/ImGuiTest.png", &textureTrap1, &imageWidth, &imageHeight);
     IM_ASSERT(ret);
-    bool ret2 = LoadTextureFromFile("Textures/ImGuiTest2.jpg", &textureTrap2, &trap2ImageWidth, &trap2ImageHeight);
-    IM_ASSERT(ret2);
+    ret = LoadTextureFromFile("Textures/ImGuiTest2.jpg", &textureTrap2, &imageWidth, &imageHeight);
+    IM_ASSERT(ret);
+    ret = LoadTextureFromFile("Textures/Brain.png", &textureBrain, &imageWidth, &imageHeight);
+    IM_ASSERT(ret);
 
 }
 
@@ -88,6 +90,7 @@ void GUIHandler::Render()
 
 	CreateFPSCounter();
     CreateTrapGUI();
+    CreateBrainGUI();
 
 	EndFrame();
 	ImGui::Render();
@@ -130,24 +133,36 @@ void GUIHandler::CreateTrapGUI()
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
-    SetNextWindowPos(ImVec2(200,(float)Graphics::GetWindowHeight() - 250));
-    SetNextWindowSize(ImVec2((float)trap1ImageWidth + 50.f, (float)trap1ImageHeight + 50.f));
+    SetNextWindowPos(ImVec2(200,(float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
     
     if (this->trap1Active)
     {
         Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
-        Image((void*)textureTrap1, ImVec2((float)trap1ImageWidth, (float)trap1ImageHeight));
+        Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
         End();
     }
     if (this->trap2Active)
     {
         Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
-        Image((void*)textureTrap2, ImVec2((float)trap2ImageWidth, (float)trap2ImageHeight));
+        Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
         End();
     }
 
     delete trap1;
     delete trap2;
+}
+
+void GUIHandler::CreateBrainGUI()
+{
+    bool* isActive = new bool;
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));
+    SetNextWindowSize(ImVec2((float)imageWidth + 50.f, (float)imageHeight + 50.f));
+    Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
+    Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight));
+    End();
+    delete isActive;
 }
 
 bool GUIHandler::LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int *out_width, int *out_height)
