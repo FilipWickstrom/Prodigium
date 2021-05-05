@@ -78,7 +78,7 @@ public:
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
 	void RemoveObject(const int& index);
 
-	// switches the to indexed object if it is within the scope of the vector! else nothing changes.
+	// switches the current object to indexed object if it is within the scope of the vector! else nothing changes.
 	void SwitchObject(const int& index);
 
 	// return the object at index
