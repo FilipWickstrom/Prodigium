@@ -13,11 +13,14 @@ private:
 	ID3D11PixelShader* pixelShader;
 	ID3D11ComputeShader* computeShader;
 	ID3D11InputLayout* inputLayout;
-	ID3D11UnorderedAccessView* particleAccess;
+
 
 	ID3D11Buffer* particleBuff;
+	ID3D11UnorderedAccessView* particleAccess;
+	ID3D11ShaderResourceView* particleView;
 
 	std::vector<ParticleVertex> parts;
+	std::string vertexData;
 
 	bool hasSetup;
 
@@ -26,6 +29,17 @@ private:
 
 	// Clear any COM object before setting up particles.
 	void ClearHistory();
+
+	// Remove any binded COM object onto pipeline.
+	void Clear();
+private:
+
+	// Shaders
+	bool LoadVertexShader();
+	bool LoadGeometryShader();
+	bool LoadPixelShader();
+	bool LoadComputeShader();
+
 public:
 
 	ParticleSystem();
@@ -34,3 +48,4 @@ public:
 
 	void Render();
 };
+

@@ -1,6 +1,6 @@
 struct VertexIn
 {
-    float4 position : SV_Position;
+    float4 position : POSITION;
 };
 
 struct VertexOut

@@ -68,6 +68,5 @@ struct LightStruct
 
 struct ParticleVertex
 {
-	DirectX::SimpleMath::Vector3 position;
-	DirectX::SimpleMath::Vector2 size;
+	DirectX::SimpleMath::Vector4 position;
 };

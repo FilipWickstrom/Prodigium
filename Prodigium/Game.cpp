@@ -1,7 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include <thread>
-
+#include "ParticleSystem.h"
 
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)

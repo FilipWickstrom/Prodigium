@@ -48,15 +48,12 @@ void main(point VertexOut input[1], uint primID : SV_PrimitiveID,
     point_normal = normalize(point_normal);
     float3 right = cross(up, point_normal);
 
-    float width = input[0].size.x;
-    float height = input[0].size.y;
-
     float4 pos_w[4] =
     {
-        float4(position + width * right - height * up, 1.0f),
-		float4(position + width * right + height * up, 1.0f),
-		float4(position - width * right - height * up, 1.0f),
-		float4(position - width * right + height * up, 1.0f)
+        float4(position + input[0].size.x * right - input[0].size.y * up, 1.0f),
+		float4(position + input[0].size.x * right + input[0].size.y * up, 1.0f),
+		float4(position - input[0].size.x * right - input[0].size.y * up, 1.0f),
+		float4(position - input[0].size.x * right + input[0].size.y * up, 1.0f)
     };
 
     GSOutput geOut;
