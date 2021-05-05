@@ -1,18 +1,20 @@
-struct VertexIn
+struct Vertex
 {
-    float4 position : POSITION;
+    float3 position;
 };
+
+StructuredBuffer<Vertex> particles : register(t0);
 
 struct VertexOut
 {
-    float4 position : SV_Position;
+    float3 position : POSITION;
 };
 
-VertexOut main( VertexIn input)
+VertexOut main( uint ID : SV_InstanceID)
 {
     VertexOut output;
     
-    output.position = input.position;
+    output.position = particles[ID].position;
     
     return output;
 }

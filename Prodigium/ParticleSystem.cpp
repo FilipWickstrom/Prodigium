@@ -17,9 +17,12 @@ void ParticleSystem::InternalRender()
 	Graphics::GetContext()->PSSetShader(this->pixelShader, nullptr, 0);
 	Graphics::GetContext()->GSSetShader(this->geoShader, nullptr, 0);
 	Graphics::GetContext()->CSSetShader(this->computeShader, nullptr, 0);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	Graphics::GetContext()->VSSetShaderResources(0, 1, &this->particleView);
-	Graphics::GetContext()->IASetInputLayout(this->inputLayout);
+
+	ID3D11InputLayout* nullLayout = nullptr;
+	Graphics::GetContext()->IASetInputLayout(nullLayout);
 
 	/*
 		Render Phase
@@ -31,6 +34,9 @@ void ParticleSystem::InternalRender()
 	/*
 		Update Phase
 	*/
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	Graphics::GetContext()->VSSetShaderResources(0, 1, &nullSRV);
+	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->particleAccess, 0);
 	Graphics::GetContext()->Dispatch(MAX_PARTICLES / 8, 1, 1);
 
 	this->Clear();
@@ -42,6 +48,14 @@ void ParticleSystem::ClearHistory()
 
 void ParticleSystem::Clear()
 {
+	ID3D11VertexShader* nullVShader = nullptr;
+	ID3D11UnorderedAccessView* nullAccess = nullptr;
+	Graphics::GetContext()->VSSetShader(nullVShader, nullptr, 0);
+	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullAccess, 0);
+
 }
 
 bool ParticleSystem::LoadVertexShader()
@@ -207,7 +221,7 @@ bool ParticleSystem::SetUp()
 	for (int i = 0; i < MAX_PARTICLES; i++)
 	{
 		ParticleVertex part;
-		part.position = DirectX::SimpleMath::Vector4(randomize(1000.0f, -1000.0f), randomize(125.0f, 75.0f), randomize(1000.0f, -1000.0f), 1.0f);
+		part.position = DirectX::SimpleMath::Vector3(randomize(1000.0f, -1000.0f), randomize(125.0f, 75.0f), randomize(1000.0f, -1000.0f));
 		this->parts.push_back(part);
 	}
 
@@ -231,7 +245,7 @@ bool ParticleSystem::SetUp()
 		return false;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	srvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvDesc.BufferEx.FirstElement = 0;
 	srvDesc.BufferEx.Flags = 0;
@@ -247,12 +261,6 @@ bool ParticleSystem::SetUp()
 	this->LoadPixelShader();
 	this->LoadComputeShader();
 
-	D3D11_INPUT_ELEMENT_DESC inputDesc[1] = 
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
-	hr = Graphics::GetDevice()->CreateInputLayout(inputDesc, 1, this->vertexData.c_str(), this->vertexData.length(), &this->inputLayout);
-	if (FAILED(hr))
-		return false;
-
 	return true;
 }
 
@@ -267,5 +275,5 @@ void ParticleSystem::Render()
 		else
 			hasSetup = false;
 	}
-	//this->InternalRender();
+	this->InternalRender();
 }

@@ -499,6 +499,34 @@ bool LightPass::CreateSamplerState()
 	return true;
 }
 
+bool LightPass::CreateDepthStencilState()
+{
+	HRESULT hr;
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+
+	dsDesc.DepthEnable = false;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	dsDesc.StencilEnable = false;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	hr = Graphics::GetDevice()->CreateDepthStencilState(&dsDesc, &this->noDepth);
+
+	return !FAILED(hr);
+}
+
 LightPass::LightPass()
 {
 	this->iBuffer = nullptr;
@@ -510,6 +538,7 @@ LightPass::LightPass()
 	this->vShader = nullptr;
 	this->pShader = nullptr;
 	this->sampler = nullptr;
+	this->noDepth = nullptr;
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		this->shaderResources[i] = nullptr;
@@ -534,6 +563,8 @@ LightPass::~LightPass()
 		this->pShader->Release();
 	if (this->sampler)
 		this->sampler->Release();
+	if (this->noDepth)
+		this->noDepth->Release();
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (this->shaderResources[i])
@@ -568,6 +599,11 @@ bool LightPass::Initialize()
 		return false;
 	}
 
+	if (!CreateDepthStencilState())
+	{
+		return false;
+	}
+
 
 	return true;
 }
@@ -580,6 +616,7 @@ void LightPass::Clear()
 	ID3D11Buffer* vBufferNull = nullptr;
 	ID3D11Buffer* iBufferNull = nullptr;
 	ID3D11SamplerState* samplerStateNull = nullptr;
+	ID3D11DepthStencilState* nullState = nullptr;
 	ID3D11ShaderResourceView* shaderResourceNull[BUFFER_COUNT] = { nullptr };
 	UINT stride = 0;
 	UINT offset = 0;
@@ -591,6 +628,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
+	Graphics::GetContext()->OMSetDepthStencilState(nullState, 0);
 }
 
 void LightPass::Prepare()
@@ -604,6 +642,7 @@ void LightPass::Prepare()
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, this->shaderResources);
+	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }
