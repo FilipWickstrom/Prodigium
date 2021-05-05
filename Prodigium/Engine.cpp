@@ -88,6 +88,7 @@ void Engine::Render()
 	this->sceneHandler.Render();
 	this->gPass.Clear();
 
+	// Shadow pass
 	this->gPass.Prepare();
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
@@ -97,6 +98,9 @@ void Engine::Render()
 	this->sceneHandler.RenderLights();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
+
+	// Particle pass
+	this->sceneHandler.RenderParticles();
 
 	//Render the skybox on the places where there is no objects visible from depthstencil
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());

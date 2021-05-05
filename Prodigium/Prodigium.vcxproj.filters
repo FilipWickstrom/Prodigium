@@ -22,6 +22,18 @@
     <FxCompile Include="ShadowVertex.hlsl">
       <Filter>Engine\Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="VertexShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ComputeShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="GeometryShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -81,6 +93,9 @@
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
     <ClCompile Include="ShadowHandler.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,6 +221,9 @@
     </Filter>
     <Filter Include="Engine\Graphics\Techniques">
       <UniqueIdentifier>{1d409d0e-e0d2-4a3e-bd9f-4711da5fbe64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Particle Shaders">
+      <UniqueIdentifier>{178aa798-03e2-4f31-ad79-8484498a3727}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

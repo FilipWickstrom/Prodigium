@@ -8,7 +8,6 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 {
 	this->running = true;
 	this->player = nullptr;
-	
 }
 
 Game::~Game()

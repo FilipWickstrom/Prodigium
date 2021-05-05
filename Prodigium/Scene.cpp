@@ -331,3 +331,8 @@ void Scene::RenderShadows()
 	test = true;
 }
 
+void Scene::RenderParticles()
+{
+	this->particles.Render();
+}
+

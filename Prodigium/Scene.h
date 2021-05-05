@@ -2,6 +2,7 @@
 #include <vector>
 #include "MeshObject.h"
 #include "ShadowHandler.h"
+#include "ParticleSystem.h"
 #define SHADOWRANGE 125.0f
 struct InfoStruct
 {
@@ -43,6 +44,11 @@ private:
 		For rendering Shadows
 	*/
 	ShadowHandler* shadowHandler;
+
+	/*
+		For rendering particles
+	*/
+	ParticleSystem particles;
 
 public:
 
@@ -99,4 +105,7 @@ public:
 
 	// render all shadows to be prepared for the light pass
 	void RenderShadows();
+
+	// render the particles inside the scene.
+	void RenderParticles();
 };

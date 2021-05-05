@@ -48,5 +48,9 @@ public:
 	// render the lights in the current selected scene.
 	void RenderLights();
 
+	// render the shadows with each light.
 	void RenderShadows();
+
+	// render particles inside current scene.
+	void RenderParticles();
 };

@@ -123,6 +123,9 @@ void CameraObject::Update()
 
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
+
+	Graphics::GetContext()->GSSetConstantBuffers(0, 1, &matrixBuffer);
+	Graphics::GetContext()->GSSetConstantBuffers(1, 1, &camPosBuffer);
 }
 
 void CameraObject::ChangeOffset(const Vector3& offset)
