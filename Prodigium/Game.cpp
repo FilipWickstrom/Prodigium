@@ -137,7 +137,6 @@ bool Game::OnFrame(const float& deltaTime)
 bool Game::OnStart()
 {
 	this->LoadMap();
-	SceneHandle()->EditScene().GetParticles().SetActive(false);
 	return true;
 }
 
