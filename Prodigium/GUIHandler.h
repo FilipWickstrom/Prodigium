@@ -1,16 +1,23 @@
 #pragma once
-
 #include "UsefulHeader.h"
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
 #include "Graphics.h"
 #include "Window.h"
+#include <stb/stb_image.h>
 
 class GUIHandler
 {
 private:
 	ImGuiIO io;
+	bool trap1Active, trap2Active;
+	int trap1ImageWidth, trap1ImageHeight, trap2ImageWidth, trap2ImageHeight;
+	ID3D11ShaderResourceView* textureTrap1;
+	ID3D11ShaderResourceView* textureTrap2;
+	void CreateFPSCounter(const float& fps);
+	void CreateTrapGUI();
+	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:
 	GUIHandler();
 	virtual ~GUIHandler();
@@ -18,5 +25,5 @@ public:
 	void Initialize(const HWND& window);
 	void Render();
 	void Shutdown();
-	void CreateFPSCounter(const float& fps);
+	void ChangeActiveTrap();
 };

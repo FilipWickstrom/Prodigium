@@ -89,13 +89,13 @@
     <ClCompile Include="imgui_impl_win32.cpp">
       <Filter>Engine\Graphics\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="imgui_tables.cpp">
-      <Filter>Engine\Graphics\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="imgui_widgets.cpp">
       <Filter>Engine\Graphics\imgui</Filter>
     </ClCompile>
     <ClCompile Include="GUIHandler.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_tables.cpp">
       <Filter>Engine\Graphics\imgui</Filter>
     </ClCompile>
   </ItemGroup>

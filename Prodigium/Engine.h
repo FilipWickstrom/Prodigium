@@ -39,6 +39,7 @@ public:
 	void ClearDisplay();
 	void Render();
 	void OpenConsole();
+	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
 };

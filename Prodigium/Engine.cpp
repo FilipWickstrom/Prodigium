@@ -110,6 +110,11 @@ void Engine::OpenConsole()
 	this->RedirectIoToConsole();
 }
 
+void Engine::ChangeActiveTrap()
+{
+	guiHandler.ChangeActiveTrap();
+}
+
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	if (!InputHandler::Initialize())

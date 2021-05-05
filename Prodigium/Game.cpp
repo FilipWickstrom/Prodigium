@@ -97,6 +97,7 @@ void Game::HandleInput(const float& deltaTime)
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
 		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
+		Engine::ChangeActiveTrap();
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
 	{
