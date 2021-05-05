@@ -15,7 +15,7 @@ private:
 	int trap1ImageWidth, trap1ImageHeight, trap2ImageWidth, trap2ImageHeight;
 	ID3D11ShaderResourceView* textureTrap1;
 	ID3D11ShaderResourceView* textureTrap2;
-	void CreateFPSCounter(const float& fps);
+	void CreateFPSCounter();
 	void CreateTrapGUI();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:

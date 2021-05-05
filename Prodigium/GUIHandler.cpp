@@ -86,7 +86,7 @@ void GUIHandler::Render()
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-	CreateFPSCounter(120);
+	CreateFPSCounter();
     CreateTrapGUI();
 
 	EndFrame();
@@ -117,12 +117,12 @@ void GUIHandler::ChangeActiveTrap()
         this->trap1Active = true;
 }
 
-void GUIHandler::CreateFPSCounter(const float& fps)
+void GUIHandler::CreateFPSCounter()
 {
-    SetNextWindowPos(ImVec2(0, -15));
+    SetNextWindowPos(ImVec2(0, -25));
     SetNextWindowSize(ImVec2(250, 250), 0);
 	Begin("FPS");
-	Text("FPS: %d", (int)fps);
+	Text("FPS: %d", (int)GetIO().Framerate);
 	End();
 }
 
