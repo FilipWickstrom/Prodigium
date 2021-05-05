@@ -95,18 +95,11 @@ Scene::Scene()
 Scene::~Scene()
 {
 	if (this->lightShaderView)
-	{
 		this->lightShaderView->Release();
-	}
-
 	if (this->lightBuffer)
-	{
 		this->lightBuffer->Release();
-	}
 	if (this->infoBuffer)
-	{
 		this->infoBuffer->Release();
-	}
 
 	if (this->shadowHandler)
 		delete this->shadowHandler;
@@ -242,6 +235,11 @@ ShadowHandler& Scene::GetShadows()
 	return *this->shadowHandler;
 }
 
+ParticleSystem& Scene::GetParticles()
+{
+	return this->particles;
+}
+
 const int Scene::GetNumberOfObjects() const
 {
 	return (unsigned int)this->objects.size();
@@ -315,20 +313,18 @@ void Scene::RenderShadows()
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
 	{
 		this->shadowHandler->Render(i);
+
+		// Loop through all objects
 		for (int j = 0; j < (int)objects.size(); j++)
 		{
+			// Check the distance between light source and object.
 			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE)
 			{
-				if (test == false)
-				{
-					std::cout << this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) << "\n";
-				}
 				this->objects[j]->Render();
 			}
 		}
 	}
 	this->shadowHandler->Clear();
-	test = true;
 }
 
 void Scene::RenderParticles()

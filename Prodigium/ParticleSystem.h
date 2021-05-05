@@ -20,6 +20,7 @@ private:
 	std::string vertexData;
 
 	bool hasSetup;
+	bool isActive;
 
 private:
 
@@ -38,12 +39,13 @@ private:
 	// Remove any binded COM object onto pipeline.
 	void Clear();
 
+	// setup
+	bool SetUp();
 public:
 
 	ParticleSystem();
 	virtual ~ParticleSystem();
-	bool SetUp();
-
+	void SetActive(bool act = true);
 	void Render();
 };
 

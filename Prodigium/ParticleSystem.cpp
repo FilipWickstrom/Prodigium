@@ -192,6 +192,7 @@ ParticleSystem::ParticleSystem()
 	this->particleView = nullptr;
 	this->defaultState = nullptr;
 	this->hasSetup = false;
+	this->isActive = true;
 }
 
 ParticleSystem::~ParticleSystem()
@@ -289,16 +290,24 @@ bool ParticleSystem::SetUp()
 	return true;
 }
 
+void ParticleSystem::SetActive(bool act)
+{
+	this->isActive = act;
+}
+
 void ParticleSystem::Render()
 {
-	while (!hasSetup)
+	if (isActive)
 	{
-		if (this->SetUp())
+		while (!hasSetup)
 		{
-			hasSetup = true;
+			if (this->SetUp())
+			{
+				hasSetup = true;
+			}
+			else
+				hasSetup = false;
 		}
-		else
-			hasSetup = false;
+		this->InternalRender();
 	}
-	this->InternalRender();
 }

@@ -41,7 +41,12 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::K))
 	{
-		OpenConsole();
+		//OpenConsole();
+		SceneHandle()->EditScene().GetParticles().SetActive(true);
+	}
+	if (InputHandler::IsKeyPressed(Keyboard::L))
+	{
+		SceneHandle()->EditScene().GetParticles().SetActive(false);
 	}
 	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
@@ -132,6 +137,7 @@ bool Game::OnFrame(const float& deltaTime)
 bool Game::OnStart()
 {
 	this->LoadMap();
+	SceneHandle()->EditScene().GetParticles().SetActive(false);
 	return true;
 }
 

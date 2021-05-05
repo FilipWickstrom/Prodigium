@@ -38,8 +38,6 @@ private:
 	const bool SetupLightBuffer();
 	const bool UpdateInfoBuffer();
 
-	bool test = false;
-
 	/*
 		For rendering Shadows
 	*/
@@ -87,6 +85,8 @@ public:
 	MeshObject& GetMeshObject(int index);
 
 	ShadowHandler& GetShadows();
+
+	ParticleSystem& GetParticles();
 
 	// return the number of objects inside the scene.
 	const int GetNumberOfObjects() const;
