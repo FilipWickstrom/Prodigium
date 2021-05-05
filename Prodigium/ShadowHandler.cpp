@@ -1,7 +1,86 @@
 #include "ShadowHandler.h"
+#include <fstream>
+
+const bool ShadowHandler::LoadVertexShader()
+{
+	HRESULT hr;
+
+	std::string shaderData;
+	std::ifstream reader;
+
+	reader.open("ShadowVertex.cso", std::ios::binary | std::ios::ate);
+	if (!reader.is_open())
+	{
+		return false;
+	}
+	reader.seekg(0, std::ios::end);
+	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+	reader.seekg(0, std::ios::beg);
+
+	shaderData.assign((std::istreambuf_iterator<char>(reader)),
+		std::istreambuf_iterator<char>());
+
+	hr = Graphics::GetDevice()->CreateVertexShader(shaderData.c_str(), shaderData.length(), nullptr, &this->vertexShader);
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	shaderData.clear();
+	reader.close();
+
+	return true;
+}
+
+void ShadowHandler::ClearHistory()
+{
+	if (this->vertexShader)
+	{
+		this->vertexShader->Release();
+		this->vertexShader = nullptr;
+	}
+
+	if (this->shadowMapArray)
+	{
+		this->shadowMapArray->Release();
+		this->shadowMapArray = nullptr;
+	}
+
+	if (this->lightArrayView)
+	{
+		this->lightArrayView->Release();
+		this->lightArrayView = nullptr;
+	}
+
+	if (this->arrayView)
+	{
+		this->arrayView->Release();
+		this->arrayView = nullptr;
+	}
+
+	if (this->lightInfoBuffer)
+	{
+		this->lightInfoBuffer->Release();
+		this->lightInfoBuffer = nullptr;
+	}
+}
 
 bool ShadowHandler::SetupMapArray()
 {
+
+	// Allows for dynamic input of shadows maps
+	this->ClearHistory();
+
+
+	this->LoadVertexShader();
+	this->viewPort.TopLeftX = 0.0f;
+	this->viewPort.TopLeftY = 0.0f;
+	this->viewPort.Width = static_cast<float>(SHADOWWIDTH);
+	this->viewPort.Height = static_cast<float>(SHADOWHEIGHT);
+	this->viewPort.MinDepth = 0.0f;
+	this->viewPort.MaxDepth = 1.0f;
+
 	// to do: compile all textures into map.
 	HRESULT hr, hr2, hr3;
 	D3D11_TEXTURE2D_DESC texDesc;
@@ -75,6 +154,8 @@ ShadowHandler::ShadowHandler()
 	this->arrayView = nullptr;
 	this->lightArrayView = nullptr;
 	this->lightInfoBuffer = nullptr;
+	this->vertexShader = nullptr;
+	this->viewPort = {};
 	this->nrOf = 0;
 }
 
@@ -106,6 +187,8 @@ ShadowHandler::~ShadowHandler()
 		this->lightArrayView->Release();
 	if (this->lightInfoBuffer)
 		this->lightInfoBuffer->Release();
+	if (this->vertexShader)
+		this->vertexShader->Release();
 
 	for (int i = 0; i < (int)shadows.size(); i++)
 	{
@@ -121,11 +204,6 @@ ShadowMap& ShadowHandler::GetShadow(const int index)
 
 void ShadowHandler::Render(const int index)
 {
-	if (this->newMap)
-	{
-		this->SetupMapArray();
-		this->newMap = false;
-	}
 	this->shadows[index]->RenderStatic();
 }
 
@@ -152,4 +230,16 @@ void ShadowHandler::Clear()
 	//Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
 	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
 	Graphics::SetMainWindowViewport();
+}
+
+void ShadowHandler::Prepare()
+{
+	if (this->newMap)
+	{
+		this->SetupMapArray();
+		this->newMap = false;
+	}
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->RSSetViewports(1, &this->viewPort);
+	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 }

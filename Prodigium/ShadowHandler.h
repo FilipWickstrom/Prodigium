@@ -14,6 +14,8 @@ private:
 	std::vector<MatrixLight> structs;
 	ID3D11Texture2D* shadowMapArray;
 	ID3D11Buffer* lightInfoBuffer;
+	ID3D11VertexShader* vertexShader;
+	D3D11_VIEWPORT viewPort;
 
 	// Contains the view and projection matrices of our lights
 	ID3D11ShaderResourceView* lightArrayView;
@@ -22,6 +24,11 @@ private:
 	ID3D11ShaderResourceView* arrayView;
 	bool newMap;
 	int nrOf;
+
+	const bool LoadVertexShader();
+
+	// if any of the COM objects exists we release them and create new ones.
+	void ClearHistory();
 public:
 
 	bool SetupMapArray();
@@ -35,4 +42,5 @@ public:
 	const int NrOfShadows() const;
 	void RenderLightPass();
 	void Clear();
+	void Prepare();
 };

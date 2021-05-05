@@ -311,6 +311,7 @@ void Scene::RenderLights()
 
 void Scene::RenderShadows()
 {
+	this->shadowHandler->Prepare();
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
 	{
 		this->shadowHandler->Render(i);

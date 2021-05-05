@@ -7,18 +7,14 @@ class ShadowMap
 {
 private:
 
-	ID3D11Texture2D* shadowMap;
 	ID3D11DepthStencilView* shadowDepth;
-	ID3D11ShaderResourceView* shadowResourceView;
 	ID3D11Buffer* lightBuffer;
-	D3D11_VIEWPORT viewPort;
-	ID3D11VertexShader* vertexShader;
+
 	LightStruct lightSt;
 	// Internal setting up shadow map.
-	const bool SetupShadowMap();
 	const bool SetupLightBuffer(const LightStruct& lightSt);
 	const bool UpdateLightBuffer(const LightStruct& lightSt);
-	const bool LoadVertexShader();
+
 
 public:
 
