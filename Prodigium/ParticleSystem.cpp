@@ -27,7 +27,6 @@ void ParticleSystem::InternalRender()
 	/*
 		Render Phase
 	*/
-	Graphics::BindBackBuffer();
 	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
 

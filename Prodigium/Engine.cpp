@@ -100,6 +100,7 @@ void Engine::Render()
 	this->lightPass.Clear();
 
 	// Particle pass
+	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 	this->sceneHandler.RenderParticles();
 
 	//Render the skybox on the places where there is no objects visible from depthstencil

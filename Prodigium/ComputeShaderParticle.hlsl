@@ -20,5 +20,5 @@ void main( uint3 DTid : SV_DispatchThreadID )
     }
     // Respawn particle
     else
-        buffer[DTid.x].position.y += 225.0f;
+        buffer[DTid.x].position.y += 235.0f;
 }
