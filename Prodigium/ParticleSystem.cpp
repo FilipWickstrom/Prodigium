@@ -28,6 +28,7 @@ void ParticleSystem::InternalRender()
 		Render Phase
 	*/
 	Graphics::BindBackBuffer();
+	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
 
 
@@ -186,10 +187,10 @@ ParticleSystem::ParticleSystem()
 	this->vertexShader = nullptr;
 	this->pixelShader = nullptr;
 	this->computeShader = nullptr;
-	this->inputLayout = nullptr;
 	this->particleAccess = nullptr;
 	this->particleBuff = nullptr;
 	this->particleView = nullptr;
+	this->defaultState = nullptr;
 	this->hasSetup = false;
 }
 
@@ -203,26 +204,27 @@ ParticleSystem::~ParticleSystem()
 		this->pixelShader->Release();
 	if (this->computeShader)
 		this->computeShader->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
 	if (this->particleAccess)
 		this->particleAccess->Release();
 	if (this->particleBuff)
 		this->particleBuff->Release();
 	if (this->particleView)
 		this->particleView->Release();
+	if (this->defaultState)
+		this->defaultState->Release();
 }
 
 bool ParticleSystem::SetUp()
 {
 	this->ClearHistory();
 
+	std::vector<ParticleVertex> parts;
 	HRESULT hr;
 	for (int i = 0; i < MAX_PARTICLES; i++)
 	{
 		ParticleVertex part;
-		part.position = DirectX::SimpleMath::Vector3(randomize(1000.0f, -1000.0f), randomize(125.0f, 75.0f), randomize(1000.0f, -1000.0f));
-		this->parts.push_back(part);
+		part.position = DirectX::SimpleMath::Vector3(randomize(1000.0f, -1000.0f), randomize(300.0f, 50.0f), randomize(1000.0f, -1000.0f));
+		parts.push_back(part);
 	}
 
 	D3D11_BUFFER_DESC desc;
@@ -230,11 +232,11 @@ bool ParticleSystem::SetUp()
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-	desc.ByteWidth = sizeof(ParticleVertex) * (int)this->parts.size();
+	desc.ByteWidth = sizeof(ParticleVertex) * (int)parts.size();
 	desc.StructureByteStride = sizeof(ParticleVertex);
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &(this->parts[0]);
+	data.pSysMem = &(parts[0]);
 
 	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->particleBuff);
 	if (FAILED(hr))
@@ -249,7 +251,7 @@ bool ParticleSystem::SetUp()
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvDesc.BufferEx.FirstElement = 0;
 	srvDesc.BufferEx.Flags = 0;
-	srvDesc.BufferEx.NumElements = (int)this->parts.size();
+	srvDesc.BufferEx.NumElements = (int)parts.size();
 
 	hr = Graphics::GetDevice()->CreateShaderResourceView(this->particleBuff, 0, &this->particleView);
 	assert(SUCCEEDED(hr));
@@ -260,6 +262,29 @@ bool ParticleSystem::SetUp()
 	this->LoadVertexShader();
 	this->LoadPixelShader();
 	this->LoadComputeShader();
+
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	dsDesc.StencilEnable = false;
+	dsDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	dsDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	hr = Graphics::GetDevice()->CreateDepthStencilState(&dsDesc, &this->defaultState);
+	if (FAILED(hr))
+		return false;
 
 	return true;
 }
