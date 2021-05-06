@@ -65,7 +65,7 @@ struct PixelShaderInput
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 diff = float4(0.8f, 0.8f, 0.8f, 0.8f);
+    float4 diff = float4(1.0f, 1.0f, 1.0f, 0.8f);
     float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
     float distance = length(lights[index].position.xyz - buff.positionWS.xyz);
     float3 lightVector = normalize(lights[index].position.xyz - buff.positionWS.xyz);
@@ -116,8 +116,6 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         }
     }
     
-    
-    
     // Check if pixel is within the range of the spotlight
 
     float3 normals = normalize(buff.normalWS.xyz);
@@ -138,7 +136,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         float3 direction = normalize(lights[index].direction.xyz);
 
          // Nice effect to fade the lgiht at the rim of the cone
-        float minCos = cos(lights[index].direction.w);
+        float minCos = cos(15.f);
         float maxCos = (minCos + 1.0f) * 0.5f;
         float cosAngle = dot(direction, -lightVector);
         float spot = smoothstep(minCos, maxCos, cosAngle);
@@ -149,12 +147,12 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         //Attenuate depending on distance from lightsource
         float denom = d / range + 1.f;
         float attenuation = 1.f / (denom * denom);
-        float cutoff = 0.01f;
+        float cutoff = 0.001f;
      
         // scale and bias attenuation such that:
         // attenuation == 0 at extent of max influence
         // attenuation == 1 when d == 0
-        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.05f;
         attenuation = max(attenuation, 0);
         
         //float attenuation = 1 / (lights[index].att.x + (lights[index].att.y * d) + (lights[index].att.z * d * d));
@@ -199,6 +197,66 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 
     float4 diff = float4(1.0f, 1.0f, 1.0f, 0.8f);
     float4 spec = float4(0.07f, 0.07f, 0.07f, 1.0f);
+    
+    int shadowIndex = index - 1;
+    float4 lightViewPos = mul(buff.positionWS, lightMatrices[shadowIndex].lightView);
+    lightViewPos = mul(lightViewPos, lightMatrices[shadowIndex].lightProj);
+    
+    float2 shadowCoord;
+
+    shadowCoord.x = lightViewPos.x / lightViewPos.w / 2.0f + 0.5f;
+    shadowCoord.y = -lightViewPos.y / lightViewPos.w / 2.0f + 0.5f;
+    
+    
+    if ((saturate(shadowCoord.x) == shadowCoord.x) &&
+	    (saturate(shadowCoord.y) == shadowCoord.y))
+    {
+        float bias = 0.00003f;
+        float dx = 1.0f / 2048;
+        float depth = shadowMaps.Sample(anisotropic, float3(shadowCoord, shadowIndex)).r;
+        float s0 = shadowMaps.Sample(anisotropic, float3(shadowCoord, shadowIndex).r) + bias;
+        float s1 = shadowMaps.Sample(anisotropic, float3(shadowCoord, 0.0f) + float3(dx, 0.0f, shadowIndex)).r + bias;
+        float s2 = shadowMaps.Sample(anisotropic, float3(shadowCoord, 0.0f) + float3(0.0f, dx, shadowIndex)).r + bias;
+        float s3 = shadowMaps.Sample(anisotropic, float3(shadowCoord, 0.0f) + float3(dx, dx, shadowIndex)).r + bias;
+        
+        float result0 = depth <= s0;
+        float result1 = depth <= s1;
+        float result2 = depth <= s2;
+        float result3 = depth <= s3;
+        
+        float2 texelPos = shadowCoord * 2048;
+        float2 lerps = frac(texelPos);
+        
+        float shadowCoeff = lerp(lerp(result0, result1, lerps.x), lerp(result2, result3, lerps.x), lerps.y);
+        
+        float lightDepth = (lightViewPos.z / lightViewPos.w) - bias;
+        if (lightDepth > depth)
+        {
+            float range = lights[index].position.w;
+            float d = max(distance - range, 0);
+        
+            float denom = d / range + 1.f;
+            float attenuation = 1.f / (denom * denom);
+            float cutoff = 0.001f;
+     
+            attenuation = (attenuation - cutoff) / (1 - cutoff);
+            attenuation = max(attenuation, 0);
+            float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * buff.diffuseColor;
+            return buff.diffuseColor * 0.01f * attenuation * shadowCoeff;
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
         
         //Diffuse light calculations
     float diffuse = max(dot(vecToLight, normals), 0.0f);

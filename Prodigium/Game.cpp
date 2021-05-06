@@ -74,7 +74,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::IsLMBPressed())
 	{
-		std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+		//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
 
 		// Test pick up
 		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
@@ -198,40 +198,42 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { 130.0f, 20.0f, 0.0f, 20.0f };
+	L.position = { 130.0f, 25.0f, 0.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.position = { 30.0f, 25.0f, 0.0f, 20.0f };
+	L.position = { 30.0f, 25.0f, 0.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.position = { 190.0f, 25.0f, 90.0f, 20.0f };
+	L.position = { 190.0f, 25.0f, 90.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.position = { 30.0f, 25.0f, 100.0f, 20.0f };
+	L.position = { 30.0f, 25.0f, 100.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.position = { 130.0f, 25.0f, 100.0f, 20.0f };
+	L.position = { 130.0f, 25.0f, 100.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { 325.0f, 25.0f, -75.0f, 20.0f };
+	L.position = { 325.0f, 25.0f, -75.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", true, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", true, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { -75.0f, 20.0f, 45.0f, 30.0f };
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { -91.0f, 12.f, 50.0f, 40.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house 2
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { 375.0f, 25.0f, -175.0f, 30.0f };
+	L.direction = { 0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test

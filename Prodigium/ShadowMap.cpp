@@ -10,10 +10,10 @@ const bool ShadowMap::SetupLightBuffer(const LightStruct& lightSt)
 		DirectX::SimpleMath::Matrix proj;
 	}Lpos;
 
-	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 100, lightSt.position.z },
+	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 65.f, lightSt.position.z },
 		{ lightSt.position.x - 0.001f, -1.0f , lightSt.position.z + 0.001f }, { 0.0f, 1.0f, 0.0f }));
 
-	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 85.0f, 150.0f));
+	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 65.0f, 110.0f));
 
 
 	D3D11_BUFFER_DESC desc = {};
@@ -36,7 +36,7 @@ const bool ShadowMap::UpdateLightBuffer(const LightStruct& lightSt)
 		DirectX::SimpleMath::Matrix proj;
 	}Lpos;
 
-	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y + 100, lightSt.position.z },
+	Lpos.view = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreateLookAt({ lightSt.position.x, lightSt.position.y, lightSt.position.z },
 		{ lightSt.position.x - 0.001f, -1.0f , lightSt.position.z + 0.001f }, { 0.0f, 1.0f, 0.0f }));
 
 	Lpos.proj = DirectX::XMMatrixTranspose(DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(0.5f * DirectX::XM_PI, (float)(SHADOWWIDTH / SHADOWHEIGHT), 85.0f, 150.0f));

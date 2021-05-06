@@ -1,33 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="PixelShaderGPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShaderLightPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderLightPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShaderGPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="SkyboxVertexShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="SkyboxPixelShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="DebugVertexShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="DebugPixelShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="ShadowVertex.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="VertexShaderParticle.hlsl">
       <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
     </FxCompile>
@@ -39,6 +12,33 @@
     </FxCompile>
     <FxCompile Include="GeometryShaderParticle.hlsl">
       <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderLightPass.hlsl">
+      <Filter>Engine\Graphics\Shaders\Light Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderLightPass.hlsl">
+      <Filter>Engine\Graphics\Shaders\Light Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShaderGPass.hlsl">
+      <Filter>Engine\Graphics\Shaders\G Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderGPass.hlsl">
+      <Filter>Engine\Graphics\Shaders\G Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowVertex.hlsl">
+      <Filter>Engine\Graphics\Shaders\Shadow Pass Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DebugVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Bounding Box Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DebugPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Bounding Box Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyboxPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Skybox Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyboxVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Skybox Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -282,6 +282,21 @@
     </Filter>
     <Filter Include="Engine\Graphics\Shaders\Particle Shaders">
       <UniqueIdentifier>{178aa798-03e2-4f31-ad79-8484498a3727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Light Shaders">
+      <UniqueIdentifier>{741c2f16-8579-4c5d-b745-9d86299a6129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Shadow Pass Shaders">
+      <UniqueIdentifier>{a90a11f7-2cbe-4b78-b06c-745fa5f3d047}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Bounding Box Shaders">
+      <UniqueIdentifier>{6e51fe19-ccb5-4e94-96de-957618062c03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Skybox Shaders">
+      <UniqueIdentifier>{5c77d980-3e50-4929-8914-c7ac4e395f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\G Shaders">
+      <UniqueIdentifier>{0a9b69c2-294c-45ca-8f5e-812a3ef01f02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

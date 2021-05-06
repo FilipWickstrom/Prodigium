@@ -93,9 +93,9 @@ void GUIHandler::Render()
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     CreateDebugGUI();
-#endif // _DEBUG
+//#endif // _DEBUG
 
 	
     CreateTrapGUI();
