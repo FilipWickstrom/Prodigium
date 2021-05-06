@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "Window.h"
 #include <stb/stb_image.h>
+#include <SimpleMath.h>
 
 class GUIHandler
 {
@@ -13,11 +14,12 @@ private:
 	ImGuiIO io;
 	bool trap1Active, trap2Active;
 	int imageWidth, imageHeight;
+	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
 	ID3D11ShaderResourceView* textureTrap2;
 	ID3D11ShaderResourceView* textureBrain;
 	ID3D11ShaderResourceView* textureOutline;
-	void CreateFPSCounter();
+	void CreateDebugGUI();
 	void CreateTrapGUI();
 	void CreateBrainGUI();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
@@ -29,4 +31,5 @@ public:
 	void Render();
 	void Shutdown();
 	void ChangeActiveTrap();
+	void setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
 };

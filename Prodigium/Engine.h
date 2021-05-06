@@ -23,6 +23,7 @@ private:
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	GUIHandler guiHandler;
+	DirectX::SimpleMath::Vector3 playerPos;
 	MeshObject testMeshObj;		//DELETE LATER***
 	//MeshObject testMeshObj2;	//DELETE LATER***
 private:
@@ -42,4 +43,5 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
+	void SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos);
 };

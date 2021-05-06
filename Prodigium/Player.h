@@ -19,5 +19,6 @@ public:
 	void Rotate(const float& pitch, const float& yaw);
 	void Sprint();
 	void Walk();
+	const DirectX::SimpleMath::Vector3 getPlayerPos();
 	MeshObject* GetMeshObject()const;
 };

@@ -124,7 +124,7 @@ bool Game::OnFrame(const float& deltaTime)
 	HandleInput(deltaTime);
 
 	player->Update(deltaTime);
-
+	Engine::SetPlayerPos(player->getPlayerPos());
 	Engine::ClearDisplay();
 	Engine::Render();
 
