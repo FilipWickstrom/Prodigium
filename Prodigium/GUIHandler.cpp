@@ -12,12 +12,14 @@ GUIHandler::GUIHandler()
     this->textureTrap1 = nullptr;
     this->textureTrap2 = nullptr;
     this->textureBrain = nullptr;
+    this->textureOutline = nullptr;
 }
 GUIHandler::~GUIHandler()
 {
-    delete this->textureTrap1;
-    delete this->textureTrap2;
-    delete this->textureBrain;
+    textureTrap1->Release();
+    textureTrap2->Release();
+    textureBrain->Release();
+    textureOutline->Release();
 }
 
 void SetUpGUIStyle()
@@ -73,11 +75,13 @@ void GUIHandler::Initialize(const HWND& window)
 	ImGui_ImplWin32_Init(window);
     SetUpGUIStyle();
 
-    bool ret = LoadTextureFromFile("Textures/ImGuiTest.png", &textureTrap1, &imageWidth, &imageHeight);
+    bool ret = LoadTextureFromFile("Textures/StopMoving.png", &textureTrap1, &imageWidth, &imageHeight);
     IM_ASSERT(ret);
-    ret = LoadTextureFromFile("Textures/ImGuiTest2.jpg", &textureTrap2, &imageWidth, &imageHeight);
+    ret = LoadTextureFromFile("Textures/SlowMoving.png", &textureTrap2, &imageWidth, &imageHeight);
     IM_ASSERT(ret);
     ret = LoadTextureFromFile("Textures/Brain.png", &textureBrain, &imageWidth, &imageHeight);
+    IM_ASSERT(ret);
+    ret = LoadTextureFromFile("Textures/Outline.png", &textureOutline, &imageWidth, &imageHeight);
     IM_ASSERT(ret);
 
 }
@@ -90,7 +94,7 @@ void GUIHandler::Render()
 
 	CreateFPSCounter();
     CreateTrapGUI();
-    CreateBrainGUI();
+    //CreateBrainGUI();
 
 	EndFrame();
 	ImGui::Render();
@@ -133,21 +137,36 @@ void GUIHandler::CreateTrapGUI()
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
-    SetNextWindowPos(ImVec2(200,(float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowPos(ImVec2(50,(float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+        
+    Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
+    Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
     
+    SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
+    Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
     if (this->trap1Active)
     {
-        Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
-        Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+        SetNextWindowPos(ImVec2(50, (float)Graphics::GetWindowHeight() - 150));
+        SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+        Begin("TRAP 1 OUTLINE", trap1, ImGuiWindowFlags_NoTitleBar);
+        Image((void*)textureOutline, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
         End();
     }
-    if (this->trap2Active)
+    else if (this->trap2Active)
     {
-        Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
-        Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+        SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 150));
+        SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+        Begin("TRAP 2 OUTLINE", trap1, ImGuiWindowFlags_NoTitleBar);
+        Image((void*)textureOutline, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
         End();
     }
+    
 
     delete trap1;
     delete trap2;

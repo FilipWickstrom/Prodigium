@@ -16,6 +16,7 @@ private:
 	ID3D11ShaderResourceView* textureTrap1;
 	ID3D11ShaderResourceView* textureTrap2;
 	ID3D11ShaderResourceView* textureBrain;
+	ID3D11ShaderResourceView* textureOutline;
 	void CreateFPSCounter();
 	void CreateTrapGUI();
 	void CreateBrainGUI();
