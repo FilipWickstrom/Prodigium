@@ -99,15 +99,15 @@ bool GameObject::UpdateMatrix()
 	return true;
 }
 
-const Vector3 GameObject::GetPosition() const
+const Vector3& GameObject::GetPosition() const
 {
 	return this->position;
 }
-const Vector3 GameObject::GetScale() const
+const Vector3& GameObject::GetScale() const
 {
 	return this->scale;
 }
-const Vector3 GameObject::GetRotation() const
+const Vector3& GameObject::GetRotation() const
 {
 	return this->rotation;
 }

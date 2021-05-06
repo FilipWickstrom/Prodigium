@@ -29,9 +29,9 @@ public:
 	bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	bool UpdateMatrix();
 	
-	const DirectX::SimpleMath::Vector3 GetPosition() const;
-	const DirectX::SimpleMath::Vector3 GetScale() const;
-	const DirectX::SimpleMath::Vector3 GetRotation() const;
+	const DirectX::SimpleMath::Vector3& GetPosition() const;
+	const DirectX::SimpleMath::Vector3& GetScale() const;
+	const DirectX::SimpleMath::Vector3& GetRotation() const;
 
 	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
 	void SetScale(const DirectX::SimpleMath::Vector3& newScale);
