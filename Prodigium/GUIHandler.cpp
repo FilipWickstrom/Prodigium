@@ -8,6 +8,7 @@ GUIHandler::GUIHandler()
     this->trap2Active = false;
     this->imageWidth = 0;
     this->imageHeight = 0;
+    this->playerPos = {};
 
     this->textureTrap1 = nullptr;
     this->textureTrap2 = nullptr;
@@ -92,7 +93,11 @@ void GUIHandler::Render()
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-	CreateFPSCounter();
+#ifdef _DEBUG
+    CreateDebugGUI();
+#endif // _DEBUG
+
+	
     CreateTrapGUI();
     //CreateBrainGUI();
 
@@ -124,12 +129,19 @@ void GUIHandler::ChangeActiveTrap()
         this->trap1Active = true;
 }
 
-void GUIHandler::CreateFPSCounter()
+void GUIHandler::setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
+{
+    this->playerPos = playerPos;
+}
+
+void GUIHandler::CreateDebugGUI()
 {
     SetNextWindowPos(ImVec2(0, -25));
     SetNextWindowSize(ImVec2(250, 250), 0);
-	Begin("FPS");
+	Begin("DEBUG");
 	Text("FPS: %d", (int)GetIO().Framerate);
+    Text("Player Pos X: %f", this->playerPos.x);
+    Text("Player Pos Z: %f", this->playerPos.z);
 	End();
 }
 

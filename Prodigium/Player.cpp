@@ -76,6 +76,11 @@ void Player::Walk()
 	this->speed = 20.0f;
 }
 
+const DirectX::SimpleMath::Vector3 Player::getPlayerPos()
+{
+	return this->playerModel->GetPosition();
+}
+
 MeshObject* Player::GetMeshObject() const
 {
 	return this->playerModel;

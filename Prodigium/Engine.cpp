@@ -109,8 +109,9 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
+	this->guiHandler.setPlayerPos(this->playerPos);
 	this->guiHandler.Render();
-
+	
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
 }
@@ -123,6 +124,11 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	guiHandler.ChangeActiveTrap();
+}
+
+void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
+{
+	this->playerPos = PlayerPos;
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
