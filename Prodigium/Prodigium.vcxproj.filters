@@ -19,6 +19,12 @@
     <FxCompile Include="SkyboxPixelShader.hlsl">
       <Filter>Engine\Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="DebugVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DebugPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders</Filter>
+    </FxCompile>
     <FxCompile Include="ShadowVertex.hlsl">
       <Filter>Engine\Graphics\Shaders</Filter>
     </FxCompile>
@@ -122,6 +128,9 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
+    <ClCompile Include="DebugInfo.cpp">
+      <Filter>Engine\DEBUG</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -191,6 +200,9 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="LightObject.h" />
+    <ClInclude Include="DebugInfo.h">
+      <Filter>Engine\DEBUG</Filter>
+    </ClInclude>
     <ClInclude Include="GUIHandler.h">
       <Filter>Engine\Graphics\imgui</Filter>
     </ClInclude>
@@ -263,6 +275,9 @@
     </Filter>
     <Filter Include="Engine\Graphics\Techniques">
       <UniqueIdentifier>{1d409d0e-e0d2-4a3e-bd9f-4711da5fbe64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\DEBUG">
+      <UniqueIdentifier>{9c8412bf-2332-4ad2-a0cc-023b1ff46a49}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Graphics\imgui">
       <UniqueIdentifier>{858b5652-46d0-4a74-ad90-7a5e905b510a}</UniqueIdentifier>

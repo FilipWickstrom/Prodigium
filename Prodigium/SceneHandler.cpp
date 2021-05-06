@@ -125,3 +125,13 @@ void SceneHandler::RenderParticles()
 		this->scenes[this->currentScene]->RenderParticles();
 	}
 }
+
+#ifdef _DEBUG
+void SceneHandler::RenderBoundingBoxes()
+{
+	if((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderBoundingBoxes();
+	}
+}
+#endif

@@ -48,6 +48,10 @@ public:
 	// render the lights in the current selected scene.
 	void RenderLights();
 
+#ifdef _DEBUG
+	void RenderBoundingBoxes();
+#endif
+
 	// render the shadows with each light.
 	void RenderShadows();
 

@@ -23,12 +23,9 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+bool GameObject::CreateModelMatrixBuffer()
 {
-	this->position = pos;
-	this->scale = scl;
-	this->rotation = rot;
-	modelMatrix = Matrix(Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position)).Transpose();
+	this->modelMatrix = this->modelMatrix.Transpose();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -39,10 +36,26 @@ const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->modelMatrix;
 	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
-	return !FAILED(result);
+
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
 }
 
-const bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+{
+	this->position = pos;
+	this->scale = scl;
+	this->rotation = rot;
+	modelMatrix = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position);
+
+	return true;
+}
+
+bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -60,7 +73,7 @@ const bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, cons
 	return !FAILED(hr);
 }
 
-const bool GameObject::UpdateMatrix()
+bool GameObject::UpdateMatrix()
 {
 
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
@@ -81,6 +94,7 @@ const bool GameObject::UpdateMatrix()
 	{
 		return false;
 	}
+
 
 	return true;
 }

@@ -21,4 +21,5 @@ public:
 	void Walk();
 	const DirectX::SimpleMath::Vector3 getPlayerPos();
 	MeshObject* GetMeshObject()const;
+	bool CheckCollision(MeshObject* other);
 };

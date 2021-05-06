@@ -111,13 +111,13 @@ Scene::~Scene()
 
 }
 
-void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, const Vector3& position, const Vector3& rotation, const Vector3& scale)
+void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, const Vector3& position, const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, position, rotation, scale))
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, position, rotation, scale))
 	{
 		this->objects.push_back(newObject);
 		this->currentObject = (int)objects.size() - 1;
@@ -167,7 +167,7 @@ void Scene::Add(MeshObject* object)
 	}
 }
 
-void Scene::UpdateMatrix(const Vector3& pos,const Vector3& rotation, const Vector3& scale)
+void Scene::UpdateMatrix(const Vector3& pos, const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Update the Matrix with input.
@@ -332,3 +332,15 @@ void Scene::RenderParticles()
 	this->particles.Render();
 }
 
+#ifdef _DEBUG
+void Scene::RenderBoundingBoxes()
+{
+	if ((int)this->objects.size() > 0)
+	{
+		for (int i = 0; i < (int)this->objects.size(); i++)
+		{
+			this->objects[i]->RenderBoundingBoxes();
+		}
+	}
+}
+#endif

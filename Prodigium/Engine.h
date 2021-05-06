@@ -12,6 +12,7 @@
 #include "SceneHandler.h"
 #include "CameraObject.h"
 #include "GUIHandler.h"
+#include "DebugInfo.h"
 
 class Engine
 {
