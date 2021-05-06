@@ -93,7 +93,7 @@ bool Player::CheckCollision(MeshObject* other)
 	{
 		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
 		{
-			std::cout << "INTERSECTION POGGERS OMG WHATTT!" << std::endl;
+			// ADD LOGIC HERE
 		}
 	}
 

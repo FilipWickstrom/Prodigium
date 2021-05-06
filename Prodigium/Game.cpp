@@ -172,7 +172,7 @@ void Game::LoadMap()
 	// Test pickups but its static lol
 	float randX = (float)(rand() % 200 - rand() % 200);
 	float randZ = (float)(rand() % 200- rand() % 200);
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", true, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
 	randX = (float)(rand() % 200 - rand() % 200);
 	randZ = (float)(rand() % 200 - rand() % 200);
@@ -245,6 +245,6 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
 		
-		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", true, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 }
