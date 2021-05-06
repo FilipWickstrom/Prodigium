@@ -91,7 +91,6 @@
     <ClCompile Include="SkyboxPass.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -199,7 +198,6 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="LightObject.h" />
     <ClInclude Include="DebugInfo.h">
       <Filter>Engine\DEBUG</Filter>
     </ClInclude>
