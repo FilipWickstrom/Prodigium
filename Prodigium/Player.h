@@ -19,7 +19,7 @@ public:
 	void Rotate(const float& pitch, const float& yaw);
 	void Sprint();
 	void Walk();
-	const DirectX::SimpleMath::Vector3 getPlayerPos();
+	const DirectX::SimpleMath::Vector3& GetPlayerPos();
 	MeshObject* GetMeshObject()const;
 	bool CheckCollision(MeshObject* other);
 };

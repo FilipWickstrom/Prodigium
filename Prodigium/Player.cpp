@@ -77,7 +77,7 @@ void Player::Walk()
 	this->speed = 20.0f;
 }
 
-const DirectX::SimpleMath::Vector3 Player::getPlayerPos()
+const DirectX::SimpleMath::Vector3& Player::GetPlayerPos()
 {
 	return this->playerModel->GetPosition();
 }
@@ -93,7 +93,7 @@ bool Player::CheckCollision(MeshObject* other)
 	{
 		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
 		{
-			// ADD LOGIC HERE
+			
 		}
 	}
 

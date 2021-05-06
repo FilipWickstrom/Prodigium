@@ -128,7 +128,7 @@ bool Game::OnFrame(const float& deltaTime)
 	HandleInput(deltaTime);
 
 	player->Update(deltaTime);
-	Engine::SetPlayerPos(player->getPlayerPos());
+	Engine::SetPlayerPos(player->GetPlayerPos());
 	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 	{
 		player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i));
