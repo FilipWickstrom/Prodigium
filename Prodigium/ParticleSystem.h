@@ -2,7 +2,7 @@
 #include <d3d11.h>
 #include "UsefulStructuresHeader.h"
 #include <vector>
-#define MAX_PARTICLES 4096
+#define MAX_PARTICLES 8192
 
 class ParticleSystem
 {
