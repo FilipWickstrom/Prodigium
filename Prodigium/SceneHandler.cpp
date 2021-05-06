@@ -107,3 +107,13 @@ void SceneHandler::RenderLights()
 		this->scenes[this->currentScene]->RenderLights();
 	}
 }
+
+#ifdef _DEBUG
+void SceneHandler::RenderBoundingBoxes()
+{
+	if((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderBoundingBoxes();
+	}
+}
+#endif

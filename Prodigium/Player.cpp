@@ -59,9 +59,7 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
 
 	this->playerModel->UpdateMatrix();
-	this->playerModel->BuildBoundingVolume();
-	/*std::cout << "P: " << this->playerModel->position.x << " " << this->playerModel->position.z << " C: " <<
-		this->playerModel->GetCollider().Center.x << " " << this->playerModel->GetCollider().Center.z << std::endl;*/
+	this->playerModel->UpdateBoundingBoxes();
 }
 
 void Player::Rotate(const float& pitch, const float& yaw)
@@ -82,4 +80,17 @@ void Player::Walk()
 MeshObject* Player::GetMeshObject() const
 {
 	return this->playerModel;
+}
+
+bool Player::CheckCollision(MeshObject* other)
+{
+	for (int i = 0; i < other->colliders.size(); i++)
+	{
+		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
+		{
+			std::cout << "INTERSECTION POGGERS OMG WHATTT!" << std::endl;
+		}
+	}
+
+	return true;
 }

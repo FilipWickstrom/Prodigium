@@ -11,6 +11,7 @@
 #include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
+#include "DebugInfo.h"
 
 class Engine
 {

@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "ResourceManager.h"
 
 Graphics* Graphics::instance = nullptr;
 
@@ -151,7 +152,7 @@ bool Graphics::CreateBackBuffer()
 {
 	HRESULT hr;
 
-	ID3D11Texture2D* tempTexture = nullptr;
+	ID3D11Texture2D* tempTexture = ResourceManager::GetTexture("FinalImage");
 	if (FAILED(Graphics::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTexture))))
 	{
 		return false;
@@ -205,12 +206,6 @@ bool Graphics::Initialize(const HWND& windowHandler, const UINT& windowWidth, co
 		{
 			return false;
 		}
-		Graphics::instance->CreateViewPort();
-		if (!Graphics::instance->CreateBackBuffer())
-		{
-			return false;
-		}
-
 	}
 
 	return true;
@@ -273,4 +268,15 @@ void Graphics::ClearDisplay()
 	color[3] = 0.75;
 
 	Graphics::instance->context->ClearRenderTargetView(Graphics::instance->backBufferView, color);
+}
+
+bool Graphics::SetupGraphics()
+{
+	Graphics::instance->CreateViewPort();
+	if (!Graphics::instance->CreateBackBuffer())
+	{
+		return false;
+	}
+
+	return true;
 }

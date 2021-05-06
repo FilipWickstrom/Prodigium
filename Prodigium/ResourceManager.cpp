@@ -45,6 +45,7 @@ void ResourceManager::Initialize()
 	{
 		ResourceManager::instance = new ResourceManager();
 		Texture* gBufferTextures[BUFFER_COUNT];
+		Texture* lightImage = new Texture();
 		std::string key = "";
 
 		for (int i = 0; i < BUFFER_COUNT; i++)
@@ -55,6 +56,10 @@ void ResourceManager::Initialize()
 			ResourceManager::instance->textures.emplace(key, gBufferTextures[i]);
 			ResourceManager::instance->referenceCount++;
 		}
+		key = "FinalImage";
+		lightImage->Initialize(key);
+		ResourceManager::instance->textures.emplace(key, lightImage);
+		ResourceManager::instance->referenceCount++;
 	}
 	else
 	{

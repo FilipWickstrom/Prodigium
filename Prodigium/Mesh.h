@@ -19,18 +19,18 @@ private:
 	std::vector<ID3D11Buffer*>vertexBuffers;
 	std::vector<ID3D11Buffer*>indexBuffers;
 	std::vector<UINT>indexCount;
-	DirectX::SimpleMath::Vector3 minPos;
-	DirectX::SimpleMath::Vector3 maxPos;
 
 private:
 	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
+	bool BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 
 public:
 	Mesh();
 	~Mesh();
 
+	std::vector<DirectX::BoundingOrientedBox> collidersOriginal;
+	std::vector<DirectX::BoundingOrientedBox> colliders;
 	bool LoadFile(std::string filename);
 	void Render();
-	const DirectX::SimpleMath::Vector3& GetMin();
-	const DirectX::SimpleMath::Vector3& GetMax();
+	void RemoveColliders();
 };

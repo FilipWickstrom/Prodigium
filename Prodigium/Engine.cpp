@@ -5,7 +5,6 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 
-
 	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
@@ -17,6 +16,9 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 Engine::~Engine()
 {
 	ResourceManager::Destroy();
+#ifdef _DEBUG
+	DebugInfo::Destroy();
+#endif
 	Graphics::Destroy();
 }
 
@@ -93,8 +95,14 @@ void Engine::Render()
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 
-	//Render the skybox on the places where there is no objects visible from depthstencil
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
+#ifdef _DEBUG
+	DebugInfo::Prepare();
+	this->sceneHandler.RenderBoundingBoxes();
+	DebugInfo::Clear();
+#endif
+
+	//Render the skybox on the places where there is no objects visible from depthstencil
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
@@ -122,7 +130,13 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
 	ResourceManager::Initialize();
+
+	if (!Graphics::SetupGraphics())
+	{
+		return false;
+	}
 
 	Graphics::SetMainWindowViewport();
 

@@ -5,11 +5,12 @@
 class GameObject
 {
 private:
-	// World Matrix, Pos, Scale, Rotation
-	DirectX::SimpleMath::Matrix modelMatrix;
-
 	// Buffer containing world matrix, updated each time BuildMatrix is run.
 	ID3D11Buffer* modelMatrixBuffer;
+
+protected:
+	// World Matrix, Pos, Scale, Rotation
+	DirectX::SimpleMath::Matrix modelMatrix;
 
 public:
 
@@ -23,9 +24,10 @@ public:
 	DirectX::SimpleMath::Vector3 right;
 	DirectX::SimpleMath::Vector3 up;
 
-	const bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
-	const bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
-	const bool UpdateMatrix();
+	bool CreateModelMatrixBuffer();
+	bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	bool UpdateMatrix();
 	
 	const DirectX::SimpleMath::Vector3 GetPosition() const;
 	const DirectX::SimpleMath::Vector3 GetScale() const;

@@ -20,4 +20,5 @@ public:
 	void Sprint();
 	void Walk();
 	MeshObject* GetMeshObject()const;
+	bool CheckCollision(MeshObject* other);
 };
