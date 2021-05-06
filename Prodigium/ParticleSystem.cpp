@@ -37,7 +37,7 @@ void ParticleSystem::InternalRender()
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	Graphics::GetContext()->VSSetShaderResources(0, 1, &nullSRV);
 	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->particleAccess, 0);
-	Graphics::GetContext()->Dispatch(MAX_PARTICLES / 8, 1, 1);
+	Graphics::GetContext()->Dispatch(MAX_PARTICLES / 1024, 1, 1);
 
 	this->Clear();
 }
