@@ -9,10 +9,12 @@ cbuffer player : register(b0)
     float3 position;
 }
 
-[numthreads(8, 1, 1)]
+// Only need to know speed.
+// Send factor through constant buffer
+
+[numthreads(1024, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
-    
     // temp change to monsters position when he is in the game.
     // Distance from camera to monster.
     float3 dist = (position.xyz - float3(0.0f, 0.0f, 0.0f));
