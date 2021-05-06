@@ -42,10 +42,6 @@ void ParticleSystem::InternalRender()
 	this->Clear();
 }
 
-void ParticleSystem::ClearHistory()
-{
-}
-
 void ParticleSystem::Clear()
 {
 	ID3D11VertexShader* nullVShader = nullptr;
@@ -189,7 +185,6 @@ ParticleSystem::ParticleSystem()
 	this->particleAccess = nullptr;
 	this->particleBuff = nullptr;
 	this->particleView = nullptr;
-	this->defaultState = nullptr;
 	this->hasSetup = false;
 	this->isActive = true;
 }
@@ -210,14 +205,10 @@ ParticleSystem::~ParticleSystem()
 		this->particleBuff->Release();
 	if (this->particleView)
 		this->particleView->Release();
-	if (this->defaultState)
-		this->defaultState->Release();
 }
 
 bool ParticleSystem::SetUp()
 {
-	this->ClearHistory();
-
 	std::vector<ParticleVertex> parts;
 	HRESULT hr;
 	for (int i = 0; i < MAX_PARTICLES; i++)
@@ -262,29 +253,6 @@ bool ParticleSystem::SetUp()
 	this->LoadVertexShader();
 	this->LoadPixelShader();
 	this->LoadComputeShader();
-
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
-	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	dsDesc.StencilEnable = false;
-	dsDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-	dsDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	hr = Graphics::GetDevice()->CreateDepthStencilState(&dsDesc, &this->defaultState);
-	if (FAILED(hr))
-		return false;
 
 	return true;
 }

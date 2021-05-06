@@ -16,7 +16,6 @@ private:
 	ID3D11Buffer* particleBuff;
 	ID3D11UnorderedAccessView* particleAccess;
 	ID3D11ShaderResourceView* particleView;
-	ID3D11DepthStencilState* defaultState;
 	std::string vertexData;
 
 	bool hasSetup;
@@ -32,9 +31,6 @@ private:
 
 	// Makes the final preparations and does the draw call
 	void InternalRender();
-
-	// Clear any COM object before setting up particles.
-	void ClearHistory();
 
 	// Remove any binded COM object onto pipeline.
 	void Clear();
