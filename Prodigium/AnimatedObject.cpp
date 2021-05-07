@@ -234,8 +234,6 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 
 		//Load our tree of bones from the scenes rootnode
 		LoadBoneTree(this->rootBone, scene->mRootNode, tempBoneMap);
-		
-		Matrix test1 = Matrix(&scene->mRootNode->mTransformation.a1);
 
 	}
 	else
@@ -377,11 +375,11 @@ void AnimatedObject::TestLoop(Bone& currentBone, Bone& parentBone, std::vector<D
 {
 	if (currentBone.name == this->rootBone.name)
 	{
-		matrices[currentBone.id] = Matrix::Identity * currentBone.bindMatrix.Invert();
+		matrices[currentBone.id] = Matrix::Identity * currentBone.bindMatrix.Invert().Transpose();
 	}
 	else
 	{
-		matrices[currentBone.id] = currentBone.bindMatrix.Invert() * matrices[parentBone.id];
+		matrices[currentBone.id] = currentBone.bindMatrix.Invert().Transpose() * matrices[parentBone.id];
 	}
 
 	for (size_t i = 0; i < currentBone.children.size(); i++)
@@ -454,13 +452,21 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 
 
 	//
-	this->finalMatrices.resize(25, DirectX::SimpleMath::Matrix(Matrix::Identity));
+	this->finalMatrices.resize(MAXBONES, DirectX::SimpleMath::Matrix(Matrix::Identity));
 	Bone test;
 	TestLoop(this->rootBone, test, this->finalMatrices);
 
-	this->invBindMatrix.resize(25, DirectX::SimpleMath::Matrix(Matrix::Identity));
+	this->invBindMatrix.resize(MAXBONES, DirectX::SimpleMath::Matrix(Matrix::Identity));
 	SetupInvBindMatrices(this->rootBone, this->invBindMatrix);
 
+	for (int i = 0; i < MAXBONES; i++)
+	{
+		std::cout << "ID: " << i << std::endl;
+		std::cout << finalMatrices[i]._11 << " " << finalMatrices[i]._12 << " " << finalMatrices[i]._13 << " " << finalMatrices[i]._14 << std::endl;
+		std::cout << finalMatrices[i]._21 << " " << finalMatrices[i]._22 << " " << finalMatrices[i]._23 << " " << finalMatrices[i]._24 << std::endl;
+		std::cout << finalMatrices[i]._31 << " " << finalMatrices[i]._32 << " " << finalMatrices[i]._33 << " " << finalMatrices[i]._34 << std::endl;
+		std::cout << finalMatrices[i]._41 << " " << finalMatrices[i]._42 << " " << finalMatrices[i]._43 << " " << finalMatrices[i]._44 << std::endl;
+	}
 
 	//Load cbuffer
 	if (!CreateBonesCBuffer())
