@@ -40,6 +40,9 @@
     <FxCompile Include="SkyboxVertexShader.hlsl">
       <Filter>Engine\Graphics\Shaders\Skybox Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="BlurFilterCS.hlsl">
+      <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -129,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="DebugInfo.cpp">
       <Filter>Engine\DEBUG</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurFilter.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +231,9 @@
     <ClInclude Include="ShadowHandler.h">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClInclude>
+    <ClInclude Include="BlurFilter.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -297,6 +306,9 @@
     </Filter>
     <Filter Include="Engine\Graphics\Shaders\G Shaders">
       <UniqueIdentifier>{0a9b69c2-294c-45ca-8f5e-812a3ef01f02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\BlurFilter">
+      <UniqueIdentifier>{1df4d83f-2a72-44bc-9ee1-5706e04bb33c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -118,9 +118,15 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
+	//Render the blur depending on sanity
+	//1.0f is full sanity = no blur
+	//0.0f is no sanitiy = max blur
+	this->blurPass.Render(this->playerSanity);//CHANGE LATER***
+
+	Graphics::BindBackBuffer();
 	this->guiHandler.setPlayerPos(this->playerPos);
 	this->guiHandler.Render();
-	
+
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
 }
@@ -133,6 +139,7 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	guiHandler.ChangeActiveTrap();
+	this->playerSanity -= 0.2f;//REMOVE LATER***
 }
 
 void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
@@ -181,6 +188,12 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	}
 
 	this->guiHandler.Initialize(window.GetWindowHandler());
+
+	if (!this->blurPass.Initialize(5))
+	{
+		return false;
+	}
+	this->playerSanity = 1.0f;//REMOVE LATER***
 
 	OpenConsole();
 
