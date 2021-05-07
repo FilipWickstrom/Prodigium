@@ -297,7 +297,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
     float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
     
-
+    
     for (int i = 1; i < info.x; i++)
     {
         switch (lights[i].att.w)

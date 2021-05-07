@@ -28,6 +28,6 @@ PixelShaderOutput main(PixelShaderInput input)
 
     //LATER FIX: implement normalmap calculations here
     output.normalWS = float4(input.normalWS, 1.0f);
-    
+    output.colour =  output.colour;
     return output;
 }

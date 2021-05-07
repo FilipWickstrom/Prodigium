@@ -50,7 +50,7 @@ bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& w
 
 	// Change this feature level to change DirectX version, Most stable is DirectX11
 	D3D_FEATURE_LEVEL directXfeature[] = { D3D_FEATURE_LEVEL_11_0 };
-	DXGI_SWAP_CHAIN_DESC swapDesc;
+	DXGI_SWAP_CHAIN_DESC swapDesc = {};
 
 	/*
 		What refresh rate do we lock to?
