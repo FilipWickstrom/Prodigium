@@ -261,16 +261,16 @@ void Graphics::ClearDisplay()
 	float color[4];
 
 	// Red
-	color[0] = 0.25;
+	color[0] = 0.65f;
 
 	// Green
-	color[1] = 0.25;
+	color[1] = 0.65f;
 
 	// Blue
-	color[2] = 1;
+	color[2] = 0.65f;
 
 	// Alpha
-	color[3] = 0.75;
+	color[3] = 0.75f;
 
 	Graphics::instance->context->ClearRenderTargetView(Graphics::instance->backBufferView, color);
 }

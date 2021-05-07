@@ -9,7 +9,12 @@ cbuffer ModelMatrix : register(b1)
 {
     float4x4 world;
 };
-
+cbuffer fogBuffer
+{
+    float fogStart;
+    float fogEnd;
+    
+};
 struct VertexShaderInput
 {
     float3 position : POSITION;
@@ -24,6 +29,7 @@ struct VertexShaderOutput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
+    float fogFactor : FOG;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
@@ -37,8 +43,9 @@ VertexShaderOutput main(VertexShaderInput input)
     output.positionWS = mul(float4(input.position, 1.0f), world);
 
     output.texCoord = input.texCoord;
-    
+    float4 cameraPos = mul(float4(input.position,1.f), world);
+    cameraPos = mul(cameraPos, view);
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
-
+    output.fogFactor = saturate((fogEnd - cameraPos.z) / (fogEnd - fogStart));
 	return output;
 }

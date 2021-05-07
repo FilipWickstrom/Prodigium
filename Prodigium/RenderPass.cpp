@@ -16,7 +16,7 @@ GeometryPass::GeometryPass()
 	this->pShader = nullptr;
 	this->sampler = nullptr;
 	this->vShader = nullptr;
-
+	this->fogVBuffer = nullptr;
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		this->gBuffer.renderTargets[i] = nullptr;
@@ -84,7 +84,17 @@ bool GeometryPass::CreateGBuffer()
 			return false;
 		}
 	}
-
+	fogBuffer fog = {};
+	fog.fogStart = .5f;
+	fog.fogEnd = 100.f;
+	D3D11_BUFFER_DESC fogDesc = {};
+	fogDesc.ByteWidth = sizeof(fogBuffer);
+	fogDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	fogDesc.CPUAccessFlags = 0;
+	fogDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	D3D11_SUBRESOURCE_DATA data = {};
+	data.pSysMem = &fog;
+	Graphics::GetDevice()->CreateBuffer(&fogDesc, &data, &fogVBuffer);
 	return true;
 }
 

@@ -60,7 +60,7 @@ private:
 	ID3D11SamplerState* sampler;
 	ID3D11InputLayout* inputLayout;
 	std::string vShaderByteCode;
-
+	ID3D11Buffer* fogVBuffer;
 	bool CreateGBuffer();
 	bool CreateDepthBuffer();
 	bool CreateInputLayout();

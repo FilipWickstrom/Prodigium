@@ -9,6 +9,7 @@ struct PixelShaderInput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
+    float fogFactor   : FOG;
 };
 
 struct PixelShaderOutput
@@ -28,6 +29,6 @@ PixelShaderOutput main(PixelShaderInput input)
 
     //LATER FIX: implement normalmap calculations here
     output.normalWS = float4(input.normalWS, 1.0f);
-    
+    output.colour = input.fogFactor * output.colour + (1.f - input.fogFactor) * float4(0.65f, 0.65f, 0.65f, 0.65f);
     return output;
 }
