@@ -11,6 +11,11 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 		exit(-1);
 	}
 
+	#ifdef _DEBUG
+		OpenConsole();
+	#endif 
+
+
 }
 
 Engine::~Engine()
@@ -194,8 +199,6 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 	this->playerSanity = 1.0f;//REMOVE LATER***
-
-	OpenConsole();
 
 	return true;
 }

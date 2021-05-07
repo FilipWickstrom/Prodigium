@@ -1,16 +1,14 @@
+#define MAXWEIGHTSIZE 24
 
-RWTexture2D<unorm  float4> backBuffer : register(u0);
-
-//
-//struct 
-//StructuredBuffer<floats> GuassFilter : register(t6);
+RWTexture2D<unorm float4> backBuffer : register(u0);
 
 cbuffer BlurSettings : register(b5)
 {
     uint blurRadius;
     bool useVertical;
+    float2 padding;
+    float4 weights[MAXWEIGHTSIZE / 4];
 };
-
 
 //64 threads per group
 [numthreads(8, 8, 1)]
@@ -26,14 +24,14 @@ void main( uint3 DTid : SV_DispatchThreadID )
     
     int start = blurRadius * -1;
     int end = blurRadius;
-    //uint counter = 0;
+    uint counter = 0;
     for (int i = start; i <= end; i++)
     {
-        finalColour += backBuffer[DTid.xy + (offset * i)];  //* weight[counter++]
+        float weight = (weights[counter / 4])[counter % 4];
+        
+        finalColour += backBuffer[DTid.xy + (offset * i)] * weight;
+        counter++;
     }
     
-    backBuffer[DTid.xy] = finalColour / (blurRadius*2 + 1); //remove blurRadius*2 + 1 then
-        
-    //Inverts colours for testing
-    //backBuffer[DTid.xy] = float4(1.0f, 1.0f, 1.0f, 1.0f) - backBuffer[DTid.xy];
+    backBuffer[DTid.xy] = finalColour;
 }

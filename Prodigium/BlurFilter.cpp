@@ -40,8 +40,9 @@ bool BlurFilter::CreateSettingsBuffer()
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 
-	this->blurSettings.blurRadius = 0;
+	this->blurSettings.blurRadius = 1;
 	this->blurSettings.useVerticalBlur = true;
+	SetWeights(this->blurSettings.blurRadius);
 
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->blurSettings;
@@ -49,6 +50,40 @@ bool BlurFilter::CreateSettingsBuffer()
 	data.SysMemSlicePitch = 0;
 
 	return !FAILED(Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->settingsBuffer));
+}
+
+void BlurFilter::GenerateGaussFilters()
+{
+	//Generate filters for 1 radius to maxBlurRadius (default 5)
+	for (UINT i = 0; i < this->maxBlurRadius; i++)
+	{
+		std::vector<float> blurVector;
+		int radius = i + 1;
+		
+		//To fit with the curve
+		float sigma = float(radius / 2.0f);
+
+		for (int x = -radius; x <= radius; x++)
+		{
+			float weight = (float)(1.0f / sqrt(2 * PI * pow(sigma, 2)) * exp(-pow(x, 2) / (2 * pow(sigma, 2))));
+			blurVector.push_back(weight);
+		}
+		this->allGaussFilters.push_back(blurVector);
+	}
+
+}
+
+void BlurFilter::SetWeights(UINT radius)
+{
+	if (radius >= MINRADIUS && radius <= MAXRADIUS)
+	{
+		std::vector<float> currentWeights = this->allGaussFilters[radius - 1];
+
+		for (size_t i = 0; i < currentWeights.size(); i++)
+		{
+			this->blurSettings.weights[i] = currentWeights[i];
+		}
+	}
 }
 
 void BlurFilter::UpdateBlurSettings()
@@ -84,9 +119,13 @@ void BlurFilter::UpdateBlurRadius(float sanity)
 		}
 		else if (blurRad != this->blurSettings.blurRadius)
 		{
-			std::cout << "Changed blur to " << blurRad << std::endl;
+			std::cout << "Changed blur to " << blurRad << std::endl;	//REMOVE LATER***
 			this->useBlurFilter = true;
 			this->blurSettings.blurRadius = blurRad;
+			
+			//Update weights
+			SetWeights(blurRad);
+			
 			UpdateBlurSettings();
 		}
 	}
@@ -112,8 +151,19 @@ BlurFilter::~BlurFilter()
 		this->settingsBuffer->Release();
 }
 
-bool BlurFilter::Initialize(UINT maxBlurRadius)
+bool BlurFilter::Initialize(int maxBlurRadius)
 {
+	//Over the max range: 11
+	if (maxBlurRadius > (int)MAXRADIUS)
+		this->maxBlurRadius = MAXRADIUS;
+	//Under the min range: 1
+	else if (maxBlurRadius < (int)MINRADIUS)
+		this->maxBlurRadius = MINRADIUS;
+	//In range
+	else
+		this->maxBlurRadius = (UINT)maxBlurRadius;
+
+
 	if (!CreateComputeShader())
 	{
 		std::cout << "Failed to create computeShader for blur..." << std::endl;
@@ -124,13 +174,16 @@ bool BlurFilter::Initialize(UINT maxBlurRadius)
 		std::cout << "Failed to create unordered accessview..." << std::endl;
 		return false;
 	}
+
+	//Precalculate all the gaussfilters that will be needed
+	GenerateGaussFilters();
+
 	if (!CreateSettingsBuffer())
 	{
 		std::cout << "Failed to create cbuffer for blur filter..." << std::endl;
 		return false;
 	}
-
-	this->maxBlurRadius = maxBlurRadius;
+	
 
 	return true;
 }
