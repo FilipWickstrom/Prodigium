@@ -64,7 +64,7 @@ const bool Scene::SetupInfoBuffer()
 const bool Scene::UpdateInfoBuffer()
 {
 	InfoStruct newInfo = {};
-	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)lights.size(), (float)lights.size(), (float)lights.size());
+	newInfo.info = DirectX::XMFLOAT4((float)lights.size(), (float)this->shadowHandler->NrOfShadows(), 0.0f, 0.0f);
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
@@ -83,6 +83,7 @@ Scene::Scene()
 	this->lightShaderView = nullptr;
 	this->infoBuffer = nullptr;
 	this->firstTime = true;
+	this->shadowHandler = new ShadowHandler();
 
 	LightStruct filler;
 	filler.position = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,18 +95,14 @@ Scene::Scene()
 Scene::~Scene()
 {
 	if (this->lightShaderView)
-	{
 		this->lightShaderView->Release();
-	}
-
 	if (this->lightBuffer)
-	{
 		this->lightBuffer->Release();
-	}
 	if (this->infoBuffer)
-	{
 		this->infoBuffer->Release();
-	}
+
+	if (this->shadowHandler)
+		delete this->shadowHandler;
 	// Delete the allocated memory from vector.
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
@@ -114,13 +111,13 @@ Scene::~Scene()
 
 }
 
-void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, const Vector3& position, const Vector3& rotation, const Vector3& scale)
+void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, const Vector3& position, const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, position, rotation, scale))
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, position, rotation, scale))
 	{
 		this->objects.push_back(newObject);
 		this->currentObject = (int)objects.size() - 1;
@@ -137,6 +134,7 @@ void Scene::AddLight(LightStruct& L)
 {
 	this->lights.push_back(L);
 	this->firstTime = true;
+	this->shadowHandler->Add(L);
 }
 
 void Scene::PopLight()
@@ -169,7 +167,7 @@ void Scene::Add(MeshObject* object)
 	}
 }
 
-void Scene::UpdateMatrix(const Vector3& pos,const Vector3& rotation, const Vector3& scale)
+void Scene::UpdateMatrix(const Vector3& pos, const Vector3& rotation, const Vector3& scale)
 {
 	/*
 		Update the Matrix with input.
@@ -230,6 +228,16 @@ void Scene::SwitchObject(const int& index)
 MeshObject& Scene::GetMeshObject(int index)
 {
 	return *this->objects[index];
+}
+
+ShadowHandler& Scene::GetShadows()
+{
+	return *this->shadowHandler;
+}
+
+ParticleSystem& Scene::GetParticles()
+{
+	return this->particles;
 }
 
 const int Scene::GetNumberOfObjects() const
@@ -299,3 +307,40 @@ void Scene::RenderLights()
 	}
 }
 
+void Scene::RenderShadows()
+{
+	this->shadowHandler->Prepare();
+	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
+	{
+		this->shadowHandler->Render(i);
+
+		// Loop through all objects
+		for (int j = 0; j < (int)objects.size(); j++)
+		{
+			// Check the distance between light source and object.
+			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE)
+			{
+				this->objects[j]->Render();
+			}
+		}
+	}
+	this->shadowHandler->Clear();
+}
+
+void Scene::RenderParticles()
+{
+	this->particles.Render();
+}
+
+#ifdef _DEBUG
+void Scene::RenderBoundingBoxes()
+{
+	if ((int)this->objects.size() > 0)
+	{
+		for (int i = 0; i < (int)this->objects.size(); i++)
+		{
+			this->objects[i]->RenderBoundingBoxes();
+		}
+	}
+}
+#endif

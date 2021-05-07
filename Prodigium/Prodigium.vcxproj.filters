@@ -1,23 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="PixelShaderGPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+    <FxCompile Include="VertexShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PixelShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ComputeShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="GeometryShaderParticle.hlsl">
+      <Filter>Engine\Graphics\Shaders\Particle Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PixelShaderLightPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+      <Filter>Engine\Graphics\Shaders\Light Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VertexShaderLightPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+      <Filter>Engine\Graphics\Shaders\Light Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VertexShaderGPass.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+      <Filter>Engine\Graphics\Shaders\G Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="SkyboxVertexShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+    <FxCompile Include="PixelShaderGPass.hlsl">
+      <Filter>Engine\Graphics\Shaders\G Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowVertex.hlsl">
+      <Filter>Engine\Graphics\Shaders\Shadow Pass Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DebugVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Bounding Box Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DebugPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Bounding Box Shaders</Filter>
     </FxCompile>
     <FxCompile Include="SkyboxPixelShader.hlsl">
-      <Filter>Engine\Graphics\Shaders</Filter>
+      <Filter>Engine\Graphics\Shaders\Skybox Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyboxVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Skybox Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,9 +91,44 @@
     <ClCompile Include="SkyboxPass.cpp">
       <Filter>Engine\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="LightObject.cpp" />
     <ClCompile Include="Player.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_dx11.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_win32.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_widgets.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIHandler.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_tables.cpp">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowHandler.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugInfo.cpp">
+      <Filter>Engine\DEBUG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,7 +198,33 @@
     <ClInclude Include="Player.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="LightObject.h" />
+    <ClInclude Include="DebugInfo.h">
+      <Filter>Engine\DEBUG</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIHandler.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_dx11.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_win32.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>Engine\Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowHandler.h">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -191,6 +273,30 @@
     </Filter>
     <Filter Include="Engine\Graphics\Techniques">
       <UniqueIdentifier>{1d409d0e-e0d2-4a3e-bd9f-4711da5fbe64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\DEBUG">
+      <UniqueIdentifier>{9c8412bf-2332-4ad2-a0cc-023b1ff46a49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\imgui">
+      <UniqueIdentifier>{858b5652-46d0-4a74-ad90-7a5e905b510a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Particle Shaders">
+      <UniqueIdentifier>{178aa798-03e2-4f31-ad79-8484498a3727}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Light Shaders">
+      <UniqueIdentifier>{741c2f16-8579-4c5d-b745-9d86299a6129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Shadow Pass Shaders">
+      <UniqueIdentifier>{a90a11f7-2cbe-4b78-b06c-745fa5f3d047}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Bounding Box Shaders">
+      <UniqueIdentifier>{6e51fe19-ccb5-4e94-96de-957618062c03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Skybox Shaders">
+      <UniqueIdentifier>{5c77d980-3e50-4929-8914-c7ac4e395f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\G Shaders">
+      <UniqueIdentifier>{0a9b69c2-294c-45ca-8f5e-812a3ef01f02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
