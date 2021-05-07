@@ -2,18 +2,14 @@
 #include "Graphics.h"
 #include <thread>
 using namespace DirectX::SimpleMath;
-void GameObject::BuildBoundingVolume()
-{
-	this->collider.Center = { this->position / 2.f };
-	this->collider.Orientation = Quaternion().CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
-	//this->collider.Extents = {}
-}
 
 GameObject::GameObject()
 {
 	this->position = { 0.0f, 0.0f, 0.0f };
 	this->scale = { 0.0f, 0.0f, 0.0f };
 	this->rotation = { 0.0f, 0.0f, 0.0f };
+	this->up = { 0.0f, 1.0f, 0.0f };
+	this->right = { 0.0f, 0.0f, 0.0f };
 	this->modelMatrixBuffer = nullptr;
 	this->modelMatrix = { 1.0f, 0.0f, 0.0f, 0.0f,
 											0.0f, 1.0f, 0.0f, 0.0f,
@@ -27,12 +23,9 @@ GameObject::~GameObject()
 		this->modelMatrixBuffer->Release();
 }
 
-const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+bool GameObject::CreateModelMatrixBuffer()
 {
-	this->position = pos;
-	this->scale = scl;
-	this->rotation = rot;
-	modelMatrix = Matrix(Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position)).Transpose();
+	this->modelMatrix = this->modelMatrix.Transpose();
 
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -43,10 +36,26 @@ const bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->modelMatrix;
 	HRESULT result = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->modelMatrixBuffer);
-	return !FAILED(result);
+
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
 }
 
-const bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+{
+	this->position = pos;
+	this->scale = scl;
+	this->rotation = rot;
+	modelMatrix = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position);
+
+	return true;
+}
+
+bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
 {
 	this->position = pos;
 	this->scale = scl;
@@ -64,7 +73,7 @@ const bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, cons
 	return !FAILED(hr);
 }
 
-const bool GameObject::UpdateMatrix()
+bool GameObject::UpdateMatrix()
 {
 
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
@@ -86,18 +95,19 @@ const bool GameObject::UpdateMatrix()
 		return false;
 	}
 
+
 	return true;
 }
 
-const Vector3 GameObject::GetPosition() const
+const Vector3& GameObject::GetPosition() const
 {
 	return this->position;
 }
-const Vector3 GameObject::GetScale() const
+const Vector3& GameObject::GetScale() const
 {
 	return this->scale;
 }
-const Vector3 GameObject::GetRotation() const
+const Vector3& GameObject::GetRotation() const
 {
 	return this->rotation;
 }
@@ -145,7 +155,11 @@ float GameObject::GetDistance(const GameObject& otherObject) const
 	return dist;
 }
 
-const DirectX::BoundingOrientedBox& GameObject::GetCollider() const
+float GameObject::GetDistance(const DirectX::SimpleMath::Vector4& otherObject) const
 {
-	return this->collider;
+	float dist = Vector3(otherObject - this->position).Length();
+	if (dist < 0)
+		dist *= -1;
+
+	return dist;
 }

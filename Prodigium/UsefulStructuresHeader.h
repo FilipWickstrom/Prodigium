@@ -70,3 +70,8 @@ struct LightStruct
 	DirectX::SimpleMath::Vector4 direction; // direction.w is Spot.
 	DirectX::SimpleMath::Vector4 attentuate; // attentuate.w is LightType.
 };
+
+struct ParticleVertex
+{
+	DirectX::SimpleMath::Vector3 position;
+};
