@@ -96,6 +96,8 @@ void Engine::Render()
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
 
+	//TODO: Add Fog Pass
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();

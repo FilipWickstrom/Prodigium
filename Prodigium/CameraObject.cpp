@@ -129,7 +129,7 @@ void CameraObject::Update()
 	Graphics::GetContext()->GSSetConstantBuffers(1, 1, &camPosBuffer);
 
 	// For particles compute shader.
-	Graphics::GetContext()->CSSetConstantBuffers(0, 1, &camPosBuffer);
+	//Graphics::GetContext()->CSSetConstantBuffers(0, 1, &camPosBuffer);
 }
 
 void CameraObject::ChangeOffset(const Vector3& offset)

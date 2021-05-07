@@ -28,6 +28,7 @@ void ParticleSystem::InternalRender()
 		Render Phase
 	*/
 	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
+	Graphics::GetContext()->CSSetConstantBuffers(0, 1, &this->speedBuffer);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
 
 
@@ -185,6 +186,7 @@ ParticleSystem::ParticleSystem()
 	this->particleAccess = nullptr;
 	this->particleBuff = nullptr;
 	this->particleView = nullptr;
+	this->speedBuffer = nullptr;
 	this->hasSetup = false;
 	this->isActive = true;
 }
@@ -205,6 +207,8 @@ ParticleSystem::~ParticleSystem()
 		this->particleBuff->Release();
 	if (this->particleView)
 		this->particleView->Release();
+	if (this->speedBuffer)
+		this->speedBuffer->Release();
 }
 
 bool ParticleSystem::SetUp()
@@ -254,7 +258,36 @@ bool ParticleSystem::SetUp()
 	this->LoadPixelShader();
 	this->LoadComputeShader();
 
+	D3D11_BUFFER_DESC speedDesc;
+	speedDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	speedDesc.Usage = D3D11_USAGE_DYNAMIC;
+	speedDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	speedDesc.MiscFlags = 0;
+	speedDesc.ByteWidth = sizeof(DirectX::SimpleMath::Vector4);
+
+	hr = Graphics::GetDevice()->CreateBuffer(&speedDesc, 0, &this->speedBuffer);
+	if (FAILED(hr))
+		return false;
+
 	return true;
+}
+
+bool ParticleSystem::UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, DirectX::SimpleMath::Vector3 monsterPos)
+{
+	float dist = (playerPos - monsterPos).Length();
+	if (dist < 0)
+		dist *= -1;
+
+	float factor = std::max(std::min(dist, 200.0f), 20.0f) * 0.5f;
+	float speed = factor * 0.01f;
+
+	DirectX::SimpleMath::Vector4 package = { speed, speed, speed, speed };
+	D3D11_MAPPED_SUBRESOURCE submap;
+	HRESULT hr = Graphics::GetContext()->Map(this->speedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &package, sizeof(DirectX::SimpleMath::Vector4));
+	Graphics::GetContext()->Unmap(this->speedBuffer, 0);
+
+	return !FAILED(hr);
 }
 
 void ParticleSystem::SetActive(bool act)
@@ -277,4 +310,9 @@ void ParticleSystem::Render()
 		}
 		this->InternalRender();
 	}
+}
+
+const bool ParticleSystem::IsActive() const
+{
+	return this->isActive;
 }

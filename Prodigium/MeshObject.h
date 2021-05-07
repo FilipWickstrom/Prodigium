@@ -44,6 +44,7 @@ public:
 	void SetPickUp(bool toggle = true);
 	void Render();
 	void UpdateBoundingBoxes();
+	const bool IsVisible() const;
 #ifdef _DEBUG
 	void RenderBoundingBoxes();
 #endif
