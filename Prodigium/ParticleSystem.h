@@ -18,6 +18,8 @@ private:
 	ID3D11ShaderResourceView* particleView;
 	std::string vertexData;
 
+	ID3D11Buffer* speedBuffer;
+
 	bool hasSetup;
 	bool isActive;
 
@@ -42,6 +44,8 @@ public:
 	ParticleSystem();
 	virtual ~ParticleSystem();
 	void SetActive(bool act = true);
+	bool UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, DirectX::SimpleMath::Vector3 monsterPos);
 	void Render();
+	const bool IsActive() const;
 };
 
