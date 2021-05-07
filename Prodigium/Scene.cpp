@@ -273,7 +273,10 @@ void Scene::Render()
 	{
 		for (int i = 0; i < (int)this->objects.size(); i++)
 		{
-			this->objects[i]->Render();
+			if (this->objects[i]->IsVisible())
+			{
+				this->objects[i]->Render();
+			}
 		}
 	}
 }
@@ -318,7 +321,7 @@ void Scene::RenderShadows()
 		for (int j = 0; j < (int)objects.size(); j++)
 		{
 			// Check the distance between light source and object.
-			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE)
+			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->objects[j]->IsVisible())
 			{
 				this->objects[j]->Render();
 			}

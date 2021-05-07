@@ -83,7 +83,7 @@ MeshObject::MeshObject()
 	}
 
 	this->isPickUp = false;
-	this->isVisible = false;
+	this->isVisible = true;
 }
 
 MeshObject::~MeshObject()
@@ -239,6 +239,11 @@ void MeshObject::UpdateBoundingBoxes()
 		allCorners.clear();
 #endif
 	}
+}
+
+const bool MeshObject::IsVisible() const
+{
+	return this->isVisible;
 }
 
 #ifdef _DEBUG

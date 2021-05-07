@@ -31,7 +31,8 @@ struct VertexShaderOutput
     float3 normalWS   : NORMAL;
     float fogFactor : FOG;
 };
-
+static const float density = 0.007f;
+static const float gradient = 1.5f;
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
@@ -43,9 +44,10 @@ VertexShaderOutput main(VertexShaderInput input)
     output.positionWS = mul(float4(input.position, 1.0f), world);
 
     output.texCoord = input.texCoord;
-    float4 cameraPos = mul(float4(input.position,1.f), world);
-    cameraPos = mul(cameraPos, view);
+
+    float4 posRelativeToCam = mul(output.positionWS, view);
+    float distance = length(posRelativeToCam.xyz);
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
-    output.fogFactor = saturate((fogEnd - cameraPos.z) / (fogEnd - fogStart));
+    output.fogFactor = clamp(exp(-pow((distance * density), gradient)), 0.f,1.f);
 	return output;
 }

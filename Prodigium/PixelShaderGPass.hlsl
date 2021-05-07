@@ -29,6 +29,6 @@ PixelShaderOutput main(PixelShaderInput input)
 
     //LATER FIX: implement normalmap calculations here
     output.normalWS = float4(input.normalWS, 1.0f);
-    output.colour = input.fogFactor * output.colour + (1.f - input.fogFactor) * float4(0.65f, 0.65f, 0.65f, 0.65f);
+    output.colour =  output.colour;
     return output;
 }

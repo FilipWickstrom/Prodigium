@@ -80,15 +80,22 @@ void Game::HandleInput(const float& deltaTime)
 		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
 		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
 		{
-			SceneHandle()->EditScene().RemoveObject(1);
+			SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
 			std::cout << "Picked up Book!\n";
 		}
 
 		std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
 		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
 		{
-			SceneHandle()->EditScene().RemoveObject(2);
+			SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
 			std::cout << "Picked up Drawing!\n";
+		}
+
+		std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
+		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
+		{
+			SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
+			std::cout << "Picked up Mask!\n";
 		}
 	}
 	if (InputHandler::IsRMBPressed())
@@ -181,6 +188,10 @@ void Game::LoadMap()
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
 
+	randX = (float)(rand() % 200 - rand() % 200);
+	randZ = (float)(rand() % 200 - rand() % 200);
+	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", true, { randX, -3.0f, randZ });
+
 	// Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, -50.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { -5.0f, -7.0f, -50.0f });
@@ -247,6 +258,6 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
 		
-		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", true, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 }
