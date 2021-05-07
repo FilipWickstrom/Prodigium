@@ -17,9 +17,9 @@ bool MeshObject::CreateColliderBuffers()
 	std::vector<DirectX::XMFLOAT3> allCorners;
 	DirectX::XMFLOAT3 corners[8];
 
-	for (int i = 0; i < this->mesh->colliders.size(); i++)
+	for (int i = 0; i < this->colliders.size(); i++)
 	{
-		this->mesh->colliders[i].GetCorners(corners);
+		this->colliders[i].GetCorners(corners);
 
 		allCorners.push_back(corners[1]);
 		allCorners.push_back(corners[0]);
