@@ -1,4 +1,3 @@
-
 cbuffer CameraViewProj : register(b0)
 {
     float4x4 view;
@@ -25,8 +24,7 @@ struct VertexShaderOutput
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
 };
-static const float density = 0.007f;
-static const float gradient = 1.5f;
+
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
@@ -39,9 +37,7 @@ VertexShaderOutput main(VertexShaderInput input)
 
     output.texCoord = input.texCoord;
 
-    float4 posRelativeToCam = mul(output.positionWS, view);
-    float distance = length(posRelativeToCam.xyz);
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
-    output.fogFactor = clamp(exp(-pow((distance * density), gradient)), 0.f,1.f);
+
 	return output;
 }

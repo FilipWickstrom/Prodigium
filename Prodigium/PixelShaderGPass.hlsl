@@ -1,4 +1,3 @@
-
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture  : register(t1);
 SamplerState anisotropic : register(s0);
