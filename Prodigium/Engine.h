@@ -11,6 +11,8 @@
 #include "SceneHandler.h"
 #include "CameraObject.h"
 
+#include "AnimatedObject.h"		//DELETE LATER****
+
 class Engine
 {
 private:
@@ -20,6 +22,8 @@ private:
 	SkyboxPass skyboxPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
+
+	AnimatedObject anime;	//DELETE LATER****
 
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);

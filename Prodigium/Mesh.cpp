@@ -71,7 +71,7 @@ bool Mesh::LoadFile(std::string filename)
                                             aiProcess_FlipWindingOrder |          //Makes it clockwise order
                                             aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models                                                                             
                                             //aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
-                                            
+                  
     //Check if it was possible to load file
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {

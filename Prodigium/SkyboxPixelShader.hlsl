@@ -12,5 +12,5 @@ struct InputFromVertex
 
 float4 main(InputFromVertex input) : SV_TARGET
 {
-    return cubemap.Sample(samplerState, input.texCoord);
+    return cubemap.Sample(samplerState, input.texCoord) * float4(0.2f,0.2f,0.2f,1.0f);
 }

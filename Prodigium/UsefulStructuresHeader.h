@@ -29,7 +29,7 @@ struct Material
 	Struct for usage with different Matrices
 	Contains the matrices for view and projection.
 */
-struct Matrix
+struct ViewProjMatrix
 {
 	DirectX::SimpleMath::Matrix view;
 	DirectX::SimpleMath::Matrix projection;
@@ -64,4 +64,18 @@ struct LightStruct
 	DirectX::SimpleMath::Vector4 position; // position.w is range.
 	DirectX::SimpleMath::Vector4 direction; // direction.w is Spot.
 	DirectX::SimpleMath::Vector4 attentuate; // attentuate.w is LightType.
+};
+
+/*
+	Structure for vertices that will be used in an animation
+	bonesID is 3 integers which represents 3 bones that can affect the vertex
+	weights is 3 floats which is how much each bone will affect the vertex
+*/
+struct AnimationVertex
+{
+	DirectX::SimpleMath::Vector3 position = {};
+	DirectX::SimpleMath::Vector2 uv = {};
+	DirectX::SimpleMath::Vector3 normal = {};
+	DirectX::SimpleMath::Vector3 boneIDs = {};
+	DirectX::SimpleMath::Vector3 boneWeights = {};
 };

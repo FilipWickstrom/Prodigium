@@ -88,6 +88,9 @@ void Engine::Render()
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
+
+	this->anime.Render();	//DELETE LATER****
+
 	this->gPass.Clear();
 
 	//Bind only 1 render target, backbuffer
@@ -140,6 +143,11 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	}
 
 	if (!this->skyboxPass.Initialize())
+	{
+		return false;
+	}
+
+	if (!this->anime.Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png"))	//DELETE LATER***
 	{
 		return false;
 	}
