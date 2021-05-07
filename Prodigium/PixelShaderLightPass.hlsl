@@ -246,19 +246,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
         }
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-        //Diffuse light calculations
+    //Diffuse light calculations
     float diffuse = max(dot(vecToLight, normals), 0.0f);
     diff *= diffuse;
     [flatten]
@@ -280,7 +268,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
         // scale and bias attenuation such that:
         // attenuation == 0 at extent of max influence
         // attenuation == 1 when d == 0
-        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.1f;
         attenuation = max(attenuation, 0);
            
         // Add upp the specular

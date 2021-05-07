@@ -247,6 +247,6 @@ void Game::LoadMap()
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
 		
-		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", true, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 }
