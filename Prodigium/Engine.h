@@ -28,7 +28,7 @@ private:
 	GUIHandler guiHandler;
 	DirectX::SimpleMath::Vector3 playerPos;
 
-	float playerSanity;//REMOVE LATER***
+	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);

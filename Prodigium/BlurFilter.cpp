@@ -14,7 +14,8 @@ bool BlurFilter::CreateComputeShader()
 	shaderData.reserve((unsigned int)reader.tellg());
 	reader.seekg(0, std::ios::beg);
 	shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
-	
+	reader.close();
+
 	return !FAILED(Graphics::GetDevice()->CreateComputeShader(shaderData.c_str(), shaderData.length(), nullptr, &this->computeShader));
 }
 
@@ -70,11 +71,11 @@ void BlurFilter::GenerateGaussFilters()
 		}
 		this->allGaussFilters.push_back(blurVector);
 	}
-
 }
 
 void BlurFilter::SetWeights(UINT radius)
 {
+	//Have to be in the range
 	if (radius >= MINRADIUS && radius <= MAXRADIUS)
 	{
 		std::vector<float> currentWeights = this->allGaussFilters[radius - 1];
@@ -119,7 +120,11 @@ void BlurFilter::UpdateBlurRadius(float sanity)
 		}
 		else if (blurRad != this->blurSettings.blurRadius)
 		{
+
+		#ifdef _DEBUG
 			std::cout << "Changed blur to " << blurRad << std::endl;	//REMOVE LATER***
+		#endif
+			
 			this->useBlurFilter = true;
 			this->blurSettings.blurRadius = blurRad;
 			
@@ -163,7 +168,6 @@ bool BlurFilter::Initialize(int maxBlurRadius)
 	else
 		this->maxBlurRadius = (UINT)maxBlurRadius;
 
-
 	if (!CreateComputeShader())
 	{
 		std::cout << "Failed to create computeShader for blur..." << std::endl;
@@ -184,7 +188,6 @@ bool BlurFilter::Initialize(int maxBlurRadius)
 		return false;
 	}
 	
-
 	return true;
 }
 
@@ -204,7 +207,8 @@ void BlurFilter::Render(float blurAmount)
 		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->unorderedAccessView, nullptr);
 		Graphics::GetContext()->CSSetConstantBuffers(5, 1, &this->settingsBuffer);
 
-		//Render in two steps. Use vertical first, then swap and do horizontal. Better performance
+		//Render in two steps. Use vertical first, then swap and do horizontal. 
+		//Like a cross, which gives better performance than a square 
 		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
 		SwapBlurDirection();
 		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);

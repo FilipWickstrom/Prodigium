@@ -7,6 +7,7 @@ cbuffer BlurSettings : register(b5)
     uint blurRadius;
     bool useVertical;
     float2 padding;
+    //Better to package it like this instead of separate floats
     float4 weights[MAXWEIGHTSIZE / 4];
 };
 
@@ -25,13 +26,15 @@ void main( uint3 DTid : SV_DispatchThreadID )
     int start = blurRadius * -1;
     int end = blurRadius;
     uint counter = 0;
+    
     for (int i = start; i <= end; i++)
     {
+        //Unpackage the correct way from float4
         float weight = (weights[counter / 4])[counter % 4];
         
         finalColour += backBuffer[DTid.xy + (offset * i)] * weight;
         counter++;
     }
     
-    backBuffer[DTid.xy] = finalColour;
+    backBuffer[DTid.xy] = finalColour;   
 }

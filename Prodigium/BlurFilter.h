@@ -12,7 +12,14 @@ const UINT MINRADIUS = 1;
 /*
 Guassian blur filter that makes everything
 blurry on the screen, but still so that you 
-can see objects better than flat blur.
+can see objects better than flat box blur.
+
+- In Initialize(int maximumRadius): 1 to 11 
+  for now where higher radius give more blur
+
+- In Render(float percentage): 0.0f to 1.0f
+  which is how much blur to use. 1.0f is maxblur 
+  which is going to use maxradius.
 */
 
 class BlurFilter
@@ -22,6 +29,7 @@ private:
 	ID3D11UnorderedAccessView* unorderedAccessView;
 	ID3D11Buffer* settingsBuffer;
 
+	//CBuffer for the compute shader
 	struct BlurSettings
 	{
 		UINT blurRadius;
@@ -30,8 +38,8 @@ private:
 		float weights[MAXWEIGHTSIZE];
 	} blurSettings;
 
+	//Precalculated filters that will be used
 	std::vector<std::vector<float>>allGaussFilters;
-	
 	bool useBlurFilter;
 	UINT maxBlurRadius;
 
@@ -40,9 +48,9 @@ private:
 	bool CreateUnorderedAccessView();
 	bool CreateSettingsBuffer();
 	
+	//Help functions
 	void GenerateGaussFilters();
 	void SetWeights(UINT radius);
-
 	void UpdateBlurSettings();
 	void SwapBlurDirection();
 
@@ -55,5 +63,4 @@ public:
 
 	bool Initialize(int maxBlurRadius = 5);
 	void Render(float blurPercentage);
-
 };

@@ -126,7 +126,7 @@ void Engine::Render()
 	//Render the blur depending on sanity
 	//1.0f is full sanity = no blur
 	//0.0f is no sanitiy = max blur
-	this->blurPass.Render(this->playerSanity);//CHANGE LATER***
+	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	Graphics::BindBackBuffer();
 	this->guiHandler.setPlayerPos(this->playerPos);
@@ -144,7 +144,7 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	guiHandler.ChangeActiveTrap();
-	this->playerSanity -= 0.2f;//REMOVE LATER***
+	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
 void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
@@ -193,12 +193,13 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	}
 
 	this->guiHandler.Initialize(window.GetWindowHandler());
-
+	
+	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
 	{
 		return false;
 	}
-	this->playerSanity = 1.0f;//REMOVE LATER***
+	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	return true;
 }
