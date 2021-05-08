@@ -46,4 +46,5 @@ public:
 	static void BindBackBuffer(ID3D11DepthStencilView*& depthStencilView);
 	static void UnbindBackBuffer();
 	static void ClearDisplay();
+	static bool SetupGraphics();
 };

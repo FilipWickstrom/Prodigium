@@ -79,3 +79,8 @@ struct AnimationVertex
 	DirectX::SimpleMath::Vector3 boneIDs = {};
 	DirectX::SimpleMath::Vector3 boneWeights = {};
 };
+
+struct ParticleVertex
+{
+	DirectX::SimpleMath::Vector3 position;
+};

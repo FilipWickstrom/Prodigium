@@ -5,22 +5,27 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 
-	#ifdef _DEBUG
-		RedirectIoToConsole();
-	#endif 
-
 	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
 	}
 
+	#ifdef _DEBUG
+		OpenConsole();
+	#endif 
+
+
 }
 
 Engine::~Engine()
 {
 	ResourceManager::Destroy();
+#ifdef _DEBUG
+	DebugInfo::Destroy();
+#endif
 	Graphics::Destroy();
+	this->guiHandler.Shutdown();
 }
 
 void Engine::RedirectIoToConsole()
@@ -86,6 +91,7 @@ void Engine::ClearDisplay()
 void Engine::Render()
 {
 	//Render the scene to the gbuffers - 3 render targets
+	this->gPass.ClearScreen();
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
 
@@ -93,16 +99,41 @@ void Engine::Render()
 
 	this->gPass.Clear();
 
+	// Shadow pass
+	this->gPass.Prepare();
+	this->sceneHandler.RenderShadows();
+	this->gPass.Clear();
+
+	//TODO: Add Fog Pass
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 
-	//Render the skybox on the places where there is no objects visible from depthstencil
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
+#ifdef _DEBUG
+	DebugInfo::Prepare();
+	this->sceneHandler.RenderBoundingBoxes();
+	DebugInfo::Clear();
+#endif
+
+	// Particle pass
+	this->sceneHandler.RenderParticles();
+
+	//Render the skybox on the places where there is no objects visible from depthstencil
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
+
+	//Render the blur depending on sanity
+	//1.0f is full sanity = no blur
+	//0.0f is no sanitiy = max blur
+	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
+
+	Graphics::BindBackBuffer();
+	this->guiHandler.setPlayerPos(this->playerPos);
+	this->guiHandler.Render();
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
@@ -111,6 +142,17 @@ void Engine::Render()
 void Engine::OpenConsole()
 {
 	this->RedirectIoToConsole();
+}
+
+void Engine::ChangeActiveTrap()
+{
+	guiHandler.ChangeActiveTrap();
+	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
+}
+
+void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
+{
+	this->playerPos = PlayerPos;
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
@@ -128,7 +170,13 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
 	ResourceManager::Initialize();
+
+	if (!Graphics::SetupGraphics())
+	{
+		return false;
+	}
 
 	Graphics::SetMainWindowViewport();
 
@@ -146,6 +194,15 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+
+	this->guiHandler.Initialize(window.GetWindowHandler());
+	
+	//Max blur radius is 5 for now
+	if (!this->blurPass.Initialize(5))
+	{
+		return false;
+	}
+	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	if (!this->anime.Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png"))	//DELETE LATER***
 	{

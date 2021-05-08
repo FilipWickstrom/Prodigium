@@ -9,7 +9,7 @@ Player::Player()
 	cameraForward.Normalize();
 	this->speed = 10.f;
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Normal.jpg");
+	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Albedo.png");
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
@@ -59,6 +59,7 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
 
 	this->playerModel->UpdateMatrix();
+	this->playerModel->UpdateBoundingBoxes();
 }
 
 void Player::Rotate(const float& pitch, const float& yaw)
@@ -76,7 +77,25 @@ void Player::Walk()
 	this->speed = 20.0f;
 }
 
+const DirectX::SimpleMath::Vector3& Player::GetPlayerPos()
+{
+	return this->playerModel->GetPosition();
+}
+
 MeshObject* Player::GetMeshObject() const
 {
 	return this->playerModel;
+}
+
+bool Player::CheckCollision(MeshObject* other)
+{
+	for (int i = 0; i < other->colliders.size(); i++)
+	{
+		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

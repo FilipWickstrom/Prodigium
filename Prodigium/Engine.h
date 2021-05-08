@@ -10,6 +10,9 @@
 #include "InputHandler.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
+#include "GUIHandler.h"
+#include "DebugInfo.h"
+#include "BlurFilter.h"
 
 #include "AnimatedObject.h"		//DELETE LATER****
 
@@ -20,8 +23,14 @@ private:
 	GeometryPass gPass;
 	LightPass lightPass;
 	SkyboxPass skyboxPass;
+	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
+	GUIHandler guiHandler;
+	DirectX::SimpleMath::Vector3 playerPos;
+
+	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	
 
 	AnimatedObject anime;	//DELETE LATER****
 
@@ -39,6 +48,8 @@ public:
 	void ClearDisplay();
 	void Render();
 	void OpenConsole();
+	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
+	void SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos);
 };

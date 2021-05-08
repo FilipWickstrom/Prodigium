@@ -5,16 +5,12 @@
 class GameObject
 {
 private:
-
-	DirectX::BoundingOrientedBox collider;
-
-	// World Matrix, Pos, Scale, Rotation
-	DirectX::SimpleMath::Matrix modelMatrix;
-
 	// Buffer containing world matrix, updated each time BuildMatrix is run.
 	ID3D11Buffer* modelMatrixBuffer;
 
-	void BuildBoundingVolume();
+protected:
+	// World Matrix, Pos, Scale, Rotation
+	DirectX::SimpleMath::Matrix modelMatrix;
 
 public:
 
@@ -28,13 +24,14 @@ public:
 	DirectX::SimpleMath::Vector3 right;
 	DirectX::SimpleMath::Vector3 up;
 
-	const bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
-	const bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
-	const bool UpdateMatrix();
+	bool CreateModelMatrixBuffer();
+	bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	bool UpdateMatrix();
 	
-	const DirectX::SimpleMath::Vector3 GetPosition() const;
-	const DirectX::SimpleMath::Vector3 GetScale() const;
-	const DirectX::SimpleMath::Vector3 GetRotation() const;
+	const DirectX::SimpleMath::Vector3& GetPosition() const;
+	const DirectX::SimpleMath::Vector3& GetScale() const;
+	const DirectX::SimpleMath::Vector3& GetRotation() const;
 
 	void SetPosition(const DirectX::SimpleMath::Vector3& newPos);
 	void SetScale(const DirectX::SimpleMath::Vector3& newScale);
@@ -42,7 +39,7 @@ public:
 
 	// Returns the float4x4 of the modelMatrix.
 	const DirectX::SimpleMath::Matrix& GetModelMatrix() const;
-
+	float GetDistance(const DirectX::SimpleMath::Vector4& otherObject) const;
 	// Returns the transposed XMMATRIX of modelMatrix.
 	const DirectX::SimpleMath::Matrix GetTransposedMatrix() const;
 
@@ -50,5 +47,4 @@ public:
 	ID3D11Buffer*& GetModelMatrixBuffer();
 
 	float GetDistance(const GameObject &otherObject) const;
-	const DirectX::BoundingOrientedBox& GetCollider() const;
 };

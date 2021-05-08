@@ -105,5 +105,33 @@ void SceneHandler::RenderLights()
 	if ((int)this->scenes.size() > 0)
 	{
 		this->scenes[this->currentScene]->RenderLights();
+		// Shadows for light pass
+		this->scenes[this->currentScene]->GetShadows().RenderLightPass();
 	}
 }
+
+void SceneHandler::RenderShadows()
+{
+	if ((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderShadows();
+	}
+}
+
+void SceneHandler::RenderParticles()
+{
+	if ((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderParticles();
+	}
+}
+
+#ifdef _DEBUG
+void SceneHandler::RenderBoundingBoxes()
+{
+	if((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderBoundingBoxes();
+	}
+}
+#endif

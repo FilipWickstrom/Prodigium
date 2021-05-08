@@ -31,6 +31,7 @@ private:
 	ID3D11ShaderResourceView* shaderResources[BUFFER_COUNT];
 	ID3D11Texture2D* renderedImage;
 	ID3D11SamplerState* sampler;
+	ID3D11DepthStencilState* noDepth;
 	std::string vShaderByteCode;
 
 	bool LoadShaders();
@@ -38,6 +39,7 @@ private:
 	bool CreateFullScreenQuad();
 	bool CreateInputLayout();
 	bool CreateSamplerState();
+	bool CreateDepthStencilState();
 
 public:
 	LightPass();
@@ -60,7 +62,6 @@ private:
 	ID3D11SamplerState* sampler;
 	ID3D11InputLayout* inputLayout;
 	std::string vShaderByteCode;
-
 	bool CreateGBuffer();
 	bool CreateDepthBuffer();
 	bool CreateInputLayout();
@@ -71,6 +72,7 @@ public:
 	GeometryPass();
 	~GeometryPass();
 
+	void ClearScreen();
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
 
