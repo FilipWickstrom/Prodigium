@@ -43,7 +43,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 	return true;
 }
 
-bool Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
+void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
 	DirectX::BoundingOrientedBox collider;
 
@@ -57,8 +57,6 @@ bool Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XM
 	collider.Extents.z = (max.z - min.z) / 2.f;
 
 	colliders.push_back(collider);
-
-	return true;
 }
 
 Mesh::Mesh()
@@ -77,6 +75,8 @@ Mesh::~Mesh()
 	this->vertexBuffers.clear();
 	this->indexBuffers.clear();
 	this->indexCount.clear();
+	this->colliders.clear();
+	this->collidersOriginal.clear();
 }
 
 bool Mesh::LoadFile(std::string filename)

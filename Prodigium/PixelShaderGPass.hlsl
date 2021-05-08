@@ -1,4 +1,3 @@
-
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture  : register(t1);
 SamplerState anisotropic : register(s0);
@@ -28,6 +27,6 @@ PixelShaderOutput main(PixelShaderInput input)
 
     //LATER FIX: implement normalmap calculations here
     output.normalWS = float4(input.normalWS, 1.0f);
-    
+    output.colour =  output.colour;
     return output;
 }

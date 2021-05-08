@@ -93,9 +93,9 @@ bool Player::CheckCollision(MeshObject* other)
 	{
 		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
 		{
-			
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }

@@ -1,4 +1,3 @@
-
 cbuffer CameraViewProj : register(b0)
 {
     float4x4 view;
@@ -37,7 +36,7 @@ VertexShaderOutput main(VertexShaderInput input)
     output.positionWS = mul(float4(input.position, 1.0f), world);
 
     output.texCoord = input.texCoord;
-    
+
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
 
 	return output;

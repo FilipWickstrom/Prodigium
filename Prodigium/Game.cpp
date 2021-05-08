@@ -138,7 +138,10 @@ bool Game::OnFrame(const float& deltaTime)
 	Engine::SetPlayerPos(player->GetPlayerPos());
 	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 	{
-		player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i));
+		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
+		{
+			std::cout << i << std::endl;
+		}
 	}
 
 	Engine::ClearDisplay();

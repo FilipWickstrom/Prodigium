@@ -332,7 +332,11 @@ void Scene::RenderShadows()
 
 void Scene::RenderParticles()
 {
-	this->particles.Render();
+	if (this->particles.IsActive())
+	{
+		this->particles.Render();
+		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), { 0.0f, 0.0f, 0.0f });
+	}
 }
 
 #ifdef _DEBUG
