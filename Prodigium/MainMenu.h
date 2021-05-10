@@ -37,6 +37,7 @@ public:
 
 	// Perform the zoom in.
 	void ZoomIn(DirectX::SimpleMath::Vector4 endPos, const float& deltaTime, bool& inGoal);
+	void Reset();
 
 	void Update();
 };

@@ -53,6 +53,8 @@ void Game::HandleInput(const float& deltaTime)
 	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
 	{
 		this->menu.Switch(true);
+		this->inGoal = false;
+		this->menu.Reset();
 	}
 
 	if (this->hasLoaded)
@@ -158,6 +160,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	if (this->inGoal)
 	{
+		this->zoomIn = false;
 		this->menu.Switch();
 	}
 
