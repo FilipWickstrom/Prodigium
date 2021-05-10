@@ -230,8 +230,16 @@ void Game::LoadMainMenu()
 	SceneHandle()->AddScene();
 	SceneHandle()->EditScene().GetParticles().SetActive(false);
 
-	int randX = rand() % 100 - rand() % 100;
+	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
+
+	SceneHandle()->EditScene().Add("ProdigiumText.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 30.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	LightStruct L;
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { 0.0, 30.0f, 40.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
 	// Player model
 	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", true, 
 		{ (float)randX, 0.0f, (float)randZ } // Pos
@@ -243,7 +251,6 @@ void Game::LoadMainMenu()
 	// Ominous House
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", true, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
-	LightStruct L;
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
