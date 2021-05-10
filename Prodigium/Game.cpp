@@ -199,7 +199,9 @@ bool Game::OnFrame(const float& deltaTime)
 
 bool Game::OnStart()
 {
+#ifdef _DEBUG
 	OpenConsole();
+#endif
 	this->menu.Init();
 	this->LoadMainMenu();
 
