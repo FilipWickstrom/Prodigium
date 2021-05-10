@@ -13,7 +13,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 
 Game::~Game()
 {
-	if (this->player)
+	if (this->player && !this->menu.IsInMenu())
 		delete this->player;
 }
 
@@ -207,15 +207,16 @@ void Game::LoadMainMenu()
 
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
+	SceneHandle()->EditScene().GetParticles().SetActive(false);
 
 	// Player model
-	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", false, { 40.0f, 0.0f, 100.0f }, {0.0f, 0.82f, 0.0f});
+	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", true, { 40.0f, 0.0f, 100.0f }, {0.0f, 0.82f, 0.0f});
 
 	// Terrain
-	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
+	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, { 0.0f, -6.25f, 0.0f });
 	
 	// Ominous House
-	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", true, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
 	LightStruct L;
 
@@ -225,13 +226,13 @@ void Game::LoadMainMenu()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", true, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
