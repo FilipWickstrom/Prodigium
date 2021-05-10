@@ -9,6 +9,8 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->running = true;
 	this->player = nullptr;
 	this->hasLoaded = false;
+	this->zoomIn = false;
+	this->inGoal = false;
 }
 
 Game::~Game()
@@ -44,7 +46,7 @@ void Game::HandleInput(const float& deltaTime)
 	// Start the game.
 	if (!this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Space))
 	{
-		this->menu.Switch();
+		this->zoomIn = true;
 	}
 
 	// Go back to Menu
@@ -151,7 +153,15 @@ bool Game::OnFrame(const float& deltaTime)
 
 	HandleInput(deltaTime);
 
-	if (this->menu.IsInMenu())
+	if (this->zoomIn)
+		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+
+	if (this->inGoal)
+	{
+		this->menu.Switch();
+	}
+
+	if (!this->inGoal)
 		this->menu.Update();
 
 	if (!this->menu.IsInMenu() && !this->hasLoaded)
@@ -219,7 +229,6 @@ void Game::LoadMainMenu()
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", true, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
 	LightStruct L;
-
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
@@ -239,6 +248,7 @@ void Game::LoadMainMenu()
 	SceneHandle()->EditScene().AddLight(L);
 
 	this->hasLoaded = false;
+	this->inGoal = false;
 }
 
 void Game::LoadMap()
@@ -342,4 +352,5 @@ void Game::LoadMap()
 	}
 
 	this->hasLoaded = true;
+	this->inGoal = true;
 }

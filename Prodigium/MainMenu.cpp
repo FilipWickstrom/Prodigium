@@ -11,11 +11,7 @@ const bool MainMenu::SetUpBuffer()
 	this->menuView = view.Transpose();
 	this->menuProj = proj.Transpose();
 
-	struct Package
-	{
-		DirectX::SimpleMath::Matrix view;
-		DirectX::SimpleMath::Matrix projection;
-	}pack;
+	Package pack;
 
 	pack.view = this->menuView;
 	pack.projection = this->menuProj;
@@ -49,6 +45,8 @@ MainMenu::MainMenu()
 	this->eyeBuffer = nullptr;
 	this->inMenu = true;
 	this->menuView = {};
+	this->time = 0;
+	this->distToGoal = 99999;
 
 	// Start pos
 	this->eyePos = { 0.0f, 5.0f, -1.0f, 1.0f };
@@ -77,10 +75,39 @@ void MainMenu::Init()
 void MainMenu::Switch(bool boolean)
 {
 	this->inMenu = boolean;
+	this->time = 0;
+	this->distToGoal = 99999;
 }
 
-void MainMenu::ZoomIn(DirectX::SimpleMath::Vector3 endPos)
+void MainMenu::ZoomIn(DirectX::SimpleMath::Vector4 endPos, const float& deltaTime, bool& inGoal)
 {
+	this->time += deltaTime;
+	DirectX::SimpleMath::Vector4 result;
+	DirectX::SimpleMath::Vector4::Lerp(this->eyePos, endPos, this->time, result);
+
+	this->distToGoal = (result - endPos).Length();
+	if (this->distToGoal < 0)
+		this->distToGoal *= -1;
+
+	if (this->distToGoal < 5.0f)
+		inGoal = true;
+
+
+	DirectX::SimpleMath::Vector3 eye = { result.x, result.y, result.z };
+	DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookToLH(eye, { 0.0f, eye.y + 0.00001f, eye.z + 50.0f }, { 0.0f, 1.0f, 0.0f });
+
+	DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PI * 0.5f, (float)(Graphics::GetWindowWidth() / Graphics::GetWindowHeight()), 0.1f, 400.0f);
+	this->menuView = view.Transpose();
+	this->menuProj = proj.Transpose();
+	Package pack;
+
+	pack.view = this->menuView;
+	pack.projection = this->menuProj;
+	D3D11_MAPPED_SUBRESOURCE submap;
+	HRESULT hr = Graphics::GetContext()->Map(this->viewBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &pack, sizeof(Package));
+
+	Graphics::GetContext()->Unmap(this->viewBuffer, 0);
 }
 
 void MainMenu::Update()

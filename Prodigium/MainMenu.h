@@ -5,9 +5,17 @@ class MainMenu
 {
 private:
 
+	struct Package
+	{
+		DirectX::SimpleMath::Matrix view;
+		DirectX::SimpleMath::Matrix projection;
+	};
+
 	bool inMenu;
 	ID3D11Buffer* viewBuffer;
 	ID3D11Buffer* eyeBuffer;
+	float distToGoal;
+	float time;
 
 private:
 
@@ -28,7 +36,7 @@ public:
 	void Switch(bool boolean = false);
 
 	// Perform the zoom in.
-	void ZoomIn(DirectX::SimpleMath::Vector3 endPos);
+	void ZoomIn(DirectX::SimpleMath::Vector4 endPos, const float& deltaTime, bool& inGoal);
 
 	void Update();
 };
