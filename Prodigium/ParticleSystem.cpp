@@ -274,11 +274,13 @@ bool ParticleSystem::SetUp()
 
 bool ParticleSystem::UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, DirectX::SimpleMath::Vector3 monsterPos)
 {
+	// Control the speed of particles.
 	float dist = (playerPos - monsterPos).Length();
 	if (dist < 0)
 		dist *= -1;
 
-	float factor = std::max(std::min(dist, 200.0f), 20.0f) * 0.5f;
+	// Changes the speed factor, highest being 1.0 aka normal speed.
+	float factor = std::max(std::min(dist, 400.0f), 20.0f) * 0.25f;
 	float speed = factor * 0.01f;
 
 	DirectX::SimpleMath::Vector4 package = { speed, speed, speed, speed };
