@@ -209,7 +209,7 @@ void Game::LoadMainMenu()
 	SceneHandle()->AddScene();
 
 	// Player model
-	SceneHandle()->EditScene().Add("LowPoly_Character.obj", "Char_Albedo.png", "", false, { 40.0f, 0.0f, 100.0f }, {0.0f, 0.82f, 0.0f});
+	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", false, { 40.0f, 0.0f, 100.0f }, {0.0f, 0.82f, 0.0f});
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
