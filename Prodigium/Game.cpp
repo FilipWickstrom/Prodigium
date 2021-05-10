@@ -8,6 +8,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 {
 	this->running = true;
 	this->player = nullptr;
+	this->hasLoaded = false;
 }
 
 Game::~Game()
@@ -39,89 +40,105 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->running = false;
 	}
-	if (InputHandler::IsKeyPressed(Keyboard::K))
-	{
-		//OpenConsole();
-		SceneHandle()->EditScene().GetParticles().SetActive(true);
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::L))
-	{
-		SceneHandle()->EditScene().GetParticles().SetActive(false);
-	}
-	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
-	{
-		this->player->Sprint();
-	}
-	if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
-	{
-		this->player->Walk();
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::W))
-	{
-		direction.x = 1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::S))
-	{
-		direction.x = -1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::A))
-	{
-		direction.y = -1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::D))
-	{
-		direction.y = 1.f;
-	}
-	if (InputHandler::IsLMBPressed())
-	{
-		//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
 
-		// Test pick up
-		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+	// Start the game.
+	if (!this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Space))
+	{
+		this->menu.Switch();
+	}
+
+	// Go back to Menu
+	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
+	{
+		this->menu.Switch(true);
+	}
+
+	if (this->hasLoaded)
+	{
+		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
-			SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
-			std::cout << "Picked up Book!\n";
+			//OpenConsole();
+			SceneHandle()->EditScene().GetParticles().SetActive(true);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::L))
+		{
+			SceneHandle()->EditScene().GetParticles().SetActive(false);
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+		{
+			this->player->Sprint();
+		}
+		if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
+		{
+			this->player->Walk();
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::W))
+		{
+			direction.x = 1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::S))
+		{
+			direction.x = -1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::A))
+		{
+			direction.y = -1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::D))
+		{
+			direction.y = 1.f;
+		}
+		if (InputHandler::IsLMBPressed())
+		{
+			//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+
+			// Test pick up
+			std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
+				std::cout << "Picked up Book!\n";
+			}
+
+			std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
+				std::cout << "Picked up Drawing!\n";
+			}
+
+			std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
+				std::cout << "Picked up Mask!\n";
+			}
+		}
+		if (InputHandler::IsRMBPressed())
+		{
+			// Temp -- Change to trap later
+			SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
+				{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+				{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::E))
+		{
+			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
+			Engine::ChangeActiveTrap();
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::T))
+		{
+			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
+		}
+		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
+		{
+			this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
 
-		std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+		if (direction.Length() > 0.0f)
 		{
-			SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
-			std::cout << "Picked up Drawing!\n";
+			this->player->Move(direction, deltaTime);
 		}
-
-		std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
-		{
-			SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
-			std::cout << "Picked up Mask!\n";
-		}
-	}
-	if (InputHandler::IsRMBPressed())
-	{
-		// Temp -- Change to trap later
-		SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
-			{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-			{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::E))
-	{
-		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
-		Engine::ChangeActiveTrap();
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::T))
-	{
-		//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
-	}
-	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
-	{
-		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
-	}
-
-	if (direction.Length() > 0.0f)
-	{
-		this->player->Move(direction, deltaTime);
 	}
 }
 
@@ -134,13 +151,30 @@ bool Game::OnFrame(const float& deltaTime)
 
 	HandleInput(deltaTime);
 
-	player->Update(deltaTime);
-	Engine::SetPlayerPos(player->GetPlayerPos());
-	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
+	if (this->menu.IsInMenu())
+		this->menu.Update();
+
+	if (!this->menu.IsInMenu() && !this->hasLoaded)
 	{
-		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
+		// Load game map
+		this->LoadMap();
+	}
+	if (this->menu.IsInMenu() && this->hasLoaded)
+	{
+		// Load menu
+		this->LoadMainMenu();
+	}
+
+	if (this->hasLoaded)
+	{
+		player->Update(deltaTime);
+		Engine::SetPlayerPos(player->GetPlayerPos());
+		for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 		{
-			std::cout << i << std::endl;
+			if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
+			{
+				std::cout << i << std::endl;
+			}
 		}
 	}
 
@@ -153,7 +187,8 @@ bool Game::OnFrame(const float& deltaTime)
 bool Game::OnStart()
 {
 	OpenConsole();
-	this->LoadMap();
+	this->menu.Init();
+	this->LoadMainMenu();
 
 #ifdef _DEBUG
 	if (!DebugInfo::Initialize())
@@ -165,8 +200,49 @@ bool Game::OnStart()
 	return true;
 }
 
+void Game::LoadMainMenu()
+{
+	if (this->player)
+		delete this->player;
+
+	SceneHandle()->RemoveAllScenes();
+	SceneHandle()->AddScene();
+
+	// Player model
+	SceneHandle()->EditScene().Add("LowPoly_Character.obj", "Char_Albedo.png", "", false, { 40.0f, 0.0f, 100.0f }, {0.0f, 0.82f, 0.0f});
+
+	// Terrain
+	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
+	
+	// Ominous House
+	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "", false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	
+	LightStruct L;
+
+	// Directional light
+	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
+	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
+	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "", false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	this->hasLoaded = false;
+}
+
 void Game::LoadMap()
 {
+	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
 	this->player = new Player();
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
@@ -263,4 +339,6 @@ void Game::LoadMap()
 		
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
+
+	this->hasLoaded = true;
 }

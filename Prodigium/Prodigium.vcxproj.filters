@@ -136,6 +136,9 @@
     <ClCompile Include="BlurFilter.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -233,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="BlurFilter.h">
       <Filter>Engine\Graphics\Techniques</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

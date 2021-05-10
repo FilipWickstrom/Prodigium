@@ -83,6 +83,7 @@ Scene::Scene()
 	this->lightShaderView = nullptr;
 	this->infoBuffer = nullptr;
 	this->firstTime = true;
+	this->menuMode = false;
 	this->shadowHandler = new ShadowHandler();
 
 	LightStruct filler;
@@ -337,6 +338,11 @@ void Scene::RenderParticles()
 		this->particles.Render();
 		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), { 0.0f, 0.0f, 0.0f });
 	}
+}
+
+void Scene::SwitchMenuMode(bool sw)
+{
+	this->menuMode = sw;
 }
 
 #ifdef _DEBUG
