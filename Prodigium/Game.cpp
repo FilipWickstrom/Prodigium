@@ -233,7 +233,7 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandle()->EditScene().Add("ProdigiumText.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 30.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 30.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
