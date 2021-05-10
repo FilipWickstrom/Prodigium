@@ -230,9 +230,12 @@ void Game::LoadMainMenu()
 	SceneHandle()->AddScene();
 	SceneHandle()->EditScene().GetParticles().SetActive(false);
 
+	int randX = rand() % 100 - rand() % 100;
+	int randZ = rand() % 60 + 10;
 	// Player model
-	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", true, { 40.0f, 0.0f, 100.0f }
-	, {0.0f, 0.82f, 0.0f});
+	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "", true, 
+		{ (float)randX, 0.0f, (float)randZ } // Pos
+	, {0.0f, 0.0f, 0.0f});
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, { 0.0f, -6.25f, 0.0f });
@@ -282,10 +285,18 @@ void Game::LoadMap()
 	float randX = (float)(rand() % 200 - rand() % 200);
 	float randZ = (float)(rand() % 200- rand() % 200);
 	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", true, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { randX, 0.0f, randZ, 5.0f };
+	SceneHandle()->EditScene().AddLight(L);
 
 	randX = (float)(rand() % 200 - rand() % 200);
 	randZ = (float)(rand() % 200 - rand() % 200);
 	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "", true, { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { randX, 0.0f, randZ, 5.0f };
+	SceneHandle()->EditScene().AddLight(L);
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
@@ -293,6 +304,10 @@ void Game::LoadMap()
 	randX = (float)(rand() % 200 - rand() % 200);
 	randZ = (float)(rand() % 200 - rand() % 200);
 	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", true, { randX, -3.0f, randZ });
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { randX, 0.0f, randZ, 5.0f };
+	SceneHandle()->EditScene().AddLight(L);
 
 	// Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, -50.0f });
