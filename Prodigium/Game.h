@@ -29,4 +29,7 @@ public:
 	virtual bool OnStart() override;
 	void LoadMap();
 	void LoadMainMenu();
+
+	// Put in here whatever values that need reset after each game.
+	void ResetValues();
 };
