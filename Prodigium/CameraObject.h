@@ -13,6 +13,15 @@ private:
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Matrix projectionMatrix;
 	};
+	struct LightPassCameraBuffer
+	{
+		DirectX::SimpleMath::Matrix viewMatrix;
+		DirectX::SimpleMath::Vector4 cameraPos;
+		DirectX::SimpleMath::Vector4 fogColour;
+		float fogStart;
+		float fogRange;
+		DirectX::SimpleMath::Vector2 padding;
+	};
 	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
 	DirectX::SimpleMath::Vector3 defaultForward;
 	DirectX::SimpleMath::Vector3 defaultPosition;

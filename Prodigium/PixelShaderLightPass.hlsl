@@ -23,10 +23,16 @@ cbuffer LightsInfo : register(b0)
 }
 
 #define TEMPCOUNT 9
-
+static const float density = 0.007f;
+static const float gradient = 0.2f;
 cbuffer Camera : register(b1)
 {
+    float4x4 viewMatrix;
     float4 camPos;
+    float4 fogColour;
+    float fogStart;
+    float fogRange;
+    float2 padding;
 }
 
 struct LightViewProj
@@ -316,5 +322,15 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    return (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
+    float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
+    
+    //FOG
+    float3 toEye = camPos - gbuffers.positionWS;
+    float distanceToEye = length(toEye);
+    
+    float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
+    finalColor = lerp(finalColor, fogColour, fogFactor);
+    
+  
+    return finalColor;
 }
