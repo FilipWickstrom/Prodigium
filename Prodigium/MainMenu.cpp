@@ -16,22 +16,27 @@ const bool MainMenu::SetUpBuffer()
 	pack.view = this->menuView;
 	pack.projection = this->menuProj;
 
-	D3D11_BUFFER_DESC desc;
+	D3D11_BUFFER_DESC desc = {};
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.ByteWidth = sizeof(Package);
 	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	desc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA data;
+	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &pack;
 
 	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->viewBuffer);
 	if (FAILED(hr))
 		return false;
-
-	desc.ByteWidth = sizeof(DirectX::SimpleMath::Vector4);
-	data.pSysMem = &this->eyePos;
+	FogBuffer fog;
+	fog.viewMatrix = this->menuView;
+	fog.cameraPos = this->eyePos;
+	fog.fogColour = { 0.6f,0.6f,0.6f,0.f };
+	fog.fogRange = 200.f;
+	fog.fogStart = 10.f;
+	desc.ByteWidth = sizeof(FogBuffer);
+	data.pSysMem = &fog;
 	hr2 = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->eyeBuffer);
 	if (FAILED(hr2))
 		return false;

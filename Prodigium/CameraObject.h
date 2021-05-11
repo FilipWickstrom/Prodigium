@@ -38,6 +38,7 @@ private:
 	ID3D11Buffer* matrixBuffer;
 	ID3D11Buffer* camPosBuffer;
 	void UpdateViewMatrix();
+
 public:
 	CameraObject();
 	virtual ~CameraObject();
