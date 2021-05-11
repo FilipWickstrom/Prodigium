@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include "ParticleSystem.h"
+#include "GUIHandler.h"
 
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
@@ -110,11 +111,11 @@ void Game::HandleInput(const float& deltaTime)
 	if (InputHandler::IsKeyPressed(Keyboard::E))
 	{
 		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
-		Engine::ChangeActiveTrap();
+		GUIHandler::ChangeActiveTrap();
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::P))
 	{
-		Engine::PauseGame();
+		GUIHandler::PauseGame();
 		this->isPaused = true;
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
@@ -142,7 +143,7 @@ bool Game::OnFrame(const float& deltaTime)
 	HandleInput(deltaTime);
 
 	player->Update(deltaTime);
-	Engine::SetPlayerPos(player->GetPlayerPos());
+	GUIHandler::SetPlayerPos(player->GetPlayerPos());
 	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 	{
 		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))

@@ -25,8 +25,6 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	//GUIHandler guiHandler;
-	DirectX::SimpleMath::Vector3 playerPos;
 
 	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 	
@@ -47,6 +45,4 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
-	void SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos);
-	void PauseGame();
 };
