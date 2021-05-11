@@ -144,7 +144,7 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	guiHandler.ChangeActiveTrap();
-	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	//this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
 void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)

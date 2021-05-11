@@ -20,6 +20,7 @@ class Engine
 protected:
 
 	GUIHandler guiHandler;
+	float playerSanity; // Blur
 
 private:
 	Window window;
@@ -31,8 +32,6 @@ private:
 	SceneHandler sceneHandler;
 	
 	DirectX::SimpleMath::Vector3 playerPos;
-
-	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
