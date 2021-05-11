@@ -54,7 +54,7 @@ void SetUpGUIStyle()
     style.Colors[ImGuiCol_SliderGrab]                               = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_SliderGrabActive]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.6f);
-    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(1.f, 1.f, 1.f, 0.5f);
     style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(1.f, 1.f, 1.f, 1.f);
     style.Colors[ImGuiCol_Header]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_HeaderHovered]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -76,9 +76,6 @@ const bool GUIHandler::Initialize(const HWND& window)
         GUIHandler::instance = new GUIHandler;
         CreateContext();
         GUIHandler::instance->io = GetIO();
-        //GUIHandler::instance->io.WantCaptureMouse = true;
-        //GUIHandler::instance->io.WantCaptureKeyboard = true;
-        //GUIHandler::instance->io.MouseDrawCursor = true;
         
 
         ImGui_ImplDX11_Init(Graphics::GetDevice(), Graphics::GetContext());
@@ -110,6 +107,13 @@ void GUIHandler::Render()
         GetIO().WantCaptureKeyboard = true;
         GetIO().MouseDrawCursor = true;
     }
+    else
+    {
+        GetIO().WantCaptureMouse = false;
+        GetIO().WantCaptureKeyboard = false;
+        GetIO().MouseDrawCursor = false;
+    }
+
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
@@ -178,7 +182,9 @@ const bool GUIHandler::ShouldQuit()
 
 void GUIHandler::MouseClicked()
 {
-    GetIO().MouseClicked;
+    GetIO().MouseClicked[ImGuiMouseButton_Left] = true;
+    if (GetIO().MouseClicked[ImGuiMouseButton_Left])
+        std::cout << "Mouse Clicked!" << std::endl;
 }
 
 void GUIHandler::CreateDebugGUI()
@@ -246,28 +252,29 @@ void GUIHandler::CreateBrainGUI()
 void GUIHandler::CreatePauseMenu()
 {
 
-    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() + 50, (float)Graphics::GetWindowHeight() + 50));
+    SetNextWindowSize(ImVec2(1920, 1080));
     SetNextWindowPos(ImVec2(0, 0));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
 
     Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
 
-    SetNextWindowPos(ImVec2(500, 250));
-    Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
-    if (Button("Resume", ImVec2(250, 50)))
-    {
-        ResumeGame();
-    }
-    End();
+        SetNextWindowPos(ImVec2(500, 250));
+        Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        if(Button("Resume", ImVec2(250, 50)))
+        {
+            ResumeGame();
+        }
+        End();
 
-    SetNextWindowPos(ImVec2(500, 325));
-    Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
-    if (Button("Quit", ImVec2(250, 50)))
-    {
-        GUIHandler::instance->shouldQuit = true;
-    }
-    End();
+        SetNextWindowPos(ImVec2(500, 325));
+        Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        if(Button("Quit", ImVec2(250, 50)))
+        {
+            GUIHandler::instance->shouldQuit = true;
+            std::cout << "QUIT! /n";
+        }
+        End();
 
     End();
 

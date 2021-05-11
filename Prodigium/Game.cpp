@@ -135,10 +135,11 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	else
 	{
-		if (InputHandler::IsLMBPressed())
+		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{
-			GUIHandler::MouseClicked();
-		}
+			this->isPaused = false;
+			GUIHandler::ResumeGame();
+		}		
 	}
 }
 
