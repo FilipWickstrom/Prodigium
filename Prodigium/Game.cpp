@@ -123,7 +123,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsRMBPressed())
 		{
-			if (guiHandler.ActiveTrap())
+			if (GUIHandler::ActiveTrap())
 			{
 				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
@@ -218,7 +218,7 @@ bool Game::OnFrame(const float& deltaTime)
 	if (this->hasLoaded)
 	{
 		player->Update(deltaTime);
-		Engine::SetPlayerPos(player->GetPlayerPos());
+		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 		{
 			if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
@@ -228,16 +228,8 @@ bool Game::OnFrame(const float& deltaTime)
 		}
 	}
 	
-	player->Update(deltaTime);
-	GUIHandler::SetPlayerPos(player->GetPlayerPos());
+	
 
-	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
-	{
-		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
-		{
-			std::cout << i << std::endl;
-		}
-	}
 
 	Engine::ClearDisplay();
 	Engine::Render();

@@ -168,9 +168,9 @@ const bool GUIHandler::ShouldQuit()
     return GUIHandler::instance->shouldQuit;
 }
 
-const bool GUIHandler::ActiveTrap() const
+const bool GUIHandler::ActiveTrap()
 {
-    return this->trap1Active;
+    return GUIHandler::instance->trap1Active;
 }
 
 void GUIHandler::CreateDebugGUI()

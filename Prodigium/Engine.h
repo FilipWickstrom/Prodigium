@@ -19,7 +19,6 @@ class Engine
 {
 protected:
 
-	GUIHandler guiHandler;
 	float playerSanity; // Blur
 
 private:

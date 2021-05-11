@@ -39,7 +39,6 @@ public:
 	static void PauseGame();
 	static void ResumeGame();
 	static const bool ShouldQuit();
-	static void MouseClicked();
 	// Returns the trap1Active bool.
-	static const bool ActiveTrap() const;
+	static const bool ActiveTrap();
 };
