@@ -32,7 +32,6 @@ cbuffer Camera : register(b1)
     float4 fogColour;
     float fogStart;
     float fogRange;
-    float2 padding;
 }
 
 struct LightViewProj
@@ -330,6 +329,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     
     float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
     finalColor = lerp(finalColor, fogColour, fogFactor);
+    
     
   
     return finalColor;

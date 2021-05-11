@@ -11,7 +11,15 @@ private:
 		DirectX::SimpleMath::Matrix view;
 		DirectX::SimpleMath::Matrix projection;
 	};
-
+	struct FogBuffer
+	{
+		DirectX::SimpleMath::Matrix viewMatrix;
+		DirectX::SimpleMath::Vector4 cameraPos;
+		DirectX::SimpleMath::Vector4 fogColour;
+		float fogStart;
+		float fogRange;
+		DirectX::SimpleMath::Vector2 padding;
+	};
 	bool inMenu;
 	ID3D11Buffer* viewBuffer;
 	ID3D11Buffer* eyeBuffer;
