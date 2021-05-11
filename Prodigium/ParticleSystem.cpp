@@ -222,7 +222,7 @@ bool ParticleSystem::SetUp()
 		parts.push_back(part);
 	}
 
-	D3D11_BUFFER_DESC desc;
+	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.CPUAccessFlags = 0;
@@ -230,7 +230,7 @@ bool ParticleSystem::SetUp()
 	desc.ByteWidth = sizeof(ParticleVertex) * (int)parts.size();
 	desc.StructureByteStride = sizeof(ParticleVertex);
 
-	D3D11_SUBRESOURCE_DATA data;
+	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &(parts[0]);
 
 	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->particleBuff);
@@ -241,7 +241,7 @@ bool ParticleSystem::SetUp()
 	if (FAILED(hr))
 		return false;
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 	srvDesc.BufferEx.FirstElement = 0;
@@ -258,7 +258,7 @@ bool ParticleSystem::SetUp()
 	this->LoadPixelShader();
 	this->LoadComputeShader();
 
-	D3D11_BUFFER_DESC speedDesc;
+	D3D11_BUFFER_DESC speedDesc = {};
 	speedDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	speedDesc.Usage = D3D11_USAGE_DYNAMIC;
 	speedDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -303,16 +303,12 @@ void ParticleSystem::Render()
 	{
 		while (!hasSetup)
 		{
-			if (this->SetUp())
-			{
-				hasSetup = true;
-			}
-			else
-				hasSetup = false;
+			hasSetup = this->SetUp();
 		}
 		this->InternalRender();
 	}
 }
+
 
 const bool ParticleSystem::IsActive() const
 {

@@ -501,7 +501,7 @@ bool LightPass::CreateSamplerState()
 bool LightPass::CreateDepthStencilState()
 {
 	HRESULT hr;
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
 
 	dsDesc.DepthEnable = false;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -642,6 +642,7 @@ void LightPass::Prepare()
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, this->shaderResources);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }

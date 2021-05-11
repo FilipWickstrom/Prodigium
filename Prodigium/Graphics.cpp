@@ -253,7 +253,7 @@ void Graphics::UnbindBackBuffer()
 
 void Graphics::ClearDisplay()
 {
-	float color[4];
+	float color[4] = {};
 
 	// Red
 	color[0] = 0.65f;

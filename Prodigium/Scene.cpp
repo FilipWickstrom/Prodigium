@@ -31,7 +31,7 @@ const bool Scene::SetupLightBuffer()
 
 	if (!(FAILED(hr)))
 	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		srvDesc.BufferEx.FirstElement = 0;
@@ -338,6 +338,7 @@ void Scene::RenderParticles()
 		this->particles.Render();
 		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[1]->GetPosition());
 	}
+
 }
 
 void Scene::SwitchMenuMode(bool sw)
