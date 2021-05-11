@@ -3,6 +3,8 @@
 #include <thread>
 #include "ParticleSystem.h"
 
+DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -32,7 +34,7 @@ void Game::HandleInput(const float& deltaTime)
 	//Updates the keyboard and mouse with new info about their current state.
 	InputHandler::UpdateKeyboardAndMouse();
 
-	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
+	direction = { 0.f, 0.f };
 
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
@@ -48,7 +50,7 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		SceneHandle()->EditScene().GetParticles().SetActive(false);
 	}
-	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
+	if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
 	{
 		this->player->Sprint();
 	}
@@ -116,12 +118,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 	{
-		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
-	}
-
-	if (direction.Length() > 0.0f)
-	{
-		this->player->Move(direction, deltaTime);
+		this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 	}
 }
 
@@ -134,15 +131,13 @@ bool Game::OnFrame(const float& deltaTime)
 
 	HandleInput(deltaTime);
 
-	player->Update(deltaTime);
-	Engine::SetPlayerPos(player->GetPlayerPos());
-	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
+	if (player->CheckCollision(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime))
 	{
-		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
-		{
-			std::cout << i << std::endl;
-		}
+		direction = { 0.0f, 0.0f };
 	}
+	player->Move(direction, deltaTime);
+	Engine::SetPlayerPos(player->GetPlayerPos());
+	player->Update(deltaTime);
 
 	Engine::ClearDisplay();
 	Engine::Render();
@@ -181,7 +176,7 @@ void Game::LoadMap()
 
 	// Test pickups but its static lol
 	float randX = (float)(rand() % 200 - rand() % 200);
-	float randZ = (float)(rand() % 200- rand() % 200);
+	float randZ = (float)(rand() % 200 - rand() % 200);
 	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", true, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 
 	randX = (float)(rand() % 200 - rand() % 200);
@@ -195,7 +190,7 @@ void Game::LoadMap()
 	randZ = (float)(rand() % 200 - rand() % 200);
 	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "", true, { randX, -3.0f, randZ });
 
-	// Houses around the town.
+	//Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, -50.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { -5.0f, -7.0f, -50.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
@@ -260,7 +255,7 @@ void Game::LoadMap()
 			x = (float)(rand() % 1000 - rand() % 1000);
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
-		
+
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 }

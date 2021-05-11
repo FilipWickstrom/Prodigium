@@ -45,16 +45,16 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 
 void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
-	DirectX::BoundingOrientedBox collider;
+	Collider collider;
 
-	collider.Center.x = (max.x + min.x) / 2.f;
-	collider.Center.y = (max.y + min.y) / 2.f;
-	collider.Center.z = (max.z + min.z) / 2.f;
+	collider.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	collider.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	collider.boundingBox.Center.z = (max.z + min.z) / 2.f;
 
-	collider.Orientation = { 0.f, 1.f, 0.f, 0.f };
-	collider.Extents.x = (max.x - min.x) / 2.f;
-	collider.Extents.y = (max.y - min.y) / 2.f;
-	collider.Extents.z = (max.z - min.z) / 2.f;
+	collider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	collider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	collider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	collider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
 
 	colliders.push_back(collider);
 }
@@ -173,10 +173,4 @@ void Mesh::Render()
 		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R16_UINT, 0);
 		Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
 	}
-}
-
-void Mesh::RemoveColliders()
-{
-	this->colliders.clear();
-	this->colliders.clear();
 }

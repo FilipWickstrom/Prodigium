@@ -29,7 +29,7 @@ struct Material
 	Struct for usage with different Matrices
 	Contains the matrices for view and projection.
 */
-struct Matrix
+struct ViewProjMatrix
 {
 	DirectX::SimpleMath::Matrix view;
 	DirectX::SimpleMath::Matrix projection;
