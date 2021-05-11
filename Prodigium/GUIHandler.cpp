@@ -134,6 +134,11 @@ void GUIHandler::setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
     this->playerPos = playerPos;
 }
 
+const bool GUIHandler::ActiveTrap() const
+{
+    return this->trap1Active;
+}
+
 void GUIHandler::CreateDebugGUI()
 {
     SetNextWindowPos(ImVec2(0, -25));

@@ -120,10 +120,18 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsRMBPressed())
 		{
-			// Temp -- Change to trap later
-			SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
-				{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-				{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+			if (guiHandler.ActiveTrap())
+			{
+				SceneHandle()->EditScene().Add("cube.obj", "Lamp1_Diffuse.png", "", true,
+					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+			}
+			else
+			{
+				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
+					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
 		{

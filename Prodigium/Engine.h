@@ -17,6 +17,10 @@
 
 class Engine
 {
+protected:
+
+	GUIHandler guiHandler;
+
 private:
 	Window window;
 	GeometryPass gPass;
@@ -25,7 +29,7 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	GUIHandler guiHandler;
+	
 	DirectX::SimpleMath::Vector3 playerPos;
 
 	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 

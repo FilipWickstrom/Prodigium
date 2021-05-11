@@ -32,4 +32,7 @@ public:
 	void Shutdown();
 	void ChangeActiveTrap();
 	void setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
+
+	// Returns the trap1Active bool.
+	const bool ActiveTrap() const;
 };
