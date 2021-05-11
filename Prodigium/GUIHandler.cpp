@@ -4,18 +4,19 @@ GUIHandler* GUIHandler::instance = nullptr;
 
 GUIHandler::GUIHandler()
 {
-	this->io = {};
-    this->trap1Active = false;
-    this->trap2Active = false;
-    this->isPaused = false;
-    this->imageWidth = 0;
-    this->imageHeight = 0;
-    this->playerPos = {};
+	io = {};
+    trap1Active = false;
+    trap2Active = false;
+    isPaused = false;
+    shouldQuit = false;
+    imageWidth = 0;
+    imageHeight = 0;
+    playerPos = {};
 
-    this->textureTrap1 = nullptr;
-    this->textureTrap2 = nullptr;
-    this->textureBrain = nullptr;
-    this->textureOutline = nullptr;
+    textureTrap1 = nullptr;
+    textureTrap2 = nullptr;
+    textureBrain = nullptr;
+    textureOutline = nullptr;
 }
 GUIHandler::~GUIHandler()
 {
@@ -75,6 +76,10 @@ const bool GUIHandler::Initialize(const HWND& window)
         GUIHandler::instance = new GUIHandler;
         CreateContext();
         GUIHandler::instance->io = GetIO();
+        //GUIHandler::instance->io.WantCaptureMouse = true;
+        //GUIHandler::instance->io.WantCaptureKeyboard = true;
+        //GUIHandler::instance->io.MouseDrawCursor = true;
+        
 
         ImGui_ImplDX11_Init(Graphics::GetDevice(), Graphics::GetContext());
         ImGui_ImplWin32_Init(window);
@@ -99,6 +104,12 @@ const bool GUIHandler::Initialize(const HWND& window)
 
 void GUIHandler::Render()
 {
+    if (GUIHandler::instance->isPaused)
+    {
+        GetIO().WantCaptureMouse = true;
+        GetIO().WantCaptureKeyboard = true;
+        GetIO().MouseDrawCursor = true;
+    }
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
@@ -158,6 +169,16 @@ void GUIHandler::PauseGame()
 void GUIHandler::ResumeGame()
 {
     GUIHandler::instance->isPaused = false;
+}
+
+const bool GUIHandler::ShouldQuit()
+{
+    return GUIHandler::instance->shouldQuit;
+}
+
+void GUIHandler::MouseClicked()
+{
+    GetIO().MouseClicked;
 }
 
 void GUIHandler::CreateDebugGUI()
@@ -224,7 +245,6 @@ void GUIHandler::CreateBrainGUI()
 
 void GUIHandler::CreatePauseMenu()
 {
-    SetCursorPos(ImVec2(500, 250));
 
     SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() + 50, (float)Graphics::GetWindowHeight() + 50));
     SetNextWindowPos(ImVec2(0, 0));
@@ -245,7 +265,7 @@ void GUIHandler::CreatePauseMenu()
     Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
     if (Button("Quit", ImVec2(250, 50)))
     {
-        //QuitGame
+        GUIHandler::instance->shouldQuit = true;
     }
     End();
 

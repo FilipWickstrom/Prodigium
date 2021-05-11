@@ -17,7 +17,7 @@ private:
 	static GUIHandler* instance;
 
 	ImGuiIO io;
-	bool trap1Active, trap2Active, isPaused;
+	bool trap1Active, trap2Active, isPaused, shouldQuit;
 	int imageWidth, imageHeight;
 	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
@@ -38,4 +38,6 @@ public:
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
 	static void PauseGame();
 	static void ResumeGame();
+	static const bool ShouldQuit();
+	static void MouseClicked();
 };

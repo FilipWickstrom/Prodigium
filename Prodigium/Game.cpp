@@ -32,104 +32,113 @@ void Game::HandleInput(const float& deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 	//Updates the keyboard and mouse with new info about their current state.
-	if(!this->isPaused)
-		InputHandler::UpdateKeyboardAndMouse();
+	
+	InputHandler::UpdateKeyboardAndMouse();
 
 	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
-
-	//TODO: Make the engine cleanly shutdown
-	if (InputHandler::IsKeyPressed(Keyboard::Escape))
+	if (!this->isPaused)
 	{
-		this->running = false;
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::K))
-	{
-		//OpenConsole();
-		SceneHandle()->EditScene().GetParticles().SetActive(true);
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::L))
-	{
-		SceneHandle()->EditScene().GetParticles().SetActive(false);
-	}
-	if(InputHandler::IsKeyHeld(Keyboard::LeftShift))
-	{
-		this->player->Sprint();
-	}
-	if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
-	{
-		this->player->Walk();
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::W))
-	{
-		direction.x = 1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::S))
-	{
-		direction.x = -1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::A))
-	{
-		direction.y = -1.f;
-	}
-	if (InputHandler::IsKeyHeld(Keyboard::D))
-	{
-		direction.y = 1.f;
-	}
-	if (InputHandler::IsLMBPressed())
-	{
-		//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
-
-		// Test pick up
-		std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+		//TODO: Make the engine cleanly shutdown
+		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{
-			SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
-			std::cout << "Picked up Book!\n";
+			this->running = false;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::K))
+		{
+			//OpenConsole();
+			SceneHandle()->EditScene().GetParticles().SetActive(true);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::L))
+		{
+			SceneHandle()->EditScene().GetParticles().SetActive(false);
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+		{
+			this->player->Sprint();
+		}
+		if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
+		{
+			this->player->Walk();
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::W))
+		{
+			direction.x = 1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::S))
+		{
+			direction.x = -1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::A))
+		{
+			direction.y = -1.f;
+		}
+		if (InputHandler::IsKeyHeld(Keyboard::D))
+		{
+			direction.y = 1.f;
+		}
+		if (InputHandler::IsLMBPressed())
+		{
+			//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+
+			// Test pick up
+			std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
+				std::cout << "Picked up Book!\n";
+			}
+
+			std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
+				std::cout << "Picked up Drawing!\n";
+			}
+
+			std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
+			{
+				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
+				std::cout << "Picked up Mask!\n";
+			}
+		}
+		if (InputHandler::IsRMBPressed())
+		{
+			// Temp -- Change to trap later
+			SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
+				{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+				{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::E))
+		{
+			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
+			GUIHandler::ChangeActiveTrap();
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::P))
+		{
+			GUIHandler::PauseGame();
+			this->isPaused = true;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::T))
+		{
+			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
+		}
+		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
+		{
+			this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
 
-		std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+		if (direction.Length() > 0.0f)
 		{
-			SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
-			std::cout << "Picked up Drawing!\n";
-		}
-
-		std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-		if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
-		{
-			SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
-			std::cout << "Picked up Mask!\n";
+			this->player->Move(direction, deltaTime);
 		}
 	}
-	if (InputHandler::IsRMBPressed())
+	else
 	{
-		// Temp -- Change to trap later
-		SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
-			{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-			{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::E))
-	{
-		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
-		GUIHandler::ChangeActiveTrap();
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::P))
-	{
-		GUIHandler::PauseGame();
-		this->isPaused = true;
-	}
-	if (InputHandler::IsKeyPressed(Keyboard::T))
-	{
-		//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
-	}
-	if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
-	{
-		this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
-	}
-
-	if (direction.Length() > 0.0f)
-	{
-		this->player->Move(direction, deltaTime);
+		if (InputHandler::IsLMBPressed())
+		{
+			GUIHandler::MouseClicked();
+		}
 	}
 }
 
@@ -141,6 +150,8 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	HandleInput(deltaTime);
+	if (GUIHandler::ShouldQuit())
+		this->running = false;
 
 	player->Update(deltaTime);
 	GUIHandler::SetPlayerPos(player->GetPlayerPos());
