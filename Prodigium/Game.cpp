@@ -387,13 +387,13 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -91.0f, 12.f, 50.0f, 40.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Big momma house 2
 	L.direction = { 0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	SceneHandle()->EditScene().AddLight(L);
 

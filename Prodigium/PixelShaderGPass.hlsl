@@ -31,12 +31,13 @@ PixelShaderOutput main(PixelShaderInput input)
     
     if(input.tangent.w >= 1.0f)
     {
-         //float3 tangent = normalize(input.tangent.xyz - dot(input.tangent.xyz, input.normalWS) * input.normalWS);
-        float3 tangent = input.tangent.xyz;
+        float3 tangent = normalize(input.tangent.xyz - dot(input.tangent.xyz, input.normalWS) * input.normalWS);
+        //float3 tangent = input.tangent.xyz;
         float3 bitangent = cross(input.normalWS, input.tangent.xyz);
-        float3x3 TBN = float3x3(bitangent, bitangent, input.normalWS);
+        float3x3 TBN = float3x3(tangent, bitangent, input.normalWS);
     
         output.normalWS = float4(mul(normalMap, TBN), 0.0f);
+        output.normalWS = normalize(output.normalWS);
     }
     else
         output.normalWS = float4(input.normalWS, 0.0f);
