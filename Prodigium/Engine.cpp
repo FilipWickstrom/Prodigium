@@ -25,7 +25,8 @@ Engine::~Engine()
 	DebugInfo::Destroy();
 #endif
 	Graphics::Destroy();
-	this->guiHandler.Shutdown();
+	//this->guiHandler.Shutdown();
+	GUIHandler::Shutdown();
 }
 
 void Engine::RedirectIoToConsole()
@@ -129,8 +130,10 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	Graphics::BindBackBuffer();
-	this->guiHandler.SetPlayerPos(this->playerPos);
-	this->guiHandler.Render();
+	//this->guiHandler.SetPlayerPos(this->playerPos);
+	//this->guiHandler.Render();
+	GUIHandler::SetPlayerPos(this->playerPos);
+	GUIHandler::Render();
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
@@ -143,7 +146,8 @@ void Engine::OpenConsole()
 
 void Engine::ChangeActiveTrap()
 {
-	guiHandler.ChangeActiveTrap();
+	//guiHandler.ChangeActiveTrap();
+	GUIHandler::ChangeActiveTrap();
 	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
@@ -154,7 +158,8 @@ void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
 
 void Engine::PauseGame()
 {
-	this->guiHandler.PauseGame();
+	//this->guiHandler.PauseGame();
+	GUIHandler::PauseGame();
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
@@ -197,7 +202,11 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	this->guiHandler.Initialize(window.GetWindowHandler());
+	//this->guiHandler.Initialize(window.GetWindowHandler());
+	if (!GUIHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
