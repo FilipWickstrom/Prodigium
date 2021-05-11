@@ -101,19 +101,7 @@ const bool GUIHandler::Initialize(const HWND& window)
 
 void GUIHandler::Render()
 {
-    if (GUIHandler::instance->isPaused)
-    {
-        GetIO().WantCaptureMouse = true;
-        GetIO().WantCaptureKeyboard = true;
-        GetIO().MouseDrawCursor = true;
-    }
-    else
-    {
-        GetIO().WantCaptureMouse = false;
-        GetIO().WantCaptureKeyboard = false;
-        GetIO().MouseDrawCursor = false;
-    }
-
+  
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
@@ -178,13 +166,6 @@ void GUIHandler::ResumeGame()
 const bool GUIHandler::ShouldQuit()
 {
     return GUIHandler::instance->shouldQuit;
-}
-
-void GUIHandler::MouseClicked()
-{
-    GetIO().MouseClicked[ImGuiMouseButton_Left] = true;
-    if (GetIO().MouseClicked[ImGuiMouseButton_Left])
-        std::cout << "Mouse Clicked!" << std::endl;
 }
 
 void GUIHandler::CreateDebugGUI()

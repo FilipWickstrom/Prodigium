@@ -114,11 +114,6 @@ void Game::HandleInput(const float& deltaTime)
 			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 			GUIHandler::ChangeActiveTrap();
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::P))
-		{
-			GUIHandler::PauseGame();
-			this->isPaused = true;
-		}
 		if (InputHandler::IsKeyPressed(Keyboard::T))
 		{
 			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
@@ -135,11 +130,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 	else
 	{
-		if (InputHandler::IsKeyPressed(Keyboard::Escape))
-		{
-			this->isPaused = false;
-			GUIHandler::ResumeGame();
-		}		
+		//Inputs Specifikt för när spelet är pausat	
 	}
 }
 
@@ -151,11 +142,10 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	HandleInput(deltaTime);
-	if (GUIHandler::ShouldQuit())
-		this->running = false;
-
+	
 	player->Update(deltaTime);
 	GUIHandler::SetPlayerPos(player->GetPlayerPos());
+
 	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
 	{
 		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
