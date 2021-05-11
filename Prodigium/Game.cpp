@@ -2,11 +2,13 @@
 #include <iostream>
 #include <thread>
 #include "ParticleSystem.h"
+#include "GUIHandler.h"
 
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
 	this->running = true;
+	this->isPaused = false;
 	this->player = nullptr;
 	this->hasLoaded = false;
 	this->zoomIn = false;
@@ -33,6 +35,7 @@ void Game::HandleInput(const float& deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 	//Updates the keyboard and mouse with new info about their current state.
+	
 	InputHandler::UpdateKeyboardAndMouse();
 
 	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
@@ -222,6 +225,17 @@ bool Game::OnFrame(const float& deltaTime)
 			{
 				std::cout << i << std::endl;
 			}
+		}
+	}
+	
+	player->Update(deltaTime);
+	GUIHandler::SetPlayerPos(player->GetPlayerPos());
+
+	for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
+	{
+		if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
+		{
+			std::cout << i << std::endl;
 		}
 	}
 

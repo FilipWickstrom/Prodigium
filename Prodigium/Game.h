@@ -19,6 +19,7 @@ private:
 	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
+	bool isPaused;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();

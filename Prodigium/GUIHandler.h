@@ -11,8 +11,13 @@
 class GUIHandler
 {
 private:
+	GUIHandler();
+	virtual ~GUIHandler();
+
+	static GUIHandler* instance;
+
 	ImGuiIO io;
-	bool trap1Active, trap2Active;
+	bool trap1Active, trap2Active, isPaused, shouldQuit;
 	int imageWidth, imageHeight;
 	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
@@ -22,17 +27,19 @@ private:
 	void CreateDebugGUI();
 	void CreateTrapGUI();
 	void CreateBrainGUI();
+	void CreatePauseMenu();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:
-	GUIHandler();
-	virtual ~GUIHandler();
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
-	void Initialize(const HWND& window);
-	void Render();
-	void Shutdown();
-	void ChangeActiveTrap();
-	void setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
-
+	static const bool Initialize(const HWND& window);
+	static void Render();
+	static void Shutdown();
+	static void ChangeActiveTrap();
+	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
+	static void PauseGame();
+	static void ResumeGame();
+	static const bool ShouldQuit();
+	static void MouseClicked();
 	// Returns the trap1Active bool.
-	const bool ActiveTrap() const;
+	static const bool ActiveTrap() const;
 };

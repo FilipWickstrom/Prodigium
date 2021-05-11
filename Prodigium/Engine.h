@@ -31,7 +31,6 @@ private:
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
-	DirectX::SimpleMath::Vector3 playerPos;
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
@@ -50,5 +49,4 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
-	void SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos);
 };

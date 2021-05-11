@@ -1,26 +1,29 @@
 #include "GUIHandler.h"
 using namespace ImGui;
+GUIHandler* GUIHandler::instance = nullptr;
 
 GUIHandler::GUIHandler()
 {
-	this->io = {};
-    this->trap1Active = false;
-    this->trap2Active = false;
-    this->imageWidth = 0;
-    this->imageHeight = 0;
-    this->playerPos = {};
+	io = {};
+    trap1Active = false;
+    trap2Active = false;
+    isPaused = false;
+    shouldQuit = false;
+    imageWidth = 0;
+    imageHeight = 0;
+    playerPos = {};
 
-    this->textureTrap1 = nullptr;
-    this->textureTrap2 = nullptr;
-    this->textureBrain = nullptr;
-    this->textureOutline = nullptr;
+    textureTrap1 = nullptr;
+    textureTrap2 = nullptr;
+    textureBrain = nullptr;
+    textureOutline = nullptr;
 }
 GUIHandler::~GUIHandler()
 {
     textureTrap1->Release();
     textureTrap2->Release();
     textureBrain->Release();
-    textureOutline->Release();
+    textureOutline->Release();  
 }
 
 void SetUpGUIStyle()
@@ -50,9 +53,9 @@ void SetUpGUIStyle()
     style.Colors[ImGuiCol_CheckMark]                                = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_SliderGrab]                               = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_SliderGrabActive]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.6f);
+    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(1.f, 1.f, 1.f, 0.5f);
+    style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(1.f, 1.f, 1.f, 1.f);
     style.Colors[ImGuiCol_Header]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_HeaderHovered]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_HeaderActive]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -66,40 +69,52 @@ void SetUpGUIStyle()
     style.Colors[ImGuiCol_TextSelectedBg]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
 }
 
-void GUIHandler::Initialize(const HWND& window)
+const bool GUIHandler::Initialize(const HWND& window)
 {
-	CreateContext();
-	io = GetIO();
+    if (!GUIHandler::instance)
+    {
+        GUIHandler::instance = new GUIHandler;
+        CreateContext();
+        GUIHandler::instance->io = GetIO();
+        
 
+        ImGui_ImplDX11_Init(Graphics::GetDevice(), Graphics::GetContext());
+        ImGui_ImplWin32_Init(window);
+        SetUpGUIStyle();
 
-	ImGui_ImplDX11_Init(Graphics::GetDevice() , Graphics::GetContext());
-	ImGui_ImplWin32_Init(window);
-    SetUpGUIStyle();
-
-    bool ret = LoadTextureFromFile("Textures/StopMoving.png", &textureTrap1, &imageWidth, &imageHeight);
-    IM_ASSERT(ret);
-    ret = LoadTextureFromFile("Textures/SlowMoving.png", &textureTrap2, &imageWidth, &imageHeight);
-    IM_ASSERT(ret);
-    ret = LoadTextureFromFile("Textures/Brain.png", &textureBrain, &imageWidth, &imageHeight);
-    IM_ASSERT(ret);
-    ret = LoadTextureFromFile("Textures/Outline.png", &textureOutline, &imageWidth, &imageHeight);
-    IM_ASSERT(ret);
-
+        bool ret = GUIHandler::instance->LoadTextureFromFile("Textures/StopMoving.png", &GUIHandler::instance->textureTrap1, &GUIHandler::instance->imageWidth, &GUIHandler::instance->imageHeight);
+        IM_ASSERT(ret);
+        ret = GUIHandler::instance->LoadTextureFromFile("Textures/SlowMoving.png", &GUIHandler::instance->textureTrap2, &GUIHandler::instance->imageWidth, &GUIHandler::instance->imageHeight);
+        IM_ASSERT(ret);
+        ret = GUIHandler::instance->LoadTextureFromFile("Textures/Brain.png", &GUIHandler::instance->textureBrain, &GUIHandler::instance->imageWidth, &GUIHandler::instance->imageHeight);
+        IM_ASSERT(ret);
+        ret = GUIHandler::instance->LoadTextureFromFile("Textures/Outline.png", &GUIHandler::instance->textureOutline, &GUIHandler::instance->imageWidth, &GUIHandler::instance->imageHeight);
+        IM_ASSERT(ret);
+    }
+    else
+    {
+        std::cerr << "GUIHandler already Initialized\n";
+    }
+    
+    return true;
 }
 
 void GUIHandler::Render()
 {
+  
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
 //#ifdef _DEBUG
-    CreateDebugGUI();
+    GUIHandler::instance->CreateDebugGUI();
 //#endif // _DEBUG
 
 	
-    CreateTrapGUI();
+    GUIHandler::instance->CreateTrapGUI();
     //CreateBrainGUI();
+    if(GUIHandler::instance->isPaused)
+        GUIHandler::instance->CreatePauseMenu();
 
 	EndFrame();
 	ImGui::Render();
@@ -111,27 +126,46 @@ void GUIHandler::Shutdown()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	DestroyContext();
+    if (GUIHandler::instance)
+    {
+        delete GUIHandler::instance;
+    }
 }
 
 void GUIHandler::ChangeActiveTrap()
 {
-    if (this->trap1Active)
+    if (GUIHandler::instance->trap1Active)
     {
-        this->trap1Active = false;
-        this->trap2Active = true;
+        GUIHandler::instance->trap1Active = false;
+        GUIHandler::instance->trap2Active = true;
     }
-    else if (this->trap2Active)
+    else if (GUIHandler::instance->trap2Active)
     {
-        this->trap2Active = false;
-        this->trap1Active = true;
+        GUIHandler::instance->trap2Active = false;
+        GUIHandler::instance->trap1Active = true;
     }
-    else if (!this->trap1Active && !this->trap2Active)
-        this->trap1Active = true;
+    else if (!GUIHandler::instance->trap1Active && !GUIHandler::instance->trap2Active)
+        GUIHandler::instance->trap1Active = true;
 }
 
-void GUIHandler::setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
+void GUIHandler::SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
 {
-    this->playerPos = playerPos;
+    GUIHandler::instance->playerPos = playerPos;
+}
+
+void GUIHandler::PauseGame()
+{
+    GUIHandler::instance->isPaused = true;
+}
+
+void GUIHandler::ResumeGame()
+{
+    GUIHandler::instance->isPaused = false;
+}
+
+const bool GUIHandler::ShouldQuit()
+{
+    return GUIHandler::instance->shouldQuit;
 }
 
 const bool GUIHandler::ActiveTrap() const
@@ -198,6 +232,38 @@ void GUIHandler::CreateBrainGUI()
     Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight));
     End();
+    delete isActive;
+}
+
+void GUIHandler::CreatePauseMenu()
+{
+
+    SetNextWindowSize(ImVec2(1920, 1080));
+    SetNextWindowPos(ImVec2(0, 0));
+    SetNextWindowBgAlpha(0.5);
+    bool* isActive = new bool;
+
+    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
+
+        SetNextWindowPos(ImVec2(500, 250));
+        Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        if(Button("Resume", ImVec2(250, 50)))
+        {
+            ResumeGame();
+        }
+        End();
+
+        SetNextWindowPos(ImVec2(500, 325));
+        Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        if(Button("Quit", ImVec2(250, 50)))
+        {
+            GUIHandler::instance->shouldQuit = true;
+            std::cout << "QUIT! /n";
+        }
+        End();
+
+    End();
+
     delete isActive;
 }
 
