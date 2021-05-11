@@ -63,16 +63,13 @@ bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, c
 		return false;
 	}
 
-	buffDesc.ByteWidth = sizeof(this->eyePosGPU);
+	buffDesc.ByteWidth = sizeof(LightPassCameraBuffer);
 	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
 
-	this->eyePosGPU = Vector4(this->eyePos.x, this->eyePos.y, this->eyePos.z, 0.0f);
 
-	data.pSysMem = &eyePosGPU;
-
-	hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, &data, &camPosBuffer);
+	hr = Graphics::GetDevice()->CreateBuffer(&buffDesc, nullptr, &camPosBuffer);
 
 	if (FAILED(hr))
 	{
@@ -116,9 +113,16 @@ void CameraObject::Update()
 	memcpy(mappedResource.pData, &viewProjMatrix, sizeof(viewProjMatrix));
 	Graphics::GetContext()->Unmap(matrixBuffer, 0);
 
+
+	LightPassCameraBuffer camBuffer;
 	this->eyePosGPU = Vector4(this->eyePos.x, this->eyePos.y, this->eyePos.z, 0.0f);
+	camBuffer.cameraPos = eyePosGPU;
+	camBuffer.viewMatrix = viewProjMatrix.viewMatrix;
+	camBuffer.fogColour = { 0.6f,0.6f,0.6f,0.f };
+	camBuffer.fogStart = 10.f;
+	camBuffer.fogRange = 200;
 	Graphics::GetContext()->Map(camPosBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, &this->eyePosGPU, sizeof(this->eyePosGPU));
+	memcpy(mappedResource.pData, &camBuffer, sizeof(camBuffer));
 	Graphics::GetContext()->Unmap(camPosBuffer, 0);
 
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);

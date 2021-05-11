@@ -101,8 +101,9 @@ void Engine::Render()
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
 
-	//TODO: Add Fog Pass
+	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 
+	this->sceneHandler.RenderParticles();
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -117,7 +118,6 @@ void Engine::Render()
 #endif
 
 	// Particle pass
-	this->sceneHandler.RenderParticles();
 
 	//Render the skybox on the places where there is no objects visible from depthstencil
 	this->skyboxPass.Prepare();

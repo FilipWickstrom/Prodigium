@@ -35,7 +35,12 @@ struct Matrix
 	DirectX::SimpleMath::Matrix view;
 	DirectX::SimpleMath::Matrix projection;
 };
-
+struct fogBuffer
+{
+	float fogStart;
+	float fogEnd;
+	float padding1, padding2;
+};
 /*
 	Compact version of the 'Matrix' struct.
 	Contains one element that can be used as world, view and projection in one matrix.
