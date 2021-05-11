@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics.h"
 #include <SimpleMath.h>
+#include "imgui.h"
 class MainMenu
 {
 private:

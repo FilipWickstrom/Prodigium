@@ -157,13 +157,30 @@ bool Game::OnFrame(const float& deltaTime)
 
 	if (this->zoomIn)
 		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
-
+	else
+	{
+		// Doesn't show any text.
+		/*
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+		ImGui::Begin("MENU");
+		ImGui::SetNextWindowPos(ImVec2(100.0f, 100.0f));
+		ImGui::SetNextWindowSize(ImVec2(250, 250), 0);
+		ImGui::Text("Press 'Space' to start game.");
+		ImGui::End();
+		ImGui::EndFrame();
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		*/
+	}
 	if (this->inGoal)
 	{
 		this->zoomIn = false;
 		this->menu.Switch();
 	}
 
+	// If inside meny, update with menu buffers.
 	if (!this->inGoal)
 		this->menu.Update();
 
@@ -178,6 +195,7 @@ bool Game::OnFrame(const float& deltaTime)
 		this->LoadMainMenu();
 	}
 
+	// Return to player buffers.
 	if (this->hasLoaded)
 	{
 		player->Update(deltaTime);
