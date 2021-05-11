@@ -129,7 +129,7 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	Graphics::BindBackBuffer();
-	this->guiHandler.setPlayerPos(this->playerPos);
+	this->guiHandler.SetPlayerPos(this->playerPos);
 	this->guiHandler.Render();
 
 	Graphics::GetSwapChain()->Present(0, 0);
@@ -150,6 +150,11 @@ void Engine::ChangeActiveTrap()
 void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
 {
 	this->playerPos = PlayerPos;
+}
+
+void Engine::PauseGame()
+{
+	this->guiHandler.PauseGame();
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)

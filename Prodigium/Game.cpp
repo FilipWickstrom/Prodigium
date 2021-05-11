@@ -7,6 +7,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	:Engine(instance, windowWidth, windowHeight)
 {
 	this->running = true;
+	this->isPaused = false;
 	this->player = nullptr;
 }
 
@@ -30,7 +31,8 @@ void Game::HandleInput(const float& deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 	//Updates the keyboard and mouse with new info about their current state.
-	InputHandler::UpdateKeyboardAndMouse();
+	if(!this->isPaused)
+		InputHandler::UpdateKeyboardAndMouse();
 
 	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
@@ -109,6 +111,11 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 		Engine::ChangeActiveTrap();
+	}
+	if (InputHandler::IsKeyPressed(Keyboard::P))
+	{
+		Engine::PauseGame();
+		this->isPaused = true;
 	}
 	if (InputHandler::IsKeyPressed(Keyboard::T))
 	{

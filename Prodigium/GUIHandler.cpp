@@ -6,6 +6,7 @@ GUIHandler::GUIHandler()
 	this->io = {};
     this->trap1Active = false;
     this->trap2Active = false;
+    this->isPaused = false;
     this->imageWidth = 0;
     this->imageHeight = 0;
     this->playerPos = {};
@@ -50,9 +51,9 @@ void SetUpGUIStyle()
     style.Colors[ImGuiCol_CheckMark]                                = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_SliderGrab]                               = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_SliderGrabActive]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.6f);
+    style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(1.f, 1.f, 1.f, 1.f);
     style.Colors[ImGuiCol_Header]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_HeaderHovered]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_HeaderActive]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -70,6 +71,8 @@ void GUIHandler::Initialize(const HWND& window)
 {
 	CreateContext();
 	io = GetIO();
+    io.WantCaptureKeyboard = true;
+    io.WantCaptureMouse = true;
 
 
 	ImGui_ImplDX11_Init(Graphics::GetDevice() , Graphics::GetContext());
@@ -100,6 +103,8 @@ void GUIHandler::Render()
 	
     CreateTrapGUI();
     //CreateBrainGUI();
+    if(this->isPaused)
+        CreatePauseMenu();
 
 	EndFrame();
 	ImGui::Render();
@@ -129,9 +134,19 @@ void GUIHandler::ChangeActiveTrap()
         this->trap1Active = true;
 }
 
-void GUIHandler::setPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
+void GUIHandler::SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
 {
     this->playerPos = playerPos;
+}
+
+void GUIHandler::PauseGame()
+{
+    this->isPaused = true;
+}
+
+void GUIHandler::ResumeGame()
+{
+    this->isPaused = false;
 }
 
 void GUIHandler::CreateDebugGUI()
@@ -193,6 +208,38 @@ void GUIHandler::CreateBrainGUI()
     Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight));
     End();
+    delete isActive;
+}
+
+void GUIHandler::CreatePauseMenu()
+{
+    SetCursorPos(ImVec2(500, 250));
+
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() + 50, (float)Graphics::GetWindowHeight() + 50));
+    SetNextWindowPos(ImVec2(0, 0));
+    SetNextWindowBgAlpha(0.5);
+    bool* isActive = new bool;
+
+    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
+
+    SetNextWindowPos(ImVec2(500, 250));
+    Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+    if (Button("Resume", ImVec2(250, 50)))
+    {
+        ResumeGame();
+    }
+    End();
+
+    SetNextWindowPos(ImVec2(500, 325));
+    Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+    if (Button("Quit", ImVec2(250, 50)))
+    {
+        //QuitGame
+    }
+    End();
+
+    End();
+
     delete isActive;
 }
 
