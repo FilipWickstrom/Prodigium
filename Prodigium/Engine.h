@@ -13,6 +13,7 @@
 #include "CameraObject.h"
 #include "GUIHandler.h"
 #include "DebugInfo.h"
+#include "BlurFilter.h"
 
 class Engine
 {
@@ -21,12 +22,14 @@ private:
 	GeometryPass gPass;
 	LightPass lightPass;
 	SkyboxPass skyboxPass;
+	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	GUIHandler guiHandler;
 	DirectX::SimpleMath::Vector3 playerPos;
-	MeshObject testMeshObj;		//DELETE LATER***
-	//MeshObject testMeshObj2;	//DELETE LATER***
+
+	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();

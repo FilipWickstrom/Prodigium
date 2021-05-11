@@ -1,4 +1,3 @@
-
 cbuffer CameraViewProj : register(b0)
 {
     float4x4 view;
@@ -25,8 +24,7 @@ struct VertexShaderOutput
     float2 texCoord : TEXCOORD;
     float3 normalWS : NORMAL;
 };
-static const float density = 0.007f;
-static const float gradient = 2.5f;
+
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
@@ -41,5 +39,5 @@ VertexShaderOutput main(VertexShaderInput input)
 
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
 
-    return output;
+	return output;
 }

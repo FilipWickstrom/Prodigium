@@ -22,6 +22,8 @@ private:
 	// points to the current selected light.
 	int currentLight;
 
+	bool menuMode;
+
 	/*
 		For rendering lights
 	*/
@@ -113,4 +115,6 @@ public:
 
 	// render the particles inside the scene.
 	void RenderParticles();
+
+	void SwitchMenuMode(bool sw = true);
 };
