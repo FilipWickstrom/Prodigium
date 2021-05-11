@@ -25,7 +25,6 @@ Engine::~Engine()
 	DebugInfo::Destroy();
 #endif
 	Graphics::Destroy();
-	//this->guiHandler.Shutdown();
 	GUIHandler::Shutdown();
 }
 
@@ -130,8 +129,6 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	Graphics::BindBackBuffer();
-	//this->guiHandler.SetPlayerPos(this->playerPos);
-	//this->guiHandler.Render();
 	GUIHandler::SetPlayerPos(this->playerPos);
 	GUIHandler::Render();
 
@@ -146,7 +143,6 @@ void Engine::OpenConsole()
 
 void Engine::ChangeActiveTrap()
 {
-	//guiHandler.ChangeActiveTrap();
 	GUIHandler::ChangeActiveTrap();
 	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
@@ -158,7 +154,6 @@ void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
 
 void Engine::PauseGame()
 {
-	//this->guiHandler.PauseGame();
 	GUIHandler::PauseGame();
 }
 
@@ -202,7 +197,6 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	//this->guiHandler.Initialize(window.GetWindowHandler());
 	if (!GUIHandler::Initialize(window.GetWindowHandler()))
 	{
 		return false;
