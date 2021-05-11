@@ -9,7 +9,7 @@ Player::Player()
 	cameraForward.Normalize();
 	this->speed = 10.f;
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Albedo.png");
+	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Albedo.png", "Char_Normal.jpg");
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };

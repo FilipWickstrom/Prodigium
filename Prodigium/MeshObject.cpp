@@ -73,9 +73,29 @@ void MeshObject::SetColliders()
 	this->collidersOriginal = this->mesh->collidersOriginal;
 }
 
+bool MeshObject::SetUpNormalMapBuffer()
+{
+	HRESULT hr;
+
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = sizeof(DirectX::SimpleMath::Vector4);
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	Vector4 isMapped = { 2.0f, 1.0f, 1.0f, 1.0f };
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = &isMapped;
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->hasNormalMapBuffer);
+
+	return !FAILED(hr);
+}
+
 MeshObject::MeshObject()
 {
 	this->mesh = nullptr;
+	this->hasNormalMapBuffer = nullptr;
 
 	for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
 	{
@@ -101,6 +121,8 @@ MeshObject::~MeshObject()
 	}
 	this->boundingBoxBuffer.clear();
 #endif
+	if (this->hasNormalMapBuffer)
+		this->hasNormalMapBuffer->Release();
 }
 
 bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, bool hasBounds, Vector3 pos, Vector3 rot, Vector3 scl)
@@ -135,6 +157,7 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 	//Load in the normal map
 	if (normalTxt != "")
 	{
+		normalTxt = "Textures/" + normalTxt;
 		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalTxt);
 		if (normTexture == nullptr)
 		{
@@ -144,6 +167,11 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		if (!BindTextureToSRV(normTexture, this->shaderResourceViews[1]))
 		{
 			std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
+			return false;
+		}
+		if (!this->SetUpNormalMapBuffer())
+		{
+			std::cout << "Failed to setup 'has normal map' buffer.\n";
 			return false;
 		}
 	}
@@ -189,6 +217,14 @@ void MeshObject::Render()
 {
 	//Set this objects modelmatrix
 	Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+
+	if (this->hasNormalMapBuffer)
+		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
+	else
+	{
+		ID3D11Buffer* nullMap = nullptr;
+		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &nullMap);
+	}
 
 	//Set all the textures to the geometry pass pixelshader
 	for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)

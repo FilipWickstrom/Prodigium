@@ -89,8 +89,8 @@ bool Mesh::LoadFile(std::string filename)
 		aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
 		aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
 		aiProcess_FlipWindingOrder |          //Makes it clockwise order
-		aiProcess_MakeLeftHanded);            //Use a lefthanded system for the models                                                                             
-		//aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
+		aiProcess_MakeLeftHanded          //Use a lefthanded system for the models                                                                             
+		| aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
 
 	//Check if it was possible to load file
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -115,6 +115,7 @@ bool Mesh::LoadFile(std::string filename)
 			temp.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 			temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 			temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+			temp.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
 			vertices.push_back(temp);
 
 			min.x = std::min(min.x, temp.position.x);

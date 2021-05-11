@@ -23,10 +23,12 @@ private:
 
 	bool isPickUp;
 	bool isVisible;
+	ID3D11Buffer* hasNormalMapBuffer;
 
 private:
 	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
 	void SetColliders();
+	bool SetUpNormalMapBuffer();
 #ifdef _DEBUG
 	bool CreateColliderBuffers();
 #endif
