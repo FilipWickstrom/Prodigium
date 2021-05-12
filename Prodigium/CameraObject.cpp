@@ -118,7 +118,7 @@ void CameraObject::Update()
 	this->eyePosGPU = Vector4(this->eyePos.x, this->eyePos.y, this->eyePos.z, 0.0f);
 	camBuffer.cameraPos = eyePosGPU;
 	camBuffer.viewMatrix = viewProjMatrix.viewMatrix;
-	camBuffer.fogColour = { 0.6f,0.6f,0.6f,0.f };
+	camBuffer.fogColour = { 0.2f,0.2f,0.2f,0.f };
 	camBuffer.fogStart = 10.f;
 	camBuffer.fogRange = 200;
 	Graphics::GetContext()->Map(camPosBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

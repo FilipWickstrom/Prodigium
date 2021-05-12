@@ -4,9 +4,13 @@ cbuffer camViewProj : register(b0)
     matrix proj;
 }
 
-cbuffer camera : register(b1)
+cbuffer Camera : register(b1)
 {
+    float4x4 viewMatrix;
     float4 camPos;
+    float4 fogColour;
+    float fogStart;
+    float fogRange;
 }
 
 struct VertexOut
@@ -28,7 +32,7 @@ void main(point VertexOut input[1], uint primID : SV_PrimitiveID,
     float3 toCamera = camPos.xyz - position.xyz;
     
     // Exclude particles that are too far away from the player.
-    if (length(toCamera) > 500.0f)
+    if (length(toCamera) > 300.0f)
         return;
     
     // Exclude particles too close to the camera.
