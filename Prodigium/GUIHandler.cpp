@@ -9,6 +9,9 @@ GUIHandler::GUIHandler()
     trap2Active = false;
     isPaused = false;
     shouldQuit = false;
+    shouldResume = false;
+    showMainMenu = false;
+    showGameGUI = false;
     imageWidth = 0;
     imageHeight = 0;
     playerPos = {};
@@ -26,14 +29,57 @@ GUIHandler::~GUIHandler()
     textureOutline->Release();  
 }
 
-void SetUpGUIStyle()
+void SetUpGUIStyleDEBUG()
+{
+    ImGuiStyle& style = GetStyle();
+
+
+    style.Alpha = 1.0f;
+    style.FrameRounding = 0;
+    style.Colors[ImGuiCol_Text] = ImVec4(0.f, 1.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.f, 0.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 1.f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Button] = ImVec4(0.f, 0.f, 0.f, 0.6f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.f, 1.f, 1.f, 0.5f);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_Header] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotLines] = ImVec4(0.f, 0.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+}
+
+void SetUpGUIStyleGame()
 {
 	ImGuiStyle& style = GetStyle();
 	
 
 	style.Alpha = 1.0f;
 	style.FrameRounding = 0;
-    style.Colors[ImGuiCol_Text]                                     = ImVec4(0.f, 1.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_Text]                                     = ImVec4(0.6f, 0.6f, 0.6f, 1.f);
     style.Colors[ImGuiCol_TextDisabled]                             = ImVec4(0.f, 0.f, 0.f, 1.f);
     style.Colors[ImGuiCol_WindowBg]                                 = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_PopupBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -69,6 +115,49 @@ void SetUpGUIStyle()
     style.Colors[ImGuiCol_TextSelectedBg]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
 }
 
+void SetUpGUIStyleMainMenu()
+{
+    ImGuiStyle& style = GetStyle();
+
+
+    style.Alpha = 1.0f;
+    style.FrameRounding = 0;
+    style.Colors[ImGuiCol_Text] = ImVec4(0.6f, 0.6f, 1.0f, 1.f);
+    style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.f, 0.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Border] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBg] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 1.f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_Button] = ImVec4(0.f, 0.f, 0.f, 0.6f);
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.f, 1.f, 1.f, 0.5f);
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_Header] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotLines] = ImVec4(0.f, 0.f, 0.f, 1.f);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
+}
+
 const bool GUIHandler::Initialize(const HWND& window)
 {
     if (!GUIHandler::instance)
@@ -76,11 +165,9 @@ const bool GUIHandler::Initialize(const HWND& window)
         GUIHandler::instance = new GUIHandler;
         CreateContext();
         GUIHandler::instance->io = GetIO();
-        
 
         ImGui_ImplDX11_Init(Graphics::GetDevice(), Graphics::GetContext());
         ImGui_ImplWin32_Init(window);
-        SetUpGUIStyle();
 
         bool ret = GUIHandler::instance->LoadTextureFromFile("Textures/StopMoving.png", &GUIHandler::instance->textureTrap1, &GUIHandler::instance->imageWidth, &GUIHandler::instance->imageHeight);
         IM_ASSERT(ret);
@@ -101,20 +188,41 @@ const bool GUIHandler::Initialize(const HWND& window)
 
 void GUIHandler::Render()
 {
-  
+    if (GUIHandler::instance->isPaused)
+    {
+        GetIO().WantCaptureMouse = true;
+        GetIO().WantCaptureKeyboard = true;
+        GetIO().MouseDrawCursor = true;
+    }
+    else
+    {
+        GetIO().WantCaptureMouse = false;
+        GetIO().WantCaptureKeyboard = false;
+        GetIO().MouseDrawCursor = false;
+    }
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-//#ifdef _DEBUG
-    GUIHandler::instance->CreateDebugGUI();
-//#endif // _DEBUG
+#ifdef _DEBUG
+    SetUpGUIStyleDEBUG();
+    GUIHandler::instance->RenderDebugGUI();
+#endif  _DEBUG
 
-	
-    GUIHandler::instance->CreateTrapGUI();
-    //CreateBrainGUI();
-    if(GUIHandler::instance->isPaused)
-        GUIHandler::instance->CreatePauseMenu();
+    if (GUIHandler::instance->showMainMenu)
+    {
+        SetUpGUIStyleMainMenu();
+        GUIHandler::instance->RenderMainMenu();
+    }
+    if (GUIHandler::instance->showGameGUI)
+    {
+        SetUpGUIStyleGame();
+        GUIHandler::instance->RenderTrapGUI();
+        //GUIHandler::instance->RenderBrainGUI();
+        if (GUIHandler::instance->isPaused)
+            GUIHandler::instance->RenderPauseMenu();
+    }
+    
 
 	EndFrame();
 	ImGui::Render();
@@ -156,11 +264,18 @@ void GUIHandler::SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
 void GUIHandler::PauseGame()
 {
     GUIHandler::instance->isPaused = true;
+    GUIHandler::instance->shouldResume = false;
 }
 
 void GUIHandler::ResumeGame()
 {
     GUIHandler::instance->isPaused = false;
+    GUIHandler::instance->shouldResume = true;
+}
+
+const bool GUIHandler::ShouldResume()
+{
+    return GUIHandler::instance->shouldResume;
 }
 
 const bool GUIHandler::ShouldQuit()
@@ -168,12 +283,22 @@ const bool GUIHandler::ShouldQuit()
     return GUIHandler::instance->shouldQuit;
 }
 
+void GUIHandler::ShowMainMenu(const bool& show)
+{
+    GUIHandler::instance->showMainMenu = show;
+}
+
+void GUIHandler::ShowGameGUI(const bool& show)
+{
+    GUIHandler::instance->showGameGUI = show;
+}
+
 const bool GUIHandler::ActiveTrap()
 {
     return GUIHandler::instance->trap1Active;
 }
 
-void GUIHandler::CreateDebugGUI()
+void GUIHandler::RenderDebugGUI()
 {
     SetNextWindowPos(ImVec2(0, -25));
     SetNextWindowSize(ImVec2(250, 250), 0);
@@ -184,7 +309,7 @@ void GUIHandler::CreateDebugGUI()
 	End();
 }
 
-void GUIHandler::CreateTrapGUI()
+void GUIHandler::RenderTrapGUI()
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
@@ -223,7 +348,7 @@ void GUIHandler::CreateTrapGUI()
     delete trap2;
 }
 
-void GUIHandler::CreateBrainGUI()
+void GUIHandler::RenderBrainGUI()
 {
     bool* isActive = new bool;
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
@@ -235,9 +360,9 @@ void GUIHandler::CreateBrainGUI()
     delete isActive;
 }
 
-void GUIHandler::CreatePauseMenu()
+void GUIHandler::RenderPauseMenu()
 {
-
+    
     SetNextWindowSize(ImVec2(1920, 1080));
     SetNextWindowPos(ImVec2(0, 0));
     SetNextWindowBgAlpha(0.5);
@@ -257,14 +382,30 @@ void GUIHandler::CreatePauseMenu()
         Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
         if(Button("Quit", ImVec2(250, 50)))
         {
-            GUIHandler::instance->shouldQuit = true;
-            std::cout << "QUIT! /n";
+            QuitGame();
         }
         End();
 
     End();
 
     delete isActive;
+}
+
+void GUIHandler::RenderMainMenu()
+{
+    bool* isActive = new bool;
+    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 100, (float)Graphics::GetWindowHeight() - 100));
+    SetNextWindowSize(ImVec2(500, 500), 0);
+    Begin("MENU", isActive, ImGuiWindowFlags_NoTitleBar);
+    Text("Press 'Space' to start game.");
+    Text("Press 'ESC' to quit game.");
+    End();
+    delete isActive;
+}
+
+void GUIHandler::QuitGame()
+{
+    GUIHandler::instance->shouldQuit = true;
 }
 
 bool GUIHandler::LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int *out_width, int *out_height)
