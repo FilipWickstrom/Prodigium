@@ -193,7 +193,7 @@ void Game::LoadMap()
 	////Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, -50.0f });
 	//SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { -5.0f, -7.0f, -50.0f });
-	//SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	//SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	//SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
 	//SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "", true, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });

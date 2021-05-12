@@ -62,7 +62,7 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
 
 	this->RotatePlayer();
-	//this->playerModel->UpdateBoundingBoxes();
+	this->playerModel->UpdateBoundingBoxes();
 	this->playerModel->UpdateMatrix();
 }
 
@@ -93,14 +93,6 @@ MeshObject* Player::GetMeshObject() const
 
 bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
 {
-	Vector3 pos = this->playerModel->GetPosition();
-	Vector3 rotation = this->playerModel->GetRotation();
-	Vector3 scale = this->playerModel->GetScale();
-	pos += (this->playerModel->forward * direction.x * deltaTime * speed);
-	pos += (this->playerModel->right * direction.y * deltaTime * speed);
-	Matrix transform = Matrix::CreateScale(scale) * Matrix::CreateFromYawPitchRoll(rotation.y, rotation.x, rotation.z) * Matrix::CreateTranslation(pos);
-	this->playerModel->UpdateBoundingBoxes(transform);
-
 	bool isCollided = false;
 
 	for (int i = 1; i < (int)objects.size() && !isCollided; i++)
@@ -109,35 +101,45 @@ bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vecto
 		{
 			if (this->playerModel->colliders[0].boundingBox.Intersects(objects[i]->colliders[j].boundingBox))
 			{
-				Vector3 u = objects[i]->position - this->playerModel->position;
+				Vector3 u = this->playerModel->position - objects[i]->position;
 
-				float currentDistance = FLT_MAX;
+				float lastDistance = FLT_MAX;
 				int index = 0;
+				Vector3 halfLengths = objects[i]->colliders[j].boundingBox.Extents;
 				for (int k = 0; k < 4; k++)
 				{
 					Vector3 n = objects[i]->colliders[j].planes[k].normal;
 					float dot = u.Dot(n);
- 
-					Vector3 projectionOnPlane = dot * n;
+					float currentDistance = 0.0f;
 
-					float distance = projectionOnPlane.z - objects[i]->colliders[j].boundingBox.Extents.z;
-
-					if (distance < currentDistance)
+					if (dot < 0.0000f)
 					{
-						currentDistance = distance;
-						index = k;
+						continue;
+					}
+					float projectedLength = (dot * n).Length();
+
+					if (k == 0 || k == 1)
+					{
+						currentDistance = projectedLength - halfLengths.z;
+					}
+					else
+					{
+						currentDistance = projectedLength - halfLengths.x;
 					}
 
+					if (currentDistance < lastDistance && currentDistance > 0.000f)
+					{
+						index = k;
+						lastDistance = currentDistance;
+					}
 				}
 
-				std::cout << index << std::endl;
-
 				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
+
 				isCollided = true;
 			}
 		}
 	}
-	this->playerModel->UpdateBoundingBoxes();
 
 	return isCollided;
 }

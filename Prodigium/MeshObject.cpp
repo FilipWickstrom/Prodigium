@@ -93,6 +93,7 @@ void MeshObject::SetColliders()
 		this->colliders[i].planes[2].point = corners[4];
 		this->colliders[i].planes[2].normal.Normalize();
 
+
 		// Left side plane
 		this->colliders[i].planes[3].normal = this->colliders[i].planes[2].normal * -1.f;
 		this->colliders[i].planes[3].point = corners[5];
