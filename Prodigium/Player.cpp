@@ -109,23 +109,29 @@ bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vecto
 		{
 			if (this->playerModel->colliders[0].boundingBox.Intersects(objects[i]->colliders[j].boundingBox))
 			{
-				Vector3 playerToObject = objects[i]->position - this->playerModel->position;
-				playerToObject.Normalize();
+				Vector3 u = objects[i]->position - this->playerModel->position;
 
-				float currentDot = 99.f;
+				float currentDistance = FLT_MAX;
 				int index = 0;
 				for (int k = 0; k < 4; k++)
 				{
-					//Vector3 playerToObject = objects[i]->colliders[j].planes[k].point - this->playerModel->position;
-					//playerToObject.Normalize();
-					float dot = playerToObject.Dot(objects[i]->colliders[j].planes[k].normal);
-					if (dot < currentDot)
+					Vector3 n = objects[i]->colliders[j].planes[k].normal;
+					float dot = u.Dot(n);
+ 
+					Vector3 projectionOnPlane = dot * n;
+
+					float distance = projectionOnPlane.z - objects[i]->colliders[j].boundingBox.Extents.z;
+
+					if (distance < currentDistance)
 					{
+						currentDistance = distance;
 						index = k;
-						currentDot = dot;
 					}
+
 				}
-				std::cout << objects[i]->colliders[j].planes[index].normal.x << " " << objects[i]->colliders[j].planes[index].normal.z << std::endl;
+
+				std::cout << index << std::endl;
+
 				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
 				isCollided = true;
 			}

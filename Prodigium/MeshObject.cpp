@@ -89,14 +89,31 @@ void MeshObject::SetColliders()
 		this->colliders[i].planes[1].normal.Normalize();
 
 		// Right side plane
-		this->colliders[i].planes[2].normal = Vector3(Vector3(corners[7] - corners[4])).Cross(Vector3(corners[0] - corners[4]));
-		this->colliders[i].planes[0].point = corners[4];
+		this->colliders[i].planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+		this->colliders[i].planes[2].point = corners[4];
 		this->colliders[i].planes[2].normal.Normalize();
 
 		// Left side plane
 		this->colliders[i].planes[3].normal = this->colliders[i].planes[2].normal * -1.f;
-		this->colliders[i].planes[0].point = corners[5];
+		this->colliders[i].planes[3].point = corners[5];
 		this->colliders[i].planes[3].normal.Normalize();
+
+		//// Top side plane
+		//this->colliders[i].planes[4].normal = Vector3(Vector3(corners[7] - corners[6])).Cross(Vector3(corners[2] - corners[6]));
+		//this->colliders[i].planes[4].point = corners[7];
+		//this->colliders[i].planes[4].normal.Normalize();
+
+		//// Bottom side plane
+		//this->colliders[i].planes[5].normal = this->colliders[i].planes[4].normal * -1.f;
+		//this->colliders[i].planes[5].point = corners[4];
+		//this->colliders[i].planes[5].normal.Normalize();
+
+		//std::cout << "Front: " << this->colliders[i].planes[0].normal.x << " " << this->colliders[i].planes[0].normal.y << " " << this->colliders[i].planes[0].normal.z << std::endl;
+		//std::cout << "Back: " << this->colliders[i].planes[1].normal.x << " " << this->colliders[i].planes[1].normal.y << " " << this->colliders[i].planes[1].normal.z << std::endl;
+		//std::cout << "Right: " << this->colliders[i].planes[2].normal.x << " " << this->colliders[i].planes[2].normal.y << " " << this->colliders[i].planes[2].normal.z << std::endl;
+		//std::cout << "Left: " << this->colliders[i].planes[3].normal.x << " " << this->colliders[i].planes[3].normal.y << " " << this->colliders[i].planes[3].normal.z << std::endl;
+		//std::cout << "Top: " << this->colliders[i].planes[4].normal.x << " " << this->colliders[i].planes[4].normal.y << " " << this->colliders[i].planes[4].normal.z << std::endl;
+		//std::cout << "Bottom: " << this->colliders[i].planes[5].normal.x << " " << this->colliders[i].planes[5].normal.y << " " << this->colliders[i].planes[5].normal.z << std::endl;
 	}
 }
 
