@@ -9,9 +9,6 @@ cbuffer buffer : register(b0)
     float4 speed;
 }
 
-// Only need to know speed.
-// Send factor through constant buffer
-
 [numthreads(1024, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
