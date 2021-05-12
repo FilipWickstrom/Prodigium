@@ -5,7 +5,7 @@ GUIHandler* GUIHandler::instance = nullptr;
 GUIHandler::GUIHandler()
 {
 	io = {};
-    trap1Active = false;
+    trap1Active = true;
     trap2Active = false;
     isPaused = false;
     shouldQuit = false;

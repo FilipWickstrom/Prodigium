@@ -5,5 +5,5 @@ struct VertexOut
 
 float4 main() : SV_TARGET
 {
-	return float4(0.075f, 0.075f, 0.5f, 0.075f);
+	return float4(0.075f, 0.075f, 0.7f, 0.075f);
 }
