@@ -33,8 +33,8 @@ bool AnimatedObject::CreateInputLayout()
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 5, this->vShaderByteCode.c_str(), 
@@ -89,8 +89,18 @@ bool AnimatedObject::LoadBoneTree(Bone& currentBone, aiNode* node, std::unordere
 		//Take the node first, then later children
 		currentBone.name = node->mName.C_Str();
 		currentBone.id = tempMap[currentBone.name].first;
-		currentBone.bindMatrix = tempMap[currentBone.name].second;
-		
+		currentBone.inverseBind = tempMap[currentBone.name].second;
+		currentBone.transform = Matrix(&node->mTransformation.a1);
+		currentBone.parentTransform = Matrix(&node->mParent->mTransformation.a1);
+	
+		/*std::cout << "Currentbone transform for: " << currentBone.name << std::endl;
+		Matrix mat = currentBone.transform;
+		std::cout << mat._11 << " " << mat._12 << " " << mat._13 << " " << mat._14 << std::endl;
+		std::cout << mat._21 << " " << mat._22 << " " << mat._23 << " " << mat._24 << std::endl;
+		std::cout << mat._31 << " " << mat._32 << " " << mat._33 << " " << mat._34 << std::endl;
+		std::cout << mat._41 << " " << mat._42 << " " << mat._43 << " " << mat._44 << std::endl;
+		std::cout << std::endl;*/
+
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			Bone child;
@@ -117,6 +127,8 @@ bool AnimatedObject::LoadBoneTree(Bone& currentBone, aiNode* node, std::unordere
 bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 {
 	Assimp::Importer importer;
+	//Max 4 bones can affect a vertex
+	importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
 	const aiScene* scene = importer.ReadFile("Models/" + riggedModelFile,
 											aiProcess_Triangulate |               //Triangulate every surface
 											aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
@@ -127,6 +139,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
+		importer.FreeScene();
 		return false;
 	}
 
@@ -161,7 +174,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 			aiBone* bone = mesh->mBones[i];
 
 			//Load the temp bonemap with index (same as ID) and matrices 
-			tempBoneMap[bone->mName.C_Str()] = { i, Matrix(&bone->mOffsetMatrix.a1) };
+			tempBoneMap[bone->mName.C_Str()] = { i, Matrix(&bone->mOffsetMatrix.a1)};
 			this->boneMap[bone->mName.C_Str()] = i;
 
 			//Goes through all the vertices that the bone affect
@@ -171,24 +184,28 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 				float weight = bone->mWeights[v].mWeight;
 
 				//Increase number of bones for this vertex
-				boneCounts[id]++;	
+				boneCounts[id]++;
 				switch (boneCounts[id])
 				{
 				case 1:
-					vertices[id].boneIDs.x = (float)i;
+					vertices[id].boneIDs.x = i;
 					vertices[id].boneWeights.x = weight;
 					break;
 				case 2:
-					vertices[id].boneIDs.y = (float)i;
+					vertices[id].boneIDs.y = i;
 					vertices[id].boneWeights.y = weight;
 					break;
 				case 3:
-					vertices[id].boneIDs.z = (float)i;
+					vertices[id].boneIDs.z = i;
 					vertices[id].boneWeights.z = weight;
+					break;
+				case 4:
+					vertices[id].boneIDs.w = i;
+					vertices[id].boneWeights.w = weight;
 					break;
 				default:
 					//Ignore adding id or weight as it
-					//already has 3 bones connected
+					//already has 4 bones connected
 					break;
 				}
 			}
@@ -197,13 +214,13 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 		//Normalize the weights
 		for (size_t i = 0; i < vertices.size(); i++)
 		{
-			Vector3 weights = vertices[i].boneWeights;
+			Vector4 weights = vertices[i].boneWeights;
 			//Total weight
-			float total = weights.x + weights.y + weights.z;
+			float total = weights.x + weights.y + weights.z + weights.w;
 			//Avoid devide by 0
 			if (total > 0.0f)
 			{
-				vertices[i].boneWeights = { weights.x / total, weights.y / total, weights.z / total };
+				vertices[i].boneWeights = { weights.x / total, weights.y / total, weights.z / total, weights.w / total };
 			}
 		}
 
@@ -229,6 +246,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 		if (!CreateVertIndBuffers(vertices, indices, this->indexCount))
 		{
 			std::cout << "Failed to create vertex or indexbuffer..." << std::endl;
+			importer.FreeScene();
 			return false;
 		}
 
@@ -239,74 +257,18 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	else
 	{
 		std::cout << "Only supports one mesh at this time..." << std::endl;
+		importer.FreeScene();
 		return false;
 	}
 
-	return true;
-}
-
-bool AnimatedObject::LoadAnimation(std::string animationFile)
-{
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile("Models/" + animationFile, 0);
-
-	if (!scene || !scene->mRootNode)
-	{
-		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-		return false;
-	}
-
-	if (!scene->HasAnimations())
-	{
-		std::cout << "The file " << animationFile << " does not have any animations..." << std::endl;
-		return false;
-	}
-	std::cout << "Animations: " << scene->mNumAnimations << std::endl;
-
-	//Load in the each "pose" for every frame
-	
-	//Going through the whole tree
-	//Loop
-		//if (i == currentNode->mNumChild && currentNode->mChild[i] == nullptr)
-		//	currentNode = currentNode->parent;
-		//
-	
-	/*aiNode* rootNode = scene->mRootNode->mChildren[0];
-	std::cout << "Root has: " << scene->mRootNode->mNumChildren << " and name is: " << scene->mRootNode->mName.C_Str() << std::endl;
-	std::cout << "First child of root has: " << scene->mRootNode->mChildren[0]->mNumChildren
-			<< " and name is: " << scene->mRootNode->mChildren[0]->mName.C_Str() << std::endl;
-	std::cout << "Second child of root has: " << scene->mRootNode->mChildren[1]->mNumChildren 
-			<< " and name is: " << scene->mRootNode->mChildren[1]->mName.C_Str() << std::endl;*/
+	//REMOVE???	
+	//this->globalTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
+	//this->globalTransformation = Matrix(&scene->mRootNode->mChildren[1]->mTransformation.a1);
+	this->globalInverseTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
+	this->globalInverseTransformation = this->globalInverseTransformation.Invert();
 
 
-	//aiMatrix4x4 test = scene->mRootNode->mChildren[0]->mTransformation;		//Same as root transform
-	//std::cout << "Matrix" << std::endl;
-	//std::cout << test.a1 << " " << test.a2 << " " << test.a3 << " " << test.a4 << std::endl;
-	//std::cout << test.b1 << " " << test.b2 << " " << test.b3 << " " << test.b4 << std::endl;
-	//std::cout << test.c1 << " " << test.c2 << " " << test.c3 << " " << test.c4 << std::endl;
-	//std::cout << test.d1 << " " << test.d2 << " " << test.d3 << " " << test.d4 << std::endl;
-
-
-	//std::vector<Matrix> invTransBindPose;
-
-	/*for (int i = 0; i < scene->mRootNode->mNumChildren; i++)
-	{
-		std::cout << "Child " << i << ": " << scene->mRootNode->mChildren[i]->mNumChildren << std::endl;
-		
-		aiMatrix4x4 test = scene->mRootNode->mChildren[i]->mTransformation;
-		std::cout << "Matrix" << std::endl;
-		std::cout << test.a1 << " " << test.a2 << " " << test.a3 << " " << test.a4 << std::endl;
-		std::cout << test.b1 << " " << test.b2 << " " << test.b3 << " " << test.b4 << std::endl;
-		std::cout << test.c1 << " " << test.c2 << " " << test.c3 << " " << test.c4 << std::endl;
-		std::cout << test.d1 << " " << test.d2 << " " << test.d3 << " " << test.d4 << std::endl;
-	}*/
-	
-
-	/*std::cout << "\nSome animation information" << std::endl;
-	std::cout << "Duraction: " << scene->mAnimations[0]->mDuration << std::endl;					//299
-	std::cout << "Ticks per second: " << scene->mAnimations[0]->mTicksPerSecond << std::endl;		//30
-	std::cout << "Channels: " << scene->mAnimations[0]->mNumChannels << std::endl;*/				//20
-
+	importer.FreeScene();
 	return true;
 }
 
@@ -362,31 +324,78 @@ bool AnimatedObject::LoadTextures(std::string diffuse, std::string normalMap)
 	return true;
 }
 
-void AnimatedObject::SetupInvBindMatrices(Bone& currentBone, std::vector<DirectX::SimpleMath::Matrix>& invBindMatrices)
+void AnimatedObject::PerFrame(Bone& currentBone, UINT parentID)
 {
-	invBindMatrices[currentBone.id] = currentBone.bindMatrix.Invert();
-	for (size_t i = 0; i < currentBone.children.size(); i++)
-	{
-		SetupInvBindMatrices(currentBone.children[i], invBindMatrices);
-	}
-}
+	//NOT WORKING CORRECTLY...
+	Matrix animMatrix = Matrix::Identity;
 
-void AnimatedObject::TestLoop(Bone& currentBone, Bone& parentBone, std::vector<DirectX::SimpleMath::Matrix>& matrices)
-{
+	//Bone is in the local space. Has a new location
+	this->animation1.GetModelMatrixTest(30, currentBone.name, animMatrix);
+	UINT id = currentBone.id;
+
+	Matrix localMatrix = currentBone.transform * animMatrix;
+	//Matrix localMatrix = animMatrix;
+
+	//Root
 	if (currentBone.name == this->rootBone.name)
 	{
-		matrices[currentBone.id] = Matrix::Identity * currentBone.bindMatrix.Invert().Transpose();
+		this->modelMatrices[id] = localMatrix;
 	}
 	else
 	{
-		matrices[currentBone.id] = currentBone.bindMatrix.Invert().Transpose() * matrices[parentBone.id];
+		this->modelMatrices[id] = this->modelMatrices[parentID] * localMatrix;
 	}
+
+	//Move from bonespace to worldspace
+	this->finalMatrices[id] = this->modelMatrices[id] * currentBone.inverseBind;
 
 	for (size_t i = 0; i < currentBone.children.size(); i++)
 	{
-		TestLoop(currentBone.children[i], currentBone, matrices);
+		PerFrame(currentBone.children[i], currentBone.id);
 	}
 }
+
+void AnimatedObject::TPoser(Bone& currentBone)
+{
+	this->finalMatrices[currentBone.id] = currentBone.transform;		//currentBone.inverseBind.Invert();
+
+	for (size_t i = 0; i < currentBone.children.size(); i++)
+	{
+		TPoser(currentBone.children[i]);
+	}
+}
+
+void AnimatedObject::GlobalTesting(Bone& currentBone, UINT parentID)
+{
+	Matrix animMatrix = Matrix::Identity;
+	Matrix localMatrix;
+	//Bone is in the local space. Has a new location
+	if (this->animation1.GetModelMatrixTest(100, currentBone.name, animMatrix))
+		localMatrix = animMatrix;
+	else
+		localMatrix = currentBone.transform;
+
+	UINT id = currentBone.id;
+
+	//Root
+	if (parentID == -1)
+	{
+		this->modelMatrices[id] = localMatrix;
+	}
+	else
+	{
+		this->modelMatrices[id] = this->modelMatrices[parentID] * localMatrix;
+	}
+
+	this->finalMatrices[id] = this->modelMatrices[id] * currentBone.inverseBind;
+
+	for (size_t i = 0; i < currentBone.children.size(); i++)
+	{
+		GlobalTesting(currentBone.children[i], currentBone.id);
+	}
+
+}
+
 
 AnimatedObject::AnimatedObject()
 {
@@ -451,22 +460,25 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 	}
 
 
-	//
-	this->finalMatrices.resize(MAXBONES, DirectX::SimpleMath::Matrix(Matrix::Identity));
-	Bone test;
-	TestLoop(this->rootBone, test, this->finalMatrices);
+	//Setup all the inverted matrices from the saved data from ASSIMP
+	/*this->invertedBindMatrix.resize(MAXBONES, DirectX::SimpleMath::Matrix::Identity);
+	SetupInvertedBindMatrices(this->rootBone);*/
 
-	this->invBindMatrix.resize(MAXBONES, DirectX::SimpleMath::Matrix(Matrix::Identity));
-	SetupInvBindMatrices(this->rootBone, this->invBindMatrix);
-
-	for (int i = 0; i < MAXBONES; i++)
+	//LoadAnimation and add to the array
+	/*if (!LoadAnimation("Player/PlayerIdleWithSkin.fbx"))
 	{
-		std::cout << "ID: " << i << std::endl;
-		std::cout << finalMatrices[i]._11 << " " << finalMatrices[i]._12 << " " << finalMatrices[i]._13 << " " << finalMatrices[i]._14 << std::endl;
-		std::cout << finalMatrices[i]._21 << " " << finalMatrices[i]._22 << " " << finalMatrices[i]._23 << " " << finalMatrices[i]._24 << std::endl;
-		std::cout << finalMatrices[i]._31 << " " << finalMatrices[i]._32 << " " << finalMatrices[i]._33 << " " << finalMatrices[i]._34 << std::endl;
-		std::cout << finalMatrices[i]._41 << " " << finalMatrices[i]._42 << " " << finalMatrices[i]._43 << " " << finalMatrices[i]._44 << std::endl;
-	}
+		std::cout << "Failed to load animation" << std::endl;
+		return false;
+	}*/
+
+	this->animation1.Load("Player/PlayerIdleWithSkin.fbx");
+
+	//Testing to use the matrices from ASSIMP but inverted
+	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
+	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
+	//PerFrame(this->rootBone, 0);
+	//TPoser(this->rootBone);
+	GlobalTesting(this->rootBone, -1);
 
 	//Load cbuffer
 	if (!CreateBonesCBuffer())
@@ -475,12 +487,6 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 		return false;
 	}
 
-
-	/*if (!LoadAnimation("Player/PlayerIdleWithSkin.fbx"))
-	{
-		std::cout << "Failed to load animation" << std::endl;
-		return false;
-	}*/
 
 	return true;
 }

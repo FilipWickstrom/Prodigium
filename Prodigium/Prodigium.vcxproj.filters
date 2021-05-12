@@ -43,6 +43,9 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
+    <FxCompile Include="AnimationVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -135,6 +138,12 @@
     </ClCompile>
     <ClCompile Include="BlurFilter.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedObject.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +243,12 @@
     <ClInclude Include="BlurFilter.h">
       <Filter>Engine\Graphics\Techniques</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedObject.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -309,6 +324,12 @@
     </Filter>
     <Filter Include="Engine\Graphics\Shaders\BlurFilter">
       <UniqueIdentifier>{1df4d83f-2a72-44bc-9ee1-5706e04bb33c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Objects\Animation">
+      <UniqueIdentifier>{781d1be2-2b99-403d-a963-ec6a425c8096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Animation">
+      <UniqueIdentifier>{767ed6fb-adb2-4ab2-a34d-412b3289cfff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

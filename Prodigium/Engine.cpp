@@ -5,17 +5,15 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 
+	#ifdef _DEBUG
+		OpenConsole();
+	#endif 
+
 	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
 	}
-
-	#ifdef _DEBUG
-		OpenConsole();
-	#endif 
-
-
 }
 
 Engine::~Engine()
@@ -157,6 +155,8 @@ void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
+
+
 	if (!InputHandler::Initialize())
 	{
 		return false;

@@ -1,17 +1,19 @@
 #pragma once
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+//#include <assimp/Importer.hpp>
+//#include <assimp/postprocess.h>
+//#include <assimp/scene.h>
 
-#include <vector>
+//#include <vector>
 #include <fstream>
 #include <unordered_map>
 
 #include "GameObject.h"
-#include "UsefulStructuresHeader.h"
+//#include "UsefulStructuresHeader.h"
 #include "ResourceManager.h"
 
-const UINT MAXBONES = 25;
+#include "Animation.h"
+
+const UINT MAXBONES = 40;
 const UINT MAXTEXTURES = 2;
 
 /*
@@ -42,35 +44,32 @@ private:
 		UINT id = -1;
 		std::string name = "";
 		//Bonespace to mesh-space in bindpose (T-pose) - Inverse bind matrix
-		DirectX::SimpleMath::Matrix bindMatrix;
+		DirectX::SimpleMath::Matrix inverseBind = {};
+		DirectX::SimpleMath::Matrix transform = {};		//Transformation relative to parent. Is in final world space
+		DirectX::SimpleMath::Matrix parentTransform = {};		//REMOVE???
 		std::vector<Bone> children = {};
 	} rootBone;	//Hips in this case
 
 	//Name of the bone refers to which ID it has. Can be used to search up in vectors later?
 	std::unordered_map<std::string, UINT> boneMap;
-	std::vector<DirectX::SimpleMath::Matrix> invBindMatrix;
-
+	
+	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;
 
-	
 	//Bones
 	//std::vector<UINT>parentArray;
-	//std::vector<DirectX::SimpleMath::Matrix> inverseBindPoses;	//Does not change - how they are relative to each other from start
 	//std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//Changes dynamic - current model transforms
 	//std::vector<DirectX::SimpleMath::Matrix> localMatrices;		//Changes dynamic - current local transforms	//relative to parent
 	//std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Also dynamic - final version that gets uploaded to GPU. Need or not???
-
-	//game objects modelMatrix is roots matrix
-	//Vector of animations
-		//animation
-
-	//current frame
-	//max frames
 
 	/*enum allAnimations:
 		idle
 		walk
 		run */
+
+	//Vector of animation
+	Animation animation1;
+	DirectX::SimpleMath::Matrix globalInverseTransformation;//REMOVE LATER!!!***
 
 private:
 	//Basic parts to be able to render vertices
@@ -86,14 +85,13 @@ private:
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string riggedModelFile);
 
-	//Load in a animation
-	bool LoadAnimation(std::string animationFile);
-
 	bool CreateBonesCBuffer();
 	bool LoadTextures(std::string diffuse, std::string normalMap = "");
-
-	void SetupInvBindMatrices(Bone& currentBone, std::vector<DirectX::SimpleMath::Matrix>& invBindMatrices);
-	void TestLoop(Bone& currentBone, Bone& parentBone, std::vector<DirectX::SimpleMath::Matrix>& matrices);
+	
+	//TESTING***
+	void PerFrame(Bone& currentBone, UINT parentID);
+	void TPoser(Bone& currentBone);
+	void GlobalTesting(Bone& currentBone, UINT parentID);
 
 public:
 	AnimatedObject();

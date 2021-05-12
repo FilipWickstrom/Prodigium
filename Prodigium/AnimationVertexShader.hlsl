@@ -1,4 +1,4 @@
-#define MAXNROFBONES 25
+#define MAXNROFBONES 40
 
 cbuffer CameraViewProj : register(b0)
 {
@@ -17,8 +17,8 @@ struct VertexShaderInput
     float2 texCoord     : TEXCOORD;
     float3 normal       : NORMAL;
     //add tangent later for normalmap
-    float3 boneIDs      : BONEIDS;     //Make uint 
-    float3 boneWeights  : BONEWEIGHTS;
+    uint4 boneIDs       : BONEIDS;
+    float4 boneWeights  : BONEWEIGHTS;
 };
 
 struct VertexShaderOutput
@@ -33,28 +33,25 @@ struct VertexShaderOutput
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
-    float4x4 viewproj = mul(view, projection);
     
-    //Calculate the model-matrix for this vertex
-    float4x4 bonesMatrices[3];
- 
-    for (int i = 0; i < 3; i++)
+    //Calculating the model/world-matrix for this vertex
+    //depending on the bones weights. Each vertex can be 
+    //affected by a maximum of 4  
+    float4x4 world = 0.0f;
+    for (int i = 0; i < 4; i++)
     {
-        if ((uint)input.boneIDs[i] < MAXNROFBONES)
-        {
-            bonesMatrices[i] = bonesTransforms[(uint)input.boneIDs[i]] * input.boneWeights[i];   
-        }
+        world += bonesTransforms[input.boneIDs[i]] * input.boneWeights[i];
     }
-    float4x4 world = bonesMatrices[0] * bonesMatrices[1] * bonesMatrices[2];
     
-    float4x4 wvp = mul(viewproj, world);
-    output.positionCS = mul(float4(input.position, 1.0f), wvp);
+    float4x4 WVP = mul(mul(world, view), projection);
+    
+    output.positionCS = mul(float4(input.position, 1.0f), WVP);
     
     output.positionWS = mul(float4(input.position, 1.0f), world);
     
-    output.normalWS = mul(input.normal, (float3x3) world);
+    output.normalWS = normalize(mul(input.normal, (float3x3) world));
       
     output.texCoord = input.texCoord;
-    
+      
 	return output;
 }
