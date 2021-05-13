@@ -129,13 +129,13 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap())
 			{
-				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
+				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 			}
 			else
 			{
-				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", true,
+				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 			}
@@ -332,7 +332,7 @@ void Game::LoadMap()
 	// Test pickups but its static lol
 	float randX = (float)(rand() % 200 - rand() % 200);
 	float randZ = (float)(rand() % 200- rand() % 200);
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", true, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { randX, 0.0f, randZ, 5.0f };
@@ -340,7 +340,7 @@ void Game::LoadMap()
 
 	randX = (float)(rand() % 200 - rand() % 200);
 	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", true, { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { randX, 0.0f, randZ, 5.0f };
@@ -351,7 +351,7 @@ void Game::LoadMap()
 
 	randX = (float)(rand() % 200 - rand() % 200);
 	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", true, { randX, -3.0f, randZ });
+	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, { randX, -3.0f, randZ });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { randX, 0.0f, randZ, 5.0f };
