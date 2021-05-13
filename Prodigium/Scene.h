@@ -87,6 +87,8 @@ public:
 	// return the object at index
 	MeshObject& GetMeshObject(int index);
 
+	const std::vector<MeshObject*>& GetAllMeshObjects();
+
 	ShadowHandler& GetShadows();
 
 	ParticleSystem& GetParticles();

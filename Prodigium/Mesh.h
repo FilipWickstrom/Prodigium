@@ -12,6 +12,17 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+struct Collider
+{
+	struct Plane
+	{
+		DirectX::SimpleMath::Vector3 point;
+		DirectX::SimpleMath::Vector3 normal;
+	};
+	Plane planes[4];
+	DirectX::BoundingOrientedBox boundingBox;
+};
+
 class Mesh : public Resource
 {
 private:
@@ -28,9 +39,9 @@ public:
 	Mesh();
 	~Mesh();
 
-	std::vector<DirectX::BoundingOrientedBox> collidersOriginal;
-	std::vector<DirectX::BoundingOrientedBox> colliders;
+	std::vector<Collider> collidersOriginal;
+	std::vector<Collider> colliders;
+
 	bool LoadFile(std::string filename);
 	void Render();
-	void RemoveColliders();
 };
