@@ -1,4 +1,6 @@
 #include "InputHandler.h"
+#include "imgui_impl_win32.h" //TESTING
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 InputHandler* InputHandler::instance = nullptr;
 InputHandler::InputHandler()
 {
@@ -124,6 +126,11 @@ void InputHandler::HandleMessages()
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+	{
+		return true;
+	}
 	// Sort through and find what code to run for the message given
 	switch (message)
 	{

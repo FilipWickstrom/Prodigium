@@ -60,9 +60,11 @@ void Game::HandleInput(const float& deltaTime)
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
 	}
 
-	if (this->hasLoaded)
+	if (this->hasLoaded && !this->isPaused)
 	{
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
@@ -159,6 +161,11 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
+		if (InputHandler::IsKeyPressed(Keyboard::P))
+		{
+			GUIHandler::PauseGame();
+			this->isPaused = true;
+		}
 	}
 }
 
@@ -172,23 +179,14 @@ bool Game::OnFrame(const float& deltaTime)
 	HandleInput(deltaTime);
 
 	if (this->zoomIn)
+	{
 		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+		GUIHandler::ShowMainMenu(false);
+	}
 	else
 	{
-		// Doesn't show any text.
-		/*
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		ImGui::Begin("MENU");
-		ImGui::SetNextWindowPos(ImVec2(100.0f, 100.0f));
-		ImGui::SetNextWindowSize(ImVec2(250, 250), 0);
-		ImGui::Text("Press 'Space' to start game.");
-		ImGui::End();
-		ImGui::EndFrame();
-		ImGui::Render();
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		*/
+		//Ritar ut Main Menu GUI på skärmen
+		GUIHandler::ShowMainMenu(true);
 	}
 	if (this->inGoal)
 	{
@@ -204,6 +202,8 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		// Load game map
 		this->LoadMap();
+		
+		GUIHandler::ShowGameGUI(true);
 	}
 	if (this->menu.IsInMenu() && this->hasLoaded)
 	{
@@ -214,6 +214,8 @@ bool Game::OnFrame(const float& deltaTime)
 	// Return to player buffers.
 	if (this->hasLoaded)
 	{
+		GUIHandler::ShowMainMenu(false);
+		GUIHandler::ShowGameGUI(true);
 		player->Update(deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (player->CheckCollision(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime))
@@ -223,8 +225,12 @@ bool Game::OnFrame(const float& deltaTime)
 		player->Move(direction, deltaTime);
 	}
 	
-	
-
+	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldResume())
+		this->isPaused = false;
+	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldQuit())
+		this->running = false;
 
 	Engine::ClearDisplay();
 	Engine::Render();

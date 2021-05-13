@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #ifndef AI_SCENE_H_INC
 #define AI_SCENE_H_INC
-
+#pragma warning(push,0)
 #include "types.h"
 #include "texture.h"
 #include "mesh.h"
@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "material.h"
 #include "anim.h"
 #include "metadata.h"
-
+#pragma warning(pop)
 #ifdef __cplusplus
 #  include <cstdlib>
 extern "C" {

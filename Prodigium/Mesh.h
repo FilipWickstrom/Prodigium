@@ -8,6 +8,7 @@
 #include "Graphics.h"
 
 //Assimp
+#pragma warning(push, 0)
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -23,6 +24,7 @@ struct Collider
 	DirectX::BoundingOrientedBox boundingBox;
 };
 
+#pragma warning(pop)
 class Mesh : public Resource
 {
 private:
