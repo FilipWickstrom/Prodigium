@@ -229,14 +229,6 @@ void MeshObject::UpdateBoundingBoxes()
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
 		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, this->modelMatrix);
-		this->colliders[i].planes[0].normal = Vector3::TransformNormal(this->colliders[i].planes[0].normal, this->modelMatrix);
-		this->colliders[i].planes[0].normal.Normalize();
-		this->colliders[i].planes[1].normal = Vector3::TransformNormal(this->colliders[i].planes[1].normal, this->modelMatrix);
-		this->colliders[i].planes[1].normal.Normalize();
-		this->colliders[i].planes[2].normal = Vector3::TransformNormal(this->colliders[i].planes[2].normal, this->modelMatrix);
-		this->colliders[i].planes[2].normal.Normalize();
-		this->colliders[i].planes[3].normal = Vector3::TransformNormal(this->colliders[i].planes[3].normal, this->modelMatrix);
-		this->colliders[i].planes[3].normal.Normalize();
 #ifdef _DEBUG
 		colliders[i].boundingBox.GetCorners(corners);
 

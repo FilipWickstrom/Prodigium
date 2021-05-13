@@ -60,7 +60,6 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	// Direction.x / z is a binary switch to toggle the direction, 1 or -1
 	this->playerModel->position += this->playerModel->forward * speed * deltaTime * direction.x;
 	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
-
 	this->RotatePlayer();
 	this->playerModel->UpdateBoundingBoxes();
 	this->playerModel->UpdateMatrix();
