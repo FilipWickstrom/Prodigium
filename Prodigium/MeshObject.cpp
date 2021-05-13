@@ -19,7 +19,7 @@ bool MeshObject::CreateColliderBuffers()
 
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
-		this->colliders[i].GetCorners(corners);
+		this->colliders[i].boundingBox.GetCorners(corners);
 
 		allCorners.push_back(corners[1]);
 		allCorners.push_back(corners[0]);
@@ -73,6 +73,21 @@ void MeshObject::SetColliders()
 	this->collidersOriginal = this->mesh->collidersOriginal;
 }
 
+void MeshObject::UpdateBoundingPlanes()
+{
+	for (size_t i = 0; i < this->colliders.size(); i++)
+	{
+		this->colliders[i].planes[0].normal = Vector3::TransformNormal(this->colliders[i].planes[0].normal, this->modelMatrix);
+		this->colliders[i].planes[0].normal.Normalize();
+		this->colliders[i].planes[1].normal = Vector3::TransformNormal(this->colliders[i].planes[1].normal, this->modelMatrix);
+		this->colliders[i].planes[1].normal.Normalize();
+		this->colliders[i].planes[2].normal = Vector3::TransformNormal(this->colliders[i].planes[2].normal, this->modelMatrix);
+		this->colliders[i].planes[2].normal.Normalize();
+		this->colliders[i].planes[3].normal = Vector3::TransformNormal(this->colliders[i].planes[3].normal, this->modelMatrix);
+		this->colliders[i].planes[3].normal.Normalize();
+	}
+}
+
 bool MeshObject::SetUpNormalMapBuffer()
 {
 	HRESULT hr;
@@ -123,6 +138,9 @@ MeshObject::~MeshObject()
 #endif
 	if (this->hasNormalMapBuffer)
 		this->hasNormalMapBuffer->Release();
+
+	this->colliders.clear();
+	this->collidersOriginal.clear();
 }
 
 bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, bool hasBounds, Vector3 pos, Vector3 rot, Vector3 scl)
@@ -190,11 +208,11 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		this->CreateColliderBuffers();
 #endif
 		this->UpdateBoundingBoxes();
-
+		this->UpdateBoundingPlanes();
 	}
 	else
 	{
-		this->mesh->RemoveColliders();
+		this->RemoveColliders();
 	}
 
 	this->CreateModelMatrixBuffer();
@@ -246,10 +264,63 @@ void MeshObject::UpdateBoundingBoxes()
 
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
-		this->collidersOriginal[i].Transform(this->colliders[i], this->modelMatrix);
+		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, this->modelMatrix);
+		this->colliders[i].planes[0].normal = Vector3::TransformNormal(this->colliders[i].planes[0].normal, this->modelMatrix);
+		this->colliders[i].planes[0].normal.Normalize();
+		this->colliders[i].planes[1].normal = Vector3::TransformNormal(this->colliders[i].planes[1].normal, this->modelMatrix);
+		this->colliders[i].planes[1].normal.Normalize();
+		this->colliders[i].planes[2].normal = Vector3::TransformNormal(this->colliders[i].planes[2].normal, this->modelMatrix);
+		this->colliders[i].planes[2].normal.Normalize();
+		this->colliders[i].planes[3].normal = Vector3::TransformNormal(this->colliders[i].planes[3].normal, this->modelMatrix);
+		this->colliders[i].planes[3].normal.Normalize();
+#ifdef _DEBUG
+		colliders[i].boundingBox.GetCorners(corners);
+
+		allCorners.push_back(corners[1]);
+		allCorners.push_back(corners[0]);
+		allCorners.push_back(corners[3]);
+		allCorners.push_back(corners[2]);
+		allCorners.push_back(corners[1]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[2]);
+		allCorners.push_back(corners[3]);
+		allCorners.push_back(corners[7]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[7]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[0]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[7]);
+
+		Graphics::GetContext()->Map(this->boundingBoxBuffer[i], 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+		memcpy(subResource.pData, allCorners.data(), allCorners.size() * sizeof(DirectX::XMFLOAT3));
+		Graphics::GetContext()->Unmap(this->boundingBoxBuffer[i], 0);
+
+		allCorners.clear();
+#endif
+	}
+}
+
+void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
+{
+#ifdef _DEBUG
+	D3D11_MAPPED_SUBRESOURCE subResource = {};
+
+	std::vector<DirectX::XMFLOAT3> allCorners;
+	DirectX::XMFLOAT3 corners[8];
+#endif
+
+	for (size_t i = 0; i < this->colliders.size(); i++)
+	{
+		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, transform);
 
 #ifdef _DEBUG
-		colliders[i].GetCorners(corners);
+		colliders[i].boundingBox.GetCorners(corners);
 
 		allCorners.push_back(corners[1]);
 		allCorners.push_back(corners[0]);
@@ -296,3 +367,9 @@ void MeshObject::RenderBoundingBoxes()
 	}
 }
 #endif
+
+void MeshObject::RemoveColliders()
+{
+	this->colliders.clear();
+	this->collidersOriginal.clear();
+}

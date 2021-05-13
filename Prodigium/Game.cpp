@@ -4,6 +4,8 @@
 #include "ParticleSystem.h"
 #include "GUIHandler.h"
 
+DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -38,7 +40,7 @@ void Game::HandleInput(const float& deltaTime)
 	
 	InputHandler::UpdateKeyboardAndMouse();
 
-	DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
+	direction = { 0.f, 0.f };
 
 	//TODO: Make the engine cleanly shutdown
 	if (InputHandler::IsKeyPressed(Keyboard::Escape))
@@ -157,12 +159,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
-			this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
-		}
-
-		if (direction.Length() > 0.0f)
-		{
-			this->player->Move(direction, deltaTime);
+			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::P))
 		{
@@ -219,15 +216,13 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
-		player->Update(deltaTime);
-		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		for (int i = 1; i < SceneHandle()->EditScene().GetNumberOfObjects(); i++)
+		if (player->CheckCollision(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime))
 		{
-			if (player->CheckCollision(&SceneHandle()->EditScene().GetMeshObject(i)))
-			{
-				std::cout << i << std::endl;
-			}
+			direction = { 0.0f, 0.0f };
 		}
+		player->Move(direction, deltaTime);
+		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		player->Update(deltaTime);
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
@@ -427,7 +422,7 @@ void Game::LoadMap()
 			x = (float)(rand() % 1000 - rand() % 1000);
 			z = (float)(rand() % 1000 - rand() % 1000);
 		}
-		
+
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 

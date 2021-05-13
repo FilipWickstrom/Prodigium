@@ -231,6 +231,11 @@ MeshObject& Scene::GetMeshObject(int index)
 	return *this->objects[index];
 }
 
+const std::vector<MeshObject*>& Scene::GetAllMeshObjects()
+{
+	return this->objects;
+}
+
 ShadowHandler& Scene::GetShadows()
 {
 	return *this->shadowHandler;

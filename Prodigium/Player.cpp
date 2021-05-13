@@ -1,6 +1,24 @@
 #include "Player.h"
 using namespace DirectX::SimpleMath;
 
+void Player::RotatePlayer()
+{
+	Vector3 currentRotation = { 0.f, this->playerModel->rotation.y, 0.f };
+	Vector3 targetRotation = { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f };
+
+	// Not so elegant way of half-fixing the lerp issue
+	if ((currentRotation.y - targetRotation.y) > 4.5f)
+	{
+		currentRotation.y -= FULL_CIRCLE;
+	}
+	else if ((targetRotation.y - currentRotation.y) > 4.5f)
+	{
+		currentRotation.y += FULL_CIRCLE;
+	}
+
+	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
+}
+
 Player::Player()
 {
 	Vector3 position(0.0f, 0.0f, 0.f);
@@ -43,26 +61,12 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->position += this->playerModel->forward * speed * deltaTime * direction.x;
 	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
 
-	Vector3 currentRotation = { 0.f, this->playerModel->rotation.y, 0.f };
-	Vector3 targetRotation = { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f };
-
-	// Not so elegant way of half-fixing the lerp issue
-	if ((currentRotation.y - targetRotation.y) > 4.5f)
-	{
-		currentRotation.y -= FULL_CIRCLE;
-	}
-	else if ((targetRotation.y - currentRotation.y) > 4.5f)
-	{
-		currentRotation.y += FULL_CIRCLE;
-	}
-
-	this->playerModel->rotation.y = Vector3::Lerp(currentRotation, targetRotation, 0.1f).y;
-
-	this->playerModel->UpdateMatrix();
+	this->RotatePlayer();
 	this->playerModel->UpdateBoundingBoxes();
+	this->playerModel->UpdateMatrix();
 }
 
-void Player::Rotate(const float& pitch, const float& yaw)
+void Player::RotateCamera(const float& pitch, const float& yaw)
 {
 	this->playerCam.Rotate(pitch, yaw, 0.f);
 }
@@ -87,15 +91,54 @@ MeshObject* Player::GetMeshObject() const
 	return this->playerModel;
 }
 
-bool Player::CheckCollision(MeshObject* other)
+bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
 {
-	for (int i = 0; i < other->colliders.size(); i++)
+	bool isCollided = false;
+
+	for (int i = 1; i < (int)objects.size() && !isCollided; i++)
 	{
-		if (this->playerModel->colliders[0].Intersects(other->colliders[i]))
+		for (int j = 0; j < objects[i]->colliders.size(); j++)
 		{
-			return true;
+			if (this->playerModel->colliders[0].boundingBox.Intersects(objects[i]->colliders[j].boundingBox))
+			{
+				Vector3 u = this->playerModel->position - objects[i]->position;
+
+				float lastDistance = FLT_MAX;
+				int index = 0;
+				Vector3 halfLengths = objects[i]->colliders[j].boundingBox.Extents;
+				for (int k = 0; k < 4; k++)
+				{
+					Vector3 n = objects[i]->colliders[j].planes[k].normal;
+					float dot = u.Dot(n);
+					float currentDistance = 0.0f;
+
+					if (dot < 0.0000f)
+					{
+						continue;
+					}
+					float projectedLength = (dot * n).Length();
+
+					if (k == 0 || k == 1)
+					{
+						currentDistance = projectedLength - halfLengths.z;
+					}
+					else
+					{
+						currentDistance = projectedLength - halfLengths.x;
+					}
+
+					if (currentDistance < lastDistance && currentDistance > 0.000f)
+					{
+						index = k;
+						lastDistance = currentDistance;
+					}
+				}
+				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
+
+				isCollided = true;
+			}
 		}
 	}
 
-	return false;
+	return isCollided;
 }
