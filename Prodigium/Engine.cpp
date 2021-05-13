@@ -204,7 +204,8 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	}
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
-	if (!this->anime.Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png"))	//DELETE LATER***
+	//if (!this->anime.Initialize("Player/TBodyTesting.fbx", "puke_color.png"))	//DELETE LATER***
+	if (!this->anime.Initialize("Player/PlayerTest.fbx", "Char_Albedo.png"))
 	{
 		return false;
 	}

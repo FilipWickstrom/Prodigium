@@ -36,9 +36,9 @@ public:
 	Animation();
 	~Animation();
 
-	bool Load(std::string filename);
+	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap);
 
-	bool GetModelMatrixTest(unsigned int keyFrame, std::string boneName, DirectX::SimpleMath::Matrix& localMatrix);
+	bool GetAnimationMatrix(unsigned int keyFrame, std::string boneName, DirectX::SimpleMath::Matrix& animation);
 
 	//GetModelMatrices(time, std::string boneName)
 };

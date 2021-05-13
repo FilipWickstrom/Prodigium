@@ -76,7 +76,7 @@ private:
 	bool LoadVertexShader();
 	bool CreateInputLayout();
 	bool CreateVertIndBuffers(const std::vector<AnimationVertex>& vertices, 
-							  const std::vector<unsigned short>& indices, UINT nrOfIndices);
+							  const std::vector<UINT>& indices, UINT nrOfIndices);
 	
 	//Recursive function to make a bone tree from ASSIMP's nodes. Depth first search
 	bool LoadBoneTree(Bone& currentBone, aiNode* node, std::unordered_map<std::string,
@@ -91,7 +91,7 @@ private:
 	//TESTING***
 	void PerFrame(Bone& currentBone, UINT parentID);
 	void TPoser(Bone& currentBone);
-	void GlobalTesting(Bone& currentBone, UINT parentID);
+	void CalcFinalMatrix(Bone& currentBone, UINT parentID);
 
 public:
 	AnimatedObject();

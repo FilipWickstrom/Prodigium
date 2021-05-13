@@ -12,10 +12,13 @@ Animation::~Animation()
 {
 }
 
-bool Animation::Load(std::string filename)
+bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile("Models/" + filename, 0);
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false); //To remove $AssimpFBX...???***
+	const aiScene* scene = importer.ReadFile("Models/" + filename,
+											aiProcess_FlipWindingOrder |
+											aiProcess_MakeLeftHanded);
 
 	if (!scene || !scene->mRootNode)
 	{
@@ -38,7 +41,6 @@ bool Animation::Load(std::string filename)
 	this->duraction = animation->mDuration;
 	this->ticksPerSecond = animation->mTicksPerSecond;
 
-	std::cout << "Has channels: " << animation->mNumChannels << std::endl;
 	//NOT ALL GETS LOADED... ONLY 20/22 "mixamorig:LeftHand" & "mixamorig:RightHand" left...
 
 	//Go through all the channels with animations
@@ -55,36 +57,40 @@ bool Animation::Load(std::string filename)
 			boneName.erase(index);
 		}
 		
-		std::cout << "'" <<  boneName << "'" << std::endl;
-
-		aiVector3D position = {};
-		aiVector3D scale = {};
-		aiQuaternion rotation = {};
-		Translation bonesTranslations;
-
-		//Go through all the frames
-		for (unsigned int key = 0; key < (unsigned int)animation->mDuration; key++)
+		//Check if the bone exists in the map
+		if (boneMap.find(boneName) != boneMap.end())
 		{
-			//Update with new information - otherwise use the previous data
-			if (key < channel->mNumPositionKeys)
+			std::cout << "Added animation matrices for: " << boneName << std::endl;
+			
+			aiVector3D position = {};
+			aiVector3D scale = {};
+			aiQuaternion rotation = {};
+			Translation bonesTranslations;
+
+			//Go through all the frames
+			for (unsigned int key = 0; key < (unsigned int)animation->mDuration; key++)
 			{
-				position = channel->mPositionKeys[key].mValue;
-			}
-			if (key < channel->mNumRotationKeys)
-			{
-				rotation = channel->mRotationKeys[key].mValue;	//Normalize???
-			}
-			if (key < channel->mNumScalingKeys)
-			{
-				scale = channel->mScalingKeys[key].mValue;
+				//Update with new information - otherwise use the previous data
+				if (key < channel->mNumPositionKeys)
+				{
+					position = channel->mPositionKeys[key].mValue;
+				}
+				if (key < channel->mNumRotationKeys)
+				{
+					rotation = channel->mRotationKeys[key].mValue;	//Normalize???
+				}
+				if (key < channel->mNumScalingKeys)
+				{
+					scale = channel->mScalingKeys[key].mValue;
+				}
+
+				bonesTranslations.position.push_back(position);
+				bonesTranslations.rotation.push_back(rotation);
+				bonesTranslations.scale.push_back(scale);
 			}
 
-			bonesTranslations.position.push_back(position);
-			bonesTranslations.rotation.push_back(rotation);
-			bonesTranslations.scale.push_back(scale);
-		} 
-
-		this->translations[boneName] = bonesTranslations;
+			this->translations[boneName] = bonesTranslations;
+		}
 
 	}
 
@@ -92,16 +98,20 @@ bool Animation::Load(std::string filename)
 	return true;
 }
 
-bool Animation::GetModelMatrixTest(unsigned int keyFrame, std::string boneName, Matrix& localMatrix)
+bool Animation::GetAnimationMatrix(unsigned int keyFrame, std::string boneName, Matrix& animation)
 {
+	//Returns true if we got an animation matrix on that bone.
+	//Returns the matrix in paramater. 
+	//All positions, scale and rotation is absolute in that space
+	
 	//See if the bone exists in the unordered map
 	if (this->translations.find(boneName) != this->translations.end())
 	{
 		aiVector3D pos = this->translations[boneName].position[keyFrame];
 		aiVector3D scl = this->translations[boneName].scale[keyFrame];
-		aiQuaternion rot = this->translations[boneName].rotation[keyFrame];
+		aiQuaternion rot = this->translations[boneName].rotation[keyFrame].Normalize();
 		aiMatrix4x4 aiMat = aiMatrix4x4(scl, rot, pos);
-		localMatrix = Matrix(&aiMat.a1);
+		animation = Matrix(&aiMat.a1);
 		return true;
 	}
 	else

@@ -263,4 +263,6 @@ void Game::LoadMap()
 		
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
+
+	SceneHandle()->EditScene().Add("/Player/PlayerTest.fbx", "puke_color.png", "", false, {5, 0, 0});
 }

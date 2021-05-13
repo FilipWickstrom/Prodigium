@@ -43,7 +43,7 @@ bool AnimatedObject::CreateInputLayout()
 	return !FAILED(hr);
 }
 
-bool AnimatedObject::CreateVertIndBuffers(const std::vector<AnimationVertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices)
+bool AnimatedObject::CreateVertIndBuffers(const std::vector<AnimationVertex>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices)
 {
 	/*-----Vertexbuffer-----*/
 	D3D11_BUFFER_DESC desc = {};
@@ -68,7 +68,7 @@ bool AnimatedObject::CreateVertIndBuffers(const std::vector<AnimationVertex>& ve
 
 	/*-----Indexbuffer-----*/
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	desc.ByteWidth = sizeof(unsigned short) * nrOfIndices;
+	desc.ByteWidth = sizeof(UINT) * nrOfIndices;
 	data.pSysMem = &indices[0];
 
 	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->indexBuffer);
@@ -127,14 +127,17 @@ bool AnimatedObject::LoadBoneTree(Bone& currentBone, aiNode* node, std::unordere
 bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 {
 	Assimp::Importer importer;
-	//Max 4 bones can affect a vertex
-	importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
+
 	const aiScene* scene = importer.ReadFile("Models/" + riggedModelFile,
 											aiProcess_Triangulate |               //Triangulate every surface
 											aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
 											aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
 											aiProcess_FlipWindingOrder |          //Makes it clockwise order
-											aiProcess_MakeLeftHanded);			  //Use a lefthanded system for the models 
+											aiProcess_MakeLeftHanded |			  //Use a lefthanded system for the models 
+											aiProcess_LimitBoneWeights |		  //Limit to 4 weights per vertex
+											
+											//aiProcess_PreTransformVertices | Make everything good, but removes bones....
+											0);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -144,6 +147,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	}
 
 	//Only works with one mesh at this time
+	std::cout << "Scenes has: " << scene->mNumMeshes << std::endl;
 	if (scene->mNumMeshes == UINT(1))
 	{
 		const aiMesh* mesh = scene->mMeshes[0];
@@ -167,6 +171,8 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 
 		//Save down the bones temporarly
 		std::unordered_map < std::string, std::pair<UINT, Matrix>> tempBoneMap;
+
+		std::cout << "This animated object has: " << mesh->mNumBones << " bones" << std::endl;
 
 		//Goes through all bones
 		for (UINT i = 0; i < mesh->mNumBones; i++)
@@ -225,9 +231,9 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 		}
 
 		/*--------Loading all faces for the mesh---------*/
-		std::vector<unsigned short> indices;
-		indices.reserve((size_t)mesh->mNumFaces * 3);
-		this->indexCount = (unsigned int)(mesh->mNumFaces * 3);
+		std::vector<UINT> indices;
+		indices.reserve(size_t(mesh->mNumFaces * 3) );
+		this->indexCount = (UINT)(mesh->mNumFaces * 3);
 
 		//Loading in the indices
 		for (UINT i = 0; i < mesh->mNumFaces; i++)
@@ -264,8 +270,8 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	//REMOVE???	
 	//this->globalTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
 	//this->globalTransformation = Matrix(&scene->mRootNode->mChildren[1]->mTransformation.a1);
-	this->globalInverseTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
-	this->globalInverseTransformation = this->globalInverseTransformation.Invert();
+	//this->globalInverseTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
+	//this->globalInverseTransformation = this->globalInverseTransformation.Invert();
 
 
 	importer.FreeScene();
@@ -330,7 +336,7 @@ void AnimatedObject::PerFrame(Bone& currentBone, UINT parentID)
 	Matrix animMatrix = Matrix::Identity;
 
 	//Bone is in the local space. Has a new location
-	this->animation1.GetModelMatrixTest(30, currentBone.name, animMatrix);
+	this->animation1.GetAnimationMatrix(30, currentBone.name, animMatrix);
 	UINT id = currentBone.id;
 
 	Matrix localMatrix = currentBone.transform * animMatrix;
@@ -365,12 +371,12 @@ void AnimatedObject::TPoser(Bone& currentBone)
 	}
 }
 
-void AnimatedObject::GlobalTesting(Bone& currentBone, UINT parentID)
+void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
 {
 	Matrix animMatrix = Matrix::Identity;
 	Matrix localMatrix;
 	//Bone is in the local space. Has a new location
-	if (this->animation1.GetModelMatrixTest(100, currentBone.name, animMatrix))
+	if (this->animation1.GetAnimationMatrix(12, currentBone.name, animMatrix))
 		localMatrix = animMatrix;
 	else
 		localMatrix = currentBone.transform;
@@ -380,7 +386,7 @@ void AnimatedObject::GlobalTesting(Bone& currentBone, UINT parentID)
 	//Root
 	if (parentID == -1)
 	{
-		this->modelMatrices[id] = localMatrix;
+		this->modelMatrices[id] = this->globalInverseTransformation * localMatrix;
 	}
 	else
 	{
@@ -391,7 +397,7 @@ void AnimatedObject::GlobalTesting(Bone& currentBone, UINT parentID)
 
 	for (size_t i = 0; i < currentBone.children.size(); i++)
 	{
-		GlobalTesting(currentBone.children[i], currentBone.id);
+		CalcFinalMatrix(currentBone.children[i], currentBone.id);
 	}
 
 }
@@ -446,10 +452,9 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 		return false;
 	}
 
-	//SOME TESTING FOR NOW	
 	if (!LoadRiggedMesh(tposeFile))
 	{
-		std::cout << "Failed to load in the player with skeleton" << std::endl;
+		std::cout << "Failed to load in skeleton" << std::endl;
 		return false;
 	}
 
@@ -471,14 +476,14 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 		return false;
 	}*/
 
-	this->animation1.Load("Player/PlayerIdleWithSkin.fbx");
+	this->animation1.Load("Player/Running.fbx", this->boneMap);
 
 	//Testing to use the matrices from ASSIMP but inverted
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
 	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
 	//PerFrame(this->rootBone, 0);
 	//TPoser(this->rootBone);
-	GlobalTesting(this->rootBone, -1);
+	CalcFinalMatrix(this->rootBone, -1);
 
 	//Load cbuffer
 	if (!CreateBonesCBuffer())
@@ -508,7 +513,7 @@ void AnimatedObject::Render()	//deltatime
 	UINT stride = sizeof(AnimationVertex);
 	UINT offset = 0;
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	//Set textures to pixelshader
 	for (unsigned int i = 0; i < MAXTEXTURES; i++)
