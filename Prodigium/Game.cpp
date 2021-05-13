@@ -159,7 +159,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
-			this->player->Rotate(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
+			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::P))
 		{
@@ -216,13 +216,13 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
-		player->Update(deltaTime);
-		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (player->CheckCollision(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime))
 		{
 			direction = { 0.0f, 0.0f };
 		}
 		player->Move(direction, deltaTime);
+		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		player->Update(deltaTime);
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
