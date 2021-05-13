@@ -17,7 +17,7 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Update(const float& deltaTime);
+	void Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 	void Move(const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 	void RotateCamera(const float& pitch, const float& yaw);
 	void Sprint();

@@ -216,13 +216,8 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
-		if (player->CheckCollision(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime))
-		{
-			direction = { 0.0f, 0.0f };
-		}
-		player->Move(direction, deltaTime);
+		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		player->Update(deltaTime);
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false

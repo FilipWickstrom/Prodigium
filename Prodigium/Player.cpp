@@ -42,8 +42,17 @@ Player::~Player()
 {
 }
 
-void Player::Update(const float& deltaTime)
+void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
 {
+	if (this->CheckCollision(objects, direction, deltaTime))
+	{
+		direction = { 0.0f, 0.0f };
+	}
+	if (direction.Length() > 0.0f)
+	{
+		this->Move(direction, deltaTime);
+	}
+
 	DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateTranslation(this->playerModel->position);
 	this->playerCam.SetTransform(transform);
 	this->playerCam.Update();
@@ -62,8 +71,8 @@ void Player::Move(const Vector2& direction, const float& deltaTime)
 	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
 
 	this->RotatePlayer();
-	this->playerModel->UpdateBoundingBoxes();
 	this->playerModel->UpdateMatrix();
+	this->playerModel->UpdateBoundingBoxes();
 }
 
 void Player::RotateCamera(const float& pitch, const float& yaw)
@@ -134,6 +143,8 @@ bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vecto
 					}
 				}
 				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
+				this->playerModel->UpdateMatrix();
+				this->playerModel->UpdateBoundingBoxes();
 
 				isCollided = true;
 			}
