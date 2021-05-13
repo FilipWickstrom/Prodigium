@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include <iostream>
 
+using namespace DirectX::SimpleMath;
+
 bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices)
 {
 	/*-----Vertexbuffer-----*/
@@ -46,6 +48,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
 	Collider collider;
+	DirectX::XMFLOAT3 corners[8];
 
 	collider.boundingBox.Center.x = (max.x + min.x) / 2.f;
 	collider.boundingBox.Center.y = (max.y + min.y) / 2.f;
@@ -55,6 +58,24 @@ void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XM
 	collider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
 	collider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
 	collider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+
+	collider.boundingBox.GetCorners(corners);
+
+	// Front plane
+	collider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	collider.planes[0].point = corners[1];
+
+	// Back plane
+	collider.planes[1].normal = collider.planes[0].normal * -1.f;
+	collider.planes[1].point = corners[6];
+
+	// Right side plane
+	collider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	collider.planes[2].point = corners[4];
+
+	// Left side plane
+	collider.planes[3].normal = collider.planes[2].normal * -1.f;
+	collider.planes[3].point = corners[5];
 
 	colliders.push_back(collider);
 }

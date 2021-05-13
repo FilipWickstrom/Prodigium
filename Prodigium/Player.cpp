@@ -133,7 +133,7 @@ bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vecto
 						lastDistance = currentDistance;
 					}
 				}
-
+				std::cout << index << std::endl;
 				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
 
 				isCollided = true;

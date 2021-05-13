@@ -26,7 +26,10 @@ private:
 
 private:
 	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
+	// Copies the mesh colliders
 	void SetColliders();
+	// Updates the planes of a boundingBox to account for rotation
+	void UpdateBoundingPlanes();
 #ifdef _DEBUG
 	bool CreateColliderBuffers();
 #endif
