@@ -19,6 +19,17 @@ const UINT MAXTEXTURES = 2;
 /*
 Load in a model with bones, .fbx-format supported for now
 Move the bones with different animations
+
+If optimalization is needed:
+	- Use only 4 weights per vertex
+	- Lower total number of bones
+*/
+
+/*
+TODO:
+	- When adding a animated object with name: "Player.fbx"
+	- We send in "Player" to animation
+	- We look for animations named: Player_Idle, Player_Walking, Player_Running
 */
 
 class AnimatedObject : public GameObject
@@ -35,7 +46,7 @@ private:
 	UINT indexCount;
 	ID3D11ShaderResourceView* textureSRVs[MAXTEXTURES];
 
-
+	//Holds each bones final matrix
 	ID3D11Buffer* boneMatricesBuffer;
 
 	//Tree structure of bones instead of saving assimps larger version		- MOVE TO USEFUL STRUCTURES?
@@ -43,21 +54,20 @@ private:
 	{
 		UINT id = -1;
 		std::string name = "";
-		//Bonespace to mesh-space in bindpose (T-pose) - Inverse bind matrix
+		//Bonespace to mesh-space in bindpose (T-pose)
 		DirectX::SimpleMath::Matrix inverseBind = {};
-		DirectX::SimpleMath::Matrix transform = {};		//Transformation relative to parent. Is in final world space
-		DirectX::SimpleMath::Matrix parentTransform = {};		//REMOVE???
 		std::vector<Bone> children = {};
-	} rootBone;	//Hips in this case
+	} rootBone;
 
 	//Name of the bone refers to which ID it has. Can be used to search up in vectors later?
 	std::unordered_map<std::string, UINT> boneMap;
+	std::vector<std::string> boneNames;
 	
 	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;
+	std::vector<DirectX::SimpleMath::Matrix> animatedMatrices;
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;
 
 	//Bones
-	//std::vector<UINT>parentArray;
 	//std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//Changes dynamic - current model transforms
 	//std::vector<DirectX::SimpleMath::Matrix> localMatrices;		//Changes dynamic - current local transforms	//relative to parent
 	//std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Also dynamic - final version that gets uploaded to GPU. Need or not???
@@ -69,7 +79,6 @@ private:
 
 	//Vector of animation
 	Animation animation1;
-	DirectX::SimpleMath::Matrix globalInverseTransformation;//REMOVE LATER!!!***
 
 private:
 	//Basic parts to be able to render vertices
@@ -79,18 +88,18 @@ private:
 							  const std::vector<UINT>& indices, UINT nrOfIndices);
 	
 	//Recursive function to make a bone tree from ASSIMP's nodes. Depth first search
-	bool LoadBoneTree(Bone& currentBone, aiNode* node, std::unordered_map<std::string,
-					std::pair<UINT, DirectX::SimpleMath::Matrix>>& tempMap);
+	bool LoadBoneTree(Bone& currentBone, 
+					  aiNode* node, 
+					  std::unordered_map<std::string,std::pair<UINT, DirectX::SimpleMath::Matrix>>& tempMap);
 	
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string riggedModelFile);
 
 	bool CreateBonesCBuffer();
+	void UpdateBonesCBuffer();
 	bool LoadTextures(std::string diffuse, std::string normalMap = "");
 	
 	//TESTING***
-	void PerFrame(Bone& currentBone, UINT parentID);
-	void TPoser(Bone& currentBone);
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID);
 
 public:
@@ -98,12 +107,11 @@ public:
 	virtual ~AnimatedObject();
 
 	bool Initialize(std::string tposeFile, std::string diffuse, std::string normalMap = "");
-		//1. Load in the mesh with all the bones
-		//2. Load in the animations
-		//3.
-
 	
 	//ChangeAnimation(allAnimations : animation)
+
+	//PlayAnimation()
+	//StopAnimation()
 
 	void Render();		//Deltatime included
 

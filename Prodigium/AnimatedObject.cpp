@@ -90,8 +90,6 @@ bool AnimatedObject::LoadBoneTree(Bone& currentBone, aiNode* node, std::unordere
 		currentBone.name = node->mName.C_Str();
 		currentBone.id = tempMap[currentBone.name].first;
 		currentBone.inverseBind = tempMap[currentBone.name].second;
-		currentBone.transform = Matrix(&node->mTransformation.a1);
-		currentBone.parentTransform = Matrix(&node->mParent->mTransformation.a1);
 	
 		/*std::cout << "Currentbone transform for: " << currentBone.name << std::endl;
 		Matrix mat = currentBone.transform;
@@ -135,8 +133,6 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 											aiProcess_FlipWindingOrder |          //Makes it clockwise order
 											aiProcess_MakeLeftHanded |			  //Use a lefthanded system for the models 
 											aiProcess_LimitBoneWeights |		  //Limit to 4 weights per vertex
-											
-											//aiProcess_PreTransformVertices | Make everything good, but removes bones....
 											0);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -147,118 +143,128 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	}
 
 	//Only works with one mesh at this time
-	std::cout << "Scenes has: " << scene->mNumMeshes << std::endl;
 	if (scene->mNumMeshes == UINT(1))
 	{
 		const aiMesh* mesh = scene->mMeshes[0];
-		std::vector<AnimationVertex> vertices;
-		vertices.reserve(mesh->mNumVertices);
-
-		/*--------Loading all vertices for the mesh---------*/
-		for (UINT i = 0; i < mesh->mNumVertices; i++)
+		
+		//Only accepts files that has bones
+		if (mesh->HasBones())
 		{
-			AnimationVertex temp;
-			temp.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
-			temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
-			temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
-			//Bone ID and Weights are set to 0 by default
-			vertices.push_back(temp);
-		}
+			std::vector<AnimationVertex> vertices;
+			vertices.reserve(mesh->mNumVertices);
 
-		/*--------Loading all bones for the mesh---------*/
-		std::vector<UINT>boneCounts;
-		boneCounts.resize(vertices.size(), 0);
-
-		//Save down the bones temporarly
-		std::unordered_map < std::string, std::pair<UINT, Matrix>> tempBoneMap;
-
-		std::cout << "This animated object has: " << mesh->mNumBones << " bones" << std::endl;
-
-		//Goes through all bones
-		for (UINT i = 0; i < mesh->mNumBones; i++)
-		{
-			aiBone* bone = mesh->mBones[i];
-
-			//Load the temp bonemap with index (same as ID) and matrices 
-			tempBoneMap[bone->mName.C_Str()] = { i, Matrix(&bone->mOffsetMatrix.a1)};
-			this->boneMap[bone->mName.C_Str()] = i;
-
-			//Goes through all the vertices that the bone affect
-			for (UINT v = 0; v < bone->mNumWeights; v++)
+			/*--------Loading all vertices for the mesh---------*/
+			for (UINT i = 0; i < mesh->mNumVertices; i++)
 			{
-				UINT id = bone->mWeights[v].mVertexId;
-				float weight = bone->mWeights[v].mWeight;
+				AnimationVertex temp;
+				temp.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
+				temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+				temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+				//Bone ID and Weights are set to 0 by default
+				vertices.push_back(temp);
+			}
 
-				//Increase number of bones for this vertex
-				boneCounts[id]++;
-				switch (boneCounts[id])
+			/*--------Loading all bones for the mesh---------*/
+			std::vector<UINT>boneCounts;
+			boneCounts.resize(vertices.size(), 0);
+
+			//Save down the bones temporarly
+			std::unordered_map < std::string, std::pair<UINT, Matrix>> tempBoneMap;
+
+			std::cout << "This animated object has: " << mesh->mNumBones << " bones" << std::endl;
+
+			//Goes through all bones
+			for (UINT i = 0; i < mesh->mNumBones; i++)
+			{
+				aiBone* bone = mesh->mBones[i];
+
+				//Load the temp bonemap with index (same as ID) and matrices 
+				tempBoneMap[bone->mName.C_Str()] = { i, Matrix(&bone->mOffsetMatrix.a1) };
+				this->boneMap[bone->mName.C_Str()] = i;
+				this->boneNames.push_back(bone->mName.C_Str());
+
+				//Goes through all the vertices that the bone affect
+				for (UINT v = 0; v < bone->mNumWeights; v++)
 				{
-				case 1:
-					vertices[id].boneIDs.x = i;
-					vertices[id].boneWeights.x = weight;
-					break;
-				case 2:
-					vertices[id].boneIDs.y = i;
-					vertices[id].boneWeights.y = weight;
-					break;
-				case 3:
-					vertices[id].boneIDs.z = i;
-					vertices[id].boneWeights.z = weight;
-					break;
-				case 4:
-					vertices[id].boneIDs.w = i;
-					vertices[id].boneWeights.w = weight;
-					break;
-				default:
-					//Ignore adding id or weight as it
-					//already has 4 bones connected
-					break;
+					UINT id = bone->mWeights[v].mVertexId;
+					float weight = bone->mWeights[v].mWeight;
+
+					//Increase number of bones for this vertex
+					boneCounts[id]++;
+					switch (boneCounts[id])
+					{
+					case 1:
+						vertices[id].boneIDs.x = i;
+						vertices[id].boneWeights.x = weight;
+						break;
+					case 2:
+						vertices[id].boneIDs.y = i;
+						vertices[id].boneWeights.y = weight;
+						break;
+					case 3:
+						vertices[id].boneIDs.z = i;
+						vertices[id].boneWeights.z = weight;
+						break;
+					case 4:
+						vertices[id].boneIDs.w = i;
+						vertices[id].boneWeights.w = weight;
+						break;
+					default:
+						//Ignore adding id or weight as it
+						//already has 4 bones connected
+						break;
+					}
 				}
 			}
-		}
 
-		//Normalize the weights
-		for (size_t i = 0; i < vertices.size(); i++)
-		{
-			Vector4 weights = vertices[i].boneWeights;
-			//Total weight
-			float total = weights.x + weights.y + weights.z + weights.w;
-			//Avoid devide by 0
-			if (total > 0.0f)
+			//Normalize the weights
+			for (size_t i = 0; i < vertices.size(); i++)
 			{
-				vertices[i].boneWeights = { weights.x / total, weights.y / total, weights.z / total, weights.w / total };
+				Vector4 weights = vertices[i].boneWeights;
+				//Total weight
+				float total = weights.x + weights.y + weights.z + weights.w;
+				//Avoid devide by 0
+				if (total > 0.0f)
+				{
+					vertices[i].boneWeights = { weights.x / total, weights.y / total, weights.z / total, weights.w / total };
+				}
 			}
-		}
 
-		/*--------Loading all faces for the mesh---------*/
-		std::vector<UINT> indices;
-		indices.reserve(size_t(mesh->mNumFaces * 3) );
-		this->indexCount = (UINT)(mesh->mNumFaces * 3);
+			/*--------Loading all faces for the mesh---------*/
+			std::vector<UINT> indices;
+			indices.reserve(size_t(mesh->mNumFaces) * 3);
+			this->indexCount = (UINT)(mesh->mNumFaces * 3);
 
-		//Loading in the indices
-		for (UINT i = 0; i < mesh->mNumFaces; i++)
-		{
-			const aiFace face = mesh->mFaces[i];
-			//Only accepts 3 vertices per face
-			if (face.mNumIndices == 3)
+			//Loading in the indices
+			for (UINT i = 0; i < mesh->mNumFaces; i++)
 			{
-				indices.push_back(face.mIndices[0]);
-				indices.push_back(face.mIndices[1]);
-				indices.push_back(face.mIndices[2]);
+				const aiFace face = mesh->mFaces[i];
+				//Only accepts 3 vertices per face
+				if (face.mNumIndices == 3)
+				{
+					indices.push_back(face.mIndices[0]);
+					indices.push_back(face.mIndices[1]);
+					indices.push_back(face.mIndices[2]);
+				}
 			}
-		}
 
-		//Create buffers for vertices and indices!
-		if (!CreateVertIndBuffers(vertices, indices, this->indexCount))
+			//Create buffers for vertices and indices!
+			if (!CreateVertIndBuffers(vertices, indices, this->indexCount))
+			{
+				std::cout << "Failed to create vertex or indexbuffer..." << std::endl;
+				importer.FreeScene();
+				return false;
+			}
+
+			//Load our tree of bones from the scenes rootnode
+			LoadBoneTree(this->rootBone, scene->mRootNode, tempBoneMap);
+		}
+		else
 		{
-			std::cout << "Failed to create vertex or indexbuffer..." << std::endl;
+			std::cout << "The file: " << riggedModelFile << " does not have any bones..." << std::endl;
 			importer.FreeScene();
 			return false;
 		}
-
-		//Load our tree of bones from the scenes rootnode
-		LoadBoneTree(this->rootBone, scene->mRootNode, tempBoneMap);
-
 	}
 	else
 	{
@@ -266,13 +272,6 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 		importer.FreeScene();
 		return false;
 	}
-
-	//REMOVE???	
-	//this->globalTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
-	//this->globalTransformation = Matrix(&scene->mRootNode->mChildren[1]->mTransformation.a1);
-	//this->globalInverseTransformation = Matrix(&scene->mRootNode->mTransformation.a1);
-	//this->globalInverseTransformation = this->globalInverseTransformation.Invert();
-
 
 	importer.FreeScene();
 	return true;
@@ -291,6 +290,14 @@ bool AnimatedObject::CreateBonesCBuffer()
 	data.pSysMem = &this->finalMatrices[0];
 
 	return !FAILED(Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->boneMatricesBuffer));
+}
+
+void AnimatedObject::UpdateBonesCBuffer()
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	Graphics::GetContext()->Map(this->boneMatricesBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy(mappedResource.pData, &this->finalMatrices[0], MAXBONES * sizeof(Matrix));
+	Graphics::GetContext()->Unmap(this->boneMatricesBuffer, 0);
 }
 
 bool AnimatedObject::LoadTextures(std::string diffuse, std::string normalMap)
@@ -330,63 +337,60 @@ bool AnimatedObject::LoadTextures(std::string diffuse, std::string normalMap)
 	return true;
 }
 
-void AnimatedObject::PerFrame(Bone& currentBone, UINT parentID)
-{
-	//NOT WORKING CORRECTLY...
-	Matrix animMatrix = Matrix::Identity;
-
-	//Bone is in the local space. Has a new location
-	this->animation1.GetAnimationMatrix(30, currentBone.name, animMatrix);
-	UINT id = currentBone.id;
-
-	Matrix localMatrix = currentBone.transform * animMatrix;
-	//Matrix localMatrix = animMatrix;
-
-	//Root
-	if (currentBone.name == this->rootBone.name)
-	{
-		this->modelMatrices[id] = localMatrix;
-	}
-	else
-	{
-		this->modelMatrices[id] = this->modelMatrices[parentID] * localMatrix;
-	}
-
-	//Move from bonespace to worldspace
-	this->finalMatrices[id] = this->modelMatrices[id] * currentBone.inverseBind;
-
-	for (size_t i = 0; i < currentBone.children.size(); i++)
-	{
-		PerFrame(currentBone.children[i], currentBone.id);
-	}
-}
-
-void AnimatedObject::TPoser(Bone& currentBone)
-{
-	this->finalMatrices[currentBone.id] = currentBone.transform;		//currentBone.inverseBind.Invert();
-
-	for (size_t i = 0; i < currentBone.children.size(); i++)
-	{
-		TPoser(currentBone.children[i]);
-	}
-}
+//void AnimatedObject::PerFrame(Bone& currentBone, UINT parentID)
+//{
+//	//NOT WORKING CORRECTLY...
+//	Matrix animMatrix = Matrix::Identity;
+//
+//	//Bone is in the local space. Has a new location
+//	this->animation1.GetAnimationMatrix(30, currentBone.name, animMatrix);
+//	UINT id = currentBone.id;
+//
+//	Matrix localMatrix = currentBone.transform * animMatrix;
+//	//Matrix localMatrix = animMatrix;
+//
+//	//Root
+//	if (currentBone.name == this->rootBone.name)
+//	{
+//		this->modelMatrices[id] = localMatrix;
+//	}
+//	else
+//	{
+//		this->modelMatrices[id] = this->modelMatrices[parentID] * localMatrix;
+//	}
+//
+//	//Move from bonespace to worldspace
+//	this->finalMatrices[id] = this->modelMatrices[id] * currentBone.inverseBind;
+//
+//	for (size_t i = 0; i < currentBone.children.size(); i++)
+//	{
+//		PerFrame(currentBone.children[i], currentBone.id);
+//	}
+//}
 
 void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
 {
-	Matrix animMatrix = Matrix::Identity;
-	Matrix localMatrix;
-	//Bone is in the local space. Has a new location
-	if (this->animation1.GetAnimationMatrix(12, currentBone.name, animMatrix))
-		localMatrix = animMatrix;
-	else
-		localMatrix = currentBone.transform;
+	//Matrix animMatrix = Matrix::Identity;
+	//Matrix localMatrix;
+	////Bone is in the local space. Has a new location
+	//if (this->animation1.GetAnimationMatrix(currentBone.name, animMatrix))
+	//{
+	//	localMatrix = animMatrix;
+	//}
+
+	Matrix localMatrix = this->animatedMatrices[this->boneMap[currentBone.name]];
 
 	UINT id = currentBone.id;
 
 	//Root
 	if (parentID == -1)
 	{
-		this->modelMatrices[id] = this->globalInverseTransformation * localMatrix;
+		/*Matrix rootMat = Matrix::CreateScale(1,1,1) * 
+						 Matrix::CreateFromYawPitchRoll(0,0,0) *
+						 Matrix::CreateTranslation(0,0,0);*/
+
+		//Get GameObject matrix with scale, rotation and translation and multiply with localMatrix
+		this->modelMatrices[id] = /*this->globalInverseTransformation * */ localMatrix;
 	}
 	else
 	{
@@ -465,25 +469,15 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 	}
 
 
-	//Setup all the inverted matrices from the saved data from ASSIMP
-	/*this->invertedBindMatrix.resize(MAXBONES, DirectX::SimpleMath::Matrix::Identity);
-	SetupInvertedBindMatrices(this->rootBone);*/
-
 	//LoadAnimation and add to the array
-	/*if (!LoadAnimation("Player/PlayerIdleWithSkin.fbx"))
-	{
-		std::cout << "Failed to load animation" << std::endl;
-		return false;
-	}*/
-
 	this->animation1.Load("Player/Running.fbx", this->boneMap);
 
 	//Testing to use the matrices from ASSIMP but inverted
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
 	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
-	//PerFrame(this->rootBone, 0);
-	//TPoser(this->rootBone);
-	CalcFinalMatrix(this->rootBone, -1);
+
+	//this->animatedMatrices = this->animation1.GetAnimationMatrices(this->boneNames, 0);
+	//CalcFinalMatrix(this->rootBone, -1);
 
 	//Load cbuffer
 	if (!CreateBonesCBuffer())
@@ -503,6 +497,10 @@ void AnimatedObject::Render()	//deltatime
 	//updateFinals(skel);
 	// 
 	//uploadToMatrixBuffer(skel.finalTxArr, BONE_COUNT);
+
+	this->animatedMatrices = this->animation1.GetAnimationMatrices(this->boneNames, 0);
+	CalcFinalMatrix(this->rootBone, -1);
+	UpdateBonesCBuffer();
 
 	//Update the boneMatricesBuffer...
 	Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->boneMatricesBuffer);

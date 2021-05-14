@@ -3,6 +3,7 @@ using namespace DirectX::SimpleMath;
 
 Animation::Animation()
 {
+	this->nrOfBones = 0;
 	this->currentFrame = 0;
 	this->duraction = 0;
 	this->ticksPerSecond = 0;
@@ -15,9 +16,11 @@ Animation::~Animation()
 bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap)
 {
 	Assimp::Importer importer;
-	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false); //To remove $AssimpFBX...???***
+	
+	//Will remove extra text on bones like: "_$AssimpFbx$_"...
+	importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
 	const aiScene* scene = importer.ReadFile("Models/" + filename,
-											aiProcess_FlipWindingOrder |
+											aiProcess_FlipWindingOrder |	//Make clockwise order
 											aiProcess_MakeLeftHanded);
 
 	if (!scene || !scene->mRootNode)
@@ -41,8 +44,6 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 	this->duraction = animation->mDuration;
 	this->ticksPerSecond = animation->mTicksPerSecond;
 
-	//NOT ALL GETS LOADED... ONLY 20/22 "mixamorig:LeftHand" & "mixamorig:RightHand" left...
-
 	//Go through all the channels with animations
 	for (unsigned int i = 0; i < animation->mNumChannels; i++)
 	{
@@ -60,8 +61,6 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 		//Check if the bone exists in the map
 		if (boneMap.find(boneName) != boneMap.end())
 		{
-			std::cout << "Added animation matrices for: " << boneName << std::endl;
-			
 			aiVector3D position = {};
 			aiVector3D scale = {};
 			aiQuaternion rotation = {};
@@ -77,7 +76,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 				}
 				if (key < channel->mNumRotationKeys)
 				{
-					rotation = channel->mRotationKeys[key].mValue;	//Normalize???
+					rotation = channel->mRotationKeys[key].mValue;
 				}
 				if (key < channel->mNumScalingKeys)
 				{
@@ -90,20 +89,27 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 			}
 
 			this->translations[boneName] = bonesTranslations;
+			this->nrOfBones++;
 		}
-
 	}
+
+	//Writing out some stats
+	std::cout << "Loaded animation: " << filename << " with " <<  this->nrOfBones << " bones!" << std::endl;
+	std::cout << "Duration: " << this->duraction << std::endl;
+	std::cout << "Ticks per second: " << this->ticksPerSecond << std::endl;
 
 	importer.FreeScene();
 	return true;
 }
 
-bool Animation::GetAnimationMatrix(unsigned int keyFrame, std::string boneName, Matrix& animation)
+bool Animation::GetAnimationMatrix(std::string boneName, Matrix& animation)
 {
 	//Returns true if we got an animation matrix on that bone.
 	//Returns the matrix in paramater. 
 	//All positions, scale and rotation is absolute in that space
-	
+
+	int keyFrame = 12;
+
 	//See if the bone exists in the unordered map
 	if (this->translations.find(boneName) != this->translations.end())
 	{
@@ -118,4 +124,43 @@ bool Animation::GetAnimationMatrix(unsigned int keyFrame, std::string boneName, 
 	{
 		return false;
 	}
+}
+
+const std::vector<DirectX::SimpleMath::Matrix> Animation::GetAnimationMatrices(std::vector<std::string> allBones, double time)
+{
+	std::vector<Matrix> animatedMatrices;
+	
+	//Adding to the current frame
+	this->currentFrame += this->ticksPerSecond * Graphics::GetDeltaTime();
+
+	//Reset when reached end
+	if (this->currentFrame >= this->duraction)
+		this->currentFrame = 0;
+
+	UINT keyFrame = UINT(this->currentFrame);
+	//UINT firstFrame;	//current
+	//UINT secondFrame;	//current + 1?
+
+	for (UINT i = 0; i < allBones.size(); i++)
+	{
+		Matrix animation = Matrix::Identity;
+		std::string boneName = allBones[i];
+		if (this->translations.find(boneName) != this->translations.end())
+		{
+			//Interpolate between two versions
+			
+			//Get first frame
+
+
+			aiVector3D pos = this->translations[boneName].position[keyFrame];
+			aiVector3D scl = this->translations[boneName].scale[keyFrame];
+			aiQuaternion rot = this->translations[boneName].rotation[keyFrame].Normalize();
+			aiMatrix4x4 aiMat = aiMatrix4x4(scl, rot, pos);
+			animation = Matrix(&aiMat.a1);
+
+		}
+		animatedMatrices.push_back(animation);
+	}
+
+	return animatedMatrices;
 }

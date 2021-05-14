@@ -24,6 +24,8 @@ private:
 	D3D11_VIEWPORT viewport;
 	UINT windowWidth;
 	UINT windowHeight;
+	float deltaTime;
+
 	bool CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight);
 	bool CreateZBufferStates();
 	void CreateViewPort();
@@ -47,4 +49,6 @@ public:
 	static void UnbindBackBuffer();
 	static void ClearDisplay();
 	static bool SetupGraphics();
+	static void SetDeltaTime(const float& time);
+	static const float& GetDeltaTime();
 };

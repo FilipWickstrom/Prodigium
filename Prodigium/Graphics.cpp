@@ -16,6 +16,7 @@ Graphics::Graphics()
 	this->backBufferView = nullptr;
 	this->depthView = nullptr;
 	this->rasterState = nullptr;
+	this->deltaTime = 0.0f;
 }
 
 Graphics::~Graphics()
@@ -279,4 +280,14 @@ bool Graphics::SetupGraphics()
 	}
 
 	return true;
+}
+
+void Graphics::SetDeltaTime(const float& time)
+{
+	Graphics::instance->deltaTime = time;
+}
+
+const float& Graphics::GetDeltaTime()
+{
+	return Graphics::instance->deltaTime;
 }
