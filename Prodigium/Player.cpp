@@ -44,32 +44,29 @@ Player::~Player()
 
 void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
 {
-	if (this->CheckCollision(objects, direction, deltaTime))
-	{
-		direction = { 0.0f, 0.0f };
-	}
 	if (direction.Length() > 0.0f)
 	{
-		this->Move(direction, deltaTime);
+		if (!CheckCollision(objects, direction, deltaTime))
+		{
+			this->Move(direction, deltaTime);
+		}
 	}
-
-	DirectX::SimpleMath::Matrix transform = DirectX::SimpleMath::Matrix::CreateTranslation(this->playerModel->position);
+	Matrix transform = Matrix::CreateTranslation(this->playerModel->position);
 	this->playerCam.SetTransform(transform);
 	this->playerCam.Update();
 }
 
-void Player::Move(const Vector2& direction, const float& deltaTime)
+void Player::Move(Vector2& direction, const float& deltaTime)
 {
-	DirectX::SimpleMath::Matrix rotation = DirectX::SimpleMath::Matrix::CreateRotationY(this->playerCam.GetRotation().y);
-	this->playerModel->forward = Vector3::Transform(Vector3(0.0f, 0.0f, 1.0f), rotation);
-	this->playerModel->forward.Normalize();
+	Matrix rotation = Matrix::CreateRotationY(this->playerCam.rotation.y);
+	this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
-	this->playerModel->right.Normalize();
 
-	// Direction.x / z is a binary switch to toggle the direction, 1 or -1
-	this->playerModel->position += this->playerModel->forward * speed * deltaTime * direction.x;
-	this->playerModel->position += this->playerModel->right * speed * deltaTime * direction.y;
+	this->playerModel->position +=
+		(this->playerModel->forward * speed * deltaTime * direction.x) +
+		(this->playerModel->right * speed * deltaTime * direction.y);
 
+	// Moves character in the direction of camera
 	this->RotatePlayer();
 	this->playerModel->UpdateMatrix();
 	this->playerModel->UpdateBoundingBoxes();
@@ -102,14 +99,15 @@ MeshObject* Player::GetMeshObject() const
 
 bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
 {
-	bool isCollided = false;
-
-	for (int i = 1; i < (int)objects.size() && !isCollided; i++)
+	for (int i = 1; i < (int)objects.size(); i++)
 	{
 		for (int j = 0; j < objects[i]->colliders.size(); j++)
 		{
 			if (this->playerModel->colliders[0].boundingBox.Intersects(objects[i]->colliders[j].boundingBox))
 			{
+				// Project the u vector onto the plane normal to get a length down to the player position
+				// Take that length - the halflength of current OBB to get the difference. 
+				// If the difference is positive and it's the smallest of all sides, we know the colliding plane
 				Vector3 u = this->playerModel->position - objects[i]->position;
 
 				float lastDistance = FLT_MAX;
@@ -146,10 +144,10 @@ bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vecto
 				this->playerModel->UpdateMatrix();
 				this->playerModel->UpdateBoundingBoxes();
 
-				isCollided = true;
+				return true;
 			}
 		}
 	}
 
-	return isCollided;
+	return false;
 }
