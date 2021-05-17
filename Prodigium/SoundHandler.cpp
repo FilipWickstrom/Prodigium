@@ -2,13 +2,13 @@
 
 SoundHandler::SoundHandler()
 {
-	this->audEngine = nullptr;
+	//this->audEngine = nullptr;
 	this->soundEffect = nullptr;
 }
 
 SoundHandler::~SoundHandler()
 {
-	this->audEngine.release();
+	//this->audEngine.release();
 	this->soundEffect.release();
 }
 
@@ -19,12 +19,15 @@ const bool SoundHandler::Initialize()
 	if (FAILED(hr))
 		return false;
 
+	//std::unique_ptr<DirectX::AudioEngine> tempEngine;
+
 	DirectX::AUDIO_ENGINE_FLAGS eFlags = DirectX::AudioEngine_Default;
 #ifdef _DEBUG
 	eFlags |= DirectX::AudioEngine_Debug;
 #endif
 
-	this->audEngine = std::make_unique<DirectX::AudioEngine>();
+	//tempEngine = std::make_unique<DirectX::AudioEngine>(eFlags);
+	audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
 
 	return true;
 }
@@ -50,7 +53,7 @@ void SoundHandler::Update()
 
 void SoundHandler::PlayOneShot()
 {
-	//this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), L"/media/ohYeah.wav");
+	this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), L"media/ohYeah.wav");
 	this->soundEffect->Play();
 }
 
