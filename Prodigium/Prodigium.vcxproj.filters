@@ -145,6 +145,9 @@
     <ClCompile Include="AIHandler.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
+      <Filter>Engine\Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -252,6 +255,9 @@
     <ClInclude Include="AIHandler.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
+    <ClInclude Include="SoundHandler.h">
+      <Filter>Engine\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -333,6 +339,9 @@
     </Filter>
     <Filter Include="Engine\IO">
       <UniqueIdentifier>{8361d11f-f9ac-4f0e-bbba-ec12bcad461e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Audio">
+      <UniqueIdentifier>{a4c7c3b2-8717-4dcb-a47b-3739f2fad1ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
