@@ -275,6 +275,8 @@ bool ParticleSystem::SetUp()
 bool ParticleSystem::UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, DirectX::SimpleMath::Vector3 monsterPos)
 {
 	// Control the speed of particles.
+
+	// Distance between player and monster
 	float dist = (playerPos - monsterPos).Length();
 	if (dist < 0)
 		dist *= -1;

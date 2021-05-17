@@ -262,6 +262,7 @@ void Game::LoadMainMenu()
 	if (this->player)
 		delete this->player;
 
+	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
 	SceneHandle()->EditScene().GetParticles().SetActive(false);
@@ -311,7 +312,6 @@ void Game::LoadMainMenu()
 
 void Game::LoadMap()
 {
-	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
 	this->player = new Player();
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
@@ -362,10 +362,31 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -135.0f }, {0.0f, 3.14159f, 0.0f});
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
 
 	/*
 		Lamps
 	*/
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+	L.position = { 575.0f, 25.0f, 50.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+	L.position = { -45.0f, 25.0f, -100.0f, 30.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
 	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
