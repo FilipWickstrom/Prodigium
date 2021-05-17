@@ -145,6 +145,12 @@
     <ClCompile Include="AIHandler.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -252,6 +258,12 @@
     <ClInclude Include="AIHandler.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -333,6 +345,12 @@
     </Filter>
     <Filter Include="Engine\IO">
       <UniqueIdentifier>{8361d11f-f9ac-4f0e-bbba-ec12bcad461e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Techniques\Acceleration">
+      <UniqueIdentifier>{6b4a2f71-66e2-4785-9100-25c162d81c04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Techniques\Acceleration\Frustum Culling">
+      <UniqueIdentifier>{74702e8d-0e06-420e-abff-7d96a9b3d658}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -423,4 +423,5 @@ void Game::LoadMap()
 
 	this->hasLoaded = true;
 	this->inGoal = true;
+	Engine::inGame = true;
 }

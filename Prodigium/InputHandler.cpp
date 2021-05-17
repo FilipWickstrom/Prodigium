@@ -7,7 +7,8 @@ InputHandler::InputHandler()
 	kbState = {};
 	mouseState = {};
 	state = {};
-	isRunning = true;	
+	isRunning = true;
+	confineCursor = false;
 }
 InputHandler::~InputHandler()
 {
@@ -26,14 +27,14 @@ const bool InputHandler::Initialize()
 		InputHandler::instance->kBTracker = std::make_unique<Keyboard::KeyboardStateTracker>();
 		InputHandler::instance->mouse = std::make_unique<DirectX::Mouse>();
 		InputHandler::instance->mouseTracker = std::make_unique<Mouse::ButtonStateTracker>();
-		
+
 	}
 	else
 	{
 		std::cerr << "InputHandler already Initialized\n";
 	}
 	return true;
-	
+
 }
 
 void InputHandler::setWindow(const HWND& windowHandle)
@@ -117,7 +118,7 @@ const bool InputHandler::IsRunning()
 }
 void InputHandler::HandleMessages()
 {
-	while(PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
+	while (PeekMessage(&InputHandler::instance->state, 0, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&InputHandler::instance->state);
 		DispatchMessage(&InputHandler::instance->state);
@@ -126,6 +127,17 @@ void InputHandler::HandleMessages()
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (InputHandler::instance->confineCursor)
+	{
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		MapWindowPoints(hWnd, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+		ClipCursor(&rect);
+	}
+	else
+	{
+		ClipCursor(nullptr);
+	}
 
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
 	{
@@ -139,9 +151,13 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 	case WM_CLOSE:
 		DestroyWindow(hWnd);
 		return 0;
+	case WM_ACTIVATE:
+		InputHandler::instance->confineCursor = true;
+		break;
 	case WM_ACTIVATEAPP:
 		InputHandler::instance->keyboard->ProcessMessage(message, wParam, lParam);
 		InputHandler::instance->mouse->ProcessMessage(message, wParam, lParam);
+		InputHandler::instance->confineCursor = false;
 		break;
 	case WM_DESTROY:
 		// This message is read when the window is closed

@@ -47,7 +47,7 @@ bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, c
 
 
 	D3D11_BUFFER_DESC buffDesc = {};
-	buffDesc.ByteWidth = sizeof(viewProjectionMatrix);
+	buffDesc.ByteWidth = sizeof(ViewProjectionMatrix);
 	buffDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	buffDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	buffDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -143,6 +143,16 @@ void CameraObject::ChangeOffset(const Vector3& offset)
 DirectX::SimpleMath::Vector3 CameraObject::GetForward()
 {
 	return this->camForward;
+}
+
+const DirectX::SimpleMath::Matrix& CameraObject::GetViewMatrix() const
+{
+	return this->viewProjMatrix.viewMatrix;
+}
+
+const DirectX::SimpleMath::Matrix& CameraObject::GetProjMatrix() const
+{
+	return this->viewProjMatrix.projectionMatrix;
 }
 
 void CameraObject::SetTransform(const Matrix& transform)

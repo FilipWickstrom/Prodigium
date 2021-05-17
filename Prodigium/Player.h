@@ -7,7 +7,7 @@ class Player
 {
 private:
 	float speed;
-	CameraObject playerCam;
+	CameraObject* playerCam;
 	MeshObject* playerModel;
 
 private:

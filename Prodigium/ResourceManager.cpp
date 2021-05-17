@@ -186,3 +186,27 @@ void ResourceManager::Destroy()
 		delete ResourceManager::instance;
 	}
 }
+
+void ResourceManager::AddCamera(std::string key, CameraObject* toAdd)
+{
+	if (toAdd)
+	{
+		ResourceManager::instance->cameras.emplace(key, toAdd);
+	}
+	else
+	{
+		throw("RM: Add Camera was nullptr!");
+	}
+}
+
+const CameraObject* ResourceManager::GetCamera(const std::string& key)
+{
+	auto found = instance->cameras.find(key);
+
+	if (found == instance->cameras.end())
+	{
+		throw("RM: Camera returned was nullptr!");
+	}
+
+	return found->second;
+}

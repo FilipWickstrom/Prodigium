@@ -11,11 +11,11 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 		exit(-1);
 	}
 
-	#ifdef _DEBUG
-		OpenConsole();
-	#endif 
+#ifdef _DEBUG
+	OpenConsole();
+#endif 
 
-
+	this->inGame = false;
 }
 
 Engine::~Engine()
@@ -90,6 +90,10 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
+	if (inGame)
+	{
+		this->frustum.BuildFrustum(2, ResourceManager::GetCamera("PlayerCam")->GetViewMatrix(), ResourceManager::GetCamera("PlayerCam")->GetProjMatrix());
+	}
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
@@ -100,7 +104,7 @@ void Engine::Render()
 	this->gPass.Prepare();
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
-	
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -188,7 +192,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	
+
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
 	{
