@@ -60,7 +60,7 @@ void SoundHandler::PlayLooping(const wchar_t* fileName, const bool& play3D, cons
 	if (!play3D)
 	{
 		auto effect = this->soundEffect->CreateInstance();
-		effect->Play();
+		effect->Play(true);
 	}
 	
 	else
@@ -73,7 +73,7 @@ void SoundHandler::PlayLooping(const wchar_t* fileName, const bool& play3D, cons
 		emitter.SetPosition(emitterPos);
 
 		effect->Apply3D(listener, emitter);
-		effect->Play();
+		effect->Play(true);
 	}
 }
 
@@ -83,5 +83,5 @@ void SoundHandler::PlayLooping(const wchar_t* fileName)
 	wcscat_s(filePath, fileName);
 	this->soundEffect = this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
 	auto effect = this->soundEffect->CreateInstance();
-	effect->Play();
+	effect->Play(true);
 }
