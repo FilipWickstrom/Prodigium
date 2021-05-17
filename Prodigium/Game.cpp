@@ -158,7 +158,7 @@ void Game::HandleInput(const float& deltaTime)
 		if (InputHandler::IsKeyPressed(Keyboard::T))
 		{
 			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
-			this->sh.PlayOneShot();
+			this->soundHandler.PlayOneShot(L"ohYeah.wav");
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
@@ -246,7 +246,7 @@ bool Game::OnStart()
 	this->menu.Init();
 	this->LoadMainMenu();
 
-	if (!this->sh.Initialize())
+	if (!this->soundHandler.Initialize())
 	{
 		return false;
 	}

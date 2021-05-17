@@ -16,7 +16,7 @@ private:
 	CameraObject tempCam;
 	MainMenu menu;
 	Player* player;
-	SoundHandler sh;
+	SoundHandler soundHandler;
 	bool running;
 	bool hasLoaded;
 	bool zoomIn;

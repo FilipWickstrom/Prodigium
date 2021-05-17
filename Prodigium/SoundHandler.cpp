@@ -2,14 +2,14 @@
 
 SoundHandler::SoundHandler()
 {
-	//this->audEngine = nullptr;
+	this->audEngine = nullptr;
 	this->soundEffect = nullptr;
 }
 
 SoundHandler::~SoundHandler()
 {
-	//this->audEngine.release();
-	this->soundEffect.release();
+	delete this->soundEffect;
+	delete this->audEngine;
 }
 
 const bool SoundHandler::Initialize()
@@ -19,15 +19,11 @@ const bool SoundHandler::Initialize()
 	if (FAILED(hr))
 		return false;
 
-	//std::unique_ptr<DirectX::AudioEngine> tempEngine;
-
 	DirectX::AUDIO_ENGINE_FLAGS eFlags = DirectX::AudioEngine_Default;
 #ifdef _DEBUG
 	eFlags |= DirectX::AudioEngine_Debug;
 #endif
-
-	//tempEngine = std::make_unique<DirectX::AudioEngine>(eFlags);
-	audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
+	audEngine = new DirectX::AudioEngine( eFlags );
 
 	return true;
 }
@@ -45,46 +41,47 @@ void SoundHandler::Update()
 	}
 }
 
-//void SoundHandler::PlayOneShot(const std::string& fileName)
-//{
-//	this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), fileName);
-//	this->soundEffect->Play();
-//}
-
-void SoundHandler::PlayOneShot()
+void SoundHandler::PlayOneShot(const wchar_t* fileName)
 {
-	this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), L"media/ohYeah.wav");
+	wchar_t filePath[50] = L"media/";
+	wcscat_s(filePath, fileName);
+	
+	this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
 	this->soundEffect->Play();
 }
 
-//void SoundHandler::PlayLooping(const std::string& fileName, const bool& play3D, const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos)
-//{
-//	this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), fileName);
-//	
-//	if (!play3D)
-//	{
-//		auto effect = this->soundEffect->CreateInstance();
-//		effect->Play();
-//	}
-//	
-//	else
-//	{
-//		auto effect = this->soundEffect->CreateInstance(DirectX::SoundEffectInstance_Use3D);
-//
-//		DirectX::AudioListener listener;
-//		listener.SetPosition(listnerPos);
-//		DirectX::AudioEmitter emitter;
-//		emitter.SetPosition(emitterPos);
-//
-//		effect->Apply3D(listener, emitter);
-//		effect->Play();
-//	}
-//}
-//
-//void SoundHandler::PlayLooping(const std::string& fileName)
-//{
-//	//wchar_t filePath = L"/media/" + fileName;
-//	this->soundEffect = std::make_unique<DirectX::SoundEffect>(this->audEngine.get(), fileName);
-//	auto effect = this->soundEffect->CreateInstance();
-//	effect->Play();
-//}
+void SoundHandler::PlayLooping(const wchar_t* fileName, const bool& play3D, const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos)
+{
+	wchar_t filePath[50] = L"media/";
+	wcscat_s(filePath, fileName);
+
+	this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
+	
+	if (!play3D)
+	{
+		auto effect = this->soundEffect->CreateInstance();
+		effect->Play();
+	}
+	
+	else
+	{
+		auto effect = this->soundEffect->CreateInstance(DirectX::SoundEffectInstance_Use3D);
+
+		DirectX::AudioListener listener;
+		listener.SetPosition(listnerPos);
+		DirectX::AudioEmitter emitter;
+		emitter.SetPosition(emitterPos);
+
+		effect->Apply3D(listener, emitter);
+		effect->Play();
+	}
+}
+
+void SoundHandler::PlayLooping(const wchar_t* fileName)
+{
+	wchar_t filePath[50] = L"media/";
+	wcscat_s(filePath, fileName);
+	this->soundEffect = this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
+	auto effect = this->soundEffect->CreateInstance();
+	effect->Play();
+}
