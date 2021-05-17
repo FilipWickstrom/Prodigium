@@ -12,6 +12,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->running = true;
 	this->isPaused = false;
 	this->player = nullptr;
+	this->sh = nullptr;
 	this->hasLoaded = false;
 	this->zoomIn = false;
 	this->inGoal = false;
@@ -21,6 +22,8 @@ Game::~Game()
 {
 	if (this->player && !this->menu.IsInMenu())
 		delete this->player;
+
+	delete this->sh;
 }
 
 const bool Game::IsRunning() const
@@ -156,6 +159,7 @@ void Game::HandleInput(const float& deltaTime)
 		if (InputHandler::IsKeyPressed(Keyboard::T))
 		{
 			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
+			this->sh->PlayOneShot();
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
@@ -227,6 +231,8 @@ bool Game::OnFrame(const float& deltaTime)
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 
+	//this->sh->Update();
+
 	Engine::ClearDisplay();
 	Engine::Render();
 
@@ -240,6 +246,12 @@ bool Game::OnStart()
 #endif
 	this->menu.Init();
 	this->LoadMainMenu();
+
+	if (!this->sh->Initialize())
+	{
+		return false;
+	}
+	
 
 #ifdef _DEBUG
 	if (!DebugInfo::Initialize())
