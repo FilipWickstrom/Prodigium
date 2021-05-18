@@ -28,16 +28,17 @@ bool AnimatedObject::LoadVertexShader()
 
 bool AnimatedObject::CreateInputLayout()
 {
-	D3D11_INPUT_ELEMENT_DESC geometryLayout[5] =
+	D3D11_INPUT_ELEMENT_DESC geometryLayout[6] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 5, this->vShaderByteCode.c_str(), 
+	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 6, this->vShaderByteCode.c_str(), 
 														  this->vShaderByteCode.length(), &this->inputlayout);
 
 	return !FAILED(hr);
@@ -125,6 +126,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 											aiProcess_FlipWindingOrder |          //Makes it clockwise order
 											aiProcess_MakeLeftHanded |			  //Use a lefthanded system for the models 
 											aiProcess_LimitBoneWeights |		  //Limit to 4 weights per vertex
+											aiProcess_CalcTangentSpace |          //Fix tangents automatic for us
 											0);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -159,6 +161,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 					temp.position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 					temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 					temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+					temp.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
 					//Bone ID and Weights are set to 0 by default
 					vertices.push_back(temp);
 				}
@@ -346,6 +349,7 @@ bool AnimatedObject::LoadTextures(std::string diffuse, std::string normalMap)
 	
 	if (normalMap != "")
 	{
+		normalMap = "Textures/" + normalMap;
 		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalMap);
 		if (normTexture == nullptr)
 		{

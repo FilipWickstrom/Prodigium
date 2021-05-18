@@ -6,6 +6,8 @@ cbuffer CameraViewProj : register(b0)
     float4x4 projection;
 };
 
+//cbuffer with normalMap settings?
+
 cbuffer BonesMatrices : register(b2) //Dont wont to mess with others
 {
     float4x4 bonesTransforms[MAXNROFBONES];
@@ -16,7 +18,7 @@ struct VertexShaderInput
     float3 position     : POSITION;
     float2 texCoord     : TEXCOORD;
     float3 normal       : NORMAL;
-    //add tangent later for normalmap
+    float3 tangent      : TANGENT;
     uint4 boneIDs       : BONEIDS;
     float4 boneWeights  : BONEWEIGHTS;
 };
@@ -27,6 +29,7 @@ struct VertexShaderOutput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
+    float4 tangent    : TANGENT;
 };
 
 
@@ -52,6 +55,9 @@ VertexShaderOutput main(VertexShaderInput input)
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
       
     output.texCoord = input.texCoord;
+    
+    // Last spot is for if it has normal map or not.
+    output.tangent = float4(mul(input.tangent, (float3x3) world), 1); //hasNormalMap.x
       
 	return output;
 }

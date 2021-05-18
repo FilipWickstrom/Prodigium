@@ -43,6 +43,9 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
+    <FxCompile Include="AnimationVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -147,6 +150,12 @@
     </ClCompile>
     <ClCompile Include="RandomSpotPicker.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedObject.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +267,12 @@
     <ClInclude Include="RandomSpotPicker.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="AnimatedObject.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -339,6 +354,12 @@
     </Filter>
     <Filter Include="Engine\IO">
       <UniqueIdentifier>{8361d11f-f9ac-4f0e-bbba-ec12bcad461e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Objects\Animation">
+      <UniqueIdentifier>{4e68246d-916a-40d7-b106-a749aead343c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\Animation">
+      <UniqueIdentifier>{5bf0f10a-c7ce-4571-bad3-47168fcd1ff3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

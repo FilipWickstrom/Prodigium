@@ -105,12 +105,12 @@ bool Mesh::LoadFile(std::string filename)
 
 	//Load in the scene - can be many meshes together in one file
 	const aiScene* scene = importer.ReadFile("Models/" + filename,
-		aiProcess_Triangulate |               //Triangulate every surface
-		aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
-		aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
-		aiProcess_FlipWindingOrder |          //Makes it clockwise order
-		aiProcess_MakeLeftHanded          //Use a lefthanded system for the models                                                                             
-		| aiProcess_CalcTangentSpace);        //LATER FIX: can be added to fix tangents automatic
+											aiProcess_Triangulate |               //Triangulate every surface
+											aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
+											aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
+											aiProcess_FlipWindingOrder |          //Makes it clockwise order
+											aiProcess_MakeLeftHanded |			  //Use a lefthanded system for the models                                                                             
+											aiProcess_CalcTangentSpace);          //Fix tangents automatic for us
 
 	//Check if it was possible to load file
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
