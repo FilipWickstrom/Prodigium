@@ -341,7 +341,7 @@ void Scene::RenderParticles()
 	if (this->particles.IsActive())
 	{
 		this->particles.Render();
-		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[1]->GetPosition());
+		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[6]->GetPosition());
 	}
 
 }

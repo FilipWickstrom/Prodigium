@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp)
+void GUIHandler::Render(int playerHp, int clues)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -218,7 +218,7 @@ void GUIHandler::Render(int playerHp)
     {
         SetUpGUIStyleGame();
         GUIHandler::instance->RenderTrapGUI();
-        GUIHandler::instance->RenderBrainGUI(playerHp);
+        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
     }
@@ -348,7 +348,7 @@ void GUIHandler::RenderTrapGUI()
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerHp)
+void GUIHandler::RenderBrainGUI(int playerHp, int clues)
 {
     float fade = 1.0f;
     float hp = playerHp;
@@ -369,6 +369,11 @@ void GUIHandler::RenderBrainGUI(int playerHp)
     Begin("HEALTH", isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(2.f);
     Text(rest.c_str());
+
+    std::string cl(std::to_string(clues));
+    cl.append("/" + std::to_string(CLUES));
+    Text(cl.c_str());
+
     End();
     delete isActive;
 }

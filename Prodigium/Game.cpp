@@ -119,24 +119,38 @@ void Game::HandleInput(const float& deltaTime)
 
 			// Test pick up
 			//std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(1).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Book!\n";
 			}
 
 			//std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(2).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Drawing!\n";
 			}
 
 			//std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(4).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Mask!\n";
+			}
+
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(5)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(5).IsVisible())
+			{
+				SceneHandle()->EditScene().GetMeshObject(5).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
+				std::cout << "Picked up Necklace!\n";
 			}
 		}
 		if (InputHandler::IsRMBPressed())
@@ -179,6 +193,45 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
+		}
+
+
+		/*
+			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
+		*/
+		float speed = 0.1f;
+		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x + speed, -0.0f, z },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x - speed, -0.0f, z },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+
+		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x , -0.0f, z + speed },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x , -0.0f, z - speed },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
 	}
 }
@@ -245,6 +298,7 @@ bool Game::OnFrame(const float& deltaTime)
 	Engine::Render();
 	Engine::Update();
 
+
 	return true;
 }
 
@@ -289,7 +343,9 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 35.0f, 85.0f }
+
+	, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
@@ -366,6 +422,17 @@ void Game::LoadMap()
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
+
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "cat_bagoverhead.jpg", "", false, { pos.x, -3.0f, pos.y });
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
+		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+		{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 
 	// Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -50.0f });
@@ -455,6 +522,19 @@ void Game::LoadMap()
 		}
 
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	}
+
+	for (int i = 0; i < 50; i++)
+	{
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
+		{
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
+		}
+
+		SceneHandle()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	}
 
 	/*

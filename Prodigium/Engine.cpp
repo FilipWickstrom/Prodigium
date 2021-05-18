@@ -5,6 +5,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 	this->playerHp = 100;
+	this->cluesCollected = 0;
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -128,7 +129,7 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
-	GUIHandler::Render(this->playerHp);
+	GUIHandler::Render(this->playerHp, this->cluesCollected);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
@@ -136,6 +137,10 @@ void Engine::Render()
 
 void Engine::Update()
 {
+	// So we don't go over a certain value
+	this->playerHp = std::min(this->playerHp, 100);
+	this->cluesCollected = std::min(this->cluesCollected, CLUES);
+
 	this->playerSanity = this->playerHp * 0.01f;
 }
 
