@@ -243,6 +243,14 @@ bool Game::OnFrame(const float& deltaTime)
 	// 2. Update the game assets and logic
 	// 3. Render
 
+	if (Engine::cluesCollected >= CLUES)
+	{
+		this->menu.Switch(true);
+		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
+	}
+
 	HandleInput(deltaTime);
 
 	if (this->zoomIn)
@@ -299,6 +307,8 @@ bool Game::OnFrame(const float& deltaTime)
 	Engine::Update();
 
 
+
+
 	return true;
 }
 
@@ -325,6 +335,7 @@ void Game::ResetValues()
 	// Reset values
 	Engine::playerHp = 100;
 	Engine::playerSanity = 1.0f;
+	Engine::cluesCollected = 0;
 	this->inGoal = false;
 	this->menu.Reset();
 	this->picker.Reset();
