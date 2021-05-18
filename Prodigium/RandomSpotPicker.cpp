@@ -34,7 +34,9 @@ DirectX::SimpleMath::Vector2 RandomSpotPicker::getRandomPos()
     while(picked[random] == 1)
         random = rand() % SPOTS;
 
-    std::cout << spots[random].x << " " << spots[random].y << "\n";
+#ifdef _DEBUG
+    std::cout << "x: " << spots[random].x << " z:" << spots[random].y << "\n";
+#endif
     picked[random] = 1;
     return spots[random];
 }
