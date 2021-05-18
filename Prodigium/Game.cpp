@@ -66,6 +66,18 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (this->hasLoaded && !this->isPaused)
 	{
+		if (InputHandler::IsKeyPressed(Keyboard::G))
+		{
+			Engine::playerHp = 50;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::H))
+		{
+			Engine::playerHp = 0;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::J))
+		{
+			Engine::playerHp = 100;
+		}
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
 			//OpenConsole();
@@ -229,6 +241,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Engine::ClearDisplay();
 	Engine::Render();
+	Engine::Update();
 
 	return true;
 }
@@ -261,6 +274,10 @@ void Game::LoadMainMenu()
 {
 	if (this->player)
 		delete this->player;
+
+	// Reset values
+	Engine::playerHp = 100;
+	Engine::playerSanity = 1.0f;
 
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
@@ -429,17 +446,35 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i < 1500; i++)
 	{
-		float x = (float)(rand() % 1000 - rand() % 1000);
-		float z = (float)(rand() % 1000 - rand() % 1000);
-		while (x > -300 && x < 700 && z > -300 && z < 150)
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
 		{
-			x = (float)(rand() % 1000 - rand() % 1000);
-			z = (float)(rand() % 1000 - rand() % 1000);
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
 		}
 
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	}
+
+	// Random lights in the forests
+	for (int j = 0; j < 5; j++)
+	{
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
+		{
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
+		}
+
+		SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { x, -7.0f, z }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+		L.position = { x, 25.0f, z, 30.0f };
+		SceneHandle()->EditScene().AddLight(L);
+		std::cout << "Light " << j << " is at pos: " << "x:" << x << " z:" << z << "\n";
 	}
 
 	this->hasLoaded = true;

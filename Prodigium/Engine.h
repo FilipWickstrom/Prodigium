@@ -20,6 +20,8 @@ class Engine
 protected:
 
 	float playerSanity; // Blur
+	int playerHp; // Health
+	int cluesCollected;
 
 private:
 	Window window;
@@ -44,6 +46,7 @@ public:
 	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
+	void Update();
 	void OpenConsole();
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;

@@ -4,6 +4,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
+	this->playerHp = 100;
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -124,13 +125,18 @@ void Engine::Render()
 	//Render the blur depending on sanity
 	//1.0f is full sanity = no blur
 	//0.0f is no sanitiy = max blur
-	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
-	GUIHandler::Render();
+	GUIHandler::Render(this->playerHp);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
+}
+
+void Engine::Update()
+{
+	this->playerSanity = this->playerHp * 0.01f;
 }
 
 void Engine::OpenConsole()

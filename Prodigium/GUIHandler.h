@@ -28,15 +28,17 @@ private:
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
 	void RenderTrapGUI();
-	void RenderBrainGUI();
+	void RenderBrainGUI(int playerHp);
+
 	void RenderPauseMenu();
 	void RenderMainMenu();
+
 	void QuitGame();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
-	static void Render();
+	static void Render(int playerHp);
 	static void Shutdown();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);

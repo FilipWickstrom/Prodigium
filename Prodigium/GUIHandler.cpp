@@ -27,6 +27,9 @@ GUIHandler::~GUIHandler()
     textureTrap2->Release();
     textureBrain->Release();
     textureOutline->Release();  
+
+    if (this->textureBrain)
+        this->textureBrain->Release();
 }
 
 void SetUpGUIStyleDEBUG()
@@ -186,7 +189,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render()
+void GUIHandler::Render(int playerHp)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -218,7 +221,7 @@ void GUIHandler::Render()
     {
         SetUpGUIStyleGame();
         GUIHandler::instance->RenderTrapGUI();
-        //GUIHandler::instance->RenderBrainGUI();
+        GUIHandler::instance->RenderBrainGUI(playerHp);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
     }
@@ -348,17 +351,31 @@ void GUIHandler::RenderTrapGUI()
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI()
+void GUIHandler::RenderBrainGUI(int playerHp)
 {
-    bool* isActive = new bool;
+    float fade = 1.0f;
+    float hp = playerHp;
+    fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
+
+    bool* isActive = new bool(true);
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
-    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));
-    SetNextWindowSize(ImVec2((float)imageWidth + 50.f, (float)imageHeight + 50.f));
+    SetNextWindowSize(ImVec2((float)imageWidth + 25, (float)imageHeight + 25));
     Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
-    Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight));
+    Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight), ImVec2(0, 0)
+    , ImVec2(1, 1), ImVec4(fade, fade, fade, fade));
+    End();
+
+    std::string rest(std::to_string(playerHp));
+    rest.append(" / 100");
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 200, 200));
+    SetNextWindowSize(ImVec2(500, 500), 0);
+    Begin("HEALTH", isActive, ImGuiWindowFlags_NoTitleBar);
+    SetWindowFontScale(2.f);
+    Text(rest.c_str());
     End();
     delete isActive;
 }
+
 
 void GUIHandler::RenderPauseMenu()
 {
