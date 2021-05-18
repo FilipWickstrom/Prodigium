@@ -14,41 +14,45 @@ class Animation
 {
 private:
 	UINT nrOfBones;
-	double currentFrame;
-	double duraction;				//20
-	double ticksPerSecond;			//24
-	//theFrame = currentFrame + dt * ticksPerSecond is how many frame to go?
+	double currentFrameTime;
+	double duraction;				//How many frames the animation is
+	double ticksPerSecond;			//Framerate of the animation
+
+	//This setting will make the animation
+	//smoother but will cost some extra frames
+	bool useInterpolation;
 
 	struct Translation
 	{
-		//Times
-		std::vector<double> positionTime = {};		//ADD OR NOT???
-		std::vector<double> rotationTime = {};		//ADD OR NOT???
-		std::vector<double> scaleTime = {};			//ADD OR NOT???
-		//Actual values
+		//Times of when something change
+		std::vector<double> positionTime = {};
+		std::vector<double> rotationTime = {};
+		std::vector<double> scaleTime = {};
+		//Actual values of the change
 		std::vector<aiVector3D> position = {};
 		std::vector<aiVector3D> scale = {};
 		std::vector<aiQuaternion> rotation = {};
 	};
-	//Translation lastTranslation;	//Will be used to interpolate later?
 
 	//Every bone has it own positions, scale and rotation on each frame
 	std::unordered_map<std::string, Translation> translations;
 
-	//InterpolatePosition(time)
-	//InterpolateRotation(time)
-	//InterpolateScale(time)
+	//Finding the closest keyframe to the current frametime
+	UINT GetClosestKeyframe(const std::string& boneName, const std::vector<double>& keyFrameTimes);
+
+	//Interpolating between two positions, scales or rotations
+	aiVector3D InterpolatePosition(const std::string& boneName);
+	aiVector3D InterpolateScale(const std::string& boneName);
+	aiQuaternion InterpolateRotation(const std::string& boneName);
+
 public:
 	Animation();
 	~Animation();
 
-	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap);
+	//Load in the animation. Only takes the bones that was loaded from the object
+	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, UINT animSpeed = 0);
 
-	bool GetAnimationMatrix(std::string boneName, DirectX::SimpleMath::Matrix& animation);
-
-
-	//Not the best... Sending copies of the matrices...?
-	const std::vector<DirectX::SimpleMath::Matrix> GetAnimationMatrices(std::vector<std::string> allBones, double time);
-
-	//GetModelMatrices(time, std::string boneName)
+	//Gets the animation matrices at this time
+	void GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices);
+	void SetAnimationSpeed(UINT animSpeed);
 };

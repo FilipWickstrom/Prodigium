@@ -1,23 +1,16 @@
 #pragma once
-//#include <assimp/Importer.hpp>
-//#include <assimp/postprocess.h>
-//#include <assimp/scene.h>
-
-//#include <vector>
 #include <fstream>
 #include <unordered_map>
 
 #include "GameObject.h"
-//#include "UsefulStructuresHeader.h"
 #include "ResourceManager.h"
-
 #include "Animation.h"
 
-const UINT MAXBONES = 40;
+const UINT MAXBONES = 25;
 const UINT MAXTEXTURES = 2;
 
 /*
-Load in a model with bones, .fbx-format supported for now
+Load in a model with bones, ".fbx" supported for now
 Move the bones with different animations
 
 If optimalization is needed:
@@ -35,7 +28,7 @@ TODO:
 class AnimatedObject : public GameObject
 {
 private:
-	//Needs a seperate vertexshader and input to it
+	//Needs a seperate vertexshader and input for it
 	ID3D11VertexShader* vertexShader;
 	std::string vShaderByteCode;
 	ID3D11InputLayout* inputlayout;
@@ -49,36 +42,32 @@ private:
 	//Holds each bones final matrix
 	ID3D11Buffer* boneMatricesBuffer;
 
-	//Tree structure of bones instead of saving assimps larger version		- MOVE TO USEFUL STRUCTURES?
+	//Tree structure of bones instead of saving assimps larger version
 	struct Bone
 	{
-		UINT id = -1;
+		UINT id = 0;
 		std::string name = "";
 		//Bonespace to mesh-space in bindpose (T-pose)
 		DirectX::SimpleMath::Matrix inverseBind = {};
 		std::vector<Bone> children = {};
 	} rootBone;
 
-	//Name of the bone refers to which ID it has. Can be used to search up in vectors later?
+	//Name of the bone refers to which ID it has
 	std::unordered_map<std::string, UINT> boneMap;
 	std::vector<std::string> boneNames;
 	
-	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;
-	std::vector<DirectX::SimpleMath::Matrix> animatedMatrices;
-	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;
+	//Updated every frame
+	std::vector<DirectX::SimpleMath::Matrix> animatedMatrices;	//Matrices that will be calculated from saved animation information
+	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//
+	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
 
-	//Bones
-	//std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//Changes dynamic - current model transforms
-	//std::vector<DirectX::SimpleMath::Matrix> localMatrices;		//Changes dynamic - current local transforms	//relative to parent
-	//std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Also dynamic - final version that gets uploaded to GPU. Need or not???
-
-	/*enum allAnimations:
-		idle
-		walk
-		run */
-
-	//Vector of animation
-	Animation animation1;
+	//Switch between states of animations
+	enum class AnimationState
+	{
+		IDLE, WALK, RUN, NROFSTATE = 4
+	};
+	AnimationState currentState;
+	std::vector<Animation> allAnimations;
 
 private:
 	//Basic parts to be able to render vertices
@@ -94,21 +83,25 @@ private:
 	
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string riggedModelFile);
+	bool LoadAnimations(std::string riggedModelFile);
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
 	bool LoadTextures(std::string diffuse, std::string normalMap = "");
 	
-	//TESTING***
+
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID);
 
 public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
 
-	bool Initialize(std::string tposeFile, std::string diffuse, std::string normalMap = "");
+	bool Initialize(std::string tposeFile, std::string diffuse, std::string normalMap = "", 
+					const DirectX::SimpleMath::Vector3& pos = {0,0,0},
+					const DirectX::SimpleMath::Vector3& rot = {0,0,0},
+					const DirectX::SimpleMath::Vector3& scl = {1,1,1});
 	
-	//ChangeAnimation(allAnimations : animation)
+	void ChangeAnimState(AnimationState state);
 
 	//PlayAnimation()
 	//StopAnimation()

@@ -1,4 +1,4 @@
-#define MAXNROFBONES 40
+#define MAXNROFBONES 25
 
 cbuffer CameraViewProj : register(b0)
 {
@@ -36,9 +36,7 @@ VertexShaderOutput main(VertexShaderInput input)
     
     //Calculating the model/world-matrix for this vertex
     //depending on the bones weights. Each vertex can be 
-    //affected by a maximum of 4  
-    
-    //float4x4 world = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+    //affected by a maximum of 4 bones
     float4x4 world = 0.0f;
     for (int i = 0; i < 4; i++)
     {

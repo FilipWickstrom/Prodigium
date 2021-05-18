@@ -205,7 +205,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	//TESTING TO ADD A ANIMATED OBJECT TO THE SCENE...
-	if (!this->anime.Initialize("Player/SkeletonMesh.fbx", "Char_Albedo.png"))
+	if (!this->anime.Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png", "", { 0,-5,10 }))
 	{
 		return false;
 	}
