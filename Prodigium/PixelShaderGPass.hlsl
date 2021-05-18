@@ -8,6 +8,7 @@ struct PixelShaderInput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
+    float4 tangent : TANGENT;
 };
 
 struct PixelShaderOutput
@@ -24,9 +25,24 @@ PixelShaderOutput main(PixelShaderInput input)
     output.positionWS = input.positionWS;
     
     output.colour = diffuseTexture.Sample(anisotropic, input.texCoord);
-
-    //LATER FIX: implement normalmap calculations here
-    output.normalWS = float4(input.normalWS, 1.0f);
+    
+    float3 normalMap = normalTexture.Sample(anisotropic, input.texCoord).rgb;
+    normalMap = normalMap * 2.0f - 1.0f;
+    
+    if(input.tangent.w >= 1.0f)
+    {
+        float3 tangent = input.tangent.xyz;
+        tangent = normalize(tangent);
+        float3 bitangent = cross(input.tangent.xyz, input.normalWS);
+        bitangent = normalize(bitangent);
+        float3x3 TBN = float3x3(tangent, bitangent, input.normalWS);
+    
+        output.normalWS = float4(mul(normalMap, TBN), 0.0f);
+        output.normalWS = normalize(output.normalWS);
+    }
+    else
+        output.normalWS = float4(input.normalWS, 0.0f);
+    
     output.colour =  output.colour;
     return output;
 }

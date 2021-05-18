@@ -9,12 +9,17 @@ cbuffer ModelMatrix : register(b1)
     float4x4 world;
 };
 
+cbuffer isNormalMapped : register(b2)
+{
+    float4 hasNormalMap;
+}
+
 struct VertexShaderInput
 {
     float3 position : POSITION;
     float2 texCoord : TEXCOORD;
     float3 normal   : NORMAL;
-    //add tangent later for normalmap
+    float3 tangent : TANGENT;
 };
 
 struct VertexShaderOutput
@@ -23,6 +28,7 @@ struct VertexShaderOutput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
+    float4 tangent : TANGENT;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
@@ -38,6 +44,9 @@ VertexShaderOutput main(VertexShaderInput input)
     output.texCoord = input.texCoord;
 
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
+    
+    // Last spot is for if it has normal map or not.
+    output.tangent = float4(mul(input.tangent, (float3x3)world), hasNormalMap.x);
 
 	return output;
 }

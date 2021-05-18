@@ -16,7 +16,6 @@ GeometryPass::GeometryPass()
 	this->pShader = nullptr;
 	this->sampler = nullptr;
 	this->vShader = nullptr;
-
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		this->gBuffer.renderTargets[i] = nullptr;
@@ -52,7 +51,7 @@ void GeometryPass::ClearScreen()
 {
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
-		float color[4];
+		float color[4] = {};
 
 		// Red
 		color[0] = 0.0f;
@@ -155,14 +154,15 @@ bool GeometryPass::CreateInputLayout()
 {
 	HRESULT hr;
 
-	D3D11_INPUT_ELEMENT_DESC geometryLayout[3] =
+	D3D11_INPUT_ELEMENT_DESC geometryLayout[4] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 3, this->vShaderByteCode.c_str(), this->vShaderByteCode.length(), &inputLayout);
+	hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 4, this->vShaderByteCode.c_str(), this->vShaderByteCode.length(), &inputLayout);
 
 	if (FAILED(hr))
 	{
@@ -502,7 +502,7 @@ bool LightPass::CreateSamplerState()
 bool LightPass::CreateDepthStencilState()
 {
 	HRESULT hr;
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
 
 	dsDesc.DepthEnable = false;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
@@ -643,6 +643,7 @@ void LightPass::Prepare()
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, this->shaderResources);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }

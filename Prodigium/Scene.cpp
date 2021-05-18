@@ -31,7 +31,7 @@ const bool Scene::SetupLightBuffer()
 
 	if (!(FAILED(hr)))
 	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 		srvDesc.BufferEx.FirstElement = 0;
@@ -83,6 +83,7 @@ Scene::Scene()
 	this->lightShaderView = nullptr;
 	this->infoBuffer = nullptr;
 	this->firstTime = true;
+	this->menuMode = false;
 	this->shadowHandler = new ShadowHandler();
 
 	LightStruct filler;
@@ -230,6 +231,11 @@ MeshObject& Scene::GetMeshObject(int index)
 	return *this->objects[index];
 }
 
+const std::vector<MeshObject*>& Scene::GetAllMeshObjects()
+{
+	return this->objects;
+}
+
 ShadowHandler& Scene::GetShadows()
 {
 	return *this->shadowHandler;
@@ -335,8 +341,14 @@ void Scene::RenderParticles()
 	if (this->particles.IsActive())
 	{
 		this->particles.Render();
-		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), { 0.0f, 0.0f, 0.0f });
+		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[6]->GetPosition());
 	}
+
+}
+
+void Scene::SwitchMenuMode(bool sw)
+{
+	this->menuMode = sw;
 }
 
 #ifdef _DEBUG

@@ -14,7 +14,6 @@ private:
 #ifdef _DEBUG
 	std::vector<ID3D11Buffer*>boundingBoxBuffer;
 #endif
-	std::vector<DirectX::BoundingOrientedBox> collidersOriginal;
 
 	//Holds all the views of the textures:
 	//1. Diffuse texture
@@ -23,10 +22,15 @@ private:
 
 	bool isPickUp;
 	bool isVisible;
+	ID3D11Buffer* hasNormalMapBuffer;
 
 private:
 	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
+	// Copies the mesh colliders
 	void SetColliders();
+	// Updates the planes of a boundingBox to account for rotation
+	void UpdateBoundingPlanes();
+	bool SetUpNormalMapBuffer();
 #ifdef _DEBUG
 	bool CreateColliderBuffers();
 #endif
@@ -44,10 +48,14 @@ public:
 	void SetPickUp(bool toggle = true);
 	void Render();
 	void UpdateBoundingBoxes();
+	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
 	const bool IsVisible() const;
 #ifdef _DEBUG
 	void RenderBoundingBoxes();
 #endif
 
-	std::vector<DirectX::BoundingOrientedBox> colliders;
+	std::vector<Collider> collidersOriginal;
+	std::vector<Collider> colliders;
+
+	void RemoveColliders();
 };

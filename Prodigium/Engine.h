@@ -18,6 +18,12 @@
 
 class Engine
 {
+protected:
+
+	float playerSanity; // Blur
+	int playerHp; // Health
+	int cluesCollected; // clues
+
 private:
 	Window window;
 	GeometryPass gPass;
@@ -26,10 +32,7 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	GUIHandler guiHandler;
-	DirectX::SimpleMath::Vector3 playerPos;
-
-	float playerSanity;//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	
 	
 
 	AnimatedObject anime;	//DELETE LATER****
@@ -47,9 +50,9 @@ public:
 	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
+	void Update();
 	void OpenConsole();
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
-	void SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos);
 };

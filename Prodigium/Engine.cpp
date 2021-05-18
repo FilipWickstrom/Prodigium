@@ -4,6 +4,8 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
+	this->playerHp = 100;
+	this->cluesCollected = 0;
 
 	#ifdef _DEBUG
 		OpenConsole();
@@ -23,7 +25,7 @@ Engine::~Engine()
 	DebugInfo::Destroy();
 #endif
 	Graphics::Destroy();
-	this->guiHandler.Shutdown();
+	GUIHandler::Shutdown();
 }
 
 void Engine::RedirectIoToConsole()
@@ -101,9 +103,7 @@ void Engine::Render()
 	this->gPass.Prepare();
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
-
-	//TODO: Add Fog Pass
-
+	
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -127,14 +127,22 @@ void Engine::Render()
 	//Render the blur depending on sanity
 	//1.0f is full sanity = no blur
 	//0.0f is no sanitiy = max blur
-	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
-	this->guiHandler.setPlayerPos(this->playerPos);
-	this->guiHandler.Render();
+	GUIHandler::Render(this->playerHp, this->cluesCollected);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
+}
+
+void Engine::Update()
+{
+	// So we don't go over a certain value
+	this->playerHp = std::min(this->playerHp, 100);
+	this->cluesCollected = std::min(this->cluesCollected, CLUES);
+
+	this->playerSanity = this->playerHp * 0.01f;
 }
 
 void Engine::OpenConsole()
@@ -144,13 +152,8 @@ void Engine::OpenConsole()
 
 void Engine::ChangeActiveTrap()
 {
-	guiHandler.ChangeActiveTrap();
-	this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
-}
-
-void Engine::SetPlayerPos(const DirectX::SimpleMath::Vector3& PlayerPos)
-{
-	this->playerPos = PlayerPos;
+	GUIHandler::ChangeActiveTrap();
+	//this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
@@ -195,7 +198,10 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	this->guiHandler.Initialize(window.GetWindowHandler());
+	if (!GUIHandler::Initialize(window.GetWindowHandler()))
+	{
+		return false;
+	}
 	
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))

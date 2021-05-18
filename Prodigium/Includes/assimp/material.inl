@@ -44,11 +44,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file material.inl
  *  @brief Defines the C++ getters for the material system
  */
-
 #pragma once
 #ifndef AI_MATERIAL_INL_INC
 #define AI_MATERIAL_INL_INC
-
+#pragma warning(push,0)
 // ---------------------------------------------------------------------------
 inline aiPropertyTypeInfo ai_real_to_property_type_info(float)
 {
@@ -386,5 +385,5 @@ inline aiReturn aiMaterial::AddProperty<int>(const int* pInput,
 }
 
 //! @endcond
-
+#pragma warning(pop)
 #endif //! AI_MATERIAL_INL_INC

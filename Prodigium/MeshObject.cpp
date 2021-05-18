@@ -19,7 +19,7 @@ bool MeshObject::CreateColliderBuffers()
 
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
-		this->colliders[i].GetCorners(corners);
+		this->colliders[i].boundingBox.GetCorners(corners);
 
 		allCorners.push_back(corners[1]);
 		allCorners.push_back(corners[0]);
@@ -73,9 +73,44 @@ void MeshObject::SetColliders()
 	this->collidersOriginal = this->mesh->collidersOriginal;
 }
 
+void MeshObject::UpdateBoundingPlanes()
+{
+	for (size_t i = 0; i < this->colliders.size(); i++)
+	{
+		this->colliders[i].planes[0].normal = Vector3::TransformNormal(this->colliders[i].planes[0].normal, this->modelMatrix);
+		this->colliders[i].planes[0].normal.Normalize();
+		this->colliders[i].planes[1].normal = Vector3::TransformNormal(this->colliders[i].planes[1].normal, this->modelMatrix);
+		this->colliders[i].planes[1].normal.Normalize();
+		this->colliders[i].planes[2].normal = Vector3::TransformNormal(this->colliders[i].planes[2].normal, this->modelMatrix);
+		this->colliders[i].planes[2].normal.Normalize();
+		this->colliders[i].planes[3].normal = Vector3::TransformNormal(this->colliders[i].planes[3].normal, this->modelMatrix);
+		this->colliders[i].planes[3].normal.Normalize();
+	}
+}
+
+bool MeshObject::SetUpNormalMapBuffer()
+{
+	HRESULT hr;
+
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = sizeof(DirectX::SimpleMath::Vector4);
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	Vector4 isMapped = { 2.0f, 1.0f, 1.0f, 1.0f };
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = &isMapped;
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->hasNormalMapBuffer);
+
+	return !FAILED(hr);
+}
+
 MeshObject::MeshObject()
 {
 	this->mesh = nullptr;
+	this->hasNormalMapBuffer = nullptr;
 
 	for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
 	{
@@ -101,6 +136,11 @@ MeshObject::~MeshObject()
 	}
 	this->boundingBoxBuffer.clear();
 #endif
+	if (this->hasNormalMapBuffer)
+		this->hasNormalMapBuffer->Release();
+
+	this->colliders.clear();
+	this->collidersOriginal.clear();
 }
 
 bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, bool hasBounds, Vector3 pos, Vector3 rot, Vector3 scl)
@@ -135,6 +175,7 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 	//Load in the normal map
 	if (normalTxt != "")
 	{
+		normalTxt = "Textures/" + normalTxt;
 		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalTxt);
 		if (normTexture == nullptr)
 		{
@@ -144,6 +185,11 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		if (!BindTextureToSRV(normTexture, this->shaderResourceViews[1]))
 		{
 			std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
+			return false;
+		}
+		if (!this->SetUpNormalMapBuffer())
+		{
+			std::cout << "Failed to setup 'has normal map' buffer.\n";
 			return false;
 		}
 	}
@@ -162,11 +208,11 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		this->CreateColliderBuffers();
 #endif
 		this->UpdateBoundingBoxes();
-
+		this->UpdateBoundingPlanes();
 	}
 	else
 	{
-		this->mesh->RemoveColliders();
+		this->RemoveColliders();
 	}
 
 	this->CreateModelMatrixBuffer();
@@ -190,6 +236,14 @@ void MeshObject::Render()
 	//Set this objects modelmatrix
 	Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 
+	if (this->hasNormalMapBuffer)
+		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
+	else
+	{
+		ID3D11Buffer* nullMap = nullptr;
+		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &nullMap);
+	}
+
 	//Set all the textures to the geometry pass pixelshader
 	for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
 	{
@@ -210,10 +264,55 @@ void MeshObject::UpdateBoundingBoxes()
 
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
-		this->collidersOriginal[i].Transform(this->colliders[i], this->modelMatrix);
+		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, this->modelMatrix);
+#ifdef _DEBUG
+		colliders[i].boundingBox.GetCorners(corners);
+
+		allCorners.push_back(corners[1]);
+		allCorners.push_back(corners[0]);
+		allCorners.push_back(corners[3]);
+		allCorners.push_back(corners[2]);
+		allCorners.push_back(corners[1]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[2]);
+		allCorners.push_back(corners[3]);
+		allCorners.push_back(corners[7]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[7]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[0]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[4]);
+		allCorners.push_back(corners[5]);
+		allCorners.push_back(corners[6]);
+		allCorners.push_back(corners[7]);
+
+		Graphics::GetContext()->Map(this->boundingBoxBuffer[i], 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
+		memcpy(subResource.pData, allCorners.data(), allCorners.size() * sizeof(DirectX::XMFLOAT3));
+		Graphics::GetContext()->Unmap(this->boundingBoxBuffer[i], 0);
+
+		allCorners.clear();
+#endif
+	}
+}
+
+void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
+{
+#ifdef _DEBUG
+	D3D11_MAPPED_SUBRESOURCE subResource = {};
+
+	std::vector<DirectX::XMFLOAT3> allCorners;
+	DirectX::XMFLOAT3 corners[8];
+#endif
+
+	for (size_t i = 0; i < this->colliders.size(); i++)
+	{
+		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, transform);
 
 #ifdef _DEBUG
-		colliders[i].GetCorners(corners);
+		colliders[i].boundingBox.GetCorners(corners);
 
 		allCorners.push_back(corners[1]);
 		allCorners.push_back(corners[0]);
@@ -260,3 +359,9 @@ void MeshObject::RenderBoundingBoxes()
 	}
 }
 #endif
+
+void MeshObject::RemoveColliders()
+{
+	this->colliders.clear();
+	this->collidersOriginal.clear();
+}

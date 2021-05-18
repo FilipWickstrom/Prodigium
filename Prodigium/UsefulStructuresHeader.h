@@ -12,6 +12,7 @@ struct Vertex
 	DirectX::SimpleMath::Vector3 position = {};
 	DirectX::SimpleMath::Vector2 uv = {};
 	DirectX::SimpleMath::Vector3 normal = {};
+	DirectX::SimpleMath::Vector3 tangent = {};
 };
 
 /*
@@ -34,7 +35,12 @@ struct ViewProjMatrix
 	DirectX::SimpleMath::Matrix view;
 	DirectX::SimpleMath::Matrix projection;
 };
-
+struct fogBuffer
+{
+	float fogStart;
+	float fogEnd;
+	float padding1, padding2;
+};
 /*
 	Compact version of the 'Matrix' struct.
 	Contains one element that can be used as world, view and projection in one matrix.

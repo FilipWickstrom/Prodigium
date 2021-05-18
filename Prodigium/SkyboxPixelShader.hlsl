@@ -12,5 +12,6 @@ struct InputFromVertex
 
 float4 main(InputFromVertex input) : SV_TARGET
 {
-    return cubemap.Sample(samplerState, input.texCoord) * float4(0.2f,0.2f,0.2f,1.0f);
+    //TODO: Fix the skybox so it is the proper colour
+    return lerp(float4(0.2f, 0.2f, 0.2f, 0.0f), cubemap.Sample(samplerState, input.texCoord), 0.2);
 }

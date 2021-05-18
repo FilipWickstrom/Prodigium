@@ -9,14 +9,11 @@ cbuffer buffer : register(b0)
     float4 speed;
 }
 
-// Only need to know speed.
-// Send factor through constant buffer
-
 [numthreads(1024, 1, 1)]
 void main( uint3 DTid : SV_DispatchThreadID )
 {
     // New position 
-    float newPos = buffer[DTid.x].position.y - 2.0f * speed.x;
+    float newPos = buffer[DTid.x].position.y - 2.5f * speed.x;
     
     // Current Position
     float currentPos = buffer[DTid.x].position.y;

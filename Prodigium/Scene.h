@@ -22,6 +22,8 @@ private:
 	// points to the current selected light.
 	int currentLight;
 
+	bool menuMode;
+
 	/*
 		For rendering lights
 	*/
@@ -85,6 +87,8 @@ public:
 	// return the object at index
 	MeshObject& GetMeshObject(int index);
 
+	const std::vector<MeshObject*>& GetAllMeshObjects();
+
 	ShadowHandler& GetShadows();
 
 	ParticleSystem& GetParticles();
@@ -113,4 +117,6 @@ public:
 
 	// render the particles inside the scene.
 	void RenderParticles();
+
+	void SwitchMenuMode(bool sw = true);
 };
