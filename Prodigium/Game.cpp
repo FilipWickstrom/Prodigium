@@ -78,6 +78,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			Engine::playerHp = 100;
 		}
+
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
 			//OpenConsole();
@@ -172,18 +173,6 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 			Engine::ChangeActiveTrap();
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::B))
-		{
-			this->playerSanity -= 0.1f;
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::N))
-		{
-			this->playerSanity += 0.1f;
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::T))
-		{
-			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{

@@ -21,7 +21,7 @@ protected:
 
 	float playerSanity; // Blur
 	int playerHp; // Health
-	int cluesCollected;
+	int cluesCollected; // clues
 
 private:
 	Window window;
