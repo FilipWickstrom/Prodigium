@@ -4,12 +4,17 @@ SoundHandler::SoundHandler()
 {
 	this->audEngine = nullptr;
 	this->soundEffect = nullptr;
+	this->waveBank = nullptr;
+	this->instance = nullptr;
+	this->masterVolume = 1.f;
 }
 
 SoundHandler::~SoundHandler()
 {
-	delete this->soundEffect;
-	delete this->audEngine;
+	this->instance.release();
+	this->waveBank.release();
+	this->soundEffect.release();
+	this->audEngine.release();	
 }
 
 const bool SoundHandler::Initialize()
@@ -19,11 +24,14 @@ const bool SoundHandler::Initialize()
 	if (FAILED(hr))
 		return false;
 
-	DirectX::AUDIO_ENGINE_FLAGS eFlags = DirectX::AudioEngine_Default;
+	DirectX::AUDIO_ENGINE_FLAGS eFlags = DirectX::AudioEngine_Default | DirectX::AudioEngine_EnvironmentalReverb 
+									   | DirectX::AudioEngine_ReverbUseFilters;
 #ifdef _DEBUG
 	eFlags |= DirectX::AudioEngine_Debug;
 #endif
-	audEngine = new DirectX::AudioEngine( eFlags );
+
+	this->audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
+	this->waveBank = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
 
 	return true;
 }
@@ -32,56 +40,55 @@ void SoundHandler::Update()
 {
 	if (!this->audEngine->Update())
 	{
-		this->audEngine->Update();
+		std::cout << "No audio playing!" << std::endl;
 
 		if (this->audEngine->IsCriticalError())
 		{
 			std::cerr << "Critical Error Occurred with Audio Device!" << std::endl;
 		}
 	}
+	this->audEngine->Update();
 }
 
-void SoundHandler::PlayOneShot(const wchar_t* fileName)
+void SoundHandler::SetVolume(const float& newVolume)
 {
-	wchar_t filePath[50] = L"media/";
-	wcscat_s(filePath, fileName);
-	
-	this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
-	this->soundEffect->Play();
+	this->masterVolume = newVolume;
 }
 
-void SoundHandler::PlayLooping(const wchar_t* fileName, const bool& play3D, const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos)
+void SoundHandler::PlayOneShot(const int& index)
 {
-	wchar_t filePath[50] = L"media/";
-	wcscat_s(filePath, fileName);
+	this->waveBank->Play(index, masterVolume, 0, 0);
+}
 
-	this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
-	
-	if (!play3D)
+void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
+							   const DirectX::SimpleMath::Vector3& emitterPos)
+{
+	if (!use3D)
 	{
-		auto effect = this->soundEffect->CreateInstance();
-		effect->Play(true);
+		this->instance = this->waveBank->CreateInstance(index);
+		if (!this->instance)
+			std::cout << "Index not in wave bank!" << std::endl;
+		else
+		{
+			this->instance->SetVolume(this->masterVolume);
+			this->instance->Play(true);
+		}
 	}
-	
 	else
-	{
-		auto effect = this->soundEffect->CreateInstance(DirectX::SoundEffectInstance_Use3D);
+	{		
+		this->instance = this->waveBank->CreateInstance(index, DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters);
+		if(!this->instance)
+			std::cout << "Index not in wave bank!" << std::endl;
+		else
+		{
+			DirectX::AudioListener listner;
+			listner.SetPosition(listnerPos);
+			DirectX::AudioEmitter emitter;
+			emitter.SetPosition(emitterPos);
 
-		DirectX::AudioListener listener;
-		listener.SetPosition(listnerPos);
-		DirectX::AudioEmitter emitter;
-		emitter.SetPosition(emitterPos);
-
-		effect->Apply3D(listener, emitter);
-		effect->Play(true);
+			this->instance->SetVolume(this->masterVolume);
+			this->instance->Apply3D(listner, emitter);
+			this->instance->Play(true);
+		}
 	}
-}
-
-void SoundHandler::PlayLooping(const wchar_t* fileName)
-{
-	wchar_t filePath[50] = L"media/";
-	wcscat_s(filePath, fileName);
-	this->soundEffect = this->soundEffect = new DirectX::SoundEffect(this->audEngine, filePath);
-	auto effect = this->soundEffect->CreateInstance();
-	effect->Play(true);
 }

@@ -11,15 +11,19 @@
 class SoundHandler
 {
 private:
-	DirectX::AudioEngine* audEngine;
-	DirectX::SoundEffect* soundEffect;
+	std::unique_ptr<DirectX::AudioEngine> audEngine;
+	std::unique_ptr<DirectX::SoundEffect> soundEffect;
+	std::unique_ptr<DirectX::WaveBank> waveBank;
+	std::unique_ptr<DirectX::SoundEffectInstance> instance;
+	float masterVolume;
 public:
 	//DELETE_COPY_ASSIGNMENT(SoundHandler);
 	SoundHandler();
 	virtual ~SoundHandler();
 	const bool Initialize();
 	void Update();
-	void PlayOneShot(const wchar_t* fileName); 
-	void PlayLooping(const wchar_t* fileName, const bool& play3D, const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos);
-	void PlayLooping(const wchar_t* fileName);
+	void SetVolume(const float& newVolume);
+	void PlayOneShot(const int& index); 
+	void PlayLooping(const int& index, const bool& use3D = false, const DirectX::SimpleMath::Vector3& listnerPos = { 0,0,0 }, 
+					 const DirectX::SimpleMath::Vector3& emitterPos = { 0,0,0 });
 };

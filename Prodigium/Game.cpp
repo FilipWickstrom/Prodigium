@@ -6,6 +6,17 @@
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
+void Game::Whisper()
+{
+	float shouldWhisper = (float)(rand() % 10000);
+
+	if (shouldWhisper > 5 && shouldWhisper < 10)
+	{
+		int index = (int)(rand() % 4 + 1);
+		this->soundHandler.PlayOneShot(index);
+	}
+}
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -158,7 +169,6 @@ void Game::HandleInput(const float& deltaTime)
 		if (InputHandler::IsKeyPressed(Keyboard::T))
 		{
 			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
-			this->soundHandler.PlayOneShot(L"ohYeah.wav");
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
@@ -190,6 +200,7 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
+		
 	}
 	if (this->inGoal)
 	{
@@ -221,6 +232,8 @@ bool Game::OnFrame(const float& deltaTime)
 		GUIHandler::ShowGameGUI(true);
 		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
+		Whisper();
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
@@ -230,7 +243,7 @@ bool Game::OnFrame(const float& deltaTime)
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 
-	//this->sh->Update();
+	this->soundHandler.Update();
 
 	Engine::ClearDisplay();
 	Engine::Render();
@@ -258,7 +271,8 @@ bool Game::OnStart()
 		return false;
 	}
 #endif
-
+	this->soundHandler.SetVolume(0.1);
+	this->soundHandler.PlayLooping(0);
 	return true;
 }
 
