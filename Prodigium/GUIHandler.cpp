@@ -27,9 +27,6 @@ GUIHandler::~GUIHandler()
     textureTrap2->Release();
     textureBrain->Release();
     textureOutline->Release();  
-
-    if (this->textureBrain)
-        this->textureBrain->Release();
 }
 
 void SetUpGUIStyleDEBUG()

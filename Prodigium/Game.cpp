@@ -113,9 +113,12 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsLMBPressed())
 		{
-			//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+			std::cout << "X: " << this->player->GetMeshObject()->GetPosition().x << " Z: " << this->player->GetMeshObject()->GetPosition().z << "\n";
+
+
 
 			// Test pick up
+			/*
 			std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
 			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
 			{
@@ -136,6 +139,7 @@ void Game::HandleInput(const float& deltaTime)
 				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
 				std::cout << "Picked up Mask!\n";
 			}
+			*/
 		}
 		if (InputHandler::IsRMBPressed())
 		{
@@ -266,18 +270,18 @@ bool Game::OnStart()
 
 void Game::ResetValues()
 {
+	// Reset values
+	Engine::playerHp = 100;
+	Engine::playerSanity = 1.0f;
 	this->inGoal = false;
 	this->menu.Reset();
+	this->picker.Reset();
 }
 
 void Game::LoadMainMenu()
 {
 	if (this->player)
 		delete this->player;
-
-	// Reset values
-	Engine::playerHp = 100;
-	Engine::playerSanity = 1.0f;
 
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
@@ -341,32 +345,28 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Test pickups but its static lol
-	float randX = (float)(rand() % 200 - rand() % 200);
-	float randZ = (float)(rand() % 200- rand() % 200);
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, { pos.x, -3.0f, pos.y }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y , 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	randX = (float)(rand() % 200 - rand() % 200);
-	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, { pos.x, -3.0f, pos.y }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
 
-	randX = (float)(rand() % 200 - rand() % 200);
-	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, { randX, -3.0f, randZ });
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, { pos.x, -3.0f, pos.y });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Houses around the town.
@@ -459,6 +459,7 @@ void Game::LoadMap()
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 
+	/*
 	// Random lights in the forests
 	for (int j = 0; j < 5; j++)
 	{
@@ -476,6 +477,7 @@ void Game::LoadMap()
 		SceneHandle()->EditScene().AddLight(L);
 		std::cout << "Light " << j << " is at pos: " << "x:" << x << " z:" << z << "\n";
 	}
+	*/
 
 	this->hasLoaded = true;
 	this->inGoal = true;
