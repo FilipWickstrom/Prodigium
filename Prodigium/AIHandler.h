@@ -12,5 +12,6 @@ public:
 	static const bool Initialize();
 	virtual ~AIHandler();
 	static void CreateNodeGrid();
+	static Node* getNodeByID(const int& id);
 };
 
