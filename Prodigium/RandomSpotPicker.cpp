@@ -16,6 +16,8 @@ RandomSpotPicker::RandomSpotPicker()
     spots[8] = SimpleMath::Vector2(-87, 158);
     spots[9] = SimpleMath::Vector2(339, 160);
     spots[10] = SimpleMath::Vector2(325, -58);
+    spots[11] = SimpleMath::Vector2(48, 174);
+    spots[12] = SimpleMath::Vector2(-275, 84);
 
     for (int i = 0; i < SPOTS; i++)
     {

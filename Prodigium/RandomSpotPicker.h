@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine.h"
 
-#define SPOTS 11
+#define SPOTS 13
 class RandomSpotPicker
 {
 private:

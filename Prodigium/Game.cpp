@@ -81,12 +81,7 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
-			//OpenConsole();
-			SceneHandle()->EditScene().GetParticles().SetActive(true);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::L))
-		{
-			SceneHandle()->EditScene().GetParticles().SetActive(false);
+			OpenConsole();
 		}
 		if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
 		{
@@ -440,6 +435,8 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
@@ -448,11 +445,17 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -135.0f }, {0.0f, 3.14159f, 0.0f});
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+
 
 	/*
 		Lamps
