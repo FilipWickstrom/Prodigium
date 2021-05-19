@@ -2,12 +2,6 @@
 #include "Graphics.h"
 using namespace DirectX::SimpleMath;
 
-bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
-{
-	HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(texture, nullptr, &srv);
-	return !FAILED(hr);
-}
-
 #ifdef _DEBUG
 bool MeshObject::CreateColliderBuffers()
 {
@@ -68,10 +62,139 @@ bool MeshObject::CreateColliderBuffers()
 }
 #endif
 
-void MeshObject::SetColliders()
+bool MeshObject::LoadTextures(std::string& diffuse, std::string& normal)
 {
-	this->colliders = this->mesh->colliders;
-	this->collidersOriginal = this->mesh->collidersOriginal;
+	HRESULT hr;
+
+	//Load in the diffuse texture
+	if (diffuse != "")
+	{
+		//To avoid writing long paths to textures
+		diffuse = "Textures/" + diffuse;
+
+		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuse);
+		if (diffTexture == nullptr)
+		{
+			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+			return false;
+		}
+		hr = Graphics::GetDevice()->CreateShaderResourceView(diffTexture, nullptr, &this->shaderResourceViews[0]);
+		if (FAILED(hr))
+		{
+			std::cout << "Failed to create SRV for diffuse texture" << std::endl;
+			return false;
+		}
+	}
+	if (normal != "")
+	{
+		//To avoid writing long paths to textures
+		normal = "Textures/" + normal;
+
+		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normal);
+		if (normTexture == nullptr)
+		{
+			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+			return false;
+		}
+		hr = Graphics::GetDevice()->CreateShaderResourceView(normTexture, nullptr, &this->shaderResourceViews[1]);
+		if (FAILED(hr))
+		{
+			std::cout << "Failed to create SRV for normal texture" << std::endl;
+			return false;
+		}
+
+		//Load normal map settings
+		if (!this->SetUpNormalMapBuffer())
+		{
+			std::cout << "Failed to setup 'has normal map' buffer.\n";
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void MeshObject::BuildColliders(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max)
+{
+	Collider collider;
+	DirectX::SimpleMath::Vector3 corners[8];
+
+	collider.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	collider.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	collider.boundingBox.Center.z = (max.z + min.z) / 2.f;
+
+	collider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	collider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	collider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	collider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+
+	collider.boundingBox.GetCorners(corners);
+
+	// Front plane
+	collider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	collider.planes[0].point = corners[1];
+
+	// Back plane
+	collider.planes[1].normal = collider.planes[0].normal * -1.f;
+	collider.planes[1].point = corners[6];
+
+	// Right side plane
+	collider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	collider.planes[2].point = corners[4];
+
+	// Left side plane
+	collider.planes[3].normal = collider.planes[2].normal * -1.f;
+	collider.planes[3].point = corners[5];
+
+	colliders.push_back(collider);
+}
+
+bool MeshObject::LoadColliders()
+{
+	std::vector<std::vector<DirectX::SimpleMath::Vector3>>positions;
+
+	if (this->mesh != nullptr)
+	{
+		positions = this->mesh->meshPositions;
+	}
+	else if (this->animatedObj != nullptr)
+	{
+		positions.push_back(this->animatedObj->meshPositions);
+	}
+
+	//Go through each of the meshes positions
+	for (size_t m = 0; m < positions.size(); m++)
+	{
+		//Find the min and max of the total
+		DirectX::SimpleMath::Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+		DirectX::SimpleMath::Vector3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
+
+		for (size_t i = 0; i < positions[m].size(); i++)
+		{
+			min.x = std::min(min.x, positions[m][i].x);
+			min.y = std::min(min.y, positions[m][i].y);
+			min.z = std::min(min.z, positions[m][i].z);
+
+			max.x = std::max(max.x, positions[m][i].x);
+			max.y = std::max(max.y, positions[m][i].y);
+			max.z = std::max(max.z, positions[m][i].z);
+		}
+		BuildColliders(min, max);
+	}
+	this->colliders.shrink_to_fit();
+	this->collidersOriginal = this->colliders;
+
+	#ifdef _DEBUG
+	if (!this->CreateColliderBuffers())
+	{
+		std::cout << "Failed to create collider buffer..." << std::endl;
+		return false;
+	}
+	#endif
+	this->UpdateBoundingBoxes();
+	this->UpdateBoundingPlanes();
+
+	return true;
 }
 
 void MeshObject::UpdateBoundingPlanes()
@@ -120,7 +243,8 @@ MeshObject::MeshObject()
 
 	this->isPickUp = false;
 	this->isVisible = true;
-	this->useMesh = true;
+	this->isAnimated = false;
+	this->animatedObj = nullptr;
 }
 
 MeshObject::~MeshObject()
@@ -130,132 +254,75 @@ MeshObject::~MeshObject()
 		if (this->shaderResourceViews[i])
 			this->shaderResourceViews[i]->Release();
 	}
-#ifdef _DEBUG
+	#ifdef _DEBUG
 	for (size_t i = 0; i < this->boundingBoxBuffer.size(); i++)
 	{
 		if (this->boundingBoxBuffer[i])
 			this->boundingBoxBuffer[i]->Release();
 	}
 	this->boundingBoxBuffer.clear();
-#endif
+	#endif
 	if (this->hasNormalMapBuffer)
 		this->hasNormalMapBuffer->Release();
+
+	if (this->animatedObj)
+		delete this->animatedObj;
 
 	this->colliders.clear();
 	this->collidersOriginal.clear();
 }
 
-bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std::string normalTxt, bool hasBounds, Vector3 pos, Vector3 rot, Vector3 scl)
+bool MeshObject::Initialize(const std::string& meshObject, 
+							std::string diffuse, 
+							std::string normal, 
+							bool hasBounds, 
+							bool hasAnimation, 
+							const DirectX::SimpleMath::Vector3& pos, 
+							const DirectX::SimpleMath::Vector3& rot, 
+							const DirectX::SimpleMath::Vector3& scl)
 {
-	//Get the mesh from the resource manager if it exist or creates a new mesh
-	this->mesh = ResourceManager::GetMesh(meshObject);
-	if (this->mesh == nullptr)
+	//Some preparation and setting
+	this->isAnimated = hasAnimation;
+	BuildMatrix(pos, scl, rot);
+	CreateModelMatrixBuffer();
+	UpdateMatrix();
+
+	//Load in animation
+	if (hasAnimation)
 	{
-		std::cout << "Failed to get a mesh from resourceManager..." << std::endl;
+		this->animatedObj = new AnimatedObject();
+		if (!this->animatedObj->Initialize(meshObject))
+		{
+			std::cout << "Failed to initialize animated object..." << std::endl;
+			return false;
+		}
+	}
+	//Load in a static mesh
+	else
+	{
+		//Get the mesh from the resource manager if it exist or creates a new mesh
+		this->mesh = ResourceManager::GetMesh(meshObject);
+		if (this->mesh == nullptr)
+		{
+			std::cout << "Failed to get a mesh from resourceManager..." << std::endl;
+			return false;
+		}
+	}
+
+	if (!LoadTextures(diffuse, normal))
+	{
+		std::cout << "Failed to create textures..." << std::endl;
 		return false;
 	}
 
-	//Load in the diffuse texture
-	if (diffuseTxt != "")
-	{
-		//To avoid writing long paths to textures
-		diffuseTxt = "Textures/" + diffuseTxt;
-
-		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuseTxt);
-		if (diffTexture == nullptr)
-		{
-			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
-			return false;
-		}
-		if (!BindTextureToSRV(diffTexture, this->shaderResourceViews[0]))
-		{
-			std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
-			return false;
-		}
-	}
-
-	//Load in the normal map
-	if (normalTxt != "")
-	{
-		normalTxt = "Textures/" + normalTxt;
-		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalTxt);
-		if (normTexture == nullptr)
-		{
-			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
-			return false;
-		}
-		if (!BindTextureToSRV(normTexture, this->shaderResourceViews[1]))
-		{
-			std::cout << "Failed to bind the texture to the shaderResourceView..." << std::endl;
-			return false;
-		}
-		if (!this->SetUpNormalMapBuffer())
-		{
-			std::cout << "Failed to setup 'has normal map' buffer.\n";
-			return false;
-		}
-	}
-
-	BuildMatrix(pos, scl, rot);
-
+	//Create colliders
 	if (hasBounds == true)
 	{
-		this->SetColliders();
-
-#ifdef _DEBUG
-		this->CreateColliderBuffers();
-#endif
-		this->UpdateBoundingBoxes();
-		this->UpdateBoundingPlanes();
+		LoadColliders();
 	}
 	else
 	{
-		this->RemoveColliders();
-	}
-
-	this->CreateModelMatrixBuffer();
-
-	//EXTRA: Material
-	return true;
-}
-
-bool MeshObject::InitializeColliders(std::vector<DirectX::SimpleMath::Vector3> positions)
-{
-	//Only okay to make this if the mesh has not been 
-	// initialized and already got a box
-	if (this->mesh == nullptr)
-	{
-		this->mesh = new Mesh();
-
-		DirectX::SimpleMath::Vector3 min;
-		DirectX::SimpleMath::Vector3 max;
-
-		for (size_t i = 0; i < positions.size(); i++)
-		{
-			min.x = std::min(min.x, position.x);
-			min.y = std::min(min.y, position.y);
-			min.z = std::min(min.z, position.z);
-
-			max.x = std::max(max.x, position.x);
-			max.y = std::max(max.y, position.y);
-			max.z = std::max(max.z, position.z);
-		}
-
-		this->mesh->BuildColliders(min, max);
-		this->mesh->colliders.shrink_to_fit();
-		this->mesh->collidersOriginal = this->mesh->colliders;
-
-		this->SetColliders();
-
-	#ifdef _DEBUG
-		this->CreateColliderBuffers();
-	#endif
-		this->UpdateBoundingBoxes();
-		this->UpdateBoundingPlanes();
-	}
-	else
-	{
-		return false;
+		RemoveColliders();
 	}
 
 	return true;
@@ -271,35 +338,48 @@ void MeshObject::SetPickUp(bool toggle)
 	this->isPickUp = toggle;
 }
 
-void MeshObject::SetUseMesh(bool toggle)
-{
-	this->useMesh = toggle;
-}
-
-void MeshObject::Render()
-{
-	if (this->useMesh)
+void MeshObject::Render(bool shadowPass)
+{	
+	//If not visible then we can ignore it
+	if (this->isVisible)
 	{
-		//Set this objects modelmatrix
-		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
-
-		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
-
-		//Set all the textures to the geometry pass pixelshader
-		for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+		//Not necesary to do everything for shadows
+		if (!shadowPass)
 		{
-			Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
+			//Set all the textures to the geometry pass pixelshader
+			for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+			{
+				Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
+			}
+			Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
 		}
 
 		if (this->mesh != nullptr)
 		{
+			Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 			this->mesh->Render();
 		}
+		else if (this->animatedObj != nullptr)
+		{
+			//Standard stuff that static objects use
+			ID3D11VertexShader* standardVS;
+			Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
+			ID3D11InputLayout* standardInputLayout;
+			Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
+
+			if (shadowPass)
+				this->animatedObj->Render(GetTransposedMatrix(), false);
+			else
+				this->animatedObj->Render(GetTransposedMatrix());
+
+			//Set back the normal stuff that static objects use
+			Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+			Graphics::GetContext()->IASetInputLayout(standardInputLayout);
+			standardVS->Release();
+			standardInputLayout->Release();
+		}
+		
 	}
-
-	//If animated object!
-
-
 }
 
 void MeshObject::UpdateBoundingBoxes()
@@ -413,4 +493,12 @@ void MeshObject::RemoveColliders()
 {
 	this->colliders.clear();
 	this->collidersOriginal.clear();
+}
+
+void MeshObject::ChangeAnimState(AnimationState state)
+{
+	if (this->animatedObj != nullptr)
+	{
+		this->animatedObj->ChangeAnimState(state);
+	}
 }

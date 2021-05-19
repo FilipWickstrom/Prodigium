@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 //#include "GameObject.h"
-#include "MeshObject.h"
 #include "ResourceManager.h"
 #include "Animation.h"
 
@@ -32,7 +31,7 @@ enum class AnimationState
 	IDLE, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 6
 };
 
-class AnimatedObject : public MeshObject
+class AnimatedObject
 {
 private:
 	//Needs a seperate vertexshader and input for it
@@ -44,7 +43,6 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 	UINT indexCount;
-	ID3D11ShaderResourceView* textureSRVs[MAXTEXTURES];		//ALREADY IN MESHOBJECT***
 
 	//Holds each bones final matrix
 	ID3D11Buffer* boneMatricesBuffer;
@@ -72,6 +70,7 @@ private:
 	//std::vector<Animation> allAnimations;
 	Animation walkRunAnim;
 
+public:
 	//All the positions of the T-posing character
 	std::vector<DirectX::SimpleMath::Vector3> meshPositions;
 
@@ -93,26 +92,21 @@ private:
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
-	bool LoadTextures(std::string diffuse, std::string normalMap = "");
 	
-
-	void CalcFinalMatrix(Bone& currentBone, UINT parentID);
+	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
 
 public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
 
-	bool Initialize(std::string tposeFile, std::string diffuse, std::string normalMap = "", 
-					const DirectX::SimpleMath::Vector3& pos = {0,0,0},
-					const DirectX::SimpleMath::Vector3& rot = {0,0,0},
-					const DirectX::SimpleMath::Vector3& scl = {1,1,1});
+	bool Initialize(std::string tposeFile);					
 	
 	void ChangeAnimState(AnimationState state);
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows
-	void Render(bool animate = true);	
+	void Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate = true);
 
-	void RenderStatic();
+	//void RenderStatic();
 
 };

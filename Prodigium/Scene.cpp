@@ -112,13 +112,20 @@ Scene::~Scene()
 
 }
 
-void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, const Vector3& position, const Vector3& rotation, const Vector3& scale)
+void Scene::Add(const std::string& objFile, 
+				const std::string& diffuseTxt, 
+				const std::string& normalTxt, 
+				bool hasBounds, 
+				bool hasAnimation, 
+				const Vector3& position,
+				const Vector3& rotation, 
+				const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, position, rotation, scale))
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, hasAnimation, position, rotation, scale))
 	{
 		this->objects.push_back(newObject);
 		this->currentObject = (int)objects.size() - 1;
@@ -160,15 +167,6 @@ void Scene::PopAllLights()
 }
 
 void Scene::Add(MeshObject* object)
-{
-	if (object != nullptr)
-	{
-		this->objects.push_back(object);
-		this->currentObject = (int)objects.size() - 1;
-	}
-}
-
-void Scene::AddAnimatedObject(AnimatedObject* object)
 {
 	if (object != nullptr)
 	{
@@ -284,36 +282,13 @@ void Scene::Pop()
 
 void Scene::Render()
 {
-	ID3D11VertexShader* standardVS;
-	Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
-	ID3D11InputLayout* standardInputLayout;
-	Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
-
 	if ((int)this->objects.size() > 0)
 	{
 		for (int i = 0; i < (int)this->objects.size(); i++)
 		{
-			if (this->objects[i]->IsVisible())
-			{
-				//Check if an animated object
-				AnimatedObject* animObj = dynamic_cast<AnimatedObject*>(this->objects[i]);
-				if (animObj == nullptr)
-				{
-					this->objects[i]->Render();
-				}
-				else
-				{
-					animObj->Render();
-					//Most likely that the next object will use the standard
-					Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
-					Graphics::GetContext()->IASetInputLayout(standardInputLayout);
-				}
-			}
+			this->objects[i]->Render();
 		}
 	}
-
-	standardVS->Release();
-	standardInputLayout->Release();
 }
 
 void Scene::RenderLights()
@@ -359,16 +334,7 @@ void Scene::RenderShadows()
 			// Check the distance between light source and object.
 			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->objects[j]->IsVisible())
 			{
-				//Check if an animated object
-				AnimatedObject* animObj = dynamic_cast<AnimatedObject*>(this->objects[j]);
-				if (animObj == nullptr)
-				{
-					this->objects[j]->Render();
-				}
-				else
-				{	
-					animObj->RenderStatic();
-				}
+				this->objects[j]->Render(true);
 			}
 		}
 	}

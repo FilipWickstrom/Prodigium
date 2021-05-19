@@ -4,8 +4,20 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "ResourceManager.h"
+#include "AnimatedObject.h"
 
 constexpr int MAXNROFTEXTURES = 2;
+
+struct Collider
+{
+	struct Plane
+	{
+		DirectX::SimpleMath::Vector3 point;
+		DirectX::SimpleMath::Vector3 normal;
+	};
+	Plane planes[4];
+	DirectX::BoundingOrientedBox boundingBox;
+};
 
 class MeshObject : public GameObject
 {
@@ -16,27 +28,26 @@ private:
 	#endif
 
 	//Holds all the views of the textures:
-	//1. Diffuse texture
-	//2. Normal map
+	//1. Diffuse texture | 2. Normal map
 	ID3D11ShaderResourceView* shaderResourceViews[MAXNROFTEXTURES];
 
 	bool isPickUp;
 	bool isVisible;
-	bool useMesh;
 	ID3D11Buffer* hasNormalMapBuffer;
 
-	//ANIMATION
-	//AnimationObject* animated;
-	bool hasAnimation;
+	//Animation
+	AnimatedObject* animatedObj;
+	bool isAnimated;
 
 public: 
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 
 private:
-	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
-	// Copies the mesh colliders
-	void SetColliders();
+	bool LoadTextures(std::string& diffuse, std::string& normal);
+	void BuildColliders(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max);
+	bool LoadColliders();
+	
 	// Updates the planes of a boundingBox to account for rotation
 	void UpdateBoundingPlanes();
 	bool SetUpNormalMapBuffer();
@@ -50,23 +61,28 @@ public:
 	MeshObject();
 	virtual ~MeshObject();
 
-	bool Initialize(std::string meshObject, std::string diffuseTxt = "", std::string normalTxt = "", bool hasBounds = true,
-					DirectX::SimpleMath::Vector3 pos = {0.0f,0.0f,0.0f}, DirectX::SimpleMath::Vector3 rot = { 0.0f,0.0f,0.0f }, 
-					DirectX::SimpleMath::Vector3 scl= {1.0f,1.0f,1.0f});
-	bool InitializeColliders(std::vector<DirectX::SimpleMath::Vector3> positions);
-
+	bool Initialize(const std::string& meshObject, 
+					std::string diffuse = "", 
+					std::string normal = "", 
+					bool hasBounds = true,
+					bool hasAnimation = false,
+					const DirectX::SimpleMath::Vector3& pos = {0.0f,0.0f,0.0f},
+					const DirectX::SimpleMath::Vector3& rot = { 0.0f,0.0f,0.0f },
+					const DirectX::SimpleMath::Vector3& scl= {1.0f,1.0f,1.0f});
 
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
-	void SetUseMesh(bool toggle = true);
 
-	void Render();
+	void Render(bool shadowPass = false);
 	void UpdateBoundingBoxes();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
 	const bool IsVisible() const;
-#ifdef _DEBUG
+	
+	#ifdef _DEBUG
 	void RenderBoundingBoxes();
-#endif
+	#endif
 
 	void RemoveColliders();
+
+	void ChangeAnimState(AnimationState state);
 };

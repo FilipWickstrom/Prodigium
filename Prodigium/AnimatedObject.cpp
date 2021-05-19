@@ -329,45 +329,7 @@ void AnimatedObject::UpdateBonesCBuffer()
 	Graphics::GetContext()->Unmap(this->boneMatricesBuffer, 0);
 }
 
-bool AnimatedObject::LoadTextures(std::string diffuse, std::string normalMap)
-{
-	diffuse = "Textures/" + diffuse;
-
-	//Load in the diffuse texture
-	ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuse);
-	if (diffTexture == nullptr)
-	{
-		std::cout << "Failed to get diffuse texture from resourceManager..." << std::endl;
-		return false;
-	}
-	HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(diffTexture, nullptr, &this->textureSRVs[0]);
-	if (FAILED(hr))
-	{
-		std::cout << "Diffuse texture failed to bind to shader resource view..." << std::endl;
-		return false;
-	}
-	
-	if (normalMap != "")
-	{
-		normalMap = "Textures/" + normalMap;
-		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalMap);
-		if (normTexture == nullptr)
-		{
-			std::cout << "Failed to get normal texture from resourceManager..." << std::endl;
-			return false;
-		}
-		HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(normTexture, nullptr, &this->textureSRVs[1]);
-		if (FAILED(hr))
-		{
-			std::cout << "Normal texture failed to bind to shader resource view..." << std::endl;
-			return false;
-		}
-	}
-
-	return true;
-}
-
-void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
+void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix)
 {
 	Matrix localMatrix = this->animatedMatrices[this->boneMap[currentBone.name]];
 	UINT id = currentBone.id;
@@ -376,7 +338,7 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
 	if (parentID == -1)
 	{
 		//Get GameObjects matrix with scale, rotation and translation and multiply with localMatrix
-		this->modelMatrices[id] = GetTransposedMatrix() * localMatrix;
+		this->modelMatrices[id] = worldMatrix * localMatrix;
 	}
 	else
 	{
@@ -387,7 +349,7 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
 
 	for (size_t i = 0; i < currentBone.children.size(); i++)
 	{
-		CalcFinalMatrix(currentBone.children[i], currentBone.id);
+		CalcFinalMatrix(currentBone.children[i], currentBone.id, worldMatrix);
 	}
 }
 
@@ -400,11 +362,6 @@ AnimatedObject::AnimatedObject()
 	this->indexBuffer = nullptr;
 	this->indexCount = 0;
 	this->boneMatricesBuffer = nullptr;
-
-	for (UINT i = 0; i < MAXTEXTURES; i++)
-	{
-		this->textureSRVs[i] = nullptr;
-	}
 
 	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
 	this->animatedMatrices.resize(MAXBONES, Matrix::Identity);
@@ -424,18 +381,9 @@ AnimatedObject::~AnimatedObject()
 		this->indexBuffer->Release();
 	if (this->boneMatricesBuffer)
 		this->boneMatricesBuffer->Release();
-
-	for (UINT i = 0; i < MAXTEXTURES; i++)
-	{
-		if (this->textureSRVs[i])
-			this->textureSRVs[i]->Release();
-	}
 }
 
-bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std::string normalMap, 
-								const DirectX::SimpleMath::Vector3& pos,
-								const DirectX::SimpleMath::Vector3& rot,
-								const DirectX::SimpleMath::Vector3& scl)
+bool AnimatedObject::Initialize(std::string tposeFile)
 {
 	if (!LoadVertexShader())
 	{
@@ -449,27 +397,9 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 		return false;
 	}
 
-	BuildMatrix(pos, scl, rot);
-
 	if (!LoadRiggedMesh(tposeFile))
 	{
 		std::cout << "Failed to load in skeleton" << std::endl;
-		return false;
-	}
-
-	//Setup the "mesh" in meshobject
-	//Then fix the colliders for it
-	if (!this->InitializeColliders(this->meshPositions))
-	{
-		std::cout << "Failed to initialize the colliders..." << std::endl;
-		return false;
-	}
-	//Do not wont to try to render with meshobject
-	this->SetUseMesh(false);
-
-	if (!LoadTextures(diffuse, normalMap))
-	{
-		std::cout << "Failed to load in textures..." << std::endl;
 		return false;
 	}
 
@@ -519,7 +449,7 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 
 }
 
-void AnimatedObject::Render(bool animate)
+void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
 {	
 	//Animate the object and get the new matrices
 	if (animate && this->currentState != AnimationState::NONE)
@@ -529,7 +459,7 @@ void AnimatedObject::Render(bool animate)
 	}
 
 	//Calculate all matrices that will later be sent to the GPU
-	CalcFinalMatrix(this->rootBone, -1);
+	CalcFinalMatrix(this->rootBone, -1, worldMatrix);
 
 	//Update the array of matrices to the GPU
 	UpdateBonesCBuffer();
@@ -543,81 +473,38 @@ void AnimatedObject::Render(bool animate)
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	//Set textures to pixelshader
-	for (unsigned int i = 0; i < MAXTEXTURES; i++)
-	{
-		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->textureSRVs[i]);
-	}
-
 	//Finally draw the mesh
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
-
-	//Clean up
-	ID3D11Buffer* vertexCBNull = nullptr;
-	Graphics::GetContext()->VSSetConstantBuffers(2, 1, &vertexCBNull);
-	ID3D11VertexShader* vertexShaderNull = nullptr;
-	Graphics::GetContext()->VSSetShader(vertexShaderNull, nullptr, 0);
-	ID3D11InputLayout* inputLayoutNull = nullptr;
-	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
-
-
-
-	/*
-	//Set this objects modelmatrix
-		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
-
-		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
-
-		//Set all the textures to the geometry pass pixelshader
-		for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
-		{
-			Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
-		}
-
-		if (this->mesh != nullptr)
-		{
-			this->mesh->Render();
-		}
-
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	for (int i = 0; i < this->vertexBuffers.size(); i++)
-	{
-		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);
-		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R16_UINT, 0);
-		Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
-	}
-	*/
 }
 
-void AnimatedObject::RenderStatic()
-{
-	//Get shadowsettings
-	ID3D11InputLayout* shadowLayout;
-	ID3D11VertexShader* shadowVS;
-	Graphics::GetContext()->IAGetInputLayout(&shadowLayout);
-	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
-
-
-	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
-	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
-
-	UINT stride = sizeof(AnimationVertex);
-	UINT offset = 0;
-	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	//Set textures to pixelshader
-	for (unsigned int i = 0; i < MAXTEXTURES; i++)
-	{
-		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->textureSRVs[i]);
-	}
-	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
-
-	//Bind back the previous
-	Graphics::GetContext()->IASetInputLayout(shadowLayout);
-	Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
-	shadowLayout->Release();
-	shadowVS->Release();
-}
+//void AnimatedObject::RenderStatic()
+//{
+//	//Get shadowsettings
+//	ID3D11InputLayout* shadowLayout;
+//	ID3D11VertexShader* shadowVS;
+//	Graphics::GetContext()->IAGetInputLayout(&shadowLayout);
+//	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
+//
+//
+//	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
+//	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+//	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
+//
+//	UINT stride = sizeof(AnimationVertex);
+//	UINT offset = 0;
+//	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
+//	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+//
+//	//Set textures to pixelshader
+//	for (unsigned int i = 0; i < MAXTEXTURES; i++)
+//	{
+//		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->textureSRVs[i]);
+//	}
+//	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+//
+//	//Bind back the previous
+//	Graphics::GetContext()->IASetInputLayout(shadowLayout);
+//	Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
+//	shadowLayout->Release();
+//	shadowVS->Release();
+//}

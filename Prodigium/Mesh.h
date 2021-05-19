@@ -7,22 +7,10 @@
 #include "Resource.h"
 #include "Graphics.h"
 
-//Assimp
 #pragma warning(push, 0)
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-
-struct Collider
-{
-	struct Plane
-	{
-		DirectX::SimpleMath::Vector3 point;
-		DirectX::SimpleMath::Vector3 normal;
-	};
-	Plane planes[4];
-	DirectX::BoundingOrientedBox boundingBox;
-};
 
 #pragma warning(pop)
 class Mesh : public Resource
@@ -32,17 +20,17 @@ private:
 	std::vector<ID3D11Buffer*>indexBuffers;
 	std::vector<UINT>indexCount;
 
+public:
+	//Will be used to create colliders
+	std::vector<std::vector<DirectX::SimpleMath::Vector3>> meshPositions;
+	
 private:
-	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
+	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices);
 
 public:
 	Mesh();
 	~Mesh();
 
-	std::vector<Collider> collidersOriginal;
-	std::vector<Collider> colliders;
-
-	void BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 	bool LoadFile(std::string filename);
 	void Render();
 };

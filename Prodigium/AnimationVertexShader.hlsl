@@ -6,7 +6,10 @@ cbuffer CameraViewProj : register(b0)
     float4x4 projection;
 };
 
-//cbuffer with normalMap settings?
+cbuffer isNormalMapped : register(b2)
+{
+    float4 hasNormalMap;
+}
 
 cbuffer BonesMatrices : register(b6)
 {
@@ -57,7 +60,7 @@ VertexShaderOutput main(VertexShaderInput input)
     output.texCoord = input.texCoord;
     
     // Last spot is for if it has normal map or not.
-    output.tangent = float4(mul(input.tangent, (float3x3) world), 1); //hasNormalMap.x
+    output.tangent = float4(mul(input.tangent, (float3x3) world), hasNormalMap.x);
       
 	return output;
 }
