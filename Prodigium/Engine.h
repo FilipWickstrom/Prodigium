@@ -14,6 +14,7 @@
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
+#include "AIHandler.h"
 
 class Engine
 {
