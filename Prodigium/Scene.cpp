@@ -347,37 +347,11 @@ void Scene::RenderLights()
 
 void Scene::RenderShadows()
 {
-	//Previous from gbuffer
-	/*ID3D11VertexShader* standardVS;
-	Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
-	ID3D11InputLayout* standardInputLayout;
-	Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
-	ID3D11PixelShader* standardPS;
-	Graphics::GetContext()->PSGetShader(&standardPS, nullptr, 0);
-	D3D11_VIEWPORT standardView;
-	UINT views = 1;
-	Graphics::GetContext()->RSGetViewports(&views, &standardView);*/
-
-	//Graphics::GetContext()->PSGetShaderResources()
-
 	this->shadowHandler->Prepare();
-
-	//Shadowstuff
-	/*ID3D11VertexShader* shadowVS;
-	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
-	D3D11_VIEWPORT shadowView;
-	Graphics::GetContext()->RSGetViewports(&views, &shadowView);*/
 
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
 	{
-		/*Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
-		Graphics::GetContext()->RSSetViewports(1, &shadowView);
-		Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);*/
 		this->shadowHandler->Render(i);
-		/*Graphics::GetContext()->RSSetViewports(1, &standardView);
-		Graphics::GetContext()->PSSetShader(standardPS, nullptr, 0);
-		Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
-		Graphics::GetContext()->IASetInputLayout(standardInputLayout);*/
 
 		// Loop through all objects
 		for (int j = 0; j < (int)objects.size(); j++)
@@ -393,18 +367,12 @@ void Scene::RenderShadows()
 				}
 				else
 				{	
-					//animObj->Render(false);
-					/*Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
-					Graphics::GetContext()->IASetInputLayout(standardInputLayout);*/
+					animObj->RenderStatic();
 				}
 			}
 		}
 	}
 	this->shadowHandler->Clear();
-	/*standardVS->Release();
-	standardInputLayout->Release();
-	standardPS->Release();
-	shadowVS->Release();*/
 }
 
 void Scene::RenderParticles()

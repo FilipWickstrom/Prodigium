@@ -113,4 +113,6 @@ public:
 	//Can be used when rendering shadows
 	void Render(bool animate = true);	
 
+	void RenderStatic();
+
 };

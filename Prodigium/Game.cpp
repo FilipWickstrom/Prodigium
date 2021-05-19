@@ -109,7 +109,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		else if (InputHandler::IsKeyReleased(Keyboard::W))
 		{
-			this->player->GetAnimObject()->ChangeAnimState(AnimationState::IDLE);
+			this->player->GetAnimObject()->ChangeAnimState(AnimationState::NONE);	//IDLE
 		}
 
 		//Backward
@@ -129,7 +129,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		else if (InputHandler::IsKeyReleased(Keyboard::S))
 		{
-			this->player->GetAnimObject()->ChangeAnimState(AnimationState::IDLE);
+			this->player->GetAnimObject()->ChangeAnimState(AnimationState::NONE);	//IDLE
 		}
 
 		//Sideways

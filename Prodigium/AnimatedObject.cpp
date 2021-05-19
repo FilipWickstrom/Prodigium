@@ -292,11 +292,6 @@ bool AnimatedObject::LoadAnimations(std::string riggedModelFile)
 	//Search for riggedModel+idle
 	//Search for riggedModel+walking
 	//Search for riggedModel+running
-	
-	//WALK SPEED = 120
-	//RUNNING SPEED = 200
-
-	//this->allAnimations.push_back();
 
 	//LoadAnimation and add to the array
 	if (!this->walkRunAnim.Load("Player/PlayerWalk.fbx", this->boneMap))
@@ -304,7 +299,9 @@ bool AnimatedObject::LoadAnimations(std::string riggedModelFile)
 		std::cout << "Failed to load running animation..." << std::endl;
 		return false;
 	}
-	//this->allAnimations[UINT(AnimationState::RUN)] = animRun;
+
+	//Load in idle animation
+
 
 	return true;
 }
@@ -412,9 +409,7 @@ AnimatedObject::AnimatedObject()
 	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
 	this->animatedMatrices.resize(MAXBONES, Matrix::Identity);
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
-
 	this->currentState = AnimationState::IDLE;
-	//this->allAnimations.resize(size_t(AnimationState::NROFSTATE));
 }
 
 AnimatedObject::~AnimatedObject()
@@ -512,7 +507,9 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 		this->walkRunAnim.SetAnimationSpeed(-200);
 		break;
 	case AnimationState::IDLE:
-		this->walkRunAnim.SetAnimationSpeed(5);
+		//CHANGE ANIMATION**
+		//this->currentAnimation = idle animation
+		//this->walkRunAnim.SetAnimationSpeed(5);
 		break;
 	default:
 		//NONE or other
@@ -524,18 +521,18 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 
 void AnimatedObject::Render(bool animate)
 {	
+	//Animate the object and get the new matrices
 	if (animate && this->currentState != AnimationState::NONE)
 	{
 		//Get all animated matrices at this time for every bone
-		//this->allAnimations[(UINT)this->currentState].GetAnimationMatrices(this->boneNames, this->animatedMatrices);
 		this->walkRunAnim.GetAnimationMatrices(this->boneNames, this->animatedMatrices);
-
-		//Calculate all matrices that will later be sent to the GPU
-		CalcFinalMatrix(this->rootBone, -1);
-
-		//Update the array of matrices to the GPU
-		UpdateBonesCBuffer();
 	}
+
+	//Calculate all matrices that will later be sent to the GPU
+	CalcFinalMatrix(this->rootBone, -1);
+
+	//Update the array of matrices to the GPU
+	UpdateBonesCBuffer();
 
 	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
 	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
@@ -562,4 +559,65 @@ void AnimatedObject::Render(bool animate)
 	Graphics::GetContext()->VSSetShader(vertexShaderNull, nullptr, 0);
 	ID3D11InputLayout* inputLayoutNull = nullptr;
 	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
+
+
+
+	/*
+	//Set this objects modelmatrix
+		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+
+		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
+
+		//Set all the textures to the geometry pass pixelshader
+		for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+		{
+			Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
+		}
+
+		if (this->mesh != nullptr)
+		{
+			this->mesh->Render();
+		}
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	for (int i = 0; i < this->vertexBuffers.size(); i++)
+	{
+		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);
+		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R16_UINT, 0);
+		Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
+	}
+	*/
+}
+
+void AnimatedObject::RenderStatic()
+{
+	//Get shadowsettings
+	ID3D11InputLayout* shadowLayout;
+	ID3D11VertexShader* shadowVS;
+	Graphics::GetContext()->IAGetInputLayout(&shadowLayout);
+	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
+
+
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
+
+	UINT stride = sizeof(AnimationVertex);
+	UINT offset = 0;
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
+	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//Set textures to pixelshader
+	for (unsigned int i = 0; i < MAXTEXTURES; i++)
+	{
+		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->textureSRVs[i]);
+	}
+	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+
+	//Bind back the previous
+	Graphics::GetContext()->IASetInputLayout(shadowLayout);
+	Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
+	shadowLayout->Release();
+	shadowVS->Release();
 }

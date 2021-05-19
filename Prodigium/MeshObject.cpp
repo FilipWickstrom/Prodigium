@@ -296,6 +296,10 @@ void MeshObject::Render()
 			this->mesh->Render();
 		}
 	}
+
+	//If animated object!
+
+
 }
 
 void MeshObject::UpdateBoundingBoxes()

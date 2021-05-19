@@ -11,9 +11,9 @@ class MeshObject : public GameObject
 {
 private:
 	Mesh* mesh;
-#ifdef _DEBUG
+	#ifdef _DEBUG
 	std::vector<ID3D11Buffer*>boundingBoxBuffer;
-#endif
+	#endif
 
 	//Holds all the views of the textures:
 	//1. Diffuse texture
@@ -25,6 +25,14 @@ private:
 	bool useMesh;
 	ID3D11Buffer* hasNormalMapBuffer;
 
+	//ANIMATION
+	//AnimationObject* animated;
+	bool hasAnimation;
+
+public: 
+	std::vector<Collider> collidersOriginal;
+	std::vector<Collider> colliders;
+
 private:
 	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
 	// Copies the mesh colliders
@@ -32,9 +40,10 @@ private:
 	// Updates the planes of a boundingBox to account for rotation
 	void UpdateBoundingPlanes();
 	bool SetUpNormalMapBuffer();
-#ifdef _DEBUG
+	
+	#ifdef _DEBUG
 	bool CreateColliderBuffers();
-#endif
+	#endif
 
 public:
 
@@ -58,9 +67,6 @@ public:
 #ifdef _DEBUG
 	void RenderBoundingBoxes();
 #endif
-
-	std::vector<Collider> collidersOriginal;
-	std::vector<Collider> colliders;
 
 	void RemoveColliders();
 };
