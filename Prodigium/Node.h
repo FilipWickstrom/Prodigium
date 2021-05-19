@@ -12,9 +12,10 @@ public:
 	Node();
 	virtual ~Node();
 	void Initialize(const DirectX::SimpleMath::Vector3& pos, const int& id);
-	void AddConnectedNode(Node* node); //Will also add this node to the other one
+	void AddConnectedNode(Node* node);
+	const Node* GetRandomConnectedNode() const;
 	const std::vector<Node*>& GetConnectedNodes() const;
-	const DirectX::SimpleMath::Vector3& getPos() const;
-	const int& getID() const;
+	const DirectX::SimpleMath::Vector3& GetPos() const;
+	const int& GetID() const;
 };
 

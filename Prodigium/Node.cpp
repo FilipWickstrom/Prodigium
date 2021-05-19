@@ -19,7 +19,13 @@ void Node::Initialize(const DirectX::SimpleMath::Vector3& pos, const int& id)
 void Node::AddConnectedNode(Node* node)
 {
 	this->connectedNodes.push_back(node);
-	node->AddConnectedNode(this);
+}
+
+const Node* Node::GetRandomConnectedNode() const
+{
+	int generatedNumber = rand() % this->connectedNodes.size();
+
+	return this->connectedNodes.at(generatedNumber);
 }
 
 const std::vector<Node*>& Node::GetConnectedNodes() const
@@ -27,12 +33,12 @@ const std::vector<Node*>& Node::GetConnectedNodes() const
 	return this->connectedNodes;
 }
 
-const DirectX::SimpleMath::Vector3& Node::getPos() const
+const DirectX::SimpleMath::Vector3& Node::GetPos() const
 {
 	return this->pos;
 }
 
-const int& Node::getID() const
+const int& Node::GetID() const
 {
 	return this->id;
 }

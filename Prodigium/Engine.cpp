@@ -205,6 +205,11 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+	if (!AIHandler::Initialize())
+	{
+		return false;
+	}
+	AIHandler::CreateNodes();
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	return true;
