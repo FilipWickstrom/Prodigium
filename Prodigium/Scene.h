@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include "MeshObject.h"
+#include "AnimatedObject.h"
 #include "ShadowHandler.h"
 #include "ParticleSystem.h"
+
 #define SHADOWRANGE 125.0f
 struct InfoStruct
 {
@@ -65,6 +67,8 @@ public:
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);
+
+	void AddAnimatedObject(AnimatedObject* object);
 
 	/* 
 	* adds a light into the scene, the behavior of this light is defined by the struct input.

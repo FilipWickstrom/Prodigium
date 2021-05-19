@@ -1,14 +1,16 @@
 #pragma once
 #include "CameraObject.h"
 #include "Graphics.h"
-#include "MeshObject.h"
+//#include "MeshObject.h"
+#include "AnimatedObject.h"
 
 class Player
 {
 private:
 	float speed;
 	CameraObject playerCam;
-	MeshObject* playerModel;
+	//MeshObject* playerModel;
+	AnimatedObject* playerModel;
 
 private:
 	void RotatePlayer();
@@ -23,6 +25,8 @@ public:
 	void Sprint();
 	void Walk();
 	const DirectX::SimpleMath::Vector3& GetPlayerPos();
-	MeshObject* GetMeshObject()const;
+	//MeshObject* GetMeshObject()const;
+	AnimatedObject* GetAnimObject() const;
+
 	bool CheckCollision(const std::vector<MeshObject*>& objects, const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 };

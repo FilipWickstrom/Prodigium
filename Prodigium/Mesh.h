@@ -34,7 +34,6 @@ private:
 
 private:
 	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
-	void BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 
 public:
 	Mesh();
@@ -43,6 +42,7 @@ public:
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 
+	void BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 	bool LoadFile(std::string filename);
 	void Render();
 };

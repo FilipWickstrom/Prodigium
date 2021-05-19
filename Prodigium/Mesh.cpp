@@ -45,7 +45,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 	return true;
 }
 
-void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
+void Mesh::BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
 	Collider collider;
 	DirectX::XMFLOAT3 corners[8];
@@ -171,7 +171,7 @@ bool Mesh::LoadFile(std::string filename)
 			return false;
 		}
 
-		this->BuildColliders(vertices, min, max);
+		this->BuildColliders(min, max);
 
 		vertices.clear();
 		indices.clear();

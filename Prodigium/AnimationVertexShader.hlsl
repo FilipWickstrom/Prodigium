@@ -8,7 +8,7 @@ cbuffer CameraViewProj : register(b0)
 
 //cbuffer with normalMap settings?
 
-cbuffer BonesMatrices : register(b2) //Dont wont to mess with others
+cbuffer BonesMatrices : register(b6)
 {
     float4x4 bonesTransforms[MAXNROFBONES];
 };

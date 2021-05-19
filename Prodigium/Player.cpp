@@ -21,20 +21,22 @@ void Player::RotatePlayer()
 
 Player::Player()
 {
-	Vector3 position(0.0f, 0.0f, 0.f);
-	Vector3 cameraOffset = { 0.0f, 2.5f, -15.f };
+	this->playerModel = new AnimatedObject();
+	this->playerModel->Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png", "Char_Normal.jpg", { 0,-5,0 }, {0, DirectX::XM_PI,0});
+
+	Vector3 cameraOffset = { 0.0f, 5.0f, -15.f };
 	Vector3 cameraForward = cameraOffset * -1;
 	cameraForward.Normalize();
 	this->speed = 10.f;
-	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Albedo.png", "Char_Normal.jpg");
+	
+	this->playerModel->GetPosition();
+
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
-	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
-	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
 	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
-	this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
-	this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
+	
+	//this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
+	//this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
 			
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
@@ -94,7 +96,7 @@ const DirectX::SimpleMath::Vector3& Player::GetPlayerPos()
 	return this->playerModel->GetPosition();
 }
 
-MeshObject* Player::GetMeshObject() const
+AnimatedObject* Player::GetAnimObject() const
 {
 	return this->playerModel;
 }

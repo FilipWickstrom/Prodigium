@@ -50,9 +50,9 @@ public:
 	~Animation();
 
 	//Load in the animation. Only takes the bones that was loaded from the object
-	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, UINT animSpeed = 0);
+	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, int animSpeed = 0);
 
 	//Gets the animation matrices at this time
 	void GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices);
-	void SetAnimationSpeed(UINT animSpeed);
+	void SetAnimationSpeed(int animSpeed);
 };

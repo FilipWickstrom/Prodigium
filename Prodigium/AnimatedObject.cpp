@@ -164,6 +164,9 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 					temp.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
 					//Bone ID and Weights are set to 0 by default
 					vertices.push_back(temp);
+
+					//Will be used to define the collisionbox
+					this->meshPositions.push_back(temp.position);
 				}
 
 				/*--------Loading all bones for the mesh---------*/
@@ -289,19 +292,19 @@ bool AnimatedObject::LoadAnimations(std::string riggedModelFile)
 	//Search for riggedModel+idle
 	//Search for riggedModel+walking
 	//Search for riggedModel+running
-
+	
+	//WALK SPEED = 120
+	//RUNNING SPEED = 200
 
 	//this->allAnimations.push_back();
 
 	//LoadAnimation and add to the array
-	Animation animRun;
-	if (!animRun.Load("Player/PlayerWalk.fbx", this->boneMap, 150))
+	if (!this->walkRunAnim.Load("Player/PlayerWalk.fbx", this->boneMap))
 	{
 		std::cout << "Failed to load running animation..." << std::endl;
 		return false;
 	}
-	this->allAnimations[UINT(AnimationState::RUN)] = animRun;
-
+	//this->allAnimations[UINT(AnimationState::RUN)] = animRun;
 
 	return true;
 }
@@ -393,7 +396,6 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID)
 
 
 AnimatedObject::AnimatedObject()
-	:GameObject()
 {
 	this->vertexShader = nullptr;
 	this->inputlayout = nullptr;
@@ -411,8 +413,8 @@ AnimatedObject::AnimatedObject()
 	this->animatedMatrices.resize(MAXBONES, Matrix::Identity);
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
 
-	this->currentState = AnimationState::RUN;
-	this->allAnimations.resize(size_t(AnimationState::NROFSTATE));
+	this->currentState = AnimationState::IDLE;
+	//this->allAnimations.resize(size_t(AnimationState::NROFSTATE));
 }
 
 AnimatedObject::~AnimatedObject()
@@ -460,6 +462,16 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 		return false;
 	}
 
+	//Setup the "mesh" in meshobject
+	//Then fix the colliders for it
+	if (!this->InitializeColliders(this->meshPositions))
+	{
+		std::cout << "Failed to initialize the colliders..." << std::endl;
+		return false;
+	}
+	//Do not wont to try to render with meshobject
+	this->SetUseMesh(false);
+
 	if (!LoadTextures(diffuse, normalMap))
 	{
 		std::cout << "Failed to load in textures..." << std::endl;
@@ -484,25 +496,48 @@ bool AnimatedObject::Initialize(std::string tposeFile, std::string diffuse, std:
 void AnimatedObject::ChangeAnimState(AnimationState state)
 {
 	this->currentState = state;
+	
+	switch (this->currentState)
+	{
+	case AnimationState::WALKFORWARD:
+		this->walkRunAnim.SetAnimationSpeed(120);
+		break;
+	case AnimationState::WALKBACKWARD:
+		this->walkRunAnim.SetAnimationSpeed(-120);
+		break;
+	case AnimationState::RUNFORWARD:
+		this->walkRunAnim.SetAnimationSpeed(200);
+		break;
+	case AnimationState::RUNBACKWARD:
+		this->walkRunAnim.SetAnimationSpeed(-200);
+		break;
+	case AnimationState::IDLE:
+		this->walkRunAnim.SetAnimationSpeed(5);
+		break;
+	default:
+		//NONE or other
+		break;
+	};
+	
+
 }
 
-void AnimatedObject::Render()
-{
-	//if (playAnimation)
-	//{
-	
-	//Get all animated matrices at this time for every bone
-	this->allAnimations[(UINT)this->currentState].GetAnimationMatrices(this->boneNames, this->animatedMatrices);
-	
-	//Calculate all matrices that will later be sent to the GPU
-	CalcFinalMatrix(this->rootBone, -1);
-	
-	//Update the array of matrices to the GPU
-	UpdateBonesCBuffer();
+void AnimatedObject::Render(bool animate)
+{	
+	if (animate && this->currentState != AnimationState::NONE)
+	{
+		//Get all animated matrices at this time for every bone
+		//this->allAnimations[(UINT)this->currentState].GetAnimationMatrices(this->boneNames, this->animatedMatrices);
+		this->walkRunAnim.GetAnimationMatrices(this->boneNames, this->animatedMatrices);
 
-	//}
+		//Calculate all matrices that will later be sent to the GPU
+		CalcFinalMatrix(this->rootBone, -1);
 
-	Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->boneMatricesBuffer);
+		//Update the array of matrices to the GPU
+		UpdateBonesCBuffer();
+	}
+
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
 	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
 	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
 
@@ -519,4 +554,12 @@ void AnimatedObject::Render()
 
 	//Finally draw the mesh
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+
+	//Clean up
+	ID3D11Buffer* vertexCBNull = nullptr;
+	Graphics::GetContext()->VSSetConstantBuffers(2, 1, &vertexCBNull);
+	ID3D11VertexShader* vertexShaderNull = nullptr;
+	Graphics::GetContext()->VSSetShader(vertexShaderNull, nullptr, 0);
+	ID3D11InputLayout* inputLayoutNull = nullptr;
+	Graphics::GetContext()->IASetInputLayout(inputLayoutNull);
 }

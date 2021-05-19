@@ -22,6 +22,7 @@ private:
 
 	bool isPickUp;
 	bool isVisible;
+	bool useMesh;
 	ID3D11Buffer* hasNormalMapBuffer;
 
 private:
@@ -43,9 +44,13 @@ public:
 	bool Initialize(std::string meshObject, std::string diffuseTxt = "", std::string normalTxt = "", bool hasBounds = true,
 					DirectX::SimpleMath::Vector3 pos = {0.0f,0.0f,0.0f}, DirectX::SimpleMath::Vector3 rot = { 0.0f,0.0f,0.0f }, 
 					DirectX::SimpleMath::Vector3 scl= {1.0f,1.0f,1.0f});
+	bool InitializeColliders(std::vector<DirectX::SimpleMath::Vector3> positions);
+
 
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
+	void SetUseMesh(bool toggle = true);
+
 	void Render();
 	void UpdateBoundingBoxes();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);

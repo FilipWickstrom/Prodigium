@@ -1,6 +1,7 @@
 #include "MeshObject.h"
 #include "Graphics.h"
 using namespace DirectX::SimpleMath;
+
 bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
 {
 	HRESULT hr = Graphics::GetDevice()->CreateShaderResourceView(texture, nullptr, &srv);
@@ -119,6 +120,7 @@ MeshObject::MeshObject()
 
 	this->isPickUp = false;
 	this->isVisible = true;
+	this->useMesh = true;
 }
 
 MeshObject::~MeshObject()
@@ -194,11 +196,7 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		}
 	}
 
-	if (!BuildMatrix(pos, scl, rot))
-	{
-		std::cout << "Build matrix failed..." << std::endl;
-		return false;
-	}
+	BuildMatrix(pos, scl, rot);
 
 	if (hasBounds == true)
 	{
@@ -221,6 +219,48 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 	return true;
 }
 
+bool MeshObject::InitializeColliders(std::vector<DirectX::SimpleMath::Vector3> positions)
+{
+	//Only okay to make this if the mesh has not been 
+	// initialized and already got a box
+	if (this->mesh == nullptr)
+	{
+		this->mesh = new Mesh();
+
+		DirectX::SimpleMath::Vector3 min;
+		DirectX::SimpleMath::Vector3 max;
+
+		for (size_t i = 0; i < positions.size(); i++)
+		{
+			min.x = std::min(min.x, position.x);
+			min.y = std::min(min.y, position.y);
+			min.z = std::min(min.z, position.z);
+
+			max.x = std::max(max.x, position.x);
+			max.y = std::max(max.y, position.y);
+			max.z = std::max(max.z, position.z);
+		}
+
+		this->mesh->BuildColliders(min, max);
+		this->mesh->colliders.shrink_to_fit();
+		this->mesh->collidersOriginal = this->mesh->colliders;
+
+		this->SetColliders();
+
+	#ifdef _DEBUG
+		this->CreateColliderBuffers();
+	#endif
+		this->UpdateBoundingBoxes();
+		this->UpdateBoundingPlanes();
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void MeshObject::SetVisible(bool toggle)
 {
 	this->isVisible = toggle;
@@ -231,26 +271,31 @@ void MeshObject::SetPickUp(bool toggle)
 	this->isPickUp = toggle;
 }
 
+void MeshObject::SetUseMesh(bool toggle)
+{
+	this->useMesh = toggle;
+}
+
 void MeshObject::Render()
 {
-	//Set this objects modelmatrix
-	Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+	if (this->useMesh)
+	{
+		//Set this objects modelmatrix
+		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 
-	if (this->hasNormalMapBuffer)
 		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
-	else
-	{
-		ID3D11Buffer* nullMap = nullptr;
-		Graphics::GetContext()->VSSetConstantBuffers(2, 1, &nullMap);
-	}
 
-	//Set all the textures to the geometry pass pixelshader
-	for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
-	{
-		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
-	}
+		//Set all the textures to the geometry pass pixelshader
+		for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
+		{
+			Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
+		}
 
-	this->mesh->Render();
+		if (this->mesh != nullptr)
+		{
+			this->mesh->Render();
+		}
+	}
 }
 
 void MeshObject::UpdateBoundingBoxes()

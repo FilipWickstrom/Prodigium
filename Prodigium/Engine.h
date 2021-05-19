@@ -14,8 +14,6 @@
 #include "DebugInfo.h"
 #include "BlurFilter.h"
 
-#include "AnimatedObject.h"		//DELETE LATER****
-
 class Engine
 {
 protected:
@@ -33,10 +31,6 @@ private:
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
-	
-
-	AnimatedObject anime;	//DELETE LATER****
-
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();

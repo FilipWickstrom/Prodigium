@@ -91,7 +91,7 @@ Animation::~Animation()
 {
 }
 
-bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, UINT animSpeed)
+bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, int animSpeed)
 {
 	Assimp::Importer importer;
 	
@@ -125,7 +125,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 	if (animSpeed == 0)
 		this->ticksPerSecond = animation->mTicksPerSecond;
 	else
-		this->ticksPerSecond = animSpeed;
+		this->ticksPerSecond = (double)animSpeed;
 
 	//Go through all the channels with animations
 	for (unsigned int i = 0; i < animation->mNumChannels; i++)
@@ -191,9 +191,12 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 	//Adding to the current frame
 	this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
 	
-	//Reset when reached end
+	//Resets to start when reached end
 	if (this->currentFrameTime >= this->duraction)
 		this->currentFrameTime = 0;
+	//Resets to end when reached start - only when playing in revers
+	else if (this->currentFrameTime <= 0)
+		this->currentFrameTime = this->duraction;
 
 	aiVector3D pos;
 	aiVector3D scl;
@@ -228,11 +231,11 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 	}
 }
 
-void Animation::SetAnimationSpeed(UINT animSpeed)
+void Animation::SetAnimationSpeed(int animSpeed)
 {
 	//Animationspeed can't be 0
 	if (animSpeed != 0)
 	{
-		this->ticksPerSecond = animSpeed;
+		this->ticksPerSecond = (double)animSpeed;
 	}
 }

@@ -94,9 +94,6 @@ void Engine::Render()
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
 	this->sceneHandler.Render();
-
-	this->anime.Render();	//DELETE LATER****
-
 	this->gPass.Clear();
 
 	// Shadow pass
@@ -153,7 +150,6 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
-	//this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
@@ -209,12 +205,6 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
-
-	//TESTING TO ADD A ANIMATED OBJECT TO THE SCENE...
-	if (!this->anime.Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png", "Char_Normal.jpg", { 0,-5,10 }))
-	{
-		return false;
-	}
 
 	return true;
 }

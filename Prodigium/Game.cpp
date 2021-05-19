@@ -88,22 +88,51 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			SceneHandle()->EditScene().GetParticles().SetActive(false);
 		}
-		if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
-		{
-			this->player->Sprint();
-		}
-		if (InputHandler::IsKeyReleased(Keyboard::LeftShift))
-		{
-			this->player->Walk();
-		}
+
+
+		/*------------------MOVEMENT----------------*/
+		//Forward
 		if (InputHandler::IsKeyHeld(Keyboard::W))
 		{
+			//Sprint
+			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+			{
+				this->player->Sprint();
+				this->player->GetAnimObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+			}
+			else
+			{
+				this->player->Walk();
+				this->player->GetAnimObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+			}
 			direction.x = 1.f;
 		}
+		else if (InputHandler::IsKeyReleased(Keyboard::W))
+		{
+			this->player->GetAnimObject()->ChangeAnimState(AnimationState::IDLE);
+		}
+
+		//Backward
 		if (InputHandler::IsKeyHeld(Keyboard::S))
 		{
+			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+			{
+				this->player->Sprint();
+				this->player->GetAnimObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
+			}
+			else
+			{
+				this->player->Walk();
+				this->player->GetAnimObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
+			}
 			direction.x = -1.f;
 		}
+		else if (InputHandler::IsKeyReleased(Keyboard::S))
+		{
+			this->player->GetAnimObject()->ChangeAnimState(AnimationState::IDLE);
+		}
+
+		//Sideways
 		if (InputHandler::IsKeyHeld(Keyboard::A))
 		{
 			direction.y = -1.f;
@@ -112,15 +141,17 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			direction.y = 1.f;
 		}
+		/*------------------MOVEMENT----------------*/
+
 		if (InputHandler::IsLMBPressed())
 		{
-			std::cout << "X: " << this->player->GetMeshObject()->GetPosition().x << " Z: " << this->player->GetMeshObject()->GetPosition().z << "\n";
+			std::cout << "X: " << this->player->GetAnimObject()->GetPosition().x << " Z: " << this->player->GetAnimObject()->GetPosition().z << "\n";
 
 
 
 			// Test pick up
 			//std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(1).IsVisible())
+			if (this->player->GetAnimObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(1).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
 				Engine::cluesCollected++;
@@ -129,7 +160,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 
 			//std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(2).IsVisible())
+			if (this->player->GetAnimObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(2).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
 				Engine::cluesCollected++;
@@ -138,7 +169,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 
 			//std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(4).IsVisible())
+			if (this->player->GetAnimObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(4).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
 				Engine::cluesCollected++;
@@ -146,7 +177,7 @@ void Game::HandleInput(const float& deltaTime)
 				std::cout << "Picked up Mask!\n";
 			}
 
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(5)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(5).IsVisible())
+			if (this->player->GetAnimObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(5)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(5).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(5).SetVisible(false);
 				Engine::cluesCollected++;
@@ -159,14 +190,14 @@ void Game::HandleInput(const float& deltaTime)
 			if (GUIHandler::ActiveTrap())
 			{
 				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
-					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+					{ this->player->GetAnimObject()->GetPosition().x, 0.0f, this->player->GetAnimObject()->GetPosition().z }, // Position
+					{ this->player->GetAnimObject()->GetRotation().x, this->player->GetAnimObject()->GetRotation().y, this->player->GetAnimObject()->GetRotation().z }); // Rotation
 			}
 			else
 			{
 				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false,
-					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+					{ this->player->GetAnimObject()->GetPosition().x, -5.0f, this->player->GetAnimObject()->GetPosition().z }, // Position
+					{ this->player->GetAnimObject()->GetRotation().x, this->player->GetAnimObject()->GetRotation().y, this->player->GetAnimObject()->GetRotation().z }); // Rotation
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
@@ -189,7 +220,7 @@ void Game::HandleInput(const float& deltaTime)
 			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
 		*/
 		float speed = 0.1f;
-		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		if (this->player->GetAnimObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -197,7 +228,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x + speed, -0.0f, z },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		else if (this->player->GetAnimObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -206,7 +237,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
 
-		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		if (this->player->GetAnimObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -214,7 +245,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x , -0.0f, z + speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		else if (this->player->GetAnimObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -354,7 +385,7 @@ void Game::LoadMainMenu()
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Player model
+	// Player model		- REMOVE LATER???
 	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, 
 		{ (float)randX, 0.0f, (float)randZ } // Pos
 	, {0.0f, 0.0f, 0.0f});
@@ -391,7 +422,7 @@ void Game::LoadMap()
 {
 	SceneHandle()->AddScene();
 	this->player = new Player();
-	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
+	Engine::SceneHandle()->EditScene().AddAnimatedObject(this->player->GetAnimObject());
 
 	LightStruct L;
 
@@ -433,8 +464,8 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
-		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-		{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+		{ this->player->GetAnimObject()->GetPosition().x, 0.0f, this->player->GetAnimObject()->GetPosition().z }, // Position
+		{ this->player->GetAnimObject()->GetRotation().x, this->player->GetAnimObject()->GetRotation().y, this->player->GetAnimObject()->GetRotation().z }); // Rotation
 
 	// Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -50.0f });

@@ -1,4 +1,5 @@
 #include "Scene.h"
+using namespace DirectX::SimpleMath;
 
 const bool Scene::SetupLightBuffer()
 {
@@ -74,7 +75,6 @@ const bool Scene::UpdateInfoBuffer()
 	return !FAILED(hr);
 }
 
-using namespace DirectX::SimpleMath;
 Scene::Scene()
 {
 	this->currentObject = 0;
@@ -160,6 +160,15 @@ void Scene::PopAllLights()
 }
 
 void Scene::Add(MeshObject* object)
+{
+	if (object != nullptr)
+	{
+		this->objects.push_back(object);
+		this->currentObject = (int)objects.size() - 1;
+	}
+}
+
+void Scene::AddAnimatedObject(AnimatedObject* object)
 {
 	if (object != nullptr)
 	{
@@ -275,16 +284,36 @@ void Scene::Pop()
 
 void Scene::Render()
 {
+	ID3D11VertexShader* standardVS;
+	Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
+	ID3D11InputLayout* standardInputLayout;
+	Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
+
 	if ((int)this->objects.size() > 0)
 	{
 		for (int i = 0; i < (int)this->objects.size(); i++)
 		{
 			if (this->objects[i]->IsVisible())
 			{
-				this->objects[i]->Render();
+				//Check if an animated object
+				AnimatedObject* animObj = dynamic_cast<AnimatedObject*>(this->objects[i]);
+				if (animObj == nullptr)
+				{
+					this->objects[i]->Render();
+				}
+				else
+				{
+					animObj->Render();
+					//Most likely that the next object will use the standard
+					Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+					Graphics::GetContext()->IASetInputLayout(standardInputLayout);
+				}
 			}
 		}
 	}
+
+	standardVS->Release();
+	standardInputLayout->Release();
 }
 
 void Scene::RenderLights()
@@ -318,10 +347,37 @@ void Scene::RenderLights()
 
 void Scene::RenderShadows()
 {
+	//Previous from gbuffer
+	/*ID3D11VertexShader* standardVS;
+	Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
+	ID3D11InputLayout* standardInputLayout;
+	Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
+	ID3D11PixelShader* standardPS;
+	Graphics::GetContext()->PSGetShader(&standardPS, nullptr, 0);
+	D3D11_VIEWPORT standardView;
+	UINT views = 1;
+	Graphics::GetContext()->RSGetViewports(&views, &standardView);*/
+
+	//Graphics::GetContext()->PSGetShaderResources()
+
 	this->shadowHandler->Prepare();
+
+	//Shadowstuff
+	/*ID3D11VertexShader* shadowVS;
+	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
+	D3D11_VIEWPORT shadowView;
+	Graphics::GetContext()->RSGetViewports(&views, &shadowView);*/
+
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
 	{
+		/*Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
+		Graphics::GetContext()->RSSetViewports(1, &shadowView);
+		Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);*/
 		this->shadowHandler->Render(i);
+		/*Graphics::GetContext()->RSSetViewports(1, &standardView);
+		Graphics::GetContext()->PSSetShader(standardPS, nullptr, 0);
+		Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+		Graphics::GetContext()->IASetInputLayout(standardInputLayout);*/
 
 		// Loop through all objects
 		for (int j = 0; j < (int)objects.size(); j++)
@@ -329,11 +385,26 @@ void Scene::RenderShadows()
 			// Check the distance between light source and object.
 			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->objects[j]->IsVisible())
 			{
-				this->objects[j]->Render();
+				//Check if an animated object
+				AnimatedObject* animObj = dynamic_cast<AnimatedObject*>(this->objects[j]);
+				if (animObj == nullptr)
+				{
+					this->objects[j]->Render();
+				}
+				else
+				{	
+					//animObj->Render(false);
+					/*Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+					Graphics::GetContext()->IASetInputLayout(standardInputLayout);*/
+				}
 			}
 		}
 	}
 	this->shadowHandler->Clear();
+	/*standardVS->Release();
+	standardInputLayout->Release();
+	standardPS->Release();
+	shadowVS->Release();*/
 }
 
 void Scene::RenderParticles()

@@ -2,7 +2,8 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "GameObject.h"
+//#include "GameObject.h"
+#include "MeshObject.h"
 #include "ResourceManager.h"
 #include "Animation.h"
 
@@ -25,7 +26,13 @@ TODO:
 	- We look for animations named: Player_Idle, Player_Walking, Player_Running
 */
 
-class AnimatedObject : public GameObject
+//Switch between states of animations
+enum class AnimationState
+{
+	IDLE, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 6
+};
+
+class AnimatedObject : public MeshObject
 {
 private:
 	//Needs a seperate vertexshader and input for it
@@ -37,7 +44,7 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 	UINT indexCount;
-	ID3D11ShaderResourceView* textureSRVs[MAXTEXTURES];
+	ID3D11ShaderResourceView* textureSRVs[MAXTEXTURES];		//ALREADY IN MESHOBJECT***
 
 	//Holds each bones final matrix
 	ID3D11Buffer* boneMatricesBuffer;
@@ -61,13 +68,12 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
 
-	//Switch between states of animations
-	enum class AnimationState
-	{
-		IDLE, WALK, RUN, NROFSTATE = 4
-	};
 	AnimationState currentState;
-	std::vector<Animation> allAnimations;
+	//std::vector<Animation> allAnimations;
+	Animation walkRunAnim;
+
+	//All the positions of the T-posing character
+	std::vector<DirectX::SimpleMath::Vector3> meshPositions;
 
 private:
 	//Basic parts to be able to render vertices
@@ -103,10 +109,8 @@ public:
 	
 	void ChangeAnimState(AnimationState state);
 
-	//PlayAnimation()
-	//StopAnimation()
-
-	void Render();		//Deltatime included
-
+	//With animate set to false, we can render without changing pose.
+	//Can be used when rendering shadows
+	void Render(bool animate = true);	
 
 };
