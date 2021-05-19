@@ -148,6 +148,9 @@
     <ClCompile Include="Node.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="RandomSpotPicker.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -254,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="AIHandler.h">
       <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomSpotPicker.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Engine\AI</Filter>

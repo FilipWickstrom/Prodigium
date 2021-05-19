@@ -33,7 +33,9 @@ Player::Player()
 	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
 	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
 	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
-
+	this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
+	this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
+			
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
 }

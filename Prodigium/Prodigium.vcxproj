@@ -169,6 +169,7 @@
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RandomSpotPicker.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="RandomSpotPicker.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />

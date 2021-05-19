@@ -5,6 +5,7 @@
 #include "MainMenu.h"
 #include <thread>
 #include <omp.h>
+#include "RandomSpotPicker.h"
 
 class Game:public Engine
 {
@@ -15,6 +16,7 @@ private:
 	CameraObject tempCam;
 	MainMenu menu;
 	Player* player;
+	RandomSpotPicker picker;
 	bool running;
 	bool hasLoaded;
 	bool zoomIn;

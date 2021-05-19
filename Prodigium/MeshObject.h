@@ -14,7 +14,6 @@ private:
 #ifdef _DEBUG
 	std::vector<ID3D11Buffer*>boundingBoxBuffer;
 #endif
-	std::vector<Collider> collidersOriginal;
 
 	//Holds all the views of the textures:
 	//1. Diffuse texture
@@ -55,6 +54,7 @@ public:
 	void RenderBoundingBoxes();
 #endif
 
+	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 
 	void RemoveColliders();
