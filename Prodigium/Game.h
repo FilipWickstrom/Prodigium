@@ -6,6 +6,7 @@
 #include <thread>
 #include <omp.h>
 #include "RandomSpotPicker.h"
+#include "NodeFinder.h"
 
 class Game:public Engine
 {
@@ -17,6 +18,7 @@ private:
 	MainMenu menu;
 	Player* player;
 	RandomSpotPicker picker;
+	NodeFinder finder;
 	bool running;
 	bool hasLoaded;
 	bool zoomIn;

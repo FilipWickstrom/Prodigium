@@ -181,10 +181,9 @@ void Game::HandleInput(const float& deltaTime)
 
 
 		/*
-			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
-		*/
+		this->finder.Update(this->player->GetMeshObject()->GetPosition(), SceneHandle()->EditScene().GetMeshObject(6).GetPosition());
 		float speed = 0.1f;
-		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		if (this->finder.MoveTo().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -192,7 +191,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x + speed, -0.0f, z },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		else if (this->finder.MoveTo().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -201,7 +200,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
 
-		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		if (this->finder.MoveTo().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -209,7 +208,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x , -0.0f, z + speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		else if (this->finder.MoveTo().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
 		{
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
@@ -217,6 +216,8 @@ void Game::HandleInput(const float& deltaTime)
 				{ x , -0.0f, z - speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
+		*/
+
 	}
 }
 
