@@ -339,6 +339,13 @@ bool Game::OnFrame(const float& deltaTime)
 		this->soundHandler.SetMasterVolume(options.masterVolume);
 		
 	}
+
+	// Update audio while in options.
+	if (this->isInOptions)
+	{
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+	}
 	if (this->inGoal)
 	{
 		this->zoomIn = false;
@@ -363,6 +370,8 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		// Load menu
 		this->LoadMainMenu();
+		this->soundHandler.PlayMusic(1);
+		this->soundHandler.PlayAmbient(1);
 	}
 
 	// Return to player buffers.

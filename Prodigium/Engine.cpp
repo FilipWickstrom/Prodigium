@@ -133,17 +133,23 @@ void Engine::Render()
 	}
 #endif
 
-	// Particle pass
-	this->sceneHandler.RenderParticles();
+	if (this->options.hasParticles)
+	{
+		// Particle pass
+		this->sceneHandler.RenderParticles();
+	}
 
 	//Render the skybox on the places where there is no objects visible from depthstencil
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	//Render the blur depending on sanity
-	//1.0f is full sanity = no blur
-	//0.0f is no sanitiy = max blur
-	this->blurPass.Render(this->playerSanity);
+	if (this->options.hasBlur)
+	{
+		//Render the blur depending on sanity
+		//1.0f is full sanity = no blur
+		//0.0f is no sanitiy = max blur
+		this->blurPass.Render(this->playerSanity);
+	}
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();

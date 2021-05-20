@@ -204,10 +204,11 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
-    SetUpGUIStyleDEBUG();
-    GUIHandler::instance->RenderDebugGUI();
-#endif  _DEBUG
+    if (options.hasDebugInfo)
+    {
+        SetUpGUIStyleDEBUG();
+        GUIHandler::instance->RenderDebugGUI();
+    }
 
     if (GUIHandler::instance->showMainMenu)
     {
@@ -447,9 +448,41 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
     SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
-    Checkbox("Time Count", &clockTimer);
+
+    std::string timeC = "Time Count: ";
+
+    // Displays ON or OFF depending on the state.
+    if (this->clockTimer)
+        timeC.append("ON");
+    else
+        timeC.append("OFF");
+    Checkbox(timeC.c_str(), &clockTimer);
+
+    std::string isBlur = "Blur: ";
+    if (options.hasBlur)
+        isBlur.append("ON");
+    else
+        isBlur.append("OFF");
+    
+    Checkbox(isBlur.c_str(), &options.hasBlur);
+
+    std::string isParticles = "Particles: ";
+    if (options.hasParticles)
+        isParticles.append("ON");
+    else
+        isParticles.append("OFF");
+
+    Checkbox(isParticles.c_str(), &options.hasParticles);
+
+    std::string isDebugDisplay = "Debug Info: ";
+    if (options.hasDebugInfo)
+        isDebugDisplay.append("ON");
+    else
+        isDebugDisplay.append("OFF");
+
+    Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
     Text("\n\nTip:");
-    Text("Difficulty will change the cooldown time for trap placement.");
+    Text("Difficulty will change the cooldown time for trap placement.\nRumors are there is also secret difficulty options somewhere!");
 
     // Ultra epic space creator for the aesthetics
     Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");
