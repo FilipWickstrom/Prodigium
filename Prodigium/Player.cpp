@@ -43,6 +43,7 @@ Player::Player()
 
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
+	this->playerModel->UpdateBoundingBoxes();
 }
 
 Player::~Player()

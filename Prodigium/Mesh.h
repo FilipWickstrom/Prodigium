@@ -23,6 +23,11 @@ struct Collider
 	DirectX::BoundingOrientedBox boundingBox;
 };
 
+struct SphereCollider
+{
+	DirectX::BoundingSphere boundingSphere;
+};
+
 #pragma warning(pop)
 class Mesh : public Resource
 {
@@ -35,7 +40,7 @@ private:
 private:
 	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
 	void BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
-	void BuildRenderCollider(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
+	void BuildRenderCollider(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 
 public:
 	Mesh();
@@ -46,6 +51,8 @@ public:
 
 	Collider modelCollider;
 	Collider modelColliderOriginal;
+
+	SphereCollider modelColliderSphere;
 
 	bool LoadFile(std::string filename);
 	void Render();
