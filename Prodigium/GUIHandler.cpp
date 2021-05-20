@@ -456,6 +456,22 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     else
         timeC.append("OFF");
     Checkbox(timeC.c_str(), &clockTimer);
+
+    std::string isBlur = "Blur: ";
+    if (options.hasBlur)
+        isBlur.append("ON");
+    else
+        isBlur.append("OFF");
+    
+    Checkbox(isBlur.c_str(), &options.hasBlur);
+
+    std::string isParticles = "Particles: ";
+    if (options.hasParticles)
+        isParticles.append("ON");
+    else
+        isParticles.append("OFF");
+
+    Checkbox(isParticles.c_str(), &options.hasParticles);
     Text("\n\nTip:");
     Text("Difficulty will change the cooldown time for trap placement.");
 

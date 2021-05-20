@@ -13,6 +13,9 @@ OptionsHandler::OptionsHandler()
 	this->gameTimer = 0;
 	this->state = MAINMENU;
 
+	this->hasBlur = true;
+	this->hasParticles = true;
+
 	std::fstream input;
 	input.open("Settings/audiosettings.txt", std::fstream::in);
 	std::string line;

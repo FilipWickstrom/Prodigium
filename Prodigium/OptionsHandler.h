@@ -26,6 +26,10 @@ public:
 	// Keeps track of where the player is. Menu? Game? Options?
 	int state;
 
+	// Increase performance by disabling options
+	bool hasParticles;
+	bool hasBlur;
+
 	OptionsHandler();
 	~OptionsHandler();
 };
