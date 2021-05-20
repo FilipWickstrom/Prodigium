@@ -131,6 +131,7 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
+	Graphics::SetMainWindowViewport();
 	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer);
 
 	Graphics::GetSwapChain()->Present(0, 0);

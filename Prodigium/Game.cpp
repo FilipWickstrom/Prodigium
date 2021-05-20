@@ -32,8 +32,6 @@ Game::~Game()
 {
 	if (this->player && !this->menu.IsInMenu())
 		delete this->player;
-
-	
 }
 
 const bool Game::IsRunning() const
@@ -55,7 +53,7 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
-	//TODO: Make the engine cleanly shutdown
+	// Quit the game while in menu.
 	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded)
 	{
 		this->running = false;
@@ -316,7 +314,11 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Engine::ClearDisplay();
 	Engine::Render();
-	Engine::Update(deltaTime);
+
+	if (!this->isPaused)
+	{
+		Engine::Update(deltaTime);
+	}
 
 
 	return true;
@@ -342,7 +344,7 @@ bool Game::OnStart()
 		return false;
 	}
 #endif
-	this->soundHandler.SetVolume(0.1);
+	this->soundHandler.SetVolume(0.5);
 	this->soundHandler.PlayLooping(0);
 	return true;
 }
@@ -452,7 +454,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "cat_bagoverhead.jpg", "", false, { pos.x, -3.0f, pos.y });
+	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "necklace_albedo.png", "", false, { pos.x, -3.0f, pos.y });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { pos.x, 0.0f, pos.y, 5.0f };

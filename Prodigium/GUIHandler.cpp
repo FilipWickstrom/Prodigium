@@ -400,31 +400,30 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
 
 void GUIHandler::RenderPauseMenu()
 {
-    
-    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth(), (float)Graphics::GetWindowHeight()));
-    SetNextWindowPos(ImVec2(0, 0));
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.25f, (float)Graphics::GetWindowHeight() * 0.25f));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
 
-    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
-        SetNextWindowPos(ImVec2(500, 250));
-        Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.33f));
+        BeginChild("Resume Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Resume", ImVec2(250, 50)))
         {
             ResumeGame();
         }
-        End();
+        EndChild();
 
-        SetNextWindowPos(ImVec2(500, 325));
-        Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
+        BeginChild("Quit Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Quit", ImVec2(250, 50)))
         {
             QuitGame();
         }
-        End();
+        EndChild();
 
     End();
 
