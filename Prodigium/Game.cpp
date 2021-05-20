@@ -240,9 +240,10 @@ void Game::HandleInput(const float& deltaTime)
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
-				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false, false,
+				SceneHandle()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
+					{1.5f, 1.5f, 1.5f}); 
 				
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
