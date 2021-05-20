@@ -284,6 +284,8 @@ bool Game::OnFrame(const float& deltaTime)
 		this->LoadMap();
 		
 		GUIHandler::ShowGameGUI(true);
+		this->soundHandler.PlayAmbient(0);
+		this->soundHandler.PlayMusic(0);
 	}
 	if (this->menu.IsInMenu() && this->hasLoaded)
 	{
@@ -347,8 +349,9 @@ bool Game::OnStart()
 		return false;
 	}
 #endif
-	this->soundHandler.SetVolume(0.5);
-	this->soundHandler.PlayLooping(0);
+	this->soundHandler.SetMasterVolume(0.5);
+	this->soundHandler.PlayMusic(1);
+	this->soundHandler.PlayAmbient(1);
 	return true;
 }
 
