@@ -1,5 +1,7 @@
 #include "MeshObject.h"
 #include "Graphics.h"
+#include "ResourceManager.h"
+
 using namespace DirectX::SimpleMath;
 bool MeshObject::BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv)
 {
@@ -71,6 +73,12 @@ void MeshObject::SetColliders()
 {
 	this->colliders = this->mesh->colliders;
 	this->collidersOriginal = this->mesh->collidersOriginal;
+}
+
+void MeshObject::SetRenderColliders()
+{
+	this->modelCollider = this->mesh->modelCollider;
+	this->modelColliderOriginal = this->mesh->modelColliderOriginal;
 }
 
 void MeshObject::UpdateBoundingPlanes()
@@ -199,7 +207,8 @@ bool MeshObject::Initialize(std::string meshObject, std::string diffuseTxt, std:
 		std::cout << "Build matrix failed..." << std::endl;
 		return false;
 	}
-
+	this->SetRenderColliders();
+	this->UpdateRenderBoundingBox();
 	if (hasBounds == true)
 	{
 		this->SetColliders();
@@ -298,6 +307,11 @@ void MeshObject::UpdateBoundingBoxes()
 	}
 }
 
+void MeshObject::UpdateRenderBoundingBox()
+{
+	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);
+}
+
 void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
 {
 #ifdef _DEBUG
@@ -306,7 +320,7 @@ void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
 	std::vector<DirectX::XMFLOAT3> allCorners;
 	DirectX::XMFLOAT3 corners[8];
 #endif
-
+	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, transform);
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
 		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, transform);

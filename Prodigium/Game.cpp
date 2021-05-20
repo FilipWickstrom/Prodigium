@@ -68,7 +68,7 @@ void Game::HandleInput(const float& deltaTime)
 	// Go back to Menu
 	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
-		std::cout << "lol" << "\n";
+		Engine::inGame = false;
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -363,6 +363,7 @@ void Game::ResetValues()
 
 void Game::LoadMainMenu()
 {
+	Engine::inGame = false;
 	if (this->player)
 		delete this->player;
 
@@ -600,4 +601,5 @@ void Game::LoadMap()
 	this->inGoal = true;
 
 	this->amountOfObjects = SceneHandle()->EditScene().GetNumberOfObjects();
+	Engine::inGame = true;
 }

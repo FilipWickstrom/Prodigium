@@ -5,7 +5,6 @@
 
 #include "UsefulStructuresHeader.h"
 #include "Resource.h"
-#include "Graphics.h"
 
 //Assimp
 #pragma warning(push, 0)
@@ -35,7 +34,8 @@ private:
 
 private:
 	bool CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<unsigned short>& indices, UINT nrOfIndices);
-	void BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
+	void BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
+	void BuildRenderCollider(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max);
 
 public:
 	Mesh();
@@ -43,6 +43,9 @@ public:
 
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
+
+	Collider modelCollider;
+	Collider modelColliderOriginal;
 
 	bool LoadFile(std::string filename);
 	void Render();

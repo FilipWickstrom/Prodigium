@@ -100,6 +100,14 @@ void SceneHandler::Render()
 	}
 }
 
+void SceneHandler::Render(const std::vector<MeshObject*>& toRender)
+{
+	if ((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->Render(toRender);
+	}
+}
+
 void SceneHandler::RenderLights()
 {
 	if ((int)this->scenes.size() > 0)
@@ -118,6 +126,14 @@ void SceneHandler::RenderShadows()
 	}
 }
 
+void SceneHandler::RenderShadows(const std::vector<MeshObject*>& toRender)
+{
+	if ((int)this->scenes.size() > 0)
+	{
+		this->scenes[this->currentScene]->RenderShadows(toRender);
+	}
+}
+
 void SceneHandler::RenderParticles()
 {
 	if ((int)this->scenes.size() > 0)
@@ -127,11 +143,11 @@ void SceneHandler::RenderParticles()
 }
 
 #ifdef _DEBUG
-void SceneHandler::RenderBoundingBoxes()
+void SceneHandler::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
 {
 	if((int)this->scenes.size() > 0)
 	{
-		this->scenes[this->currentScene]->RenderBoundingBoxes();
+		this->scenes[this->currentScene]->RenderBoundingBoxes(toRender);
 	}
 }
 #endif

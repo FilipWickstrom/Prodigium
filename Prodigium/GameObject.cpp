@@ -75,13 +75,10 @@ bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vect
 
 bool GameObject::UpdateMatrix()
 {
-
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
-
 
 	this->modelMatrix = transformedCPU;
 	Matrix transformedGPU = Matrix(transformedCPU).Transpose();
-
 
 	D3D11_MAPPED_SUBRESOURCE submap;
 	HRESULT hr;
@@ -97,6 +94,14 @@ bool GameObject::UpdateMatrix()
 
 
 	return true;
+}
+
+void GameObject::UpdateMatrixCPU()
+{
+	this->modelMatrix = 
+		Matrix::CreateScale(this->scale) * 
+		Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
+		Matrix::CreateTranslation(this->position);
 }
 
 const Vector3& GameObject::GetPosition() const

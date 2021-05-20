@@ -15,6 +15,7 @@ SoundHandler::~SoundHandler()
 	this->waveBank.release();
 	this->soundEffect.release();
 	this->audEngine.release();	
+	this->soundEffect.release();
 }
 
 const bool SoundHandler::Initialize()

@@ -1,14 +1,15 @@
 #pragma once
 #include "GameObject.h"
 #include <iostream>
-#include <SimpleMath.h>
+#include "UsefulStructuresHeader.h"
+#include "Frustum.h"
 constexpr float ROTATION_SPEED = 4.f;
 constexpr float FULL_CIRCLE = 6.283185f;
 class CameraObject :
 	public GameObject
 {
 private:
-	struct viewProjectionMatrix
+	struct ViewProjectionMatrix
 	{
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Matrix projectionMatrix;
@@ -25,7 +26,8 @@ private:
 	const DirectX::SimpleMath::Vector3 defaultUp = { 0.f, 1.f, 0.f };
 	DirectX::SimpleMath::Vector3 defaultForward;
 	DirectX::SimpleMath::Vector3 defaultPosition;
-	viewProjectionMatrix viewProjMatrix;
+	ViewProjectionMatrix viewProjMatrix;
+	ViewProjectionMatrix viewProjMatrixCPU;
 	DirectX::SimpleMath::Vector3 eyePos;
 	DirectX::SimpleMath::Vector4 eyePosGPU;
 	DirectX::SimpleMath::Vector3 upDir;
@@ -38,6 +40,7 @@ private:
 	ID3D11Buffer* matrixBuffer;
 	ID3D11Buffer* camPosBuffer;
 	void UpdateViewMatrix();
+	Frustum* frustum;
 
 public:
 	CameraObject();
@@ -50,5 +53,7 @@ public:
 	//void SetTransform(const DirectX::SimpleMath::Matrix& transform, const DirectX::SimpleMath::Vector3& playerPos);
 	void ChangeOffset(const DirectX::SimpleMath::Vector3& offset);
 	DirectX::SimpleMath::Vector3 GetForward();
-	bool FullRevolution();
+	const DirectX::SimpleMath::Matrix& GetViewMatrixCPU()const;
+	const DirectX::SimpleMath::Matrix& GetProjMatrixCPU()const;
+	Frustum* GetFrustum();
 };
