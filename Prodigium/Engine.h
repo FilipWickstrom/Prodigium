@@ -8,13 +8,13 @@
 #include "RenderPass.h"
 #include "SkyboxPass.h"
 #include "InputHandler.h"
-#include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
 #include "Frustum.h"
+#include "OptionsHandler.h"
 
 class Engine
 {
@@ -26,6 +26,8 @@ protected:
 
 	float slowdown_timer; // Slow down trap timer
 	float stopcompl_timer; // Stop completely trap timer
+
+	OptionsHandler options;
 
 private:
 	Window window;

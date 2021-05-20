@@ -72,6 +72,21 @@ struct LightStruct
 	DirectX::SimpleMath::Vector4 attentuate; // attentuate.w is LightType.
 };
 
+/*
+	Structure for vertices that will be used in an animation
+	bonesID is 4 unsigned integers which represents 4 bones that can affect the vertex
+	weights is 4 floats which is how much each bone will affect the vertex
+*/
+struct AnimationVertex
+{
+	DirectX::SimpleMath::Vector3 position = {};
+	DirectX::SimpleMath::Vector2 uv = {};
+	DirectX::SimpleMath::Vector3 normal = {};
+	DirectX::SimpleMath::Vector3 tangent = {};
+	DirectX::XMUINT4 boneIDs = {};
+	DirectX::SimpleMath::Vector4 boneWeights = {};
+};
+
 struct ParticleVertex
 {
 	DirectX::SimpleMath::Vector3 position;

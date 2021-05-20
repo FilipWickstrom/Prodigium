@@ -24,20 +24,22 @@ void Player::RotatePlayer()
 
 Player::Player()
 {
-	Vector3 position(0.0f, 0.0f, 0.f);
-	Vector3 cameraOffset = { 0.0f, 2.5f, -15.f };
-	Vector3 cameraForward = cameraOffset * -1;
+	this->playerModel = new MeshObject();
+	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, {0, DirectX::XM_PI,0});
+
+	Vector3 cameraOffset = { 0.0f, 7.5f, -20.f };
+	Vector3 cameraForward = this->playerModel->colliders[0].boundingBox.Center - cameraOffset;
+	cameraForward.y += 9;
 	cameraForward.Normalize();
 	this->speed = 10.f;
-	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("LowPoly_Character.obj", "Char_Albedo.png", "Char_Normal.jpg");
+	
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
-	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
-	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
 	this->playerCam = new CameraObject;
 	ResourceManager::AddCamera("PlayerCam", playerCam);
 	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
+	
+	//Fixes the large hitbox of the tposing player
 	this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
 	this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
 

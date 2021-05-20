@@ -103,9 +103,9 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 	{
 		this->pitch = 1.0f;
 	}
-	if (this->pitch < -0.49f)
+	if (this->pitch < -0.32f)
 	{
-		this->pitch = -0.49f;
+		this->pitch = -0.32f;
 	}
 
 	this->rotation = { this->pitch, this->yaw, this->roll };

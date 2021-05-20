@@ -146,6 +146,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AIHandler.cpp" />
+    <ClCompile Include="AnimatedObject.cpp" />
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="BlurFilter.cpp" />
     <ClCompile Include="CameraObject.cpp" />
     <ClCompile Include="DebugInfo.cpp" />
@@ -168,6 +170,7 @@
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshObject.cpp" />
+    <ClCompile Include="OptionsHandler.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RandomSpotPicker.cpp" />
@@ -186,6 +189,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIHandler.h" />
+    <ClInclude Include="AnimatedObject.h" />
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="BlurFilter.h" />
     <ClInclude Include="CameraObject.h" />
     <ClInclude Include="DebugInfo.h" />
@@ -205,6 +210,7 @@
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshObject.h" />
+    <ClInclude Include="OptionsHandler.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RandomSpotPicker.h" />
@@ -226,6 +232,14 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="AnimationVertexShader.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="BlurFilterCS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>

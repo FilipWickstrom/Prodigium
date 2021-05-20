@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerSanity, int clues, float& timer1, float& timer2)
+void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -204,10 +204,10 @@ void GUIHandler::Render(int playerSanity, int clues, float& timer1, float& timer
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
     SetUpGUIStyleDEBUG();
     GUIHandler::instance->RenderDebugGUI();
-//#endif  _DEBUG
+#endif  _DEBUG
 
     if (GUIHandler::instance->showMainMenu)
     {
@@ -217,10 +217,18 @@ void GUIHandler::Render(int playerSanity, int clues, float& timer1, float& timer
     if (GUIHandler::instance->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI(timer1, timer2);
-        GUIHandler::instance->RenderBrainGUI(playerSanity, clues);
+        GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
+        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
+    }
+    if (GUIHandler::instance->showOptionsMenu)
+    {
+        SetUpGUIStyleMainMenu();
+        GetIO().WantCaptureMouse = true;
+        GetIO().WantCaptureKeyboard = true;
+        GetIO().MouseDrawCursor = true;
+        GUIHandler::instance->RenderOptionsMenu(options);
     }
     
 
@@ -293,6 +301,11 @@ void GUIHandler::ShowGameGUI(const bool& show)
     GUIHandler::instance->showGameGUI = show;
 }
 
+void GUIHandler::ShowOptionsMenu(const bool& show)
+{
+    GUIHandler::instance->showOptionsMenu = show;
+}
+
 const bool GUIHandler::ActiveTrap()
 {
     return GUIHandler::instance->trap1Active;
@@ -309,7 +322,7 @@ void GUIHandler::RenderDebugGUI()
 	End();
 }
 
-void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
+void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options)
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
@@ -353,6 +366,18 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
     Text(t2.c_str());
     End();
 
+    if (this->clockTimer)
+    {
+        SetNextWindowPos(ImVec2(15, 15));
+        SetNextWindowSize(ImVec2(60, 30));
+        Begin("GAME TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+        // Limit to one decimal
+        std::string t3(std::to_string((int)options.gameTimer));
+        Text(t3.c_str());
+        End();
+    }
+
     if (this->trap1Active)
     {
         SetNextWindowPos(ImVec2(50, (float)Graphics::GetWindowHeight() - 150));
@@ -375,25 +400,25 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerSanity, int clues)
+void GUIHandler::RenderBrainGUI(int playerHp, int clues)
 {
     float fade = 1.0f;
-    float hp = (float)playerSanity;
+    float hp = playerHp;
     fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
 
-    bool isActive = true;
+    bool* isActive = new bool(true);
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
     SetNextWindowSize(ImVec2((float)imageWidth + 25, (float)imageHeight + 25));
-    Begin("BRAIN GUI", &isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight), ImVec2(0, 0)
     , ImVec2(1, 1), ImVec4(fade, fade, fade, fade));
     End();
 
-    std::string rest(std::to_string((int)hp));
+    std::string rest(std::to_string(playerHp));
     rest.append(" / 100");
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 200, 200));
     SetNextWindowSize(ImVec2(500, 500), 0);
-    Begin("HEALTH", &isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("HEALTH", isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(2.f);
     Text(rest.c_str());
 
@@ -402,6 +427,38 @@ void GUIHandler::RenderBrainGUI(int playerSanity, int clues)
     Text(cl.c_str());
 
     End();
+}
+
+void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
+{
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.65f, (float)Graphics::GetWindowHeight() * 0.65f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.175f, (float)Graphics::GetWindowHeight() * 0.1f));
+    SetNextWindowBgAlpha(0.5);
+    bool* isActive = new bool(true);
+
+    Begin("Options Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.33f, (float)Graphics::GetWindowHeight() * 0.25f));
+    
+    BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
+   
+    SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
+    SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
+    Checkbox("Time Count", &clockTimer);
+    Text("\n\nTip:");
+    Text("Difficulty will change the cooldown time for trap placement.");
+
+    // Ultra epic space creator for the aesthetics
+    Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    Text("Press 'Escape' to return to main menu.");
+    EndChild();
+
+    End();
+
+    delete isActive;
 }
 
 
@@ -440,12 +497,13 @@ void GUIHandler::RenderPauseMenu()
 void GUIHandler::RenderMainMenu()
 {
     bool* isActive = new bool;
-    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 200, (float)Graphics::GetWindowHeight() - 100));
-    SetNextWindowSize(ImVec2(500, 500), 0);
+    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 125, (float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowSize(ImVec2(500, 600), 0);
     
     Begin("MENU", isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(1.5f);
     Text("Press 'Space' to start game.");
+    Text("Press 'P' to open Options.");
     Text("Press 'ESC' to quit game.");
     End();
     delete isActive;
