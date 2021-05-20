@@ -163,7 +163,7 @@ void Engine::Update(const float& deltaTime)
 {
 	// So we don't go over a certain value
 	this->playerHp = std::min(this->playerHp, 100);
-	this->cluesCollected = std::min(this->cluesCollected, CLUES);
+	this->cluesCollected = std::min(this->cluesCollected, (this->options.difficulty * 2));
 
 	// Update the sanity depending on the health.
 	this->playerSanity = this->playerHp * 0.01f;

@@ -219,7 +219,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
     {
         SetUpGUIStyleGame();
         GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
-        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
+        GUIHandler::instance->RenderBrainGUI(playerHp, clues, options);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
     }
@@ -401,7 +401,7 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& opt
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerHp, int clues)
+void GUIHandler::RenderBrainGUI(int playerHp, int clues, OptionsHandler& options)
 {
     float fade = 1.0f;
     float hp = playerHp;
@@ -424,7 +424,7 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
     Text(rest.c_str());
 
     std::string cl(std::to_string(clues));
-    cl.append("/" + std::to_string(CLUES));
+    cl.append("/" + std::to_string(options.difficulty * 2));
     Text(cl.c_str());
 
     End();
@@ -482,7 +482,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
     Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
     Text("\n\nTip:");
-    Text("Difficulty will change the cooldown time for trap placement.\nRumors are there is also secret difficulty options somewhere!");
+    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\n\nRumors are there is also secret difficulty options somewhere!");
 
     // Ultra epic space creator for the aesthetics
     Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");

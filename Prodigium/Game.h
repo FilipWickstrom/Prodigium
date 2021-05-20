@@ -28,6 +28,7 @@ private:
 	bool inGoal;
 	bool isPaused;
 	bool isInOptions;
+	std::vector<int> trapIndices;
 
 	void Whisper();
 	int amountOfObjects;

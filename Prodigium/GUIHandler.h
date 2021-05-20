@@ -32,7 +32,7 @@ private:
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
 	void RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options);
-	void RenderBrainGUI(int playerHp, int clues);
+	void RenderBrainGUI(int playerHp, int clues, OptionsHandler& options);
 	void RenderOptionsMenu(OptionsHandler& options);
 
 	void RenderPauseMenu();

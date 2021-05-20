@@ -187,44 +187,15 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (InputHandler::IsLMBPressed())
 		{
-			std::cout << "X: " << this->player->GetMeshObject()->GetPosition().x << " Z: " << this->player->GetMeshObject()->GetPosition().z << "\n";
-
-
-
-			// Test pick up
-			//std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(1).IsVisible())
+			for (int i = trapIndices[0]; i < trapIndices[0] + (trapIndices.size()); i++)
 			{
-				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
-				Engine::cluesCollected++;
-				Engine::playerHp += 25;
-				std::cout << "Picked up Book!\n";
-			}
-
-			//std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(2).IsVisible())
-			{
-				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
-				Engine::cluesCollected++;
-				Engine::playerHp += 25;
-				std::cout << "Picked up Drawing!\n";
-			}
-
-			//std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(4).IsVisible())
-			{
-				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
-				Engine::cluesCollected++;
-				Engine::playerHp += 25;
-				std::cout << "Picked up Mask!\n";
-			}
-
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(5)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(5).IsVisible())
-			{
-				SceneHandle()->EditScene().GetMeshObject(5).SetVisible(false);
-				Engine::cluesCollected++;
-				Engine::playerHp += 25;
-				std::cout << "Picked up Necklace!\n";
+				if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(i).IsVisible())
+				{
+					std::cout << i << std::endl;
+					SceneHandle()->EditScene().GetMeshObject(i).SetVisible(false);
+					Engine::cluesCollected++;
+					Engine::playerHp += 25;
+				}
 			}
 		}
 		if (InputHandler::IsRMBPressed())
@@ -268,6 +239,7 @@ void Game::HandleInput(const float& deltaTime)
 		/*
 			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
 		*/
+		/*
 		float speed = 0.1f;
 		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
@@ -302,6 +274,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x , -0.0f, z - speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
+		*/
 	}
 }
 
@@ -314,7 +287,8 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Graphics::SetDeltaTime(deltaTime);
 
-	if (Engine::cluesCollected >= CLUES)
+	// You collected all clues! You are WIN!!
+	if (Engine::cluesCollected >= (this->options.difficulty * 2))
 	{
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -360,7 +334,6 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		// Load game map
 		this->LoadMap();
-		
 		GUIHandler::ShowGameGUI(true);
 		this->soundHandler.PlayOneShot(2);
 		this->soundHandler.PlayAmbient(1);
@@ -503,6 +476,8 @@ void Game::LoadMainMenu()
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
+	SceneHandle()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, {0.0f, -100.0f, 0.0f});
+
 	this->hasLoaded = false;
 	this->inGoal = false;
 }
@@ -510,8 +485,7 @@ void Game::LoadMainMenu()
 void Game::LoadMap()
 {
 	this->soundHandler.SetAmbientVolume(options.ambientVolume);
-	this->soundHandler.SetFXVolume(options.sfxVolume);
-
+	this->soundHandler.SetFXVolume(options.sfxVolume);;
 
 	SceneHandle()->AddScene();
 	this->player = new Player();
@@ -528,33 +502,17 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, false, { pos.x, -3.0f, pos.y }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
-	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { pos.x, 0.0f, pos.y , 5.0f };
-	SceneHandle()->EditScene().AddLight(L);
-
-	pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, false, { pos.x, -3.0f, pos.y }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
-	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { pos.x, 0.0f, pos.y, 5.0f };
-	SceneHandle()->EditScene().AddLight(L);
-
-	pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, false, { pos.x, -3.0f, pos.y });
-	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { pos.x, 0.0f, pos.y, 5.0f };
-	SceneHandle()->EditScene().AddLight(L);
-
-	pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "necklace_albedo.png", "", false, false, { pos.x, -3.0f, pos.y });
-	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { pos.x, 0.0f, pos.y, 5.0f };
-	SceneHandle()->EditScene().AddLight(L);
+	for (int i = 0; i < this->options.difficulty * 2; i++)
+	{
+		trapIndices.push_back(SceneHandle()->EditScene().GetNumberOfObjects());
+		DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
+		std::string clue = this->picker.getRandomClue();
+		SceneHandle()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, { pos.x, -3.0f, pos.y });
+		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+		L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+		L.position = { pos.x, 0.0f, pos.y , 5.0f };
+		SceneHandle()->EditScene().AddLight(L);
+	}
 
 	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true, false,
 		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
