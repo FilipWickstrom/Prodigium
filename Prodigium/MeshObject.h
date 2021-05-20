@@ -13,7 +13,6 @@ private:
 #ifdef _DEBUG
 	std::vector<ID3D11Buffer*>boundingBoxBuffer;
 #endif
-	std::vector<Collider> collidersOriginal;
 	Collider modelColliderOriginal;
 
 	//Holds all the views of the textures:
