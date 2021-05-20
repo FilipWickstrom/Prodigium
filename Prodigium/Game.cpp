@@ -56,7 +56,7 @@ void Game::HandleInput(const float& deltaTime)
 	direction = { 0.f, 0.f };
 
 	//TODO: Make the engine cleanly shutdown
-	if (InputHandler::IsKeyPressed(Keyboard::Escape))
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded)
 	{
 		this->running = false;
 	}
@@ -191,7 +191,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::P))
+		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
