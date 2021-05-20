@@ -1,9 +1,6 @@
 #pragma once
 #include <fstream>
 #include <unordered_map>
-
-//#include "GameObject.h"
-#include "ResourceManager.h"
 #include "Animation.h"
 
 const UINT MAXBONES = 25;
@@ -14,15 +11,8 @@ Load in a model with bones, ".fbx" supported for now
 Move the bones with different animations
 
 If optimalization is needed:
-	- Use only 4 weights per vertex
+	- Use only 3 weights per vertex
 	- Lower total number of bones
-*/
-
-/*
-TODO:
-	- When adding a animated object with name: "Player.fbx"
-	- We send in "Player" to animation
-	- We look for animations named: Player_Idle, Player_Walking, Player_Running
 */
 
 //Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
@@ -68,13 +58,8 @@ private:
 
 	AnimationState currentState;
 	
-	//FIX AND CLEANUP THIS!!!****
 	Animation* currentAnim;
 	std::vector<Animation*> allAnimations;
-
-
-	//Animation* walkRunAnim;
-	//Animation* idleAnim;
 
 public:
 	//All the positions of the T-posing character

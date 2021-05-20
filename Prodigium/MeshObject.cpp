@@ -186,6 +186,19 @@ bool MeshObject::LoadColliders()
 	this->colliders.shrink_to_fit();
 	this->collidersOriginal = this->colliders;
 
+	std::vector<DirectX::SimpleMath::Vector3>allPositions;
+	for (size_t out = 0; out < positions.size(); out++)
+	{
+		for (size_t in = 0; in < positions[out].size(); in++)
+		{
+			allPositions.push_back(positions[out][in]);
+		}
+	}
+
+	//Sphere for the total meshobject
+	DirectX::BoundingSphere::CreateFromPoints(this->sphereModelCollider.boundingSphere, allPositions.size(), 
+											  &allPositions[0], sizeof(DirectX::SimpleMath::Vector3));
+
 	#ifdef _DEBUG
 	if (!this->CreateColliderBuffers())
 	{
@@ -197,13 +210,6 @@ bool MeshObject::LoadColliders()
 	this->UpdateBoundingPlanes();
 
 	return true;
-}
-
-void MeshObject::SetRenderColliders()
-{
-	this->modelCollider = this->mesh->modelCollider;
-	this->modelColliderOriginal = this->mesh->modelColliderOriginal;
-	this->sphereModelCollider = this->mesh->modelColliderSphere;
 }
 
 void MeshObject::UpdateBoundingPlanes()
@@ -325,8 +331,6 @@ bool MeshObject::Initialize(const std::string& meshObject,
 	}
 
 	//Create colliders
-	this->SetRenderColliders();
-	this->UpdateRenderBoundingBox();
 	if (hasBounds == true)
 	{
 		LoadColliders();
@@ -335,6 +339,7 @@ bool MeshObject::Initialize(const std::string& meshObject,
 	{
 		RemoveColliders();
 	}
+	UpdateRenderBoundingBox();
 
 	return true;
 }

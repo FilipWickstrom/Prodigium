@@ -1,4 +1,5 @@
 #include "AnimatedObject.h"
+#include "ResourceManager.h"
 using namespace DirectX::SimpleMath;
 
 bool AnimatedObject::LoadVertexShader()

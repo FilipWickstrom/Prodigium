@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "Mesh.h"
 #include "Texture.h"
-#include "ResourceManager.h"
 #include "AnimatedObject.h"
 
 constexpr int MAXNROFTEXTURES = 2;
@@ -17,6 +16,11 @@ struct Collider
 	};
 	Plane planes[4];
 	DirectX::BoundingOrientedBox boundingBox;
+};
+
+struct SphereCollider
+{
+	DirectX::BoundingSphere boundingSphere;
 };
 
 class MeshObject : public GameObject
@@ -43,6 +47,7 @@ public:
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 	Collider modelCollider;
+	Collider modelColliderOriginal;
 	SphereCollider sphereModelCollider;
 
 private:

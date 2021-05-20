@@ -29,8 +29,6 @@ private:
 public:
 	Mesh();
 	~Mesh();
-
-	SphereCollider modelColliderSphere;
 	
 	bool LoadFile(std::string filename);
 	void Render();
