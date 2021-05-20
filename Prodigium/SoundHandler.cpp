@@ -79,7 +79,7 @@ void SoundHandler::SetFXVolume(const float& newVolume)
 
 void SoundHandler::PlayOneShot(const int& index)
 {
-	this->waveBankFX->Play(index, masterVolume, 0, 0);
+	this->waveBankFX->Play(index, this->fxVolume, 0, 0);
 }
 
 void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
@@ -92,7 +92,7 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 			std::cout << "Index not in wave bank!" << std::endl;
 		else
 		{
-			this->instanceFX->SetVolume(this->masterVolume);
+			this->instanceFX->SetVolume(this->fxVolume);
 			this->instanceFX->Play(true);
 		}
 	}
@@ -108,7 +108,7 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 			DirectX::AudioEmitter emitter;
 			emitter.SetPosition(emitterPos);
 
-			this->instanceFX->SetVolume(this->masterVolume);
+			this->instanceFX->SetVolume(this->fxVolume);
 			this->instanceFX->Apply3D(listner, emitter);
 			this->instanceFX->Play(true);
 		}
