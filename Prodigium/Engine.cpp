@@ -90,19 +90,32 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
-	if (inGame)
-	{
-		this->frustum.BuildFrustum(2, ResourceManager::GetCamera("PlayerCam")->GetViewMatrix(), ResourceManager::GetCamera("PlayerCam")->GetProjMatrix());
-	}
+	std::vector<MeshObject*> toRender;
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
-	this->sceneHandler.Render();
+	if (!inGame)
+	{
+		this->sceneHandler.Render();
+	}
+	else
+	{
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), toRender);
+		toRender.push_back(&this->sceneHandler.EditScene().GetMeshObject(0));
+		this->sceneHandler.Render(toRender);
+	}
 	this->gPass.Clear();
 
 	// Shadow pass
 	this->gPass.Prepare();
-	this->sceneHandler.RenderShadows();
+	if (!inGame)
+	{
+		this->sceneHandler.RenderShadows();
+	}
+	else
+	{
+		this->sceneHandler.RenderShadows(toRender);
+	}
 	this->gPass.Clear();
 
 	//Bind only 1 render target, backbuffer
@@ -113,9 +126,14 @@ void Engine::Render()
 
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 #ifdef _DEBUG
-	DebugInfo::Prepare();
-	this->sceneHandler.RenderBoundingBoxes();
-	DebugInfo::Clear();
+	if (inGame)
+	{
+		DebugInfo::Prepare();
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
+		DebugInfo::Prepare();
+		this->sceneHandler.RenderBoundingBoxes(toRender);
+		DebugInfo::Clear();
+	}
 #endif
 
 	// Particle pass

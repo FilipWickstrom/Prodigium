@@ -30,8 +30,6 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	Frustum frustum;
-	
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);

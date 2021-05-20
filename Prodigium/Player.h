@@ -1,7 +1,6 @@
 #pragma once
-#include "CameraObject.h"
-#include "Graphics.h"
 #include "MeshObject.h"
+#include "CameraObject.h"
 
 class Player
 {

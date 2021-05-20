@@ -1,4 +1,7 @@
 #include "Player.h"
+#include "Graphics.h"
+#include "ResourceManager.h"
+
 using namespace DirectX::SimpleMath;
 
 void Player::RotatePlayer()
@@ -33,8 +36,8 @@ Player::Player()
 	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
 	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
 	this->playerCam = new CameraObject;
-	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
 	ResourceManager::AddCamera("PlayerCam", playerCam);
+	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
 
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
@@ -42,7 +45,7 @@ Player::Player()
 
 Player::~Player()
 {
-	delete this->playerCam;
+	ResourceManager::RemoveCamera("PlayerCam");
 }
 
 void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)

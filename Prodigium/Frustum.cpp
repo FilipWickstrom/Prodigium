@@ -1,74 +1,194 @@
 #include "Frustum.h"
+#include "ResourceManager.h"
+#include "Graphics.h"
+
+#ifdef _DEBUG
+bool Frustum::CreateVertIndiBuffers()
+{
+	DirectX::XMFLOAT3 corners[8];
+
+	// Returns 8 corners position of bounding frustum.
+
+	this->transformed.GetCorners(corners);
+
+	//     Near    Far
+	//    0----1  4----5
+	//    |    |  |    |
+	//    |    |  |    |
+	//    3----2  7----6
+
+	std::vector<unsigned int> indices;
+
+	// NEAR PLANE
+	indices.push_back(0);
+	indices.push_back(1);
+
+	indices.push_back(1);
+	indices.push_back(2);
+
+	indices.push_back(2);
+	indices.push_back(3);
+
+	indices.push_back(3);
+	indices.push_back(0);
+
+	// FAR PLANE
+	indices.push_back(4);
+	indices.push_back(5);
+
+	indices.push_back(5);
+	indices.push_back(6);
+
+	indices.push_back(6);
+	indices.push_back(7);
+
+	indices.push_back(7);
+	indices.push_back(4);
+
+	// BRIDGE
+	indices.push_back(0);
+	indices.push_back(4);
+
+	indices.push_back(1);
+	indices.push_back(5);
+
+	indices.push_back(3);
+	indices.push_back(7);
+
+	indices.push_back(2);
+	indices.push_back(6);
+
+	D3D11_BUFFER_DESC desc = {};
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.ByteWidth = sizeof(corners);
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+
+	D3D11_SUBRESOURCE_DATA data = {};
+	data.pSysMem = &corners[0];
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
+
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &vBuffer);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create vertex buffer..." << std::endl;
+		return false;
+	}
+
+	/*-----Indexbuffer-----*/
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	desc.ByteWidth = sizeof(unsigned int) * (int)indices.size();
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.CPUAccessFlags = 0;
+
+	data.pSysMem = indices.data();
+
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &iBuffer);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create index buffer..." << std::endl;
+		return false;
+	}
+
+	return true;
+}
+#endif
 
 Frustum::Frustum()
 {
+#ifdef _DEBUG
+	this->vBuffer = nullptr;
+	this->iBuffer = nullptr;
+#endif
 }
 
 Frustum::Frustum(const Frustum& other)
 {
-	for (int i = 0; i < NR_OF_PLANES; i++)
-	{
-		this->planes[i] = other.planes[i];
-	}
+#ifdef _DEBUG
+	this->vBuffer = nullptr;
+	this->iBuffer = nullptr;
+	this->transformed = other.transformed;
+#endif
 }
 
 Frustum::~Frustum()
 {
+#ifdef _DEBUG
+	if (this->vBuffer)
+		this->vBuffer->Release();
+	if (this->iBuffer)
+		this->iBuffer->Release();
+#endif
 }
 
-void Frustum::BuildFrustum(float farZ, DirectX::SimpleMath::Matrix projMatrix, DirectX::SimpleMath::Matrix viewMatrix)
+void Frustum::Update(const Vector3& pos)
 {
-	float nearZ, r;
-	Matrix frustumMatrix;
+	using namespace DirectX;
+	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
+	Vector3 cameraPos = playerCam->position;
+	Vector3 rot = playerCam->rotation;
+	Quaternion q = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
 
-	// Calculate the minimum Z distance in the frustum.
-	nearZ = -projMatrix._43 / projMatrix._33;
-	r = farZ / (farZ - nearZ);
-	projMatrix._33 = r;
-	projMatrix._43 = -r * nearZ;
+	Matrix transform = Matrix::CreateFromQuaternion(q) * Matrix::CreateTranslation(cameraPos);
 
-	// Create the frustum matrix from the view matrix and updated projection matrix.
-	frustumMatrix = viewMatrix * projMatrix;
-
-	// Calculate near plane of frustum.
-	planes[0].x = frustumMatrix._14 + frustumMatrix._13;
-	planes[0].y = frustumMatrix._24 + frustumMatrix._23;
-	planes[0].z = frustumMatrix._34 + frustumMatrix._33;
-	planes[0].w = frustumMatrix._44 + frustumMatrix._43;
-	planes[0].Normal().Normalize();
-
-	// Calculate far plane of frustum.
-	planes[1].x = frustumMatrix._14 - frustumMatrix._13;
-	planes[1].y = frustumMatrix._24 - frustumMatrix._23;
-	planes[1].z = frustumMatrix._34 - frustumMatrix._33;
-	planes[1].w = frustumMatrix._44 - frustumMatrix._43;
-	planes[1].Normal().Normalize();
-
-	// Calculate left plane of frustum.
-	planes[2].x = frustumMatrix._14 + frustumMatrix._11;
-	planes[2].y = frustumMatrix._24 + frustumMatrix._21;
-	planes[2].z = frustumMatrix._34 + frustumMatrix._31;
-	planes[2].w = frustumMatrix._44 + frustumMatrix._41;
-	planes[2].Normal().Normalize();
-
-	// Calculate right plane of frustum.
-	planes[3].x = frustumMatrix._14 - frustumMatrix._11;
-	planes[3].y = frustumMatrix._24 - frustumMatrix._21;
-	planes[3].z = frustumMatrix._34 - frustumMatrix._31;
-	planes[3].w = frustumMatrix._44 - frustumMatrix._41;
-	planes[3].Normal().Normalize();
-
-	// Calculate top plane of frustum.
-	planes[4].x = frustumMatrix._14 - frustumMatrix._12;
-	planes[4].y = frustumMatrix._24 - frustumMatrix._22;
-	planes[4].z = frustumMatrix._34 - frustumMatrix._32;
-	planes[4].w = frustumMatrix._44 - frustumMatrix._42;
-	planes[4].Normal().Normalize();
-
-	// Calculate bottom plane of frustum.
-	planes[5].x = frustumMatrix._14 + frustumMatrix._12;
-	planes[5].y = frustumMatrix._24 + frustumMatrix._22;
-	planes[5].z = frustumMatrix._34 + frustumMatrix._32;
-	planes[5].w = frustumMatrix._44 + frustumMatrix._42;
-	planes[5].Normal().Normalize();
+	this->frustumColliderOriginal.Transform(this->transformed, transform);
 }
+
+void Frustum::Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out)
+{
+	// Start on 1 to skip the player (dynamic object)
+	for (int i = 1; i < objects.size(); i++)
+	{
+		DirectX::ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingBox);
+		if (type == DirectX::ContainmentType::CONTAINS || type == DirectX::ContainmentType::INTERSECTS)
+		{
+			out.push_back(objects[i]);
+		}
+	}
+}
+
+bool Frustum::Initialize()
+{
+	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
+
+	DirectX::BoundingFrustum::CreateFromMatrix(this->frustumColliderOriginal, playerCam->GetProjMatrixCPU());
+	Matrix transform = Matrix::CreateTranslation(playerCam->position);
+
+	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
+
+	this->transformed = frustumColliderOriginal;
+
+#ifdef _DEBUG
+	if (!CreateVertIndiBuffers())
+	{
+		return false;
+	}
+#endif
+
+	return true;
+}
+
+#ifdef _DEBUG
+void Frustum::Render()
+{
+	D3D11_MAPPED_SUBRESOURCE mappedData = {};
+
+	DirectX::XMFLOAT3 corners[8];
+
+	// Returns 8 corner position of bounding frustum.
+	this->transformed.GetCorners(corners);
+
+	Graphics::GetContext()->Map(vBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
+	memcpy(mappedData.pData, corners, sizeof(corners));
+	Graphics::GetContext()->Unmap(vBuffer, 0);
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
+	UINT stride = sizeof(corners[0]);
+	UINT offset = 0;
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+	Graphics::GetContext()->DrawIndexed(24, 0, 0);
+}
+#endif

@@ -52,5 +52,7 @@ public:
 
 	static void AddCamera(std::string key, CameraObject* toAdd);
 	
-	static const CameraObject* GetCamera(const std::string& key);
+	static CameraObject* GetCamera(const std::string& key);
+
+	static void RemoveCamera(std::string key);
 };

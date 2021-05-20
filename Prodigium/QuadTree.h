@@ -1,31 +1,29 @@
 #pragma once
 #include "UsefulStructuresHeader.h"
 #include <vector>
+#include "MeshObject.h"
 
 class QuadTree
 {
 private:
+	const int depth;
 	struct QuadNode
 	{
-		float posX, posY, width;
-		int triCount;
-		ID3D11Buffer* vBuffer, *iBuffer;
-		QuadNode* NW;
-		QuadNode* NE;
-		QuadNode* SW;
-		QuadNode* SE;
+		std::vector<MeshObject*> objects;
+		Collider collider;
+		QuadNode* childs[4] = { nullptr };
+
+		QuadNode(int level, const int depth);
 	};
 
 	QuadNode* root;
-	std::vector<Vertex> vertices;
-	int triCount;
-	int drawCount;
 
-	bool ContainsTriangle(const float& t1, const float& t2, const float& t3);
+	// Recursive call to add into Quadtree
+	void AddObject(MeshObject* object);
+
+	void BuildQuadTree();
 
 public:
-	QuadTree() = default;
+	QuadTree(int depth = 5);
 	~QuadTree() = default;
-
-
 };

@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "Mesh.h"
 #include "Texture.h"
-#include "ResourceManager.h"
 
 constexpr int MAXNROFTEXTURES = 2;
 
@@ -15,6 +14,7 @@ private:
 	std::vector<ID3D11Buffer*>boundingBoxBuffer;
 #endif
 	std::vector<Collider> collidersOriginal;
+	Collider modelColliderOriginal;
 
 	//Holds all the views of the textures:
 	//1. Diffuse texture
@@ -29,6 +29,7 @@ private:
 	bool BindTextureToSRV(ID3D11Texture2D*& texture, ID3D11ShaderResourceView*& srv);
 	// Copies the mesh colliders
 	void SetColliders();
+	void SetRenderColliders();
 	// Updates the planes of a boundingBox to account for rotation
 	void UpdateBoundingPlanes();
 	bool SetUpNormalMapBuffer();
@@ -49,6 +50,7 @@ public:
 	void SetPickUp(bool toggle = true);
 	void Render();
 	void UpdateBoundingBoxes();
+	void UpdateRenderBoundingBox();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
 	const bool IsVisible() const;
 #ifdef _DEBUG
@@ -56,6 +58,7 @@ public:
 #endif
 
 	std::vector<Collider> colliders;
+	Collider modelCollider;
 
 	void RemoveColliders();
 };

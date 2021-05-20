@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <iostream>
+#include "Graphics.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -45,7 +46,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 	return true;
 }
 
-void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
+void Mesh::BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
 	Collider collider;
 	DirectX::XMFLOAT3 corners[8];
@@ -78,6 +79,40 @@ void Mesh::BuildColliders(const std::vector<Vertex>& vertices, const DirectX::XM
 	collider.planes[3].point = corners[5];
 
 	colliders.push_back(collider);
+}
+
+void Mesh::BuildRenderCollider(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
+{
+	DirectX::XMFLOAT3 corners[8];
+
+	modelCollider.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	modelCollider.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	modelCollider.boundingBox.Center.z = (max.z + min.z) / 2.f;
+
+	modelCollider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	modelCollider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	modelCollider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	modelCollider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+
+	modelCollider.boundingBox.GetCorners(corners);
+
+	// Front plane
+	modelCollider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	modelCollider.planes[0].point = corners[1];
+
+	// Back plane
+	modelCollider.planes[1].normal = modelCollider.planes[0].normal * -1.f;
+	modelCollider.planes[1].point = corners[6];
+
+	// Right side plane
+	modelCollider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	modelCollider.planes[2].point = corners[4];
+
+	// Left side plane
+	modelCollider.planes[3].normal = modelCollider.planes[2].normal * -1.f;
+	modelCollider.planes[3].point = corners[5];
+
+	this->modelColliderOriginal = modelCollider;
 }
 
 Mesh::Mesh()
@@ -120,6 +155,9 @@ bool Mesh::LoadFile(std::string filename)
 		return false;
 	}
 
+	DirectX::XMFLOAT3 modelMin = { FLT_MAX, FLT_MAX, FLT_MAX };
+	DirectX::XMFLOAT3 modelMax = { FLT_MIN, FLT_MIN, FLT_MIN };
+
 	//Going through all the meshes in the file
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
@@ -146,6 +184,14 @@ bool Mesh::LoadFile(std::string filename)
 			max.x = std::max(max.x, temp.position.x);
 			max.y = std::max(max.y, temp.position.y);
 			max.z = std::max(max.z, temp.position.z);
+
+			modelMin.x = std::min(modelMin.x, temp.position.x);
+			modelMin.y = std::min(modelMin.y, temp.position.y);
+			modelMin.z = std::min(modelMin.z, temp.position.z);
+
+			modelMax.x = std::max(modelMax.x, temp.position.x);
+			modelMax.y = std::max(modelMax.y, temp.position.y);
+			modelMax.z = std::max(modelMax.z, temp.position.z);
 		}
 		std::vector<unsigned short> indices;
 		indices.reserve((size_t)mesh->mNumFaces * 3);
@@ -172,12 +218,14 @@ bool Mesh::LoadFile(std::string filename)
 			return false;
 		}
 
-		this->BuildColliders(vertices, min, max);
+		this->BuildColliders(min, max);
 
 		vertices.clear();
 		indices.clear();
 	}
 
+
+	this->BuildRenderCollider(modelMin, modelMax);
 	this->colliders.shrink_to_fit();
 	this->collidersOriginal = this->colliders;
 
