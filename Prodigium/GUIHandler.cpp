@@ -204,10 +204,11 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
-    SetUpGUIStyleDEBUG();
-    GUIHandler::instance->RenderDebugGUI();
-#endif  _DEBUG
+    if (options.hasDebugInfo)
+    {
+        SetUpGUIStyleDEBUG();
+        GUIHandler::instance->RenderDebugGUI();
+    }
 
     if (GUIHandler::instance->showMainMenu)
     {
@@ -472,8 +473,16 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
         isParticles.append("OFF");
 
     Checkbox(isParticles.c_str(), &options.hasParticles);
+
+    std::string isDebugDisplay = "Debug Info: ";
+    if (options.hasDebugInfo)
+        isDebugDisplay.append("ON");
+    else
+        isDebugDisplay.append("OFF");
+
+    Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
     Text("\n\nTip:");
-    Text("Difficulty will change the cooldown time for trap placement.");
+    Text("Difficulty will change the cooldown time for trap placement.\nRumors are there is also secret difficulty options somewhere!");
 
     // Ultra epic space creator for the aesthetics
     Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");

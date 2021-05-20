@@ -15,6 +15,7 @@ OptionsHandler::OptionsHandler()
 
 	this->hasBlur = true;
 	this->hasParticles = true;
+	this->hasDebugInfo = false;
 
 	std::fstream input;
 	input.open("Settings/audiosettings.txt", std::fstream::in);

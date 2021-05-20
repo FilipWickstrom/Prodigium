@@ -29,6 +29,7 @@ public:
 	// Increase performance by disabling options
 	bool hasParticles;
 	bool hasBlur;
+	bool hasDebugInfo;
 
 	OptionsHandler();
 	~OptionsHandler();
