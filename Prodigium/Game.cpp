@@ -272,6 +272,8 @@ bool Game::OnFrame(const float& deltaTime)
 		GUIHandler::ShowGameGUI(false);
 	}
 
+	
+
 	HandleInput(deltaTime);
 
 	if (this->zoomIn)
@@ -283,6 +285,8 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
 		
 	}
 	if (this->inGoal)
@@ -441,6 +445,10 @@ void Game::LoadMainMenu()
 
 void Game::LoadMap()
 {
+	this->soundHandler.SetAmbientVolume(options.ambientVolume);
+	this->soundHandler.SetFXVolume(options.sfxVolume);
+
+
 	SceneHandle()->AddScene();
 	this->player = new Player();
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
