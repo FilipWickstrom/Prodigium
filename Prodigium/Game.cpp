@@ -289,6 +289,11 @@ bool Game::OnFrame(const float& deltaTime)
 		this->soundHandler.SetMasterVolume(options.masterVolume);
 		
 	}
+	if (this->isInOptions)
+	{
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+	}
 	if (this->inGoal)
 	{
 		this->zoomIn = false;
