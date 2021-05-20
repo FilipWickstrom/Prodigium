@@ -79,7 +79,6 @@ void MeshObject::SetRenderColliders()
 {
 	this->modelCollider = this->mesh->modelCollider;
 	this->modelColliderOriginal = this->mesh->modelColliderOriginal;
-	this->sphereModelCollider = this->mesh->modelColliderSphere;
 }
 
 void MeshObject::UpdateBoundingPlanes()
@@ -311,7 +310,7 @@ void MeshObject::UpdateBoundingBoxes()
 void MeshObject::UpdateRenderBoundingBox()
 {
 	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);
-	this->sphereModelCollider.boundingSphere.Transform(this->sphereModelCollider.boundingSphere, this->modelMatrix);
+	this->modelColliderOriginal.boundingSphere.Transform(this->modelCollider.boundingSphere, this->modelMatrix);
 }
 
 void MeshObject::UpdateBoundingBoxes(const Matrix& transform)

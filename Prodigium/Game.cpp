@@ -464,7 +464,7 @@ void Game::LoadMap()
 	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
+	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
 		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 		{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 

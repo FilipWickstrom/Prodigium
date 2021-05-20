@@ -83,38 +83,38 @@ void Mesh::BuildColliders(const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3&
 
 void Mesh::BuildRenderCollider(const std::vector<Vertex>& vertices, const DirectX::XMFLOAT3& min, const DirectX::XMFLOAT3& max)
 {
-	//DirectX::XMFLOAT3 corners[8];
+	DirectX::XMFLOAT3 corners[8];
 
-	//modelCollider.boundingBox.Center.x = (max.x + min.x) / 2.f;
-	//modelCollider.boundingBox.Center.y = (max.y + min.y) / 2.f;
-	//modelCollider.boundingBox.Center.z = (max.z + min.z) / 2.f;
+	modelCollider.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	modelCollider.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	modelCollider.boundingBox.Center.z = (max.z + min.z) / 2.f;
 
-	//modelCollider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
-	//modelCollider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
-	//modelCollider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
-	//modelCollider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+	modelCollider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	modelCollider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	modelCollider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	modelCollider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
 
-	//modelCollider.boundingBox.GetCorners(corners);
+	modelCollider.boundingBox.GetCorners(corners);
 
-	//// Front plane
-	//modelCollider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
-	//modelCollider.planes[0].point = corners[1];
+	// Front plane
+	modelCollider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	modelCollider.planes[0].point = corners[1];
 
-	//// Back plane
-	//modelCollider.planes[1].normal = modelCollider.planes[0].normal * -1.f;
-	//modelCollider.planes[1].point = corners[6];
+	// Back plane
+	modelCollider.planes[1].normal = modelCollider.planes[0].normal * -1.f;
+	modelCollider.planes[1].point = corners[6];
 
-	//// Right side plane
-	//modelCollider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
-	//modelCollider.planes[2].point = corners[4];
+	// Right side plane
+	modelCollider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	modelCollider.planes[2].point = corners[4];
 
-	//// Left side plane
-	//modelCollider.planes[3].normal = modelCollider.planes[2].normal * -1.f;
-	//modelCollider.planes[3].point = corners[5];
+	// Left side plane
+	modelCollider.planes[3].normal = modelCollider.planes[2].normal * -1.f;
+	modelCollider.planes[3].point = corners[5];
 
-	//this->modelColliderOriginal = modelCollider;
+	DirectX::BoundingSphere::CreateFromPoints(this->modelCollider.boundingSphere, vertices.size(), &vertices[0].position, sizeof(Vertex));
 
-	DirectX::BoundingSphere::CreateFromPoints(this->modelColliderSphere.boundingSphere, vertices.size(), &vertices[0].position, sizeof(Vertex));
+	this->modelColliderOriginal = modelCollider;
 }
 
 Mesh::Mesh()

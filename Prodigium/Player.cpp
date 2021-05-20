@@ -53,12 +53,14 @@ Player::~Player()
 
 void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
 {
+	if (CheckCollision(objects, direction, deltaTime))
+	{
+		direction = { 0.f, 0.f };
+	}
+
 	if (direction.Length() > 0.0f)
 	{
-		if (!CheckCollision(objects, direction, deltaTime))
-		{
-			this->Move(direction, deltaTime);
-		}
+		this->Move(direction, deltaTime);
 	}
 	Matrix transform = Matrix::CreateTranslation(this->playerModel->position);
 	this->playerCam->SetTransform(transform);

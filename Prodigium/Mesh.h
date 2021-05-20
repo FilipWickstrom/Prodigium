@@ -21,10 +21,6 @@ struct Collider
 	};
 	Plane planes[4];
 	DirectX::BoundingOrientedBox boundingBox;
-};
-
-struct SphereCollider
-{
 	DirectX::BoundingSphere boundingSphere;
 };
 
@@ -51,8 +47,6 @@ public:
 
 	Collider modelCollider;
 	Collider modelColliderOriginal;
-
-	SphereCollider modelColliderSphere;
 
 	bool LoadFile(std::string filename);
 	void Render();
