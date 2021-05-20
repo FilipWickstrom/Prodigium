@@ -170,6 +170,7 @@
     <ClCompile Include="MeshObject.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RandomSpotPicker.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Resource.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="ShadowHandler.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SkyboxPass.cpp" />
+    <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -205,6 +207,7 @@
     <ClInclude Include="MeshObject.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="RandomSpotPicker.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Resource.h" />
@@ -214,6 +217,7 @@
     <ClInclude Include="ShadowHandler.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SkyboxPass.h" />
+    <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />

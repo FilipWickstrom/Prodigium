@@ -145,6 +145,12 @@
     <ClCompile Include="AIHandler.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="SoundHandler.cpp">
+      <Filter>Engine\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomSpotPicker.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
     <ClCompile Include="QuadTree.cpp">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClCompile>
@@ -258,6 +264,12 @@
     <ClInclude Include="AIHandler.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
+    <ClInclude Include="SoundHandler.h">
+      <Filter>Engine\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomSpotPicker.h">
+      <Filter>Game</Filter>
+    </ClInclude>
     <ClInclude Include="QuadTree.h">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClInclude>
@@ -345,6 +357,9 @@
     </Filter>
     <Filter Include="Engine\IO">
       <UniqueIdentifier>{8361d11f-f9ac-4f0e-bbba-ec12bcad461e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Audio">
+      <UniqueIdentifier>{a4c7c3b2-8717-4dcb-a47b-3739f2fad1ab}</UniqueIdentifier>
     </Filter>
     <Filter Include="Engine\Graphics\Techniques\Acceleration">
       <UniqueIdentifier>{6b4a2f71-66e2-4785-9100-25c162d81c04}</UniqueIdentifier>

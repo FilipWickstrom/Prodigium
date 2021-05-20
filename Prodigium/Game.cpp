@@ -6,6 +6,17 @@
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
+void Game::Whisper()
+{
+	float shouldWhisper = (float)(rand() % 10000);
+
+	if (shouldWhisper > 5 && shouldWhisper < 10)
+	{
+		int index = (int)(rand() % 4 + 1);
+		this->soundHandler.PlayOneShot(index);
+	}
+}
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -42,8 +53,8 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
-	//TODO: Make the engine cleanly shutdown
-	if (InputHandler::IsKeyPressed(Keyboard::Escape))
+	// Quit the game while in menu.
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded)
 	{
 		this->running = false;
 	}
@@ -55,7 +66,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// Go back to Menu
-	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
+	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
 		Engine::inGame = false;
 		// Set these values if you want to return to menu.
@@ -67,14 +78,22 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (this->hasLoaded && !this->isPaused)
 	{
+		if (InputHandler::IsKeyPressed(Keyboard::G))
+		{
+			Engine::playerHp = 50;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::H))
+		{
+			Engine::playerHp = 0;
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::J))
+		{
+			Engine::playerHp = 100;
+		}
+
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
 			OpenConsole();
-			SceneHandle()->EditScene().GetParticles().SetActive(true);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::L))
-		{
-			SceneHandle()->EditScene().GetParticles().SetActive(false);
 		}
 		if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
 		{
@@ -102,43 +121,63 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsLMBPressed())
 		{
-			//std::cout << "X: " << InputHandler::GetMouseX() << " Y: " << InputHandler::GetMouseY() << "\n";
+			std::cout << "X: " << this->player->GetMeshObject()->GetPosition().x << " Z: " << this->player->GetMeshObject()->GetPosition().z << "\n";
+
+
 
 			// Test pick up
-			std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f)
+			//std::cout << "Distance to book: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(1)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(1).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(1).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Book!\n";
 			}
 
-			std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f)
+			//std::cout << "Distance to Drawing: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(2)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(2).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(2).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Drawing!\n";
 			}
 
-			std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
-			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f)
+			//std::cout << "Distance to Mask: " << this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) << "\n";
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(4)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(4).IsVisible())
 			{
 				SceneHandle()->EditScene().GetMeshObject(4).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
 				std::cout << "Picked up Mask!\n";
+			}
+
+			if (this->player->GetMeshObject()->GetDistance(SceneHandle()->EditScene().GetMeshObject(5)) < 5.0f && SceneHandle()->EditScene().GetMeshObject(5).IsVisible())
+			{
+				SceneHandle()->EditScene().GetMeshObject(5).SetVisible(false);
+				Engine::cluesCollected++;
+				Engine::playerHp += 25;
+				std::cout << "Picked up Necklace!\n";
 			}
 		}
 		if (InputHandler::IsRMBPressed())
 		{
-			if (GUIHandler::ActiveTrap())
+			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+
+				this->stopcompl_timer = STOPCOOLDOWN;
 			}
-			else
+			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+				
+				this->slowdown_timer = SLOWCOOLDOWN;
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
@@ -146,26 +185,54 @@ void Game::HandleInput(const float& deltaTime)
 			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 			Engine::ChangeActiveTrap();
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::B))
-		{
-			this->playerSanity -= 0.1f;
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::N))
-		{
-			this->playerSanity += 0.1f;
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::T))
-		{
-			//this->player->Rotate(DirectX::XM_PI / 8, 0.f);
-		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
 			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::P))
+		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
+			this->soundHandler.SuspendAudio();
+		}
+
+
+		/*
+			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
+		*/
+		float speed = 0.1f;
+		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x + speed, -0.0f, z },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x - speed, -0.0f, z },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+
+		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x , -0.0f, z + speed },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
+		}
+		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		{
+			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+				{ x , -0.0f, z - speed },
+				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
 	}
 }
@@ -176,6 +243,14 @@ bool Game::OnFrame(const float& deltaTime)
 	// 1. Handle all inputs
 	// 2. Update the game assets and logic
 	// 3. Render
+
+	if (Engine::cluesCollected >= CLUES)
+	{
+		this->menu.Switch(true);
+		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
+	}
 
 	HandleInput(deltaTime);
 
@@ -188,6 +263,7 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
+		
 	}
 	if (this->inGoal)
 	{
@@ -219,17 +295,31 @@ bool Game::OnFrame(const float& deltaTime)
 		GUIHandler::ShowGameGUI(true);
 		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
+		Whisper();
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldResume())
+	{
 		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+	}
+		
 	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 
+	this->soundHandler.Update();
+
 	Engine::ClearDisplay();
 	Engine::Render();
+
+	if (!this->isPaused)
+	{
+		Engine::Update(deltaTime);
+	}
+
 
 	return true;
 }
@@ -242,20 +332,32 @@ bool Game::OnStart()
 	this->menu.Init();
 	this->LoadMainMenu();
 
+	if (!this->soundHandler.Initialize())
+	{
+		return false;
+	}
+	
+
 #ifdef _DEBUG
 	if (!DebugInfo::Initialize())
 	{
 		return false;
 	}
 #endif
-
+	this->soundHandler.SetVolume(0.5);
+	this->soundHandler.PlayLooping(0);
 	return true;
 }
 
 void Game::ResetValues()
 {
+	// Reset values
+	Engine::playerHp = 100;
+	Engine::playerSanity = 1.0f;
+	Engine::cluesCollected = 0;
 	this->inGoal = false;
 	this->menu.Reset();
+	this->picker.Reset();
 }
 
 void Game::LoadMainMenu()
@@ -272,7 +374,9 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, { 0.0f, 35.0f, 85.0f }
+
+	, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
@@ -326,33 +430,40 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Test pickups but its static lol
-	float randX = (float)(rand() % 200 - rand() % 200);
-	float randZ = (float)(rand() % 200- rand() % 200);
-	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, { randX, -3.0f, randZ }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("book_OBJ.obj", "book_albedo.png", "", false, { pos.x, -3.0f, pos.y }, { 0.0f, 0.0f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y , 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	randX = (float)(rand() % 200 - rand() % 200);
-	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, { randX, -3.0f, randZ }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("drawing_OBJ.obj", "drawing_albedo.png", "drawing_normal.png", false, { pos.x, -3.0f, pos.y }, { 3.14159f, 3.14159f, 0.0f }, { 0.4f, 0.4f, 0.4f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Terrain
 	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, { 0.0f, -6.25f, 0.0f });
 
-	randX = (float)(rand() % 200 - rand() % 200);
-	randZ = (float)(rand() % 200 - rand() % 200);
-	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, { randX, -3.0f, randZ });
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, { pos.x, -3.0f, pos.y });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-	L.position = { randX, 0.0f, randZ, 5.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
+
+	pos = this->picker.getRandomPos();
+	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "necklace_albedo.png", "", false, { pos.x, -3.0f, pos.y });
+	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	L.position = { pos.x, 0.0f, pos.y, 5.0f };
+	SceneHandle()->EditScene().AddLight(L);
+
+	SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true,
+		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+		{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 
 	// Houses around the town.
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -50.0f });
@@ -360,6 +471,8 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
@@ -368,11 +481,17 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 100.0f, -7.0f, -135.0f }, {0.0f, 3.14159f, 0.0f});
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+
 
 	/*
 		Lamps
@@ -431,20 +550,55 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i < 1500; i++)
 	{
-		float x = (float)(rand() % 1000 - rand() % 1000);
-		float z = (float)(rand() % 1000 - rand() % 1000);
-		while (x > -300 && x < 700 && z > -300 && z < 150)
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
 		{
-			x = (float)(rand() % 1000 - rand() % 1000);
-			z = (float)(rand() % 1000 - rand() % 1000);
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
 		}
 
 		SceneHandle()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 
+	for (int i = 0; i < 50; i++)
+	{
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
+		{
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
+		}
+
+		SceneHandle()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
+	}
+
+	/*
+	// Random lights in the forests
+	for (int j = 0; j < 5; j++)
+	{
+		float x = (float)(rand() % 1500 - rand() % 1500);
+		float z = (float)(rand() % 1500 - rand() % 1500);
+		while (x > -375 && x < 750 && z > -375 && z < 275)
+		{
+			x = (float)(rand() % 1500 - rand() % 1500);
+			z = (float)(rand() % 1500 - rand() % 1500);
+		}
+
+		SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { x, -7.0f, z }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
+		L.position = { x, 25.0f, z, 30.0f };
+		SceneHandle()->EditScene().AddLight(L);
+		std::cout << "Light " << j << " is at pos: " << "x:" << x << " z:" << z << "\n";
+	}
+	*/
+
 	this->hasLoaded = true;
 	this->inGoal = true;
+
+	this->amountOfObjects = SceneHandle()->EditScene().GetNumberOfObjects();
 	Engine::inGame = true;
 }

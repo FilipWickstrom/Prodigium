@@ -4,6 +4,10 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
+	this->playerHp = 100;
+	this->cluesCollected = 0;
+	this->stopcompl_timer = 0;
+	this->slowdown_timer = 0;
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -146,13 +150,38 @@ void Engine::Render()
 	//Render the blur depending on sanity
 	//1.0f is full sanity = no blur
 	//0.0f is no sanitiy = max blur
-	this->blurPass.Render(this->playerSanity);//REMOVE LATER: JUST FOR TESTING BLUR*** 
+	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
-	GUIHandler::Render();
+	Graphics::SetMainWindowViewport();
+	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
+}
+
+void Engine::Update(const float& deltaTime)
+{
+	// So we don't go over a certain value
+	this->playerHp = std::min(this->playerHp, 100);
+	this->cluesCollected = std::min(this->cluesCollected, CLUES);
+
+	// Update the sanity depending on the health.
+	this->playerSanity = this->playerHp * 0.01f;
+
+	if (this->slowdown_timer > 0.0f)
+	{
+		this->slowdown_timer -= 1.0f * deltaTime;
+		this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
+	}
+
+	if (this->stopcompl_timer > 0.0f)
+	{
+		this->stopcompl_timer -= 1.0f * deltaTime;
+		this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
+	}
+
+	
 }
 
 void Engine::OpenConsole()

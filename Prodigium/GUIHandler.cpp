@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render()
+void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -217,8 +217,8 @@ void GUIHandler::Render()
     if (GUIHandler::instance->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI();
-        //GUIHandler::instance->RenderBrainGUI();
+        GUIHandler::instance->RenderTrapGUI(timer1, timer2);
+        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
     }
@@ -309,21 +309,48 @@ void GUIHandler::RenderDebugGUI()
 	End();
 }
 
-void GUIHandler::RenderTrapGUI()
+void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
     SetNextWindowPos(ImVec2(50,(float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+
         
     Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
+    SetNextWindowPos(ImVec2(50, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 1 TIMER", trap1, ImGuiWindowFlags_NoTitleBar);
+
+    // Limit to one decimal
+    std::string t1(std::to_string(timer1));
+    if(timer1 > 10)
+        t1.erase(t1.begin() + 4, t1.end());
+    else
+        t1.erase(t1.begin() + 3, t1.end());
+    Text(t1.c_str());
     End();
     
     SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
     Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
+    SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 2 TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+    // Limit to one decimal
+    std::string t2(std::to_string(timer2));
+    if (timer2 > 10)
+        t2.erase(t2.begin() + 4, t2.end());
+    else
+        t2.erase(t2.begin() + 3, t2.end());
+    Text(t2.c_str());
     End();
 
     if (this->trap1Active)
@@ -348,45 +375,63 @@ void GUIHandler::RenderTrapGUI()
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI()
+void GUIHandler::RenderBrainGUI(int playerHp, int clues)
 {
-    bool* isActive = new bool;
+    float fade = 1.0f;
+    float hp = playerHp;
+    fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
+
+    bool* isActive = new bool(true);
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
-    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));
-    SetNextWindowSize(ImVec2((float)imageWidth + 50.f, (float)imageHeight + 50.f));
+    SetNextWindowSize(ImVec2((float)imageWidth + 25, (float)imageHeight + 25));
     Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
-    Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight));
+    Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight), ImVec2(0, 0)
+    , ImVec2(1, 1), ImVec4(fade, fade, fade, fade));
+    End();
+
+    std::string rest(std::to_string(playerHp));
+    rest.append(" / 100");
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 200, 200));
+    SetNextWindowSize(ImVec2(500, 500), 0);
+    Begin("HEALTH", isActive, ImGuiWindowFlags_NoTitleBar);
+    SetWindowFontScale(2.f);
+    Text(rest.c_str());
+
+    std::string cl(std::to_string(clues));
+    cl.append("/" + std::to_string(CLUES));
+    Text(cl.c_str());
+
     End();
     delete isActive;
 }
 
+
 void GUIHandler::RenderPauseMenu()
 {
-    
-    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth(), (float)Graphics::GetWindowHeight()));
-    SetNextWindowPos(ImVec2(0, 0));
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.25f, (float)Graphics::GetWindowHeight() * 0.25f));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
 
-    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
-        SetNextWindowPos(ImVec2(500, 250));
-        Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.33f));
+        BeginChild("Resume Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Resume", ImVec2(250, 50)))
         {
             ResumeGame();
         }
-        End();
+        EndChild();
 
-        SetNextWindowPos(ImVec2(500, 325));
-        Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
+        BeginChild("Quit Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Quit", ImVec2(250, 50)))
         {
             QuitGame();
         }
-        End();
+        EndChild();
 
     End();
 

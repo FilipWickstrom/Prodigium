@@ -10,6 +10,8 @@
 #include <stb/stb_image.h>
 #include <SimpleMath.h>
 
+#define CLUES 4
+
 class GUIHandler
 {
 private:
@@ -27,16 +29,18 @@ private:
 	ID3D11ShaderResourceView* textureBrain;
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
-	void RenderTrapGUI();
-	void RenderBrainGUI();
+	void RenderTrapGUI(float& timer1, float& timer2);
+	void RenderBrainGUI(int playerHp, int clues);
+
 	void RenderPauseMenu();
 	void RenderMainMenu();
+
 	void QuitGame();
 	bool LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int* out_width, int* out_height);
 public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
-	static void Render();
+	static void Render(int playerHp, int clues, float& timer1, float& timer2);
 	static void Shutdown();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);

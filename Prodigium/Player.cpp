@@ -87,7 +87,7 @@ void Player::RotateCamera(const float& pitch, const float& yaw)
 
 void Player::Sprint()
 {
-	this->speed = 50.0f;
+	this->speed = 35.0f;
 }
 
 void Player::Walk()

@@ -5,6 +5,11 @@
 #include "MainMenu.h"
 #include <thread>
 #include <omp.h>
+#include "SoundHandler.h"
+#include "RandomSpotPicker.h"
+
+#define STOPCOOLDOWN 17.5f
+#define SLOWCOOLDOWN 10.0f
 
 class Game:public Engine
 {
@@ -15,11 +20,16 @@ private:
 	CameraObject tempCam;
 	MainMenu menu;
 	Player* player;
+	SoundHandler soundHandler;
+	RandomSpotPicker picker;
 	bool running;
 	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
 	bool isPaused;
+
+	void Whisper();
+	int amountOfObjects;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();
