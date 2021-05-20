@@ -140,10 +140,11 @@ void Frustum::Update()
 void Frustum::Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out)
 {
 	out.push_back(objects[0]);
+	//out.push_back(objects[1]);
 	// Start on 1 to skip the player (dynamic object)
 	for (int i = 1; i < objects.size(); i++)
 	{
-		DirectX::ContainmentType type = this->transformed.Contains(objects[i]->sphereModelCollider.boundingSphere);
+		DirectX::ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingSphere);
 		if (type == DirectX::ContainmentType::CONTAINS || type == DirectX::ContainmentType::INTERSECTS)
 		{
 			out.push_back(objects[i]);
