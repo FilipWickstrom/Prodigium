@@ -29,7 +29,7 @@ private:
 	ID3D11ShaderResourceView* textureBrain;
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
-	void RenderTrapGUI();
+	void RenderTrapGUI(float& timer1, float& timer2);
 	void RenderBrainGUI(int playerHp, int clues);
 
 	void RenderPauseMenu();
@@ -40,7 +40,7 @@ private:
 public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
-	static void Render(int playerHp, int clues);
+	static void Render(int playerHp, int clues, float& timer1, float& timer2);
 	static void Shutdown();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);

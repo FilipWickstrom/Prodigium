@@ -14,7 +14,6 @@
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
-
 class Engine
 {
 protected:
@@ -22,6 +21,9 @@ protected:
 	float playerSanity; // Blur
 	int playerHp; // Health
 	int cluesCollected; // clues
+
+	float slowdown_timer; // Slow down trap timer
+	float stopcompl_timer; // Stop completely trap timer
 
 private:
 	Window window;
@@ -46,7 +48,7 @@ public:
 	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
-	void Update();
+	void Update(const float& deltaTime);
 	void OpenConsole();
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;

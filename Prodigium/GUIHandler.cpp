@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp, int clues)
+void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -217,7 +217,7 @@ void GUIHandler::Render(int playerHp, int clues)
     if (GUIHandler::instance->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI();
+        GUIHandler::instance->RenderTrapGUI(timer1, timer2);
         GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
@@ -309,21 +309,40 @@ void GUIHandler::RenderDebugGUI()
 	End();
 }
 
-void GUIHandler::RenderTrapGUI()
+void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
     SetNextWindowPos(ImVec2(50,(float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+
         
     Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
+    SetNextWindowPos(ImVec2(50, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 1 TIMER", trap1, ImGuiWindowFlags_NoTitleBar);
+
+    std::string t1(std::to_string(timer1));
+    t1.erase(t1.begin() + 3, t1.end());
+    Text(t1.c_str());
     End();
     
     SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
     Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
+    SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 2 TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+    std::string t2(std::to_string(timer2));
+    t2.erase(t2.begin() + 3, t2.end());
+    Text(t2.c_str());
     End();
 
     if (this->trap1Active)

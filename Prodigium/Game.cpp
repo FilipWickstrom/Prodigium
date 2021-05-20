@@ -55,8 +55,9 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// Go back to Menu
-	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
+	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
+		std::cout << "lol" << "\n";
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -151,17 +152,21 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsRMBPressed())
 		{
-			if (GUIHandler::ActiveTrap())
+			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+
+				this->stopcompl_timer = 10.0f;
 			}
-			else
+			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+				
+				this->slowdown_timer = 5.0f;
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
@@ -288,9 +293,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Engine::ClearDisplay();
 	Engine::Render();
-	Engine::Update();
-
-
+	Engine::Update(deltaTime);
 
 
 	return true;
@@ -562,4 +565,6 @@ void Game::LoadMap()
 
 	this->hasLoaded = true;
 	this->inGoal = true;
+
+	this->amountOfObjects = SceneHandle()->EditScene().GetNumberOfObjects();
 }

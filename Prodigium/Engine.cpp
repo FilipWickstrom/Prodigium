@@ -6,6 +6,8 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	this->consoleOpen = false;
 	this->playerHp = 100;
 	this->cluesCollected = 0;
+	this->stopcompl_timer = 0;
+	this->slowdown_timer = 0;
 
 	if (!this->StartUp(instance, width, height))
 	{
@@ -129,19 +131,34 @@ void Engine::Render()
 	this->blurPass.Render(this->playerSanity);
 
 	Graphics::BindBackBuffer();
-	GUIHandler::Render(this->playerHp, this->cluesCollected);
+	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
 }
 
-void Engine::Update()
+void Engine::Update(const float& deltaTime)
 {
 	// So we don't go over a certain value
 	this->playerHp = std::min(this->playerHp, 100);
 	this->cluesCollected = std::min(this->cluesCollected, CLUES);
 
+	// Update the sanity depending on the health.
 	this->playerSanity = this->playerHp * 0.01f;
+
+	if (this->slowdown_timer > 0.0f)
+	{
+		this->slowdown_timer -= 1.0f * deltaTime;
+		this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
+	}
+
+	if (this->stopcompl_timer > 0.0f)
+	{
+		this->stopcompl_timer -= 1.0f * deltaTime;
+		this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
+	}
+
+	
 }
 
 void Engine::OpenConsole()

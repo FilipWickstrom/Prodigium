@@ -22,6 +22,7 @@ private:
 	bool zoomIn;
 	bool inGoal;
 	bool isPaused;
+	int amountOfObjects;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();
