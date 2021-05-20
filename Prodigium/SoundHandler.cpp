@@ -108,7 +108,7 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 			DirectX::AudioEmitter emitter;
 			emitter.SetPosition(emitterPos);
 
-			this->instanceFX->SetVolume(this->masterVolume);
+			this->instanceFX->SetVolume(this->fxVolume);
 			this->instanceFX->Apply3D(listner, emitter);
 			this->instanceFX->Play(true);
 		}
