@@ -195,6 +195,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
+			this->soundHandler.SuspendAudio();
 		}
 
 
@@ -221,9 +222,6 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
 		{
-			GUIHandler::PauseGame();
-			this->isPaused = true;
-			this->soundHandler.SuspendAudio();
 			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
 			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
 			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
