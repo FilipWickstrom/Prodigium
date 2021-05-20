@@ -3,6 +3,7 @@
 #include <thread>
 #include "ParticleSystem.h"
 #include "GUIHandler.h"
+#include <omp.h>
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
@@ -26,6 +27,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->hasLoaded = false;
 	this->zoomIn = false;
 	this->inGoal = false;
+	this->amountOfObjects = 0;
 }
 
 Game::~Game()
@@ -299,6 +301,8 @@ bool Game::OnFrame(const float& deltaTime)
 		this->LoadMap();
 		
 		GUIHandler::ShowGameGUI(true);
+		this->soundHandler.PlayAmbient(0);
+		this->soundHandler.PlayMusic(0);
 	}
 	if (this->menu.IsInMenu() && this->hasLoaded)
 	{
@@ -311,7 +315,7 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
-		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
+		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
 		Whisper();
@@ -362,8 +366,9 @@ bool Game::OnStart()
 		return false;
 	}
 #endif
-	this->soundHandler.SetVolume(0.5);
-	this->soundHandler.PlayLooping(0);
+	this->soundHandler.SetMasterVolume(0.5);
+	this->soundHandler.PlayMusic(1);
+	this->soundHandler.PlayAmbient(1);
 	return true;
 }
 

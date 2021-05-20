@@ -3,19 +3,21 @@
 SoundHandler::SoundHandler()
 {
 	this->audEngine = nullptr;
-	this->soundEffect = nullptr;
-	this->waveBank = nullptr;
-	this->instance = nullptr;
+	this->waveBankFX = nullptr;
+	this->instanceFX = nullptr;
 	this->masterVolume = 1.f;
+	this->ambientVolume = 1.f;
+	this->musicVolume = 1.f;
+	this->fxVolume = 1.f;
 }
 
 SoundHandler::~SoundHandler()
 {
-	this->instance.release();
-	this->waveBank.release();
-	this->soundEffect.release();
+	this->instanceFX.release();
+	this->waveBankFX.release();
+	this->waveBankAmbient.release();
+	this->waveBankMusic.release();
 	this->audEngine.release();	
-	this->soundEffect.release();
 }
 
 const bool SoundHandler::Initialize()
@@ -32,7 +34,10 @@ const bool SoundHandler::Initialize()
 #endif
 
 	this->audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
-	this->waveBank = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
+	this->audEngine->SetMasterVolume(this->masterVolume);
+	this->waveBankFX = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
+	this->waveBankAmbient = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/ambient.xwb");
+	this->waveBankMusic = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/music.xwb");
 
 	return true;
 }
@@ -51,14 +56,30 @@ void SoundHandler::Update()
 	this->audEngine->Update();
 }
 
-void SoundHandler::SetVolume(const float& newVolume)
+void SoundHandler::SetMasterVolume(const float& newVolume)
 {
 	this->masterVolume = newVolume;
+	this->audEngine->SetMasterVolume(this->masterVolume);
+}
+
+void SoundHandler::SetAmbientVolume(const float& newVolume)
+{
+	this->ambientVolume = newVolume;
+}
+
+void SoundHandler::SetMusicVolume(const float& newVolume)
+{
+	this->musicVolume = newVolume;
+}
+
+void SoundHandler::SetFXVolume(const float& newVolume)
+{
+	this->fxVolume = newVolume;
 }
 
 void SoundHandler::PlayOneShot(const int& index)
 {
-	this->waveBank->Play(index, masterVolume, 0, 0);
+	this->waveBankFX->Play(index, this->fxVolume, 0, 0);
 }
 
 void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
@@ -66,19 +87,19 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 {
 	if (!use3D)
 	{
-		this->instance = this->waveBank->CreateInstance(index);
-		if (!this->instance)
+		this->instanceFX = this->waveBankFX->CreateInstance(index);
+		if (!this->instanceFX)
 			std::cout << "Index not in wave bank!" << std::endl;
 		else
 		{
-			this->instance->SetVolume(this->masterVolume);
-			this->instance->Play(true);
+			this->instanceFX->SetVolume(this->fxVolume);
+			this->instanceFX->Play(true);
 		}
 	}
 	else
 	{		
-		this->instance = this->waveBank->CreateInstance(index, DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters);
-		if(!this->instance)
+		this->instanceFX = this->waveBankFX->CreateInstance(index, DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters);
+		if(!this->instanceFX)
 			std::cout << "Index not in wave bank!" << std::endl;
 		else
 		{
@@ -87,10 +108,34 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 			DirectX::AudioEmitter emitter;
 			emitter.SetPosition(emitterPos);
 
-			this->instance->SetVolume(this->masterVolume);
-			this->instance->Apply3D(listner, emitter);
-			this->instance->Play(true);
+			this->instanceFX->SetVolume(this->fxVolume);
+			this->instanceFX->Apply3D(listner, emitter);
+			this->instanceFX->Play(true);
 		}
+	}
+}
+
+void SoundHandler::PlayMusic(const int& index)
+{
+	this->instanceMusic = this->waveBankMusic->CreateInstance(index);
+	if(!this->instanceMusic)
+		std::cout << "Index not in wave bank!" << std::endl;
+	else
+	{
+		this->instanceMusic->SetVolume(this->musicVolume);
+		this->instanceMusic->Play(true);
+	}
+}
+
+void SoundHandler::PlayAmbient(const int& index)
+{
+	this->instanceAmbient = this->waveBankAmbient->CreateInstance(index);
+	if (!this->instanceAmbient)
+		std::cout << "Index not in wave bank!" << std::endl;
+	else
+	{
+		this->instanceAmbient->SetVolume(this->ambientVolume);
+		this->instanceAmbient->Play(true);
 	}
 }
 

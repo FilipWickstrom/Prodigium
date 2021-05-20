@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "MainMenu.h"
 #include <thread>
-#include <omp.h>
 #include "SoundHandler.h"
 #include "RandomSpotPicker.h"
 

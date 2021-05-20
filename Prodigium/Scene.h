@@ -15,6 +15,8 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
+	
+	std::vector<MeshObject*> cullingObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -122,4 +124,8 @@ public:
 	void RenderParticles();
 
 	void SwitchMenuMode(bool sw = true);
+
+	void ClearCullingObjects();
+
+	std::vector<MeshObject*>& GetAllCullingObjects();
 };

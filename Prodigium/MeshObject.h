@@ -59,6 +59,7 @@ public:
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 	Collider modelCollider;
+	SphereCollider sphereModelCollider;
 
 	void RemoveColliders();
 };

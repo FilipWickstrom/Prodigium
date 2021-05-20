@@ -70,14 +70,7 @@ void Engine::RedirectIoToConsole()
 		std::cerr.clear();
 		std::wcin.clear();
 		std::cin.clear();
-		//AllocConsole();
-		//HANDLE stdHandle;
-		//int hConsole;
-		//FILE* fp;
-		//stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		//hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-		//fp = _fdopen(hConsole, "w");
-		//freopen_s(&fp, "CONOUT$", "w", stdout);
+	
 		consoleOpen = true;
 	}
 }
@@ -94,7 +87,8 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
-	std::vector<MeshObject*> toRender;
+	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
+	toRender->clear();
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
@@ -104,9 +98,9 @@ void Engine::Render()
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), toRender);
-		toRender.push_back(&this->sceneHandler.EditScene().GetMeshObject(0));
-		this->sceneHandler.Render(toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
+		this->sceneHandler.Render(*toRender);
+
 	}
 	this->gPass.Clear();
 
@@ -118,7 +112,7 @@ void Engine::Render()
 	}
 	else
 	{
-		this->sceneHandler.RenderShadows(toRender);
+		this->sceneHandler.RenderShadows(*toRender);
 	}
 	this->gPass.Clear();
 
@@ -135,7 +129,8 @@ void Engine::Render()
 		DebugInfo::Prepare();
 		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
 		DebugInfo::Prepare();
-		this->sceneHandler.RenderBoundingBoxes(toRender);
+		this->sceneHandler.RenderBoundingBoxes(*toRender);
+
 		DebugInfo::Clear();
 	}
 #endif

@@ -415,7 +415,6 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
     Text(cl.c_str());
 
     End();
-    delete isActive;
 }
 
 void GUIHandler::RenderOptionsMenu(OptionsHandler& options)

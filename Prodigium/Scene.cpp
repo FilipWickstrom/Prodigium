@@ -388,6 +388,16 @@ void Scene::SwitchMenuMode(bool sw)
 	this->menuMode = sw;
 }
 
+void Scene::ClearCullingObjects()
+{
+	this->cullingObjects.clear();
+}
+
+std::vector<MeshObject*>& Scene::GetAllCullingObjects()
+{
+	return this->cullingObjects;
+}
+
 #ifdef _DEBUG
 void Scene::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
 {
