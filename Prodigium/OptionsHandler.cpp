@@ -33,6 +33,10 @@ OptionsHandler::OptionsHandler()
 
 		else if (type == "ambient")
 			this->ambientVolume = value;
+
+		// Secret own defined difficulty in .txt file.
+		else if (type == "difficulty")
+			this->difficulty = value;
 	}
 	input.close();
 

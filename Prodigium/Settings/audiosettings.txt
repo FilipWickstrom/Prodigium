@@ -1,4 +1,4 @@
 master 1
-sfx 1
-music 0
-ambient 1
+sfx 0.3
+music 0.2
+ambient 0.3
