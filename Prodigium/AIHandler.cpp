@@ -21,13 +21,17 @@ std::vector<std::string> AIHandler::openFile(std::string filePath)
 
 AIHandler::AIHandler()
 {
+	currentEnemyNode = nullptr;
+	states = EnemyStates::PATROL;
+	monster = nullptr;
 }
 
-const bool AIHandler::Initialize()
+const bool AIHandler::Initialize(Enemy* monster)
 {
 	if (!AIHandler::instance)
 	{
 		AIHandler::instance = new AIHandler;
+		AIHandler::instance->monster = monster;
 		return true;
 	}
 	return false;
@@ -78,6 +82,21 @@ void AIHandler::ConnectNodes(Node* node1, Node* node2)
 {
 	node1->AddConnectedNode(node2);
 	node2->AddConnectedNode(node1);
+}
+
+void AIHandler::moveEnemy(const float& deltaTime)
+{
+	switch (AIHandler::instance->states)
+	{
+	case EnemyStates::PATROL:
+		//if (AIHandler::instance->monster.)
+		//{
+
+		//}
+		break;
+	default:
+		break;
+	}
 }
 
 Node* AIHandler::GetNodeByID(const int& id)

@@ -205,7 +205,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	if (!AIHandler::Initialize())
+	if (!AIHandler::Initialize(new Enemy()))
 	{
 		return false;
 	}
