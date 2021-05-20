@@ -1,0 +1,6 @@
+master 1
+sfx 0.3
+music 0.2
+ambient 0.3
+mouse_sens 1
+invert_mouse 0

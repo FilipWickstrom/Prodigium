@@ -458,7 +458,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     Checkbox(invSens.c_str(), &options.inverseSens);
     SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
 
-    std::string timeC = "Time Count: ";
+    std::string timeC = "In-game Timer: ";
 
     // Displays ON or OFF depending on the state.
     if (this->clockTimer)
@@ -494,7 +494,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\n\nRumors are there is also secret difficulty options somewhere!");
 
     // Ultra epic space creator for the aesthetics
-    Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    Text("\n\n\n\n\n\n\n\n\n");
     Text("Press 'Escape' to return to main menu.");
     EndChild();
 
