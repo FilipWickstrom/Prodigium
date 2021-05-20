@@ -22,7 +22,7 @@ public:
 
 	// Has to run this function for every frame becayuse it is dependant on 
 	// the currents frame view/projection matrix which will be altered next frame.
-	void Update(const Vector3& pos);
+	void Update();
 	// Will check intersection with objects to the frustum, will out a vector of all 
 	// meshobjects that should be drawed current frame.
 	void Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out);

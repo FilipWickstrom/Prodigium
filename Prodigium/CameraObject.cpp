@@ -122,6 +122,11 @@ void CameraObject::Update()
 	this->viewProjMatrix.viewMatrix = this->viewProjMatrixCPU.viewMatrix.Transpose();
 	this->UpdateMatrixCPU();
 
+	if (this->frustum)
+	{
+		this->frustum->Update();
+	}
+
 	D3D11_MAPPED_SUBRESOURCE mappedResource = {};
 
 	Graphics::GetContext()->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -177,10 +182,7 @@ Frustum* CameraObject::GetFrustum()
 void CameraObject::SetTransform(const Matrix& transform)
 {
 	Matrix transformed = Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * transform;
-	if (this->frustum)
-	{
-		this->frustum->Update(Vector3(transform._41, transform._42, transform._43));
-	}
+
 	this->eyePos = Vector3::Transform(this->defaultPosition, transformed);
 	this->position = eyePos;
 	this->camForward = Vector3::TransformNormal(this->defaultForward, transformed);

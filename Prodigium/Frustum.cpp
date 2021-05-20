@@ -124,7 +124,7 @@ Frustum::~Frustum()
 #endif
 }
 
-void Frustum::Update(const Vector3& pos)
+void Frustum::Update()
 {
 	using namespace DirectX;
 	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
@@ -158,6 +158,9 @@ bool Frustum::Initialize()
 	Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
+	// SHOWCASE PURPOSES
+	//this->frustumColliderOriginal.Near = 40.f;
+	//this->frustumColliderOriginal.Far = 125.f;
 
 	this->transformed = frustumColliderOriginal;
 
