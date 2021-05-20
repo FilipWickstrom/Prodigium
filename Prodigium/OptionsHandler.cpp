@@ -11,6 +11,7 @@ OptionsHandler::OptionsHandler()
 	this->musicVolume = 0.2f;
 	this->difficulty = 1;
 	this->gameTimer = 0;
+	this->state = MAINMENU;
 
 	std::fstream input;
 	input.open("Settings/audiosettings.txt", std::fstream::in);

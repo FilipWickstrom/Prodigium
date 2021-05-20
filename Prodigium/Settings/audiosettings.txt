@@ -1,4 +1,4 @@
-master 0.5
+master 0.6
 sfx 0.8
-music 1
+music 0.73
 ambient 0.65

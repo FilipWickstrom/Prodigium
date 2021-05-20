@@ -1,4 +1,9 @@
 #pragma once
+
+#define MAINMENU 1
+#define OPTIONS 2
+#define INGAME 3
+
 class OptionsHandler
 {
 public:
@@ -17,6 +22,9 @@ public:
 
 	// Timer
 	float gameTimer;
+
+	// Keeps track of where the player is. Menu? Game? Options?
+	int state;
 
 	OptionsHandler();
 	~OptionsHandler();

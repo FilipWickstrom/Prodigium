@@ -447,7 +447,15 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
     SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
-    Checkbox("Time Count", &clockTimer);
+
+    std::string timeC = "Time Count: ";
+
+    // Displays ON or OFF depending on the state.
+    if (this->clockTimer)
+        timeC.append("ON");
+    else
+        timeC.append("OFF");
+    Checkbox(timeC.c_str(), &clockTimer);
     Text("\n\nTip:");
     Text("Difficulty will change the cooldown time for trap placement.");
 
