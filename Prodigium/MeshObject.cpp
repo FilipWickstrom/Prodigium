@@ -151,7 +151,7 @@ void MeshObject::BuildColliders(const DirectX::SimpleMath::Vector3& min, const D
 	colliders.push_back(collider);
 }
 
-bool MeshObject::LoadColliders()
+bool MeshObject::LoadColliders(bool hasColliders)
 {
 	std::vector<std::vector<DirectX::SimpleMath::Vector3>>positions;
 
@@ -164,27 +164,40 @@ bool MeshObject::LoadColliders()
 		positions.push_back(this->animatedObj->meshPositions);
 	}
 
-	//Go through each of the meshes positions
-	for (size_t m = 0; m < positions.size(); m++)
+	if (hasColliders)
 	{
-		//Find the min and max of the total
-		DirectX::SimpleMath::Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
-		DirectX::SimpleMath::Vector3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
-
-		for (size_t i = 0; i < positions[m].size(); i++)
+		//Go through each of the meshes positions
+		for (size_t m = 0; m < positions.size(); m++)
 		{
-			min.x = std::min(min.x, positions[m][i].x);
-			min.y = std::min(min.y, positions[m][i].y);
-			min.z = std::min(min.z, positions[m][i].z);
+			//Find the min and max of the total
+			DirectX::SimpleMath::Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+			DirectX::SimpleMath::Vector3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
 
-			max.x = std::max(max.x, positions[m][i].x);
-			max.y = std::max(max.y, positions[m][i].y);
-			max.z = std::max(max.z, positions[m][i].z);
+			for (size_t i = 0; i < positions[m].size(); i++)
+			{
+				min.x = std::min(min.x, positions[m][i].x);
+				min.y = std::min(min.y, positions[m][i].y);
+				min.z = std::min(min.z, positions[m][i].z);
+
+				max.x = std::max(max.x, positions[m][i].x);
+				max.y = std::max(max.y, positions[m][i].y);
+				max.z = std::max(max.z, positions[m][i].z);
+			}
+			BuildColliders(min, max);
 		}
-		BuildColliders(min, max);
+		this->colliders.shrink_to_fit();
+		this->collidersOriginal = this->colliders;
+
+		#ifdef _DEBUG
+		if (!this->CreateColliderBuffers())
+		{
+			std::cout << "Failed to create collider buffer..." << std::endl;
+			return false;
+		}
+		#endif
+		this->UpdateBoundingBoxes();
+		this->UpdateBoundingPlanes();
 	}
-	this->colliders.shrink_to_fit();
-	this->collidersOriginal = this->colliders;
 
 	std::vector<DirectX::SimpleMath::Vector3>allPositions;
 	for (size_t out = 0; out < positions.size(); out++)
@@ -196,18 +209,8 @@ bool MeshObject::LoadColliders()
 	}
 
 	//Sphere for the total meshobject
-	DirectX::BoundingSphere::CreateFromPoints(this->sphereModelCollider.boundingSphere, allPositions.size(), 
+	DirectX::BoundingSphere::CreateFromPoints(this->modelCollider.boundingSphere, allPositions.size(), 
 											  &allPositions[0], sizeof(DirectX::SimpleMath::Vector3));
-
-	#ifdef _DEBUG
-	if (!this->CreateColliderBuffers())
-	{
-		std::cout << "Failed to create collider buffer..." << std::endl;
-		return false;
-	}
-	#endif
-	this->UpdateBoundingBoxes();
-	this->UpdateBoundingPlanes();
 
 	return true;
 }
@@ -299,8 +302,6 @@ bool MeshObject::Initialize(const std::string& meshObject,
 	//Some preparation and setting
 	this->isAnimated = hasAnimation;
 	BuildMatrix(pos, scl, rot);
-	CreateModelMatrixBuffer();
-	UpdateMatrix();
 
 	//Load in animation
 	if (hasAnimation)
@@ -330,16 +331,14 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		return false;
 	}
 
-	//Create colliders
-	if (hasBounds == true)
-	{
-		LoadColliders();
-	}
-	else
-	{
-		RemoveColliders();
-	}
+	LoadColliders(hasBounds);
+
 	UpdateRenderBoundingBox();
+	
+	if (!CreateModelMatrixBuffer())
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -445,8 +444,8 @@ void MeshObject::UpdateBoundingBoxes()
 
 void MeshObject::UpdateRenderBoundingBox()
 {
-	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);
-	this->sphereModelCollider.boundingSphere.Transform(this->sphereModelCollider.boundingSphere, this->modelMatrix);
+	this->modelCollider.boundingSphere.Transform(this->modelCollider.boundingSphere, this->modelMatrix);
+	this->modelCollider.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);
 }
 
 void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
@@ -457,7 +456,6 @@ void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
 	std::vector<DirectX::XMFLOAT3> allCorners;
 	DirectX::XMFLOAT3 corners[8];
 #endif
-	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, transform);
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
 		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, transform);

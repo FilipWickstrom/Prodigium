@@ -474,6 +474,9 @@ void Game::LoadMap()
 	this->player = new Player();
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
 
+	// Terrain
+	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
+
 	LightStruct L;
 
 	// Directional light
@@ -495,9 +498,6 @@ void Game::LoadMap()
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { pos.x, 0.0f, pos.y, 5.0f };
 	SceneHandle()->EditScene().AddLight(L);
-
-	// Terrain
-	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
 
 	pos = this->picker.getRandomPos();
 	SceneHandle()->EditScene().Add("mask_OBJ.obj", "mask_albedo.png", "mask_normal.png", false, false, { pos.x, -3.0f, pos.y });

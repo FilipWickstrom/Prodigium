@@ -16,6 +16,7 @@ struct Collider
 	};
 	Plane planes[4];
 	DirectX::BoundingOrientedBox boundingBox;
+	DirectX::BoundingSphere boundingSphere;
 };
 
 struct SphereCollider
@@ -47,13 +48,11 @@ public:
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
 	Collider modelCollider;
-	Collider modelColliderOriginal;
-	SphereCollider sphereModelCollider;
 
 private:
 	bool LoadTextures(std::string& diffuse, std::string& normal);
 	void BuildColliders(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max);
-	bool LoadColliders();
+	bool LoadColliders(bool hasColliders);
 	
 	// Updates the planes of a boundingBox to account for rotation
 	void UpdateBoundingPlanes();
