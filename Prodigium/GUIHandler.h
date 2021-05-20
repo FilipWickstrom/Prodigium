@@ -23,6 +23,7 @@ private:
 
 	ImGuiIO io;
 	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI, showOptionsMenu;
+	bool clockTimer;
 	int imageWidth, imageHeight;
 	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
@@ -30,7 +31,7 @@ private:
 	ID3D11ShaderResourceView* textureBrain;
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
-	void RenderTrapGUI(float& timer1, float& timer2);
+	void RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options);
 	void RenderBrainGUI(int playerHp, int clues);
 	void RenderOptionsMenu(OptionsHandler& options);
 

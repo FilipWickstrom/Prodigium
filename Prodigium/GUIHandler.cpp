@@ -204,10 +204,10 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
     SetUpGUIStyleDEBUG();
     GUIHandler::instance->RenderDebugGUI();
-//#endif  _DEBUG
+#endif  _DEBUG
 
     if (GUIHandler::instance->showMainMenu)
     {
@@ -217,7 +217,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
     if (GUIHandler::instance->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI(timer1, timer2);
+        GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
         GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
@@ -322,7 +322,7 @@ void GUIHandler::RenderDebugGUI()
 	End();
 }
 
-void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
+void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options)
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
@@ -365,6 +365,18 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
         t2.erase(t2.begin() + 3, t2.end());
     Text(t2.c_str());
     End();
+
+    if (this->clockTimer)
+    {
+        SetNextWindowPos(ImVec2(15, 15));
+        SetNextWindowSize(ImVec2(60, 30));
+        Begin("GAME TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+        // Limit to one decimal
+        std::string t3(std::to_string((int)options.gameTimer));
+        Text(t3.c_str());
+        End();
+    }
 
     if (this->trap1Active)
     {
@@ -434,7 +446,8 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
-    SliderInt("Difficulty", &options.difficulty, 1.0f, 3.0f);
+    SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
+    Checkbox("Time Count", &clockTimer);
     Text("\n\nTip:");
     Text("Difficulty will change the cooldown time for trap placement.");
 

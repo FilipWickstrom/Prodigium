@@ -317,6 +317,7 @@ bool Game::OnFrame(const float& deltaTime)
 	// Return to player buffers.
 	if (this->hasLoaded)
 	{
+		this->options.gameTimer += 1 * deltaTime;
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
 		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
@@ -385,6 +386,9 @@ void Game::ResetValues()
 	this->inGoal = false;
 	this->menu.Reset();
 	this->picker.Reset();
+	Engine::slowdown_timer = 0;
+	Engine::stopcompl_timer = 0;
+	this->options.gameTimer = 0;
 }
 
 void Game::LoadMainMenu()

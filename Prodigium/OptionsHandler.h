@@ -15,6 +15,9 @@ public:
 	float ambientVolume;
 	float musicVolume;
 
+	// Timer
+	float gameTimer;
+
 	OptionsHandler();
 	~OptionsHandler();
 };
