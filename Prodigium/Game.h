@@ -8,8 +8,9 @@
 #include "SoundHandler.h"
 #include "RandomSpotPicker.h"
 
-#define STOPCOOLDOWN 17.5f
-#define SLOWCOOLDOWN 10.0f
+// will also be affected by difficulty set in options, refer to "OptionsHandler".
+#define STOPCOOLDOWN 12.5f
+#define SLOWCOOLDOWN 5.0f
 
 class Game:public Engine
 {
@@ -27,6 +28,7 @@ private:
 	bool zoomIn;
 	bool inGoal;
 	bool isPaused;
+	bool isInOptions;
 
 	void Whisper();
 	int amountOfObjects;

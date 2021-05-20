@@ -53,14 +53,31 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
+	// Go to Options Menu
+	if (InputHandler::IsKeyPressed(Keyboard::P) && !this->hasLoaded)
+	{
+		this->isInOptions = true;
+		GUIHandler::ShowOptionsMenu(true);
+		GUIHandler::ShowMainMenu(false);
+	}
+
 	// Quit the game while in menu.
-	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded)
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded && !this->isInOptions)
 	{
 		this->running = false;
 	}
 
+	// Return from pause menu.
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->isInOptions)
+	{
+		this->isInOptions = false;
+		GUIHandler::ShowOptionsMenu(false);
+		GUIHandler::ShowMainMenu(true);
+	}
+
+
 	// Start the game.
-	if (!this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Space))
+	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
 	{
 		this->zoomIn = true;
 	}
@@ -170,7 +187,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
 
-				this->stopcompl_timer = STOPCOOLDOWN;
+				this->stopcompl_timer = STOPCOOLDOWN * this->options.difficulty;
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
@@ -178,7 +195,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 				
-				this->slowdown_timer = SLOWCOOLDOWN;
+				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
@@ -260,7 +277,7 @@ bool Game::OnFrame(const float& deltaTime)
 		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
-	else
+	else if(!this->zoomIn && !this->isInOptions)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);

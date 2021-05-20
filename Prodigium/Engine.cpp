@@ -154,7 +154,7 @@ void Engine::Render()
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
-	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer);
+	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer, this->options);
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();

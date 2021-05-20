@@ -157,6 +157,9 @@
     <ClCompile Include="Frustum.cpp">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClCompile>
+    <ClCompile Include="OptionsHandler.cpp">
+      <Filter>Engine\Options</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -276,6 +279,9 @@
     <ClInclude Include="Frustum.h">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClInclude>
+    <ClInclude Include="OptionsHandler.h">
+      <Filter>Engine\Options</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -366,6 +372,9 @@
     </Filter>
     <Filter Include="Engine\Graphics\Techniques\Acceleration\Frustum Culling">
       <UniqueIdentifier>{74702e8d-0e06-420e-abff-7d96a9b3d658}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Options">
+      <UniqueIdentifier>{205e89d3-4ae8-4f1b-b6a1-15db4b379e85}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

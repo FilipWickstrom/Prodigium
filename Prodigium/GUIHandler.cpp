@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
+void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -221,6 +221,14 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
         GUIHandler::instance->RenderBrainGUI(playerHp, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
+    }
+    if (GUIHandler::instance->showOptionsMenu)
+    {
+        SetUpGUIStyleMainMenu();
+        GetIO().WantCaptureMouse = true;
+        GetIO().WantCaptureKeyboard = true;
+        GetIO().MouseDrawCursor = true;
+        GUIHandler::instance->RenderOptionsMenu(options);
     }
     
 
@@ -291,6 +299,11 @@ void GUIHandler::ShowMainMenu(const bool& show)
 void GUIHandler::ShowGameGUI(const bool& show)
 {
     GUIHandler::instance->showGameGUI = show;
+}
+
+void GUIHandler::ShowOptionsMenu(const bool& show)
+{
+    GUIHandler::instance->showOptionsMenu = show;
 }
 
 const bool GUIHandler::ActiveTrap()
@@ -405,6 +418,37 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
     delete isActive;
 }
 
+void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
+{
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.65f, (float)Graphics::GetWindowHeight() * 0.65f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.175f, (float)Graphics::GetWindowHeight() * 0.1f));
+    SetNextWindowBgAlpha(0.5);
+    bool* isActive = new bool(true);
+
+    Begin("Options Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.33f, (float)Graphics::GetWindowHeight() * 0.25f));
+    
+    BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
+   
+    SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
+    SliderInt("Difficulty", &options.difficulty, 1.0f, 3.0f);
+    Text("\n\nTip:");
+    Text("Difficulty will change the cooldown time for trap placement.");
+
+    // Ultra epic space creator for the aesthetics
+    Text("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    Text("Press 'Escape' to return to main menu.");
+    EndChild();
+
+    End();
+
+    delete isActive;
+}
+
 
 void GUIHandler::RenderPauseMenu()
 {
@@ -441,12 +485,13 @@ void GUIHandler::RenderPauseMenu()
 void GUIHandler::RenderMainMenu()
 {
     bool* isActive = new bool;
-    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 200, (float)Graphics::GetWindowHeight() - 100));
-    SetNextWindowSize(ImVec2(500, 500), 0);
+    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 125, (float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowSize(ImVec2(500, 600), 0);
     
     Begin("MENU", isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(1.5f);
     Text("Press 'Space' to start game.");
+    Text("Press 'P' to open Options.");
     Text("Press 'ESC' to quit game.");
     End();
     delete isActive;

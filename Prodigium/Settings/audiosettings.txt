@@ -1,0 +1,4 @@
+master 1
+sfx 1
+music 1
+ambient 1
