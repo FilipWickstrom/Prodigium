@@ -92,3 +92,13 @@ void SoundHandler::PlayLooping(const int& index, const bool& use3D, const Direct
 		}
 	}
 }
+
+void SoundHandler::SuspendAudio()
+{
+	this->audEngine->Suspend();
+}
+
+void SoundHandler::ResumeAudio()
+{
+	this->audEngine->Resume();
+}

@@ -26,4 +26,6 @@ public:
 	void PlayOneShot(const int& index); 
 	void PlayLooping(const int& index, const bool& use3D = false, const DirectX::SimpleMath::Vector3& listnerPos = { 0,0,0 }, 
 					 const DirectX::SimpleMath::Vector3& emitterPos = { 0,0,0 });
+	void SuspendAudio();
+	void ResumeAudio();
 };

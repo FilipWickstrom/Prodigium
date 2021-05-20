@@ -178,6 +178,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
+			this->soundHandler.SuspendAudio();
 		}
 	}
 }
@@ -238,7 +239,11 @@ bool Game::OnFrame(const float& deltaTime)
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldResume())
+	{
 		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+	}
+		
 	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
