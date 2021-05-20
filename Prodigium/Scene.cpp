@@ -287,6 +287,23 @@ void Scene::Render()
 	}
 }
 
+void Scene::Render(const std::vector<MeshObject*>& toRender)
+{
+	if ((int)toRender.size() > 0)
+	{
+		for (int i = 0; i < (int)toRender.size(); i++)
+		{
+			if (toRender[i]->IsVisible())
+			{
+				toRender[i]->Render();
+			}
+		}
+	}
+#ifdef _DEBUG
+	std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+#endif
+}
+
 void Scene::RenderLights()
 {
 	if ((int)this->lights.size() > 0)
@@ -336,6 +353,26 @@ void Scene::RenderShadows()
 	this->shadowHandler->Clear();
 }
 
+void Scene::RenderShadows(const std::vector<MeshObject*>& toRender)
+{
+	this->shadowHandler->Prepare();
+	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
+	{
+		this->shadowHandler->Render(i);
+
+		// Loop through all objects
+		for (int j = 0; j < (int)toRender.size(); j++)
+		{
+			// Check the distance between light source and object.
+			if (toRender[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && toRender[j]->IsVisible())
+			{
+				toRender[j]->Render();
+			}
+		}
+	}
+	this->shadowHandler->Clear();
+}
+
 void Scene::RenderParticles()
 {
 	if (this->particles.IsActive())
@@ -352,13 +389,13 @@ void Scene::SwitchMenuMode(bool sw)
 }
 
 #ifdef _DEBUG
-void Scene::RenderBoundingBoxes()
+void Scene::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
 {
-	if ((int)this->objects.size() > 0)
+	if ((int)toRender.size() > 0)
 	{
-		for (int i = 0; i < (int)this->objects.size(); i++)
+		for (int i = 0; i < (int)toRender.size(); i++)
 		{
-			this->objects[i]->RenderBoundingBoxes();
+			toRender[i]->RenderBoundingBoxes();
 		}
 	}
 }

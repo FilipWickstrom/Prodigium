@@ -6,6 +6,7 @@
 #include "UsefulHeader.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "CameraObject.h"
 
 // The resourceManager will manage all the resources(Assets) in the game. 
 // Remember to inherit from Resource.h for every type of asset. 
@@ -21,6 +22,7 @@ private:
 	std::unordered_map<std::string, Resource*> textures;
 	std::unordered_map<std::string, Resource*> meshes;
 	std::unordered_map<std::string, Resource*> audio;
+	std::unordered_map<std::string, CameraObject*> cameras;
 
 	ResourceManager();
 	virtual ~ResourceManager();
@@ -47,4 +49,10 @@ public:
 	static const UINT GetReferenceCount();
 
 	static void Destroy();
+
+	static void AddCamera(std::string key, CameraObject* toAdd);
+	
+	static CameraObject* GetCamera(const std::string& key);
+
+	static void RemoveCamera(std::string key);
 };

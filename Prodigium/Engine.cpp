@@ -11,11 +11,11 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 		exit(-1);
 	}
 
-	#ifdef _DEBUG
-		OpenConsole();
-	#endif 
+#ifdef _DEBUG
+	OpenConsole();
+#endif 
 
-
+	this->inGame = false;
 }
 
 Engine::~Engine()
@@ -90,17 +90,34 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
+	std::vector<MeshObject*> toRender;
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
-	this->sceneHandler.Render();
+	if (!inGame)
+	{
+		this->sceneHandler.Render();
+	}
+	else
+	{
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), toRender);
+		toRender.push_back(&this->sceneHandler.EditScene().GetMeshObject(0));
+		this->sceneHandler.Render(toRender);
+	}
 	this->gPass.Clear();
 
 	// Shadow pass
 	this->gPass.Prepare();
-	this->sceneHandler.RenderShadows();
+	if (!inGame)
+	{
+		this->sceneHandler.RenderShadows();
+	}
+	else
+	{
+		this->sceneHandler.RenderShadows(toRender);
+	}
 	this->gPass.Clear();
-	
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -109,9 +126,14 @@ void Engine::Render()
 
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 #ifdef _DEBUG
-	DebugInfo::Prepare();
-	this->sceneHandler.RenderBoundingBoxes();
-	DebugInfo::Clear();
+	if (inGame)
+	{
+		DebugInfo::Prepare();
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
+		DebugInfo::Prepare();
+		this->sceneHandler.RenderBoundingBoxes(toRender);
+		DebugInfo::Clear();
+	}
 #endif
 
 	// Particle pass
@@ -188,7 +210,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	
+
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
 	{

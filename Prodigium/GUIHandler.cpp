@@ -204,10 +204,10 @@ void GUIHandler::Render()
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     SetUpGUIStyleDEBUG();
     GUIHandler::instance->RenderDebugGUI();
-#endif  _DEBUG
+//#endif  _DEBUG
 
     if (GUIHandler::instance->showMainMenu)
     {

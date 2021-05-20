@@ -14,6 +14,7 @@
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
+#include "Frustum.h"
 
 class Engine
 {
@@ -29,7 +30,6 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
@@ -48,4 +48,5 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
+	bool inGame;
 };

@@ -57,6 +57,7 @@ void Game::HandleInput(const float& deltaTime)
 	// Go back to Menu
 	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
 	{
+		Engine::inGame = false;
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -68,7 +69,7 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
-			//OpenConsole();
+			OpenConsole();
 			SceneHandle()->EditScene().GetParticles().SetActive(true);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::L))
@@ -259,6 +260,7 @@ void Game::ResetValues()
 
 void Game::LoadMainMenu()
 {
+	Engine::inGame = false;
 	if (this->player)
 		delete this->player;
 
@@ -444,4 +446,5 @@ void Game::LoadMap()
 
 	this->hasLoaded = true;
 	this->inGoal = true;
+	Engine::inGame = true;
 }
