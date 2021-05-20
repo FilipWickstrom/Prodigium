@@ -8,6 +8,9 @@
 #include "SoundHandler.h"
 #include "RandomSpotPicker.h"
 
+#define STOPCOOLDOWN 17.5f
+#define SLOWCOOLDOWN 10.0f
+
 class Game:public Engine
 {
 private:

@@ -325,8 +325,12 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
     Begin("TRAP 1 TIMER", trap1, ImGuiWindowFlags_NoTitleBar);
 
+    // Limit to one decimal
     std::string t1(std::to_string(timer1));
-    t1.erase(t1.begin() + 3, t1.end());
+    if(timer1 > 10)
+        t1.erase(t1.begin() + 4, t1.end());
+    else
+        t1.erase(t1.begin() + 3, t1.end());
     Text(t1.c_str());
     End();
     
@@ -340,8 +344,12 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
     Begin("TRAP 2 TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
 
+    // Limit to one decimal
     std::string t2(std::to_string(timer2));
-    t2.erase(t2.begin() + 3, t2.end());
+    if (timer2 > 10)
+        t2.erase(t2.begin() + 4, t2.end());
+    else
+        t2.erase(t2.begin() + 3, t2.end());
     Text(t2.c_str());
     End();
 

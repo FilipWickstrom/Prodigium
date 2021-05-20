@@ -169,7 +169,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 
-				this->stopcompl_timer = 10.0f;
+				this->stopcompl_timer = STOPCOOLDOWN;
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
@@ -177,7 +177,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 				
-				this->slowdown_timer = 5.0f;
+				this->slowdown_timer = SLOWCOOLDOWN;
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
