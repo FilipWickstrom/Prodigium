@@ -226,7 +226,11 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
-			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
+			int invert = 1.0f;
+			if (this->options.inverseSens)
+				invert = -1.0f;
+
+			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{

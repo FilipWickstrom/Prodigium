@@ -12,6 +12,8 @@ OptionsHandler::OptionsHandler()
 	this->difficulty = 1;
 	this->gameTimer = 0;
 	this->state = MAINMENU;
+	this->mouseSens = 1.0f;
+	this->inverseSens = false;
 
 	this->hasBlur = true;
 	this->hasParticles = true;
@@ -42,6 +44,12 @@ OptionsHandler::OptionsHandler()
 		// Secret own defined difficulty in .txt file.
 		else if (type == "difficulty")
 			this->difficulty = value;
+
+		else if (type == "mouse_sens")
+			this->mouseSens = value;
+
+		else if (type == "invert_mouse")
+			this->inverseSens = value;
 	}
 	input.close();
 
@@ -64,5 +72,7 @@ OptionsHandler::~OptionsHandler()
 	output << "\nsfx " << this->sfxVolume;
 	output << "\nmusic " << this->musicVolume;
 	output << "\nambient " << this->ambientVolume;
+	output << "\nmouse_sens " << this->mouseSens;
+	output << "\ninvert_mouse " << this->inverseSens;
 	output.close();
 }

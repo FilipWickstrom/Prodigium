@@ -31,6 +31,10 @@ public:
 	bool hasBlur;
 	bool hasDebugInfo;
 
+	// Control affecting attributes
+	float mouseSens;
+	bool inverseSens;
+
 	OptionsHandler();
 	~OptionsHandler();
 };

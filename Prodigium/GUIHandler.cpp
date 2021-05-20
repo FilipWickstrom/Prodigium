@@ -447,6 +447,15 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Mouse Sensitivity", &options.mouseSens, 0.5f, 5.0f, "%.2f");
+
+    std::string invSens = "Inverted Mouse: ";
+    if (options.inverseSens)
+        invSens.append("ON");
+    else
+        invSens.append("OFF");
+
+    Checkbox(invSens.c_str(), &options.inverseSens);
     SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
 
     std::string timeC = "Time Count: ";
