@@ -167,9 +167,10 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
-				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false,
-					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+				SceneHandle()->EditScene().Add("BearTrap_Triangulated.obj", "BearTrapAlbedo.png", "", false,
+					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
+					{ 0.6f, 0.6f, 0.6f });
 
 				this->stopcompl_timer = STOPCOOLDOWN;
 			}
