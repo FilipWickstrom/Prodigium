@@ -180,6 +180,7 @@
     <ClCompile Include="ShadowHandler.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SkyboxPass.cpp" />
+    <ClCompile Include="SoundHandler.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -216,6 +217,7 @@
     <ClInclude Include="ShadowHandler.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SkyboxPass.h" />
+    <ClInclude Include="SoundHandler.h" />
     <ClInclude Include="SSAO.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />

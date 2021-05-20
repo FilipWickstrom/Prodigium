@@ -6,6 +6,17 @@
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
+void Game::Whisper()
+{
+	float shouldWhisper = (float)(rand() % 10000);
+
+	if (shouldWhisper > 5 && shouldWhisper < 10)
+	{
+		int index = (int)(rand() % 4 + 1);
+		this->soundHandler.PlayOneShot(index);
+	}
+}
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -42,8 +53,8 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
-	//TODO: Make the engine cleanly shutdown
-	if (InputHandler::IsKeyPressed(Keyboard::Escape))
+	// Quit the game while in menu.
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && !this->hasLoaded)
 	{
 		this->running = false;
 	}
@@ -55,8 +66,9 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// Go back to Menu
-	if (this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::F10))
+	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
+		std::cout << "lol" << "\n";
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -81,8 +93,7 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
-			//OpenConsole();
-			SceneHandle()->EditScene().GetParticles().SetActive(true);
+			OpenConsole();
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::L))
 		{
@@ -199,17 +210,21 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsRMBPressed())
 		{
-			if (GUIHandler::ActiveTrap())
+			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+
+				this->stopcompl_timer = STOPCOOLDOWN;
 			}
-			else
+			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
 				SceneHandle()->EditScene().Add("Lamp1.obj", "Lamp1_Diffuse.png", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+				
+				this->slowdown_timer = SLOWCOOLDOWN;
 			}
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
@@ -221,10 +236,11 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			this->player->RotateCamera(InputHandler::GetMouseY() * deltaTime, InputHandler::GetMouseX() * deltaTime);
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::P))
+		if (InputHandler::IsKeyPressed(Keyboard::Escape))
 		{
 			GUIHandler::PauseGame();
 			this->isPaused = true;
+			this->soundHandler.SuspendAudio();
 		}
 
 
@@ -296,6 +312,7 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
+		
 	}
 	if (this->inGoal)
 	{
@@ -327,20 +344,30 @@ bool Game::OnFrame(const float& deltaTime)
 		GUIHandler::ShowGameGUI(true);
 		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
+		Whisper();
 	}
 	
 	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldResume())
+	{
 		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+	}
+		
 	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 
+	this->soundHandler.Update();
+
 	Engine::ClearDisplay();
 	Engine::Render();
-	Engine::Update();
 
-
+	if (!this->isPaused)
+	{
+		Engine::Update(deltaTime);
+	}
 
 
 	return true;
@@ -354,13 +381,20 @@ bool Game::OnStart()
 	this->menu.Init();
 	this->LoadMainMenu();
 
+	if (!this->soundHandler.Initialize())
+	{
+		return false;
+	}
+	
+
 #ifdef _DEBUG
 	if (!DebugInfo::Initialize())
 	{
 		return false;
 	}
 #endif
-
+	this->soundHandler.SetVolume(0.5);
+	this->soundHandler.PlayLooping(0);
 	return true;
 }
 
@@ -469,7 +503,7 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().AddLight(L);
 
 	pos = this->picker.getRandomPos();
-	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "cat_bagoverhead.jpg", "", false, false, { pos.x, -3.0f, pos.y });
+	SceneHandle()->EditScene().Add("necklace_OBJ.obj", "necklace_albedo.png", "", false, false, { pos.x, -3.0f, pos.y });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 	L.position = { pos.x, 0.0f, pos.y, 5.0f };
@@ -485,6 +519,8 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
@@ -493,11 +529,17 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, {0.0f, 3.14159f, 0.0f});
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+
 
 	/*
 		Lamps
@@ -604,4 +646,6 @@ void Game::LoadMap()
 
 	this->hasLoaded = true;
 	this->inGoal = true;
+
+	this->amountOfObjects = SceneHandle()->EditScene().GetNumberOfObjects();
 }
