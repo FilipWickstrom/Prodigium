@@ -8,7 +8,6 @@
 #include "RenderPass.h"
 #include "SkyboxPass.h"
 #include "InputHandler.h"
-#include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
 #include "GUIHandler.h"

@@ -9,17 +9,15 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	this->stopcompl_timer = 0;
 	this->slowdown_timer = 0;
 
+	#ifdef _DEBUG
+		OpenConsole();
+	#endif 
+
 	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
 	}
-
-#ifdef _DEBUG
-	OpenConsole();
-#endif 
-
-	this->inGame = false;
 }
 
 Engine::~Engine()
@@ -187,11 +185,12 @@ void Engine::OpenConsole()
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
-	//this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
+
+
 	if (!InputHandler::Initialize())
 	{
 		return false;

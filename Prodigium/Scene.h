@@ -3,6 +3,7 @@
 #include "MeshObject.h"
 #include "ShadowHandler.h"
 #include "ParticleSystem.h"
+
 #define SHADOWRANGE 125.0f
 struct InfoStruct
 {
@@ -61,9 +62,14 @@ public:
 	const bool SetupInfoBuffer();
 
 	// adds an object to the scene, current selected object will point towards this new object.
-	void Add(const std::string& objFile,const std::string& diffuseTxt = "", const std::string& normalTxt = "", bool hasBounds = true,
-		const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},
-		const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
+	void Add(const std::string& objFile,
+			 const std::string& diffuseTxt = "", 
+			 const std::string& normalTxt = "", 
+			 bool hasBounds = true,
+			 bool hasAnimation = false,
+			 const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},
+			 const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},
+			 const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);

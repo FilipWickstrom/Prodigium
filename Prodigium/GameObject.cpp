@@ -11,10 +11,7 @@ GameObject::GameObject()
 	this->up = { 0.0f, 1.0f, 0.0f };
 	this->right = { 0.0f, 0.0f, 0.0f };
 	this->modelMatrixBuffer = nullptr;
-	this->modelMatrix = { 1.0f, 0.0f, 0.0f, 0.0f,
-											0.0f, 1.0f, 0.0f, 0.0f,
-											0.0f, 0.0f, 1.0f, 0.0f,
-											0.0f, 0.0f, 0.0f, 1.0f };
+	this->modelMatrix = Matrix::Identity;
 }
 
 GameObject::~GameObject()
@@ -45,14 +42,14 @@ bool GameObject::CreateModelMatrixBuffer()
 	return true;
 }
 
-bool GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
+void GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
 {
 	this->position = pos;
 	this->scale = scl;
 	this->rotation = rot;
-	modelMatrix = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position);
-
-	return true;
+	this->modelMatrix = Matrix::CreateScale(this->scale) * 
+						Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
+						Matrix::CreateTranslation(position);
 }
 
 bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)
@@ -61,13 +58,13 @@ bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vect
 	this->scale = scl;
 	this->rotation = rot;
 
-	modelMatrix = Matrix(Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(position)).Transpose();
+	this->modelMatrix = Matrix(Matrix::CreateScale(this->scale) * 
+							   Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
+							   Matrix::CreateTranslation(position)).Transpose();
 
 	D3D11_MAPPED_SUBRESOURCE submap;
-
 	HRESULT hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
 	memcpy(submap.pData, &this->modelMatrix, sizeof(Matrix));
-
 	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
 
 	return !FAILED(hr);
@@ -75,23 +72,24 @@ bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vect
 
 bool GameObject::UpdateMatrix()
 {
-	Matrix transformedCPU = Matrix::CreateScale(this->scale) * Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * Matrix::CreateTranslation(this->position);
+	Matrix transformedCPU = Matrix::CreateScale(this->scale) * 
+							Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
+							Matrix::CreateTranslation(this->position);
 
 	this->modelMatrix = transformedCPU;
-	Matrix transformedGPU = Matrix(transformedCPU).Transpose();
 
-	D3D11_MAPPED_SUBRESOURCE submap;
-	HRESULT hr;
-	hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
-	memcpy(submap.pData, &transformedGPU, sizeof(Matrix));
-
-	Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
-
-	if (FAILED(hr))
+	//Update the buffer if it exists. Otherwise just locally
+	if (this->modelMatrixBuffer)
 	{
-		return false;
-	}
+		Matrix transformedGPU = Matrix(transformedCPU).Transpose();
 
+		D3D11_MAPPED_SUBRESOURCE submap;
+		HRESULT hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+		memcpy(submap.pData, &transformedGPU, sizeof(DirectX::SimpleMath::Matrix));
+		Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
+
+		return !FAILED(hr);
+	}
 
 	return true;
 }

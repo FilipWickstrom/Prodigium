@@ -43,6 +43,9 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
+    <FxCompile Include="AnimationVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -157,8 +160,11 @@
     <ClCompile Include="Frustum.cpp">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClCompile>
-    <ClCompile Include="OptionsHandler.cpp">
-      <Filter>Engine\Options</Filter>
+    <ClCompile Include="AnimatedObject.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -279,8 +285,11 @@
     <ClInclude Include="Frustum.h">
       <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClInclude>
-    <ClInclude Include="OptionsHandler.h">
-      <Filter>Engine\Options</Filter>
+    <ClInclude Include="AnimatedObject.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -373,8 +382,11 @@
     <Filter Include="Engine\Graphics\Techniques\Acceleration\Frustum Culling">
       <UniqueIdentifier>{74702e8d-0e06-420e-abff-7d96a9b3d658}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Options">
-      <UniqueIdentifier>{205e89d3-4ae8-4f1b-b6a1-15db4b379e85}</UniqueIdentifier>
+    <Filter Include="Engine\Graphics\Shaders\Animation">
+      <UniqueIdentifier>{9c0fdea3-4c0c-4337-99b7-1c723749b9b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Objects\Animation">
+      <UniqueIdentifier>{3402cc4e-1d5e-43de-b490-9fe1959a9fd6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
