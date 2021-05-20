@@ -1,13 +1,12 @@
 #pragma once
-#include "CameraObject.h"
-#include "Graphics.h"
 #include "MeshObject.h"
+#include "CameraObject.h"
 
 class Player
 {
 private:
 	float speed;
-	CameraObject playerCam;
+	CameraObject* playerCam;
 	MeshObject* playerModel;
 
 private:

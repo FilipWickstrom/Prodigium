@@ -68,14 +68,7 @@ void Engine::RedirectIoToConsole()
 		std::cerr.clear();
 		std::wcin.clear();
 		std::cin.clear();
-		//AllocConsole();
-		//HANDLE stdHandle;
-		//int hConsole;
-		//FILE* fp;
-		//stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		//hConsole = _open_osfhandle((intptr_t)stdHandle, _O_TEXT);
-		//fp = _fdopen(hConsole, "w");
-		//freopen_s(&fp, "CONOUT$", "w", stdout);
+	
 		consoleOpen = true;
 	}
 }
@@ -92,17 +85,35 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
+	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
+	toRender->clear();
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
-	this->sceneHandler.Render();
+	if (!inGame)
+	{
+		this->sceneHandler.Render();
+	}
+	else
+	{
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
+		this->sceneHandler.Render(*toRender);
+
+	}
 	this->gPass.Clear();
 
 	// Shadow pass
 	this->gPass.Prepare();
-	this->sceneHandler.RenderShadows();
+	if (!inGame)
+	{
+		this->sceneHandler.RenderShadows();
+	}
+	else
+	{
+		this->sceneHandler.RenderShadows(*toRender);
+	}
 	this->gPass.Clear();
-	
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -111,9 +122,15 @@ void Engine::Render()
 
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
 #ifdef _DEBUG
-	DebugInfo::Prepare();
-	this->sceneHandler.RenderBoundingBoxes();
-	DebugInfo::Clear();
+	if (inGame)
+	{
+		DebugInfo::Prepare();
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
+		DebugInfo::Prepare();
+		this->sceneHandler.RenderBoundingBoxes(*toRender);
+
+		DebugInfo::Clear();
+	}
 #endif
 
 	// Particle pass
@@ -216,7 +233,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	
+
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
 	{

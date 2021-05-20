@@ -94,6 +94,14 @@ bool GameObject::UpdateMatrix()
 	return true;
 }
 
+void GameObject::UpdateMatrixCPU()
+{
+	this->modelMatrix = 
+		Matrix::CreateScale(this->scale) * 
+		Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
+		Matrix::CreateTranslation(this->position);
+}
+
 const Vector3& GameObject::GetPosition() const
 {
 	return this->position;

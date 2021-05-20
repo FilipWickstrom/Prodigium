@@ -186,7 +186,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
+void GUIHandler::Render(int playerSanity, int clues, float& timer1, float& timer2)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -204,10 +204,10 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     SetUpGUIStyleDEBUG();
     GUIHandler::instance->RenderDebugGUI();
-#endif  _DEBUG
+//#endif  _DEBUG
 
     if (GUIHandler::instance->showMainMenu)
     {
@@ -218,7 +218,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2)
     {
         SetUpGUIStyleGame();
         GUIHandler::instance->RenderTrapGUI(timer1, timer2);
-        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
+        GUIHandler::instance->RenderBrainGUI(playerSanity, clues);
         if (GUIHandler::instance->isPaused)
             GUIHandler::instance->RenderPauseMenu();
     }
@@ -375,25 +375,25 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2)
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerHp, int clues)
+void GUIHandler::RenderBrainGUI(int playerSanity, int clues)
 {
     float fade = 1.0f;
-    float hp = playerHp;
+    float hp = (float)playerSanity;
     fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
 
-    bool* isActive = new bool(true);
+    bool isActive = true;
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
     SetNextWindowSize(ImVec2((float)imageWidth + 25, (float)imageHeight + 25));
-    Begin("BRAIN GUI", isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("BRAIN GUI", &isActive, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureBrain, ImVec2((float)imageWidth, (float)imageHeight), ImVec2(0, 0)
     , ImVec2(1, 1), ImVec4(fade, fade, fade, fade));
     End();
 
-    std::string rest(std::to_string(playerHp));
+    std::string rest(std::to_string((int)hp));
     rest.append(" / 100");
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 200, 200));
     SetNextWindowSize(ImVec2(500, 500), 0);
-    Begin("HEALTH", isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("HEALTH", &isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(2.f);
     Text(rest.c_str());
 
@@ -402,7 +402,6 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
     Text(cl.c_str());
 
     End();
-    delete isActive;
 }
 
 

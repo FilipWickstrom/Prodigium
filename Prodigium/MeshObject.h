@@ -42,6 +42,8 @@ private:
 public: 
 	std::vector<Collider> collidersOriginal;
 	std::vector<Collider> colliders;
+	Collider modelCollider;
+	SphereCollider sphereModelCollider;
 
 private:
 	bool LoadTextures(std::string& diffuse, std::string& normal);
@@ -75,6 +77,7 @@ public:
 
 	void Render(bool shadowPass = false);
 	void UpdateBoundingBoxes();
+	void UpdateRenderBoundingBox();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
 	const bool IsVisible() const;
 	

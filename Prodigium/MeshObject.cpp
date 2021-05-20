@@ -1,5 +1,7 @@
 #include "MeshObject.h"
 #include "Graphics.h"
+#include "ResourceManager.h"
+
 using namespace DirectX::SimpleMath;
 
 #ifdef _DEBUG
@@ -197,6 +199,13 @@ bool MeshObject::LoadColliders()
 	return true;
 }
 
+void MeshObject::SetRenderColliders()
+{
+	this->modelCollider = this->mesh->modelCollider;
+	this->modelColliderOriginal = this->mesh->modelColliderOriginal;
+	this->sphereModelCollider = this->mesh->modelColliderSphere;
+}
+
 void MeshObject::UpdateBoundingPlanes()
 {
 	for (size_t i = 0; i < this->colliders.size(); i++)
@@ -316,6 +325,8 @@ bool MeshObject::Initialize(const std::string& meshObject,
 	}
 
 	//Create colliders
+	this->SetRenderColliders();
+	this->UpdateRenderBoundingBox();
 	if (hasBounds == true)
 	{
 		LoadColliders();
@@ -427,6 +438,12 @@ void MeshObject::UpdateBoundingBoxes()
 	}
 }
 
+void MeshObject::UpdateRenderBoundingBox()
+{
+	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);
+	this->sphereModelCollider.boundingSphere.Transform(this->sphereModelCollider.boundingSphere, this->modelMatrix);
+}
+
 void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
 {
 #ifdef _DEBUG
@@ -435,7 +452,7 @@ void MeshObject::UpdateBoundingBoxes(const Matrix& transform)
 	std::vector<DirectX::XMFLOAT3> allCorners;
 	DirectX::XMFLOAT3 corners[8];
 #endif
-
+	this->modelColliderOriginal.boundingBox.Transform(this->modelCollider.boundingBox, transform);
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
 		this->collidersOriginal[i].boundingBox.Transform(this->colliders[i].boundingBox, transform);

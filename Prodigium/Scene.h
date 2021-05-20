@@ -16,6 +16,8 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
+	
+	std::vector<MeshObject*> cullingObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -111,18 +113,25 @@ public:
 	// loop through all objects and call their render function.
 	void Render();
 
+	void Render(const std::vector<MeshObject*>& toRender);
+
 	// loop through all lights are bind them to the light pass
 	void RenderLights();
 
 #ifdef _DEBUG
-	void RenderBoundingBoxes();
+	void RenderBoundingBoxes(const std::vector<MeshObject*>& toRender);
 #endif
 
 	// render all shadows to be prepared for the light pass
 	void RenderShadows();
+	void RenderShadows(const std::vector<MeshObject*>& toRender);
 
 	// render the particles inside the scene.
 	void RenderParticles();
 
 	void SwitchMenuMode(bool sw = true);
+
+	void ClearCullingObjects();
+
+	std::vector<MeshObject*>& GetAllCullingObjects();
 };

@@ -13,6 +13,8 @@
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
+#include "Frustum.h"
+
 class Engine
 {
 protected:
@@ -51,4 +53,5 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
+	bool inGame;
 };

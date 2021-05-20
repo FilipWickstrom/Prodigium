@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <iostream>
+#include "Graphics.h"
 
 using namespace DirectX::SimpleMath;
 

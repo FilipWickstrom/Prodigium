@@ -43,9 +43,6 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
-    <FxCompile Include="AnimationVertexShader.hlsl">
-      <Filter>Engine\Graphics\Shaders\Animation</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -154,11 +151,11 @@
     <ClCompile Include="RandomSpotPicker.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="AnimatedObject.cpp">
-      <Filter>Engine\Resources\Objects\Animated</Filter>
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Engine\Resources\Objects\Animated</Filter>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -273,11 +270,11 @@
     <ClInclude Include="RandomSpotPicker.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Engine\Resources\Objects\Animated</Filter>
+    <ClInclude Include="QuadTree.h">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClInclude>
-    <ClInclude Include="AnimatedObject.h">
-      <Filter>Engine\Resources\Objects\Animated</Filter>
+    <ClInclude Include="Frustum.h">
+      <Filter>Engine\Graphics\Techniques\Acceleration\Frustum Culling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -364,11 +361,11 @@
     <Filter Include="Engine\Audio">
       <UniqueIdentifier>{a4c7c3b2-8717-4dcb-a47b-3739f2fad1ab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Graphics\Shaders\Animation">
-      <UniqueIdentifier>{3bf8de5e-1759-44b2-a69e-734b3c5d169c}</UniqueIdentifier>
+    <Filter Include="Engine\Graphics\Techniques\Acceleration">
+      <UniqueIdentifier>{6b4a2f71-66e2-4785-9100-25c162d81c04}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Resources\Objects\Animated">
-      <UniqueIdentifier>{aebec2ed-777c-4111-91ed-0f6eb9d6c6df}</UniqueIdentifier>
+    <Filter Include="Engine\Graphics\Techniques\Acceleration\Frustum Culling">
+      <UniqueIdentifier>{74702e8d-0e06-420e-abff-7d96a9b3d658}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -5,7 +5,6 @@
 
 #include "UsefulStructuresHeader.h"
 #include "Resource.h"
-#include "Graphics.h"
 
 #pragma warning(push, 0)
 #include <assimp/Importer.hpp>
@@ -31,6 +30,8 @@ public:
 	Mesh();
 	~Mesh();
 
+	SphereCollider modelColliderSphere;
+	
 	bool LoadFile(std::string filename);
 	void Render();
 };

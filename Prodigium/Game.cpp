@@ -3,6 +3,7 @@
 #include <thread>
 #include "ParticleSystem.h"
 #include "GUIHandler.h"
+#include <omp.h>
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
@@ -26,6 +27,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->hasLoaded = false;
 	this->zoomIn = false;
 	this->inGoal = false;
+	this->amountOfObjects = 0;
 }
 
 Game::~Game()
@@ -68,7 +70,7 @@ void Game::HandleInput(const float& deltaTime)
 	// Go back to Menu
 	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
-		std::cout << "lol" << "\n";
+		Engine::inGame = false;
 		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
@@ -212,9 +214,10 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
-				SceneHandle()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", false, false,
-					{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+				SceneHandle()->EditScene().Add("BearTrap_Triangulated.obj", "BearTrapAlbedo.png", "", false, false,
+					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
+					{ 0.6f, 0.6f, 0.6f });
 
 				this->stopcompl_timer = STOPCOOLDOWN;
 			}
@@ -342,7 +345,7 @@ bool Game::OnFrame(const float& deltaTime)
 	{
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
-		player->Update(SceneHandle()->EditScene().GetAllMeshObjects(), direction, deltaTime);
+		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
 		Whisper();
@@ -411,6 +414,7 @@ void Game::ResetValues()
 
 void Game::LoadMainMenu()
 {
+	Engine::inGame = false;
 	if (this->player)
 		delete this->player;
 
@@ -648,4 +652,5 @@ void Game::LoadMap()
 	this->inGoal = true;
 
 	this->amountOfObjects = SceneHandle()->EditScene().GetNumberOfObjects();
+	Engine::inGame = true;
 }

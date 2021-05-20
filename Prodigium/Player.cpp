@@ -1,10 +1,13 @@
 #include "Player.h"
+#include "Graphics.h"
+#include "ResourceManager.h"
+
 using namespace DirectX::SimpleMath;
 
 void Player::RotatePlayer()
 {
 	Vector3 currentRotation = { 0.f, this->playerModel->rotation.y, 0.f };
-	Vector3 targetRotation = { 0.f, this->playerCam.GetRotation().y + DirectX::XM_PI, 0.f };
+	Vector3 targetRotation = { 0.f, this->playerCam->GetRotation().y + DirectX::XM_PI, 0.f };
 
 	// Not so elegant way of half-fixing the lerp issue
 	if ((currentRotation.y - targetRotation.y) > 4.5f)
@@ -31,17 +34,22 @@ Player::Player()
 	
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
-	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
-	
+	this->playerModel->rotation = { 0.f, DirectX::XM_PI, 0.f };
+	this->playerModel->position = { 0.0f, 0.0f, 0.0f };
+	this->playerCam = new CameraObject;
+	ResourceManager::AddCamera("PlayerCam", playerCam);
+	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
 	this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
 	this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
-			
+
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
+	this->playerModel->UpdateBoundingBoxes();
 }
 
 Player::~Player()
 {
+	ResourceManager::RemoveCamera("PlayerCam");
 }
 
 void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
@@ -54,13 +62,13 @@ void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath
 		}
 	}
 	Matrix transform = Matrix::CreateTranslation(this->playerModel->position);
-	this->playerCam.SetTransform(transform);
-	this->playerCam.Update();
+	this->playerCam->SetTransform(transform);
+	this->playerCam->Update();
 }
 
 void Player::Move(Vector2& direction, const float& deltaTime)
 {
-	Matrix rotation = Matrix::CreateRotationY(this->playerCam.rotation.y);
+	Matrix rotation = Matrix::CreateRotationY(this->playerCam->rotation.y);
 	this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 
@@ -76,7 +84,7 @@ void Player::Move(Vector2& direction, const float& deltaTime)
 
 void Player::RotateCamera(const float& pitch, const float& yaw)
 {
-	this->playerCam.Rotate(pitch, yaw, 0.f);
+	this->playerCam->Rotate(pitch, yaw, 0.f);
 }
 
 void Player::Sprint()

@@ -20,6 +20,7 @@ private:
 	static InputHandler* instance;
 	MSG state;
 	bool isRunning;
+	bool confineCursor;
 
 public:
 	DELETE_COPY_ASSIGNMENT(InputHandler);
