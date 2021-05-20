@@ -22,15 +22,13 @@ void Player::RotatePlayer()
 Player::Player()
 {
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("Player/PlayerSkeleton.fbx", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, {0, DirectX::XM_PI,0});
+	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, {0, DirectX::XM_PI,0});
 
 	Vector3 cameraOffset = { 0.0f, 5.0f, -15.f };
 	Vector3 cameraForward = cameraOffset * -1;
 	cameraForward.Normalize();
 	this->speed = 10.f;
 	
-	this->playerModel->GetPosition();
-
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerCam.Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.2f, 1000.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);

@@ -115,11 +115,13 @@ bool AnimatedObject::LoadBoneTree(Bone& currentBone, aiNode* node, std::unordere
 	return false;
 }
 
-bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
+bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 {
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile("Models/" + riggedModelFile,
+	std::string skeletonFile = animFolder + "/" + animFolder + "_Skeleton.fbx";
+
+	const aiScene* scene = importer.ReadFile("Models/" + skeletonFile,
 											aiProcess_Triangulate |               //Triangulate every surface
 											aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
 											aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
@@ -148,7 +150,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 			if (mesh->mNumBones <= MAXBONES)
 			{
 				#ifdef _DEBUG
-					std::cout << "Skeleton: '" << riggedModelFile << "' has " << mesh->mNumBones << " bones" << std::endl;
+					std::cout << "Skeleton: '" << skeletonFile << "' has " << mesh->mNumBones << " bones" << std::endl;
 				#endif
 
 				std::vector<AnimationVertex> vertices;
@@ -271,7 +273,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 		}
 		else
 		{
-			std::cout << "The file: " << riggedModelFile << " does not have any bones..." << std::endl;
+			std::cout << "The file: " << skeletonFile << " does not have any bones..." << std::endl;
 			importer.FreeScene();
 			return false;
 		}
@@ -287,21 +289,41 @@ bool AnimatedObject::LoadRiggedMesh(std::string riggedModelFile)
 	return true;
 }
 
-bool AnimatedObject::LoadAnimations(std::string riggedModelFile)
+bool AnimatedObject::LoadAnimations(std::string animFolder)
 {
-	//Search for riggedModel+idle
-	//Search for riggedModel+walking
-	//Search for riggedModel+running
+	std::string walkRunFile = animFolder + "/" + animFolder + "_Walk_Run.fbx";
+	std::string idleFile = animFolder + "/" + animFolder + "_Idle.fbx";
+	std::string idle2File = animFolder + "/" + animFolder + "_Idle2.fbx";
 
-	//LoadAnimation and add to the array
-	if (!this->walkRunAnim.Load("Player/PlayerWalk.fbx", this->boneMap))
+	//Load in walk/run animation
+	Animation* walkRunAnim = new Animation();
+	if (!walkRunAnim->Load(walkRunFile, this->boneMap))
 	{
-		std::cout << "Failed to load running animation..." << std::endl;
+		std::cout << "Failed to load run/walk animation ..." << std::endl;
 		return false;
 	}
+	this->allAnimations.push_back(walkRunAnim);
 
-	//Load in idle animation
+	//Load in idle 1 animation
+	Animation* idleAnim = new Animation();
+	if (!idleAnim->Load(idleFile, this->boneMap))
+	{
+		std::cout << "Failed to load idle animation 1..." << std::endl;
+		return false;
+	}
+	this->allAnimations.push_back(idleAnim);
+	
+	//Load in idle 2 animation
+	Animation* idle2Anim = new Animation();
+	if (!idle2Anim->Load(idle2File, this->boneMap))
+	{
+		std::cout << "Failed to load idle animation 2..." << std::endl;
+		return false;
+	}
+	this->allAnimations.push_back(idle2Anim);
 
+	//Set idle animation from start
+	this->currentAnim = this->allAnimations[1];
 
 	return true;
 }
@@ -353,7 +375,6 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const Dir
 	}
 }
 
-
 AnimatedObject::AnimatedObject()
 {
 	this->vertexShader = nullptr;
@@ -367,6 +388,8 @@ AnimatedObject::AnimatedObject()
 	this->animatedMatrices.resize(MAXBONES, Matrix::Identity);
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
 	this->currentState = AnimationState::IDLE;
+
+	this->currentAnim = nullptr;
 }
 
 AnimatedObject::~AnimatedObject()
@@ -381,9 +404,11 @@ AnimatedObject::~AnimatedObject()
 		this->indexBuffer->Release();
 	if (this->boneMatricesBuffer)
 		this->boneMatricesBuffer->Release();
+
+	this->allAnimations.clear();
 }
 
-bool AnimatedObject::Initialize(std::string tposeFile)
+bool AnimatedObject::Initialize(std::string animFolder)
 {
 	if (!LoadVertexShader())
 	{
@@ -397,7 +422,7 @@ bool AnimatedObject::Initialize(std::string tposeFile)
 		return false;
 	}
 
-	if (!LoadRiggedMesh(tposeFile))
+	if (!LoadRiggedMesh(animFolder))
 	{
 		std::cout << "Failed to load in skeleton" << std::endl;
 		return false;
@@ -409,7 +434,7 @@ bool AnimatedObject::Initialize(std::string tposeFile)
 		return false;
 	}
 	
-	if (!LoadAnimations(tposeFile))
+	if (!LoadAnimations(animFolder))
 	{
 		std::cout << "Failed to load one of the animations..." << std::endl;
 		return false;
@@ -420,33 +445,45 @@ bool AnimatedObject::Initialize(std::string tposeFile)
 
 void AnimatedObject::ChangeAnimState(AnimationState state)
 {
-	this->currentState = state;
-	
-	switch (this->currentState)
+	//State has been set previously
+	if (this->currentState != state)
 	{
-	case AnimationState::WALKFORWARD:
-		this->walkRunAnim.SetAnimationSpeed(120);
-		break;
-	case AnimationState::WALKBACKWARD:
-		this->walkRunAnim.SetAnimationSpeed(-120);
-		break;
-	case AnimationState::RUNFORWARD:
-		this->walkRunAnim.SetAnimationSpeed(200);
-		break;
-	case AnimationState::RUNBACKWARD:
-		this->walkRunAnim.SetAnimationSpeed(-200);
-		break;
-	case AnimationState::IDLE:
-		//CHANGE ANIMATION**
-		//this->currentAnimation = idle animation
-		//this->walkRunAnim.SetAnimationSpeed(5);
-		break;
-	default:
-		//NONE or other
-		break;
-	};
-	
+		this->currentState = state;
 
+		//Switching state to other
+		switch (this->currentState)
+		{
+		case AnimationState::WALKFORWARD:
+			this->currentAnim = this->allAnimations[0];
+			this->currentAnim->SetAnimationSpeed(120);
+			break;
+		case AnimationState::WALKBACKWARD:
+			this->currentAnim = this->allAnimations[0];
+			this->currentAnim->SetAnimationSpeed(-120);
+			break;
+		case AnimationState::RUNFORWARD:
+			this->currentAnim = this->allAnimations[0];
+			this->currentAnim->SetAnimationSpeed(200);
+			break;
+		case AnimationState::RUNBACKWARD:
+			this->currentAnim = this->allAnimations[0];
+			this->currentAnim->SetAnimationSpeed(-200);
+			break;
+		case AnimationState::IDLE:
+			this->currentAnim->ResetCurrentTime();
+			this->currentAnim = this->allAnimations[1];
+			this->currentAnim->SetAnimationSpeed(30);
+			break;
+		case AnimationState::IDLE2:
+			this->currentAnim->ResetCurrentTime();
+			this->currentAnim = this->allAnimations[2];
+			this->currentAnim->SetAnimationSpeed(30);
+			break;
+		default:
+			//NONE or other
+			break;
+		};
+	}
 }
 
 void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
@@ -455,7 +492,7 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 	if (animate && this->currentState != AnimationState::NONE)
 	{
 		//Get all animated matrices at this time for every bone
-		this->walkRunAnim.GetAnimationMatrices(this->boneNames, this->animatedMatrices);
+		this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices);
 	}
 
 	//Calculate all matrices that will later be sent to the GPU
@@ -476,35 +513,3 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 	//Finally draw the mesh
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
 }
-
-//void AnimatedObject::RenderStatic()
-//{
-//	//Get shadowsettings
-//	ID3D11InputLayout* shadowLayout;
-//	ID3D11VertexShader* shadowVS;
-//	Graphics::GetContext()->IAGetInputLayout(&shadowLayout);
-//	Graphics::GetContext()->VSGetShader(&shadowVS, nullptr, 0);
-//
-//
-//	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
-//	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-//	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
-//
-//	UINT stride = sizeof(AnimationVertex);
-//	UINT offset = 0;
-//	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-//	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-//
-//	//Set textures to pixelshader
-//	for (unsigned int i = 0; i < MAXTEXTURES; i++)
-//	{
-//		Graphics::GetContext()->PSSetShaderResources(i, 1, &this->textureSRVs[i]);
-//	}
-//	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
-//
-//	//Bind back the previous
-//	Graphics::GetContext()->IASetInputLayout(shadowLayout);
-//	Graphics::GetContext()->VSSetShader(shadowVS, nullptr, 0);
-//	shadowLayout->Release();
-//	shadowVS->Release();
-//}

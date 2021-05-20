@@ -15,7 +15,7 @@ class Animation
 private:
 	UINT nrOfBones;
 	double currentFrameTime;
-	double duraction;				//How many frames the animation is
+	double duration;				//How many frames the animation is
 	double ticksPerSecond;			//Framerate of the animation
 
 	//This setting will make the animation
@@ -55,4 +55,5 @@ public:
 	//Gets the animation matrices at this time
 	void GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices);
 	void SetAnimationSpeed(int animSpeed);
+	void ResetCurrentTime();
 };

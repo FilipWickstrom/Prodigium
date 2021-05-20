@@ -109,7 +109,13 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		else if (InputHandler::IsKeyReleased(Keyboard::W))
 		{
-			this->player->GetMeshObject()->ChangeAnimState(AnimationState::NONE);	//IDLE
+			//Randomize idle state
+			AnimationState state;
+			if (rand() % 2 == 0)
+				state = AnimationState::IDLE;
+			else
+				state = AnimationState::IDLE2;
+			this->player->GetMeshObject()->ChangeAnimState(state);
 		}
 
 		//Backward
@@ -129,7 +135,13 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		else if (InputHandler::IsKeyReleased(Keyboard::S))
 		{
-			this->player->GetMeshObject()->ChangeAnimState(AnimationState::NONE);	//IDLE
+			//Randomize idle state
+			AnimationState state;
+			if (rand() % 2 == 0)
+				state = AnimationState::IDLE;
+			else
+				state = AnimationState::IDLE2;
+			this->player->GetMeshObject()->ChangeAnimState(state);
 		}
 
 		//Sideways

@@ -25,10 +25,10 @@ TODO:
 	- We look for animations named: Player_Idle, Player_Walking, Player_Running
 */
 
-//Switch between states of animations
+//Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
 enum class AnimationState
 {
-	IDLE, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 6
+	IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 7
 };
 
 class AnimatedObject
@@ -67,8 +67,14 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
 
 	AnimationState currentState;
-	//std::vector<Animation> allAnimations;
-	Animation walkRunAnim;
+	
+	//FIX AND CLEANUP THIS!!!****
+	Animation* currentAnim;
+	std::vector<Animation*> allAnimations;
+
+
+	//Animation* walkRunAnim;
+	//Animation* idleAnim;
 
 public:
 	//All the positions of the T-posing character
@@ -87,8 +93,8 @@ private:
 					  std::unordered_map<std::string,std::pair<UINT, DirectX::SimpleMath::Matrix>>& tempMap);
 	
 	//Load in a mesh with a skeleton
-	bool LoadRiggedMesh(std::string riggedModelFile);
-	bool LoadAnimations(std::string riggedModelFile);
+	bool LoadRiggedMesh(std::string animFolder);
+	bool LoadAnimations(std::string animFolder);
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
@@ -99,14 +105,12 @@ public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
 
-	bool Initialize(std::string tposeFile);					
+	bool Initialize(std::string animFolder);					
 	
 	void ChangeAnimState(AnimationState state);
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows
 	void Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate = true);
-
-	//void RenderStatic();
 
 };

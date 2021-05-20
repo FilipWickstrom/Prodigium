@@ -82,7 +82,7 @@ Animation::Animation()
 {
 	this->nrOfBones = 0;
 	this->currentFrameTime = 0;
-	this->duraction = 0;
+	this->duration = 0;
 	this->ticksPerSecond = 0;
 	this->useInterpolation = true;
 }
@@ -119,7 +119,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 	const aiAnimation* animation = scene->mAnimations[0];
 
 	//Set the values for this type of animation
-	this->duraction = animation->mDuration;
+	this->duration = animation->mDuration;
 	
 	//Use default by assimp
 	if (animSpeed == 0)
@@ -178,7 +178,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 	#ifdef _DEBUG
 		//Writing out some stats
 		std::cout << "Animation: '" << filename << "' has " << this->nrOfBones << " bones" << std::endl;
-		std::cout << "Duration: " << this->duraction << std::endl;
+		std::cout << "Duration: " << this->duration << std::endl;
 		std::cout << "Ticks per second: " << this->ticksPerSecond << std::endl;
 	#endif
 
@@ -192,11 +192,11 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 	this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
 	
 	//Resets to start when reached end
-	if (this->currentFrameTime >= this->duraction)
+	if (this->currentFrameTime >= this->duration)
 		this->currentFrameTime = 0;
 	//Resets to end when reached start - only when playing in revers
 	else if (this->currentFrameTime <= 0)
-		this->currentFrameTime = this->duraction;
+		this->currentFrameTime = this->duration;
 
 	aiVector3D pos;
 	aiVector3D scl;
@@ -238,4 +238,9 @@ void Animation::SetAnimationSpeed(int animSpeed)
 	{
 		this->ticksPerSecond = (double)animSpeed;
 	}
+}
+
+void Animation::ResetCurrentTime()
+{
+	this->currentFrameTime = 0;
 }
