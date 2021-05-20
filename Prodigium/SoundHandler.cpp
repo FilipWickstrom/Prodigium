@@ -18,7 +18,6 @@ SoundHandler::~SoundHandler()
 	this->waveBankAmbient.release();
 	this->waveBankMusic.release();
 	this->audEngine.release();	
-	this->soundEffect.release();
 }
 
 const bool SoundHandler::Initialize()
