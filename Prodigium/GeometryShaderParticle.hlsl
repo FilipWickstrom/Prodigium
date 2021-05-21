@@ -44,8 +44,8 @@ void main(point VertexOut input[1], uint primID : SV_PrimitiveID,
     float3 up = float3(0.0f, 1.0f, 0.0f);
     float3 right = cross(up, toCamera);
 
-    float width = 0.15f;
-    float height = 0.45f;
+    float width = 0.1f;
+    float height = 0.3f;
     
     float4 positionW[4] =
     {

@@ -85,9 +85,9 @@ void SetUpGUIStyleGame()
     style.Colors[ImGuiCol_PopupBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_Border]                                   = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_BorderShadow]                             = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBg]                                  = ImVec4(46.f/255.f, 68.f/255.f, 138.f/255.f, 1.f);
-    style.Colors[ImGuiCol_FrameBgHovered]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBgActive]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.6f);
+    style.Colors[ImGuiCol_FrameBgHovered]                           = ImVec4(1.f, 1.f, 1.f, 0.5f);
+    style.Colors[ImGuiCol_FrameBgActive]                            = ImVec4(0.2f, 0.2f, 0.2f, 0.7f);
     style.Colors[ImGuiCol_TitleBg]                                  = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TitleBgCollapsed]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TitleBgActive]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -96,9 +96,9 @@ void SetUpGUIStyleGame()
     style.Colors[ImGuiCol_ScrollbarGrab]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ScrollbarGrabHovered]                     = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ScrollbarGrabActive]                      = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_CheckMark]                                = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrab]                               = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrabActive]                         = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_CheckMark]                                = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_SliderGrab]                               = ImVec4(1.f, 1.f, 1.f, 1.f);
+    style.Colors[ImGuiCol_SliderGrabActive]                         = ImVec4(0.f, 0.f, 0.f, 0.6f);
     style.Colors[ImGuiCol_Button]                                   = ImVec4(0.f, 0.f, 0.f, 0.6f);
     style.Colors[ImGuiCol_ButtonHovered]                            = ImVec4(1.f, 1.f, 1.f, 0.5f);
     style.Colors[ImGuiCol_ButtonActive]                             = ImVec4(1.f, 1.f, 1.f, 1.f);
@@ -113,49 +113,6 @@ void SetUpGUIStyleGame()
     style.Colors[ImGuiCol_PlotHistogram]                            = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_PlotHistogramHovered]                     = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TextSelectedBg]                           = ImVec4(0.f, 0.f, 0.f, 0.f);
-}
-
-void SetUpGUIStyleMainMenu()
-{
-    ImGuiStyle& style = GetStyle();
-
-
-    style.Alpha = 1.0f;
-    style.FrameRounding = 0;
-    style.Colors[ImGuiCol_Text] = ImVec4(0.6f, 0.6f, 1.0f, 1.f);
-    style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.f, 0.f, 0.f, 1.f);
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_Border] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBg] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 1.f);
-    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_Button] = ImVec4(0.f, 0.f, 0.f, 0.6f);
-    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.f, 1.f, 1.f, 0.5f);
-    style.Colors[ImGuiCol_ButtonActive] = ImVec4(1.f, 1.f, 1.f, 1.f);
-    style.Colors[ImGuiCol_Header] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ResizeGrip] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_PlotLines] = ImVec4(0.f, 0.f, 0.f, 1.f);
-    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
 }
 
 const bool GUIHandler::Initialize(const HWND& window)
@@ -186,7 +143,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp, int clues)
+void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options)
 {
     if (GUIHandler::instance->isPaused)
     {
@@ -204,23 +161,32 @@ void GUIHandler::Render(int playerHp, int clues)
 	ImGui_ImplWin32_NewFrame();
 	NewFrame();
 
-#ifdef _DEBUG
-    SetUpGUIStyleDEBUG();
-    GUIHandler::instance->RenderDebugGUI();
-#endif  _DEBUG
+    if (options.hasDebugInfo)
+    {
+        SetUpGUIStyleDEBUG();
+        GUIHandler::instance->RenderDebugGUI();
+    }
 
     if (GUIHandler::instance->showMainMenu)
     {
-        SetUpGUIStyleMainMenu();
+        SetUpGUIStyleGame();
         GUIHandler::instance->RenderMainMenu();
     }
     if (GUIHandler::instance->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI();
-        GUIHandler::instance->RenderBrainGUI(playerHp, clues);
-        if (GUIHandler::instance->isPaused)
+        GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
+        GUIHandler::instance->RenderBrainGUI(playerHp, clues, options);
+        if (GUIHandler::instance->isPaused && GUIHandler::instance->showPauseMenu)
             GUIHandler::instance->RenderPauseMenu();
+    }
+    if (GUIHandler::instance->showOptionsMenu)
+    {
+        SetUpGUIStyleGame();
+        GetIO().WantCaptureMouse = true;
+        GetIO().WantCaptureKeyboard = true;
+        GetIO().MouseDrawCursor = true;
+        GUIHandler::instance->RenderOptionsMenu(options);
     }
     
 
@@ -265,6 +231,7 @@ void GUIHandler::PauseGame()
 {
     GUIHandler::instance->isPaused = true;
     GUIHandler::instance->shouldResume = false;
+    GUIHandler::instance->showPauseMenu = true;
 }
 
 void GUIHandler::ResumeGame()
@@ -293,6 +260,26 @@ void GUIHandler::ShowGameGUI(const bool& show)
     GUIHandler::instance->showGameGUI = show;
 }
 
+void GUIHandler::ShowOptionsMenu(const bool& show)
+{
+    GUIHandler::instance->showOptionsMenu = show;
+}
+
+void GUIHandler::ShowInGameOptionsMenu(const bool& show)
+{
+    if (!show)
+    {
+        GUIHandler::instance->showGameGUI = true;
+        GUIHandler::instance->showOptionsMenu = false;
+        GUIHandler::instance->showPauseMenu = true;
+    }
+}
+
+bool GUIHandler::IsPaused()
+{
+    return GUIHandler::instance->isPaused;
+}
+
 const bool GUIHandler::ActiveTrap()
 {
     return GUIHandler::instance->trap1Active;
@@ -309,15 +296,29 @@ void GUIHandler::RenderDebugGUI()
 	End();
 }
 
-void GUIHandler::RenderTrapGUI()
+void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options)
 {
     bool* trap1 = new bool(trap1Active);
     bool* trap2 = new bool(trap2Active);
     SetNextWindowPos(ImVec2(50,(float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+
         
     Begin("TRAP 1", trap1, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap1, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
+    End();
+
+    SetNextWindowPos(ImVec2(50, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 1 TIMER", trap1, ImGuiWindowFlags_NoTitleBar);
+
+    // Limit to one decimal
+    std::string t1(std::to_string(timer1));
+    if(timer1 > 10)
+        t1.erase(t1.begin() + 4, t1.end());
+    else
+        t1.erase(t1.begin() + 3, t1.end());
+    Text(t1.c_str());
     End();
     
     SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 150));
@@ -325,6 +326,31 @@ void GUIHandler::RenderTrapGUI()
     Begin("TRAP 2", trap2, ImGuiWindowFlags_NoTitleBar);
     Image((void*)textureTrap2, ImVec2((float)imageWidth / 2, (float)imageHeight / 2));
     End();
+
+    SetNextWindowPos(ImVec2(200, (float)Graphics::GetWindowHeight() - 165));
+    SetNextWindowSize(ImVec2((float)imageWidth, (float)imageHeight));
+    Begin("TRAP 2 TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+    // Limit to one decimal
+    std::string t2(std::to_string(timer2));
+    if (timer2 > 10)
+        t2.erase(t2.begin() + 4, t2.end());
+    else
+        t2.erase(t2.begin() + 3, t2.end());
+    Text(t2.c_str());
+    End();
+
+    if (this->clockTimer)
+    {
+        SetNextWindowPos(ImVec2(15, 15));
+        SetNextWindowSize(ImVec2(60, 30));
+        Begin("GAME TIMER", trap2, ImGuiWindowFlags_NoTitleBar);
+
+        // Limit to one decimal
+        std::string t3(std::to_string((int)options.gameTimer));
+        Text(t3.c_str());
+        End();
+    }
 
     if (this->trap1Active)
     {
@@ -348,11 +374,11 @@ void GUIHandler::RenderTrapGUI()
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerHp, int clues)
+void GUIHandler::RenderBrainGUI(int playerHp, int clues, OptionsHandler& options)
 {
     float fade = 1.0f;
-    int hp = playerHp;
-    fade = std::max(std::min(hp, 100), 10) * 0.01f;
+    float hp = (float)playerHp;
+    fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
 
     bool* isActive = new bool(true);
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 250, 25));    
@@ -371,41 +397,135 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues)
     Text(rest.c_str());
 
     std::string cl(std::to_string(clues));
-    cl.append("/" + std::to_string(CLUES));
+    cl.append("/" + std::to_string(options.difficulty * 2));
     Text(cl.c_str());
 
     End();
+}
+
+void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
+{
+    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.65f, (float)Graphics::GetWindowHeight() * 0.65f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.175f, (float)Graphics::GetWindowHeight() * 0.1f));
+    SetNextWindowBgAlpha(0.5);
+    bool* isActive = new bool(true);
+
+    Begin("Options Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
+
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.33f, (float)Graphics::GetWindowHeight() * 0.1f));
+    
+    BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.8f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
+    SetWindowFontScale(1.22f);
+
+    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n\n\n\n");
+    SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Music Volume", &options.musicVolume, 0.0f, 1.0f, "%.2f");
+    SliderFloat("Mouse Sensitivity", &options.mouseSens, 0.5f, 5.0f, "%.2f");
+
+    std::string invSens = "Inverted Mouse: ";
+    if (options.inverseSens)
+        invSens.append("ON");
+    else
+        invSens.append("OFF");
+
+    Checkbox(invSens.c_str(), &options.inverseSens);
+
+    
+    if (options.state == MAINMENU)
+    {
+        SliderInt("Difficulty", &options.difficulty, 1, 5);
+
+        std::string timeC = "In-game Timer: ";
+
+        // Displays ON or OFF depending on the state.
+        if (this->clockTimer)
+            timeC.append("ON");
+        else
+            timeC.append("OFF");
+        Checkbox(timeC.c_str(), &clockTimer);
+    }
+
+    std::string isBlur = "Blur: ";
+    if (options.hasBlur)
+        isBlur.append("ON");
+    else
+        isBlur.append("OFF");
+    
+    Checkbox(isBlur.c_str(), &options.hasBlur);
+
+    std::string isParticles = "Particles: ";
+    if (options.hasParticles)
+        isParticles.append("ON");
+    else
+        isParticles.append("OFF");
+
+    Checkbox(isParticles.c_str(), &options.hasParticles);
+
+    std::string isDebugDisplay = "Debug Info: ";
+    if (options.hasDebugInfo)
+        isDebugDisplay.append("ON");
+    else
+        isDebugDisplay.append("OFF");
+
+    Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
+    Text("\n\nTips:");
+    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\nRumors are there is also secret difficulty options somewhere!\n\n\n");
+    
+    if (options.state == MAINMENU)
+    {
+        Text("Press 'Escape' to return to main menu.");
+    }
+    else if (options.state == INGAME)
+    {
+        Text("Press 'Escape' to return to pause menu.");
+    }
+    EndChild();
+
+    End();
+
     delete isActive;
 }
 
-
 void GUIHandler::RenderPauseMenu()
 {
-    
-    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth(), (float)Graphics::GetWindowHeight()));
-    SetNextWindowPos(ImVec2(0, 0));
+    SetNextWindowSize(ImVec2(260, 175));
+    SetNextWindowPos(ImVec2(((float)Graphics::GetWindowWidth() * 0.5f) - 125, ((float)Graphics::GetWindowHeight() * 0.25f) + 150));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
 
-    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoTitleBar);
+    Begin("Pause Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
-        SetNextWindowPos(ImVec2(500, 250));
-        Begin("Resume Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.33f));
+        BeginChild("Resume Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Resume", ImVec2(250, 50)))
         {
             ResumeGame();
         }
-        End();
+        EndChild();
 
-        SetNextWindowPos(ImVec2(500, 325));
-        Begin("Quit Button", isActive, ImGuiWindowFlags_NoTitleBar);
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.45f));
+        BeginChild("Options Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
+        SetWindowFontScale(1.5f);
+        if (Button("Options", ImVec2(250, 50)))
+        {
+            this->showOptionsMenu = true;
+            this->showGameGUI = false;
+            this->showPauseMenu = false;
+        }
+        EndChild();
+
+
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
+        BeginChild("Quit Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Quit", ImVec2(250, 50)))
         {
             QuitGame();
         }
-        End();
+        EndChild();
 
     End();
 
@@ -415,12 +535,13 @@ void GUIHandler::RenderPauseMenu()
 void GUIHandler::RenderMainMenu()
 {
     bool* isActive = new bool;
-    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 200, (float)Graphics::GetWindowHeight() - 100));
-    SetNextWindowSize(ImVec2(500, 500), 0);
+    SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 150, (float)Graphics::GetWindowHeight() - 150));
+    SetNextWindowSize(ImVec2(500, 600), 0);
     
     Begin("MENU", isActive, ImGuiWindowFlags_NoTitleBar);
     SetWindowFontScale(1.5f);
     Text("Press 'Space' to start game.");
+    Text("Press 'P' to open Options.");
     Text("Press 'ESC' to quit game.");
     End();
     delete isActive;

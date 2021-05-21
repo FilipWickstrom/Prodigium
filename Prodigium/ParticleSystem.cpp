@@ -35,10 +35,14 @@ void ParticleSystem::InternalRender()
 	/*
 		Update Phase
 	*/
-	ID3D11ShaderResourceView* nullSRV = nullptr;
-	Graphics::GetContext()->VSSetShaderResources(0, 1, &nullSRV);
-	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->particleAccess, 0);
-	Graphics::GetContext()->Dispatch(MAX_PARTICLES / 1024, 1, 1);
+
+	if (!GUIHandler::IsPaused())
+	{
+		ID3D11ShaderResourceView* nullSRV = nullptr;
+		Graphics::GetContext()->VSSetShaderResources(0, 1, &nullSRV);
+		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->particleAccess, 0);
+		Graphics::GetContext()->Dispatch(MAX_PARTICLES / 1024, 1, 1);
+	}
 
 	this->Clear();
 }

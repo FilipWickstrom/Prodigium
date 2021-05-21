@@ -19,6 +19,11 @@ RandomSpotPicker::RandomSpotPicker()
     spots[11] = SimpleMath::Vector2(48, 174);
     spots[12] = SimpleMath::Vector2(-275, 84);
 
+    cluesS[0] = "book";
+    cluesS[1] = "drawing";
+    cluesS[2] = "mask";
+    cluesS[3] = "necklace";
+
     for (int i = 0; i < SPOTS; i++)
     {
         picked[i] = 0;
@@ -41,6 +46,12 @@ DirectX::SimpleMath::Vector2 RandomSpotPicker::getRandomPos()
 #endif
     picked[random] = 1;
     return spots[random];
+}
+
+std::string RandomSpotPicker::getRandomClue()
+{
+    int index = rand() % CLUES_AMOUNT;
+    return this->cluesS[index];
 }
 
 void RandomSpotPicker::Reset()

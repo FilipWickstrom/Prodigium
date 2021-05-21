@@ -1,7 +1,6 @@
 #pragma once
 #include <d3d11.h>
 #include <SimpleMath.h>
-#include "Graphics.h"
 class GameObject
 {
 private:
@@ -25,9 +24,10 @@ public:
 	DirectX::SimpleMath::Vector3 up;
 
 	bool CreateModelMatrixBuffer();
-	bool BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
+	void BuildMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	bool UpdateMatrix();
+	void UpdateMatrixCPU();
 	
 	const DirectX::SimpleMath::Vector3& GetPosition() const;
 	const DirectX::SimpleMath::Vector3& GetScale() const;

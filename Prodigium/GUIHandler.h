@@ -9,6 +9,7 @@
 #include "Window.h"
 #include <stb/stb_image.h>
 #include <SimpleMath.h>
+#include "OptionsHandler.h"
 
 #define CLUES 4
 
@@ -21,7 +22,9 @@ private:
 	static GUIHandler* instance;
 
 	ImGuiIO io;
-	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI;
+	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI, showOptionsMenu;
+	bool clockTimer;
+	bool showPauseMenu;
 	int imageWidth, imageHeight;
 	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
@@ -29,8 +32,9 @@ private:
 	ID3D11ShaderResourceView* textureBrain;
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
-	void RenderTrapGUI();
-	void RenderBrainGUI(int playerHp, int clues);
+	void RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options);
+	void RenderBrainGUI(int playerHp, int clues, OptionsHandler& options);
+	void RenderOptionsMenu(OptionsHandler& options);
 
 	void RenderPauseMenu();
 	void RenderMainMenu();
@@ -40,7 +44,7 @@ private:
 public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
-	static void Render(int playerHp, int clues);
+	static void Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options);
 	static void Shutdown();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
@@ -50,6 +54,9 @@ public:
 	static const bool ShouldQuit();
 	static void ShowMainMenu(const bool& show);
 	static void ShowGameGUI(const bool& show);
+	static void ShowOptionsMenu(const bool& show);
+	static void ShowInGameOptionsMenu(const bool& show);
+	static bool IsPaused();
 	// Returns the trap1Active bool.
 	static const bool ActiveTrap();
 };
