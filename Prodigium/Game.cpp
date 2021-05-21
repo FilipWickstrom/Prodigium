@@ -521,7 +521,26 @@ void Game::LoadMap()
 		trapIndices.push_back(SceneHandle()->EditScene().GetNumberOfObjects());
 		DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
 		std::string clue = this->picker.getRandomClue();
-		SceneHandle()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, { pos.x, -3.0f, pos.y });
+
+		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
+		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+
+		// Used to fix inconsistencies in scale and rotation.
+		if (clue == "book")
+			scale = { 0.5f, 0.5f, 0.5f };
+
+		if (clue == "drawing")
+		{
+			rotation = { 3.14159f, 3.14159, 0.0f };
+			scale = { 0.5f, 0.5f, 0.5f };
+		}
+
+		if (clue == "mask")
+			scale = { 1.2f, 1.2f, 1.2f };
+
+		SceneHandle()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, 
+			{ pos.x, -3.0f, pos.y },
+			rotation, scale);
 		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 		L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 		L.position = { pos.x, 0.0f, pos.y , 5.0f };
