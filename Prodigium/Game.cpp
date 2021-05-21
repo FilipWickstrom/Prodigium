@@ -105,6 +105,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->zoomIn = false;
 	this->inGoal = false;
 	this->amountOfObjects = 0;
+	this->isInOptions = false;
 }
 
 Game::~Game()
@@ -413,6 +414,11 @@ bool Game::OnStart()
 {
 #ifdef _DEBUG
 	OpenConsole();
+
+	if (!DebugInfo::Initialize())
+	{
+		return false;
+	}
 #endif
 	this->menu.Init();
 	this->LoadMainMenu();
@@ -421,17 +427,11 @@ bool Game::OnStart()
 	{
 		return false;
 	}
-	
 
-#ifdef _DEBUG
-	if (!DebugInfo::Initialize())
-	{
-		return false;
-	}
-#endif
-	this->soundHandler.SetMasterVolume(0.5);
+	//Starts Music and ambient on game startup
 	this->soundHandler.PlayMusic(1);
 	this->soundHandler.PlayAmbient(1);
+
 	return true;
 }
 
@@ -546,7 +546,7 @@ void Game::LoadMap()
 
 		if (clue == "drawing")
 		{
-			rotation = { 3.14159f, 3.14159, 0.0f };
+			rotation = { 3.14159f, 3.14159f, 0.0f };
 			scale = { 0.5f, 0.5f, 0.5f };
 		}
 
