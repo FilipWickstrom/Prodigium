@@ -1,6 +1,6 @@
 #include "Engine.h"
 
-Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
+Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
@@ -8,12 +8,10 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 	this->cluesCollected = 0;
 	this->stopcompl_timer = 0;
 	this->slowdown_timer = 0;
-
-	#ifdef _DEBUG
-		OpenConsole();
-	#endif 
-
-	if (!this->StartUp(instance, width, height))
+#ifdef _DEBUG
+	OpenConsole();
+#endif 
+	if (!this->StartUp(instance, width, height, enemy))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
@@ -73,7 +71,7 @@ void Engine::RedirectIoToConsole()
 	}
 }
 
-SceneHandler* Engine::SceneHandle()
+SceneHandler* Engine::SceneHandler()
 {
 	return &sceneHandler;
 }
@@ -193,7 +191,7 @@ void Engine::ChangeActiveTrap()
 	GUIHandler::ChangeActiveTrap();
 }
 
-bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
+bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
 
 
@@ -245,6 +243,9 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
+	AIHandler::Initialize();
+
+	AIHandler::CreateNodes();
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	return true;

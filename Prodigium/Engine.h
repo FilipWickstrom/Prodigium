@@ -15,6 +15,7 @@
 #include "BlurFilter.h"
 #include "Frustum.h"
 #include "OptionsHandler.h"
+#include "AIHandler.h"
 
 class Engine
 {
@@ -40,16 +41,16 @@ private:
 	SceneHandler sceneHandler;
 	
 private:
-	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
+	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	void RedirectIoToConsole();
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
 
-	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height);
+	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	virtual ~Engine();
 
-	SceneHandler* SceneHandle();
+	SceneHandler* SceneHandler();
 	void ClearDisplay();
 	void Render();
 	void Update(const float& deltaTime);
