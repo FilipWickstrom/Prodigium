@@ -211,10 +211,12 @@ void Game::HandleInput(const float& deltaTime)
 			SceneHandle()->EditScene().GetParticles().SetActive(false);
 		}
 
+		/*
 		if (InputHandler::IsKeyPressed(Keyboard::N))
 		{
 			Engine::cluesCollected++;
 		}
+		*/
 
 
 		/*------------------MOVEMENT----------------*/
