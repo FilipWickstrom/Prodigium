@@ -30,6 +30,7 @@ ResourceManager::~ResourceManager()
 			delete it->second;
 		}
 	}
+	this->meshes.clear();
 	for (auto it = this->audio.begin(); it != this->audio.end(); it++)
 	{
 		if (it->second)
@@ -37,6 +38,7 @@ ResourceManager::~ResourceManager()
 			delete it->second;
 		}
 	}
+	this->cameras.clear();
 }
 
 void ResourceManager::Initialize()
@@ -184,5 +186,48 @@ void ResourceManager::Destroy()
 	if (ResourceManager::instance)
 	{
 		delete ResourceManager::instance;
+	}
+}
+
+void ResourceManager::AddCamera(std::string key, CameraObject* toAdd)
+{
+	if (toAdd)
+	{
+		ResourceManager::instance->cameras.emplace(key, toAdd);
+	}
+	else
+	{
+		throw("RM: Add Camera was nullptr!");
+	}
+}
+
+CameraObject* ResourceManager::GetCamera(const std::string& key)
+{
+	auto found = instance->cameras.find(key);
+
+	if (found == instance->cameras.end())
+	{
+		throw("RM: Camera is not in ResourceManager!");
+	}
+	if (found->second == nullptr)
+	{
+		throw("RM: Camera is nullptr!");
+	}
+
+	return found->second;
+}
+
+void ResourceManager::RemoveCamera(std::string key)
+{
+	auto found = instance->cameras.find(key);
+
+	if (found == instance->cameras.end())
+	{
+		throw("RM: Camera is not in ResourceManager!");
+	}
+	else
+	{
+		delete instance->cameras[key];
+		instance->cameras.erase(key);
 	}
 }

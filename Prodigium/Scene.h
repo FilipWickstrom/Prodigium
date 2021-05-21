@@ -3,6 +3,7 @@
 #include "MeshObject.h"
 #include "ShadowHandler.h"
 #include "ParticleSystem.h"
+
 #define SHADOWRANGE 125.0f
 struct InfoStruct
 {
@@ -15,6 +16,8 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
+	
+	std::vector<MeshObject*> cullingObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -59,9 +62,14 @@ public:
 	const bool SetupInfoBuffer();
 
 	// adds an object to the scene, current selected object will point towards this new object.
-	void Add(const std::string& objFile,const std::string& diffuseTxt = "", const std::string& normalTxt = "", bool hasBounds = true,
-		const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},
-		const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
+	void Add(const std::string& objFile,
+			 const std::string& diffuseTxt = "", 
+			 const std::string& normalTxt = "", 
+			 bool hasBounds = true,
+			 bool hasAnimation = false,
+			 const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},
+			 const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},
+			 const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
 
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);
@@ -105,18 +113,25 @@ public:
 	// loop through all objects and call their render function.
 	void Render();
 
+	void Render(const std::vector<MeshObject*>& toRender);
+
 	// loop through all lights are bind them to the light pass
 	void RenderLights();
 
 #ifdef _DEBUG
-	void RenderBoundingBoxes();
+	void RenderBoundingBoxes(const std::vector<MeshObject*>& toRender);
 #endif
 
 	// render all shadows to be prepared for the light pass
 	void RenderShadows();
+	void RenderShadows(const std::vector<MeshObject*>& toRender);
 
 	// render the particles inside the scene.
 	void RenderParticles();
 
 	void SwitchMenuMode(bool sw = true);
+
+	void ClearCullingObjects();
+
+	std::vector<MeshObject*>& GetAllCullingObjects();
 };

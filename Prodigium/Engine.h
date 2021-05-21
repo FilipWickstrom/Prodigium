@@ -8,12 +8,14 @@
 #include "RenderPass.h"
 #include "SkyboxPass.h"
 #include "InputHandler.h"
-#include "MeshObject.h"
 #include "SceneHandler.h"
 #include "CameraObject.h"
 #include "GUIHandler.h"
 #include "DebugInfo.h"
 #include "BlurFilter.h"
+#include "Frustum.h"
+#include "OptionsHandler.h"
+
 class Engine
 {
 protected:
@@ -25,6 +27,9 @@ protected:
 	float slowdown_timer; // Slow down trap timer
 	float stopcompl_timer; // Stop completely trap timer
 
+	OptionsHandler options;
+	bool isPaused;
+
 private:
 	Window window;
 	GeometryPass gPass;
@@ -33,7 +38,6 @@ private:
 	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
-	
 	
 private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
@@ -53,4 +57,5 @@ public:
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
+	bool inGame;
 };

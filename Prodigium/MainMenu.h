@@ -16,8 +16,8 @@ private:
 		DirectX::SimpleMath::Matrix viewMatrix;
 		DirectX::SimpleMath::Vector4 cameraPos;
 		DirectX::SimpleMath::Vector4 fogColour;
-		float fogStart;
-		float fogRange;
+		float fogStart = 0.0f;
+		float fogRange = 0.0f;
 		DirectX::SimpleMath::Vector2 padding;
 	};
 	bool inMenu;

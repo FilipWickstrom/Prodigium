@@ -5,7 +5,7 @@ bool Window::SetupWindow(const HINSTANCE& instance, const UINT& width, const UIN
 	this->WIDTH = width;
 	this->HEIGHT = height;
 
-	const wchar_t CLASS_NAME[] = L"Test Window Class";
+	const wchar_t CLASS_NAME[] = L"Prodigium Class";
 
 	int posX, posY;
 
@@ -23,7 +23,7 @@ bool Window::SetupWindow(const HINSTANCE& instance, const UINT& width, const UIN
 
 	windowHandler = CreateWindowEx(0,
 		CLASS_NAME,
-		L"TEST WINDOW",
+		L"Prodigium",
 		WS_OVERLAPPEDWINDOW,
 		posX,
 		posY,

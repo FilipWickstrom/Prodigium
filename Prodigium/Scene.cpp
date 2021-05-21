@@ -1,4 +1,5 @@
 #include "Scene.h"
+using namespace DirectX::SimpleMath;
 
 const bool Scene::SetupLightBuffer()
 {
@@ -74,7 +75,6 @@ const bool Scene::UpdateInfoBuffer()
 	return !FAILED(hr);
 }
 
-using namespace DirectX::SimpleMath;
 Scene::Scene()
 {
 	this->currentObject = 0;
@@ -112,13 +112,20 @@ Scene::~Scene()
 
 }
 
-void Scene::Add(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, const Vector3& position, const Vector3& rotation, const Vector3& scale)
+void Scene::Add(const std::string& objFile, 
+				const std::string& diffuseTxt, 
+				const std::string& normalTxt, 
+				bool hasBounds, 
+				bool hasAnimation, 
+				const Vector3& position,
+				const Vector3& rotation, 
+				const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, position, rotation, scale))
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, hasAnimation, position, rotation, scale))
 	{
 		this->objects.push_back(newObject);
 		this->currentObject = (int)objects.size() - 1;
@@ -279,12 +286,26 @@ void Scene::Render()
 	{
 		for (int i = 0; i < (int)this->objects.size(); i++)
 		{
-			if (this->objects[i]->IsVisible())
+			this->objects[i]->Render();
+		}
+	}
+}
+
+void Scene::Render(const std::vector<MeshObject*>& toRender)
+{
+	if ((int)toRender.size() > 0)
+	{
+		for (int i = 0; i < (int)toRender.size(); i++)
+		{
+			if (toRender[i]->IsVisible())
 			{
-				this->objects[i]->Render();
+				toRender[i]->Render();
 			}
 		}
 	}
+#ifdef _DEBUG
+	std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+#endif
 }
 
 void Scene::RenderLights()
@@ -319,6 +340,7 @@ void Scene::RenderLights()
 void Scene::RenderShadows()
 {
 	this->shadowHandler->Prepare();
+
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
 	{
 		this->shadowHandler->Render(i);
@@ -329,7 +351,27 @@ void Scene::RenderShadows()
 			// Check the distance between light source and object.
 			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->objects[j]->IsVisible())
 			{
-				this->objects[j]->Render();
+				this->objects[j]->Render(true);
+			}
+		}
+	}
+	this->shadowHandler->Clear();
+}
+
+void Scene::RenderShadows(const std::vector<MeshObject*>& toRender)
+{
+	this->shadowHandler->Prepare();
+	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
+	{
+		this->shadowHandler->Render(i);
+
+		// Loop through all objects
+		for (int j = 0; j < (int)toRender.size(); j++)
+		{
+			// Check the distance between light source and object.
+			if (toRender[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && toRender[j]->IsVisible())
+			{
+				toRender[j]->Render(true);
 			}
 		}
 	}
@@ -341,7 +383,7 @@ void Scene::RenderParticles()
 	if (this->particles.IsActive())
 	{
 		this->particles.Render();
-		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[6]->GetPosition());
+		this->particles.UpdateSpeedBuffer(this->objects[0]->GetPosition(), this->objects[1]->GetPosition());
 	}
 
 }
@@ -351,14 +393,24 @@ void Scene::SwitchMenuMode(bool sw)
 	this->menuMode = sw;
 }
 
-#ifdef _DEBUG
-void Scene::RenderBoundingBoxes()
+void Scene::ClearCullingObjects()
 {
-	if ((int)this->objects.size() > 0)
+	this->cullingObjects.clear();
+}
+
+std::vector<MeshObject*>& Scene::GetAllCullingObjects()
+{
+	return this->cullingObjects;
+}
+
+#ifdef _DEBUG
+void Scene::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
+{
+	if ((int)toRender.size() > 0)
 	{
-		for (int i = 0; i < (int)this->objects.size(); i++)
+		for (int i = 0; i < (int)toRender.size(); i++)
 		{
-			this->objects[i]->RenderBoundingBoxes();
+			toRender[i]->RenderBoundingBoxes();
 		}
 	}
 }
