@@ -129,8 +129,8 @@ void SetUpGUIStyleMainMenu()
     style.Colors[ImGuiCol_Border] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_FrameBg] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 1.f);
-    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 0.6f);
+    style.Colors[ImGuiCol_FrameBgActive] = ImVec4(46.f / 255.f, 68.f / 255.f, 138.f / 255.f, 0.6f);
     style.Colors[ImGuiCol_TitleBg] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
@@ -139,9 +139,9 @@ void SetUpGUIStyleMainMenu()
     style.Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.f, 0.f, 0.f, 0.f);
     style.Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.f, 0.f, 0.f, 0.f);
-    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.f, 0.f, 0.f, 0.f);
+    style.Colors[ImGuiCol_CheckMark] = ImVec4(0.6f, 0.6f, 1.0f, 1.f);
+    style.Colors[ImGuiCol_SliderGrab] = ImVec4(1.f, 1.f, 1.f, 0.6f);
+    style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.6f, 0.6f, 1.0f, 0.6f);
     style.Colors[ImGuiCol_Button] = ImVec4(0.f, 0.f, 0.f, 0.6f);
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(1.f, 1.f, 1.f, 0.5f);
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(1.f, 1.f, 1.f, 1.f);
