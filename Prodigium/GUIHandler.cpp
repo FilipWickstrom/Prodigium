@@ -182,6 +182,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
     }
     if (GUIHandler::instance->showOptionsMenu)
     {
+        SetUpGUIStyleGame();
         GetIO().WantCaptureMouse = true;
         GetIO().WantCaptureKeyboard = true;
         GetIO().MouseDrawCursor = true;
@@ -411,10 +412,12 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
     Begin("Options Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
-    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.33f, (float)Graphics::GetWindowHeight() * 0.25f));
+    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.33f, (float)Graphics::GetWindowHeight() * 0.1f));
     
-    BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
-   
+    BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.8f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
+    SetWindowFontScale(1.22f);
+
+    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n\n\n\n");
     SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
@@ -467,11 +470,9 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
         isDebugDisplay.append("OFF");
 
     Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
-    Text("Tip:");
-    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\nRumors are there is also secret difficulty options somewhere!");
-
-    // Ultra epic space creator for the aesthetics
-    Text("\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n");
+    Text("\n\nTips:");
+    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\nRumors are there is also secret difficulty options somewhere!\n\n\n");
+    
     if (options.state == MAINMENU)
     {
         Text("Press 'Escape' to return to main menu.");
