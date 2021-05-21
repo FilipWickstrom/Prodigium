@@ -1,8 +1,7 @@
 #pragma once
 
 #define MAINMENU 1
-#define OPTIONS 2
-#define INGAME 3
+#define INGAME 2
 
 class OptionsHandler
 {

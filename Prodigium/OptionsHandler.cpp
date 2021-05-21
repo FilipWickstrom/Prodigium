@@ -61,6 +61,9 @@ OptionsHandler::OptionsHandler()
 		this->musicVolume = 1.0f;
 	if (this->sfxVolume > 1.0f)
 		this->sfxVolume = 1.0f;
+
+	if (this->difficulty > 6)
+		this->difficulty = 6;
 }
 
 OptionsHandler::~OptionsHandler()

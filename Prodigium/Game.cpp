@@ -77,6 +77,12 @@ void Game::HandleInput(const float& deltaTime)
 		GUIHandler::ShowMainMenu(true);
 	}
 
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->hasLoaded && options.state == 2)
+	{
+		GUIHandler::ShowInGameOptionsMenu(false);
+	}
+
+
 
 	// Start the game.
 	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
@@ -434,6 +440,8 @@ void Game::LoadMainMenu()
 	if (this->player)
 		delete this->player;
 
+	options.state = MAINMENU;
+
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
@@ -490,6 +498,8 @@ void Game::LoadMap()
 {
 	this->soundHandler.SetAmbientVolume(options.ambientVolume);
 	this->soundHandler.SetFXVolume(options.sfxVolume);;
+
+	options.state = INGAME;
 
 	SceneHandle()->AddScene();
 	this->player = new Player();

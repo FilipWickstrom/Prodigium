@@ -220,7 +220,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         SetUpGUIStyleGame();
         GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
         GUIHandler::instance->RenderBrainGUI(playerHp, clues, options);
-        if (GUIHandler::instance->isPaused)
+        if (GUIHandler::instance->isPaused && GUIHandler::instance->showPauseMenu)
             GUIHandler::instance->RenderPauseMenu();
     }
     if (GUIHandler::instance->showOptionsMenu)
@@ -274,6 +274,7 @@ void GUIHandler::PauseGame()
 {
     GUIHandler::instance->isPaused = true;
     GUIHandler::instance->shouldResume = false;
+    GUIHandler::instance->showPauseMenu = true;
 }
 
 void GUIHandler::ResumeGame()
@@ -305,6 +306,16 @@ void GUIHandler::ShowGameGUI(const bool& show)
 void GUIHandler::ShowOptionsMenu(const bool& show)
 {
     GUIHandler::instance->showOptionsMenu = show;
+}
+
+void GUIHandler::ShowInGameOptionsMenu(const bool& show)
+{
+    if (!show)
+    {
+        GUIHandler::instance->showGameGUI = true;
+        GUIHandler::instance->showOptionsMenu = false;
+        GUIHandler::instance->showPauseMenu = true;
+    }
 }
 
 const bool GUIHandler::ActiveTrap()
@@ -456,16 +467,21 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
         invSens.append("OFF");
 
     Checkbox(invSens.c_str(), &options.inverseSens);
-    SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
 
-    std::string timeC = "In-game Timer: ";
+    
+    if (options.state == MAINMENU)
+    {
+        SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
 
-    // Displays ON or OFF depending on the state.
-    if (this->clockTimer)
-        timeC.append("ON");
-    else
-        timeC.append("OFF");
-    Checkbox(timeC.c_str(), &clockTimer);
+        std::string timeC = "In-game Timer: ";
+
+        // Displays ON or OFF depending on the state.
+        if (this->clockTimer)
+            timeC.append("ON");
+        else
+            timeC.append("OFF");
+        Checkbox(timeC.c_str(), &clockTimer);
+    }
 
     std::string isBlur = "Blur: ";
     if (options.hasBlur)
@@ -521,6 +537,18 @@ void GUIHandler::RenderPauseMenu()
             ResumeGame();
         }
         EndChild();
+
+        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.45f));
+        BeginChild("Options Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
+        SetWindowFontScale(1.5f);
+        if (Button("Options", ImVec2(250, 50)))
+        {
+            this->showOptionsMenu = true;
+            this->showGameGUI = false;
+            this->showPauseMenu = false;
+        }
+        EndChild();
+
 
         SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
         BeginChild("Quit Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
