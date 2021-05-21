@@ -77,5 +77,6 @@ OptionsHandler::~OptionsHandler()
 	output << "\nambient " << this->ambientVolume;
 	output << "\nmouse_sens " << this->mouseSens;
 	output << "\ninvert_mouse " << this->inverseSens;
+	output << "\ndifficulty" << this->difficulty;
 	output.close();
 }
