@@ -81,14 +81,6 @@ void Game::HandleScenes(const float& deltaTime)
 
 void Game::HandleGameLogic(const float& deltaTime)
 {
-	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
-	{
-		this->menu.Switch(true);
-		this->ResetValues();
-		GUIHandler::ShowMainMenu(true);
-		GUIHandler::ShowGameGUI(false);
-	}
 
 	// Return to player buffers.
 	if (this->hasLoaded)
@@ -167,7 +159,16 @@ void Game::HandleInput(const float& deltaTime)
 		GUIHandler::ShowInGameOptionsMenu(false);
 	}
 
-
+	// You collected all clues! You are WIN!!
+	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	{
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
+		Engine::inGame = false;
+		// Set these values if you want to return to menu.
+		this->menu.Switch(true);
+		this->ResetValues();
+	}
 
 	// Start the game.
 	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
@@ -208,6 +209,11 @@ void Game::HandleInput(const float& deltaTime)
 		if (InputHandler::IsKeyPressed(Keyboard::L))
 		{
 			SceneHandle()->EditScene().GetParticles().SetActive(false);
+		}
+
+		if (InputHandler::IsKeyPressed(Keyboard::N))
+		{
+			Engine::cluesCollected++;
 		}
 
 
@@ -384,9 +390,10 @@ bool Game::OnFrame(const float& deltaTime)
 	
 	HandleInput(deltaTime);
 
+	HandleGameLogic(deltaTime);
+
 	HandleScenes(deltaTime);
 	
-	HandleGameLogic(deltaTime);
 
 	this->soundHandler.Update();
 
