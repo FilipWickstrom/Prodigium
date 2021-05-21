@@ -318,6 +318,11 @@ void GUIHandler::ShowInGameOptionsMenu(const bool& show)
     }
 }
 
+bool GUIHandler::IsPaused()
+{
+    return GUIHandler::instance->isPaused;
+}
+
 const bool GUIHandler::ActiveTrap()
 {
     return GUIHandler::instance->trap1Active;

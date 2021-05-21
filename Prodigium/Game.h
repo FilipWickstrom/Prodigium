@@ -26,7 +26,7 @@ private:
 	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
-	bool isPaused;
+
 	bool isInOptions;
 	std::vector<int> trapIndices;
 

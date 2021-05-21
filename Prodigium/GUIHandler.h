@@ -56,6 +56,7 @@ public:
 	static void ShowGameGUI(const bool& show);
 	static void ShowOptionsMenu(const bool& show);
 	static void ShowInGameOptionsMenu(const bool& show);
+	static bool IsPaused();
 	// Returns the trap1Active bool.
 	static const bool ActiveTrap();
 };

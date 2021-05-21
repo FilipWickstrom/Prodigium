@@ -28,6 +28,7 @@ protected:
 	float stopcompl_timer; // Stop completely trap timer
 
 	OptionsHandler options;
+	bool isPaused;
 
 private:
 	Window window;

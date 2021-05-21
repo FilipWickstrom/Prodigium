@@ -489,28 +489,31 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 
 void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
 {	
-	//Animate the object and get the new matrices
-	if (animate && this->currentState != AnimationState::NONE)
+	if (!GUIHandler::IsPaused())
 	{
-		//Get all animated matrices at this time for every bone
-		this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices);
+		//Animate the object and get the new matrices
+		if (animate && this->currentState != AnimationState::NONE)
+		{
+			//Get all animated matrices at this time for every bone
+			this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices);
+		}
 	}
 
-	//Calculate all matrices that will later be sent to the GPU
-	CalcFinalMatrix(this->rootBone, -1, worldMatrix);
+		//Calculate all matrices that will later be sent to the GPU
+		CalcFinalMatrix(this->rootBone, -1, worldMatrix);
 
-	//Update the array of matrices to the GPU
-	UpdateBonesCBuffer();
+		//Update the array of matrices to the GPU
+		UpdateBonesCBuffer();
 
-	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
-	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
-	Graphics::GetContext()->IASetInputLayout(this->inputlayout);
+		Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
+		Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+		Graphics::GetContext()->IASetInputLayout(this->inputlayout);
 
-	UINT stride = sizeof(AnimationVertex);
-	UINT offset = 0;
-	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		UINT stride = sizeof(AnimationVertex);
+		UINT offset = 0;
+		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
+		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	//Finally draw the mesh
-	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+		//Finally draw the mesh
+		Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
 }
