@@ -25,7 +25,7 @@ void Game::HandleScenes(const float& deltaTime)
 		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
-	else if (!this->zoomIn && !this->isInOptions)
+	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
 	{
 		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
@@ -81,7 +81,6 @@ void Game::HandleScenes(const float& deltaTime)
 
 void Game::HandleGameLogic(const float& deltaTime)
 {
-
 	// Return to player buffers.
 	if (this->hasLoaded)
 	{
@@ -390,11 +389,8 @@ bool Game::OnFrame(const float& deltaTime)
 	Graphics::SetDeltaTime(deltaTime);
 	
 	HandleInput(deltaTime);
-
-	HandleGameLogic(deltaTime);
-
 	HandleScenes(deltaTime);
-	
+	HandleGameLogic(deltaTime);
 
 	this->soundHandler.Update();
 
@@ -513,6 +509,7 @@ void Game::LoadMap()
 {
 	this->soundHandler.SetAmbientVolume(options.ambientVolume);
 	this->soundHandler.SetFXVolume(options.sfxVolume);;
+
 
 	options.state = INGAME;
 
