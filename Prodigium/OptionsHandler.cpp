@@ -43,7 +43,7 @@ OptionsHandler::OptionsHandler()
 
 		// Secret own defined difficulty in .txt file.
 		else if (type == "difficulty")
-			this->difficulty = value;
+			this->difficulty = (int)value;
 
 		else if (type == "mouse_sens")
 			this->mouseSens = value;
@@ -61,6 +61,9 @@ OptionsHandler::OptionsHandler()
 		this->musicVolume = 1.0f;
 	if (this->sfxVolume > 1.0f)
 		this->sfxVolume = 1.0f;
+
+	if (this->difficulty > 6)
+		this->difficulty = 6;
 }
 
 OptionsHandler::~OptionsHandler()

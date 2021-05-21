@@ -24,6 +24,7 @@ private:
 	ImGuiIO io;
 	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI, showOptionsMenu;
 	bool clockTimer;
+	bool showPauseMenu;
 	int imageWidth, imageHeight;
 	DirectX::SimpleMath::Vector3 playerPos;
 	ID3D11ShaderResourceView* textureTrap1;
@@ -54,6 +55,7 @@ public:
 	static void ShowMainMenu(const bool& show);
 	static void ShowGameGUI(const bool& show);
 	static void ShowOptionsMenu(const bool& show);
+	static void ShowInGameOptionsMenu(const bool& show);
 	// Returns the trap1Active bool.
 	static const bool ActiveTrap();
 };

@@ -77,6 +77,12 @@ void Game::HandleInput(const float& deltaTime)
 		GUIHandler::ShowMainMenu(true);
 	}
 
+	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->hasLoaded && options.state == 2)
+	{
+		GUIHandler::ShowInGameOptionsMenu(false);
+	}
+
+
 
 	// Start the game.
 	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
@@ -226,9 +232,9 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
-			int invert = 1.0f;
+			int invert = 1;
 			if (this->options.inverseSens)
-				invert = -1.0f;
+				invert = -1;
 
 			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
 		}
@@ -434,6 +440,8 @@ void Game::LoadMainMenu()
 	if (this->player)
 		delete this->player;
 
+	options.state = MAINMENU;
+
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
@@ -490,6 +498,8 @@ void Game::LoadMap()
 {
 	this->soundHandler.SetAmbientVolume(options.ambientVolume);
 	this->soundHandler.SetFXVolume(options.sfxVolume);;
+
+	options.state = INGAME;
 
 	SceneHandle()->AddScene();
 	this->player = new Player();
