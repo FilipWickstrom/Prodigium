@@ -342,42 +342,41 @@ void Game::HandleInput(const float& deltaTime)
 		/*
 			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
 		*/
-		/*
 		float speed = 0.1f;
-		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		int index = 900;
+		if (this->player->GetMeshObject()->GetPosition().x > SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x)
 		{
-			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+			float x = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(index).UpdateMatrix(
 				{ x + speed, -0.0f, z },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x)
+		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x)
 		{
-			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+			float x = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(index).UpdateMatrix(
 				{ x - speed, -0.0f, z },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
 
-		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		if (this->player->GetMeshObject()->GetPosition().z > SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z)
 		{
-			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+			float x = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(index).UpdateMatrix(
 				{ x , -0.0f, z + speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z)
+		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z)
 		{
-			float x = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandle()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandle()->EditScene().GetMeshObject(6).UpdateMatrix(
+			float x = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().x;
+			float z = SceneHandle()->EditScene().GetMeshObject(index).GetPosition().z;
+			SceneHandle()->EditScene().GetMeshObject(index).UpdateMatrix(
 				{ x , -0.0f, z - speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
-		*/
 	}
 }
 

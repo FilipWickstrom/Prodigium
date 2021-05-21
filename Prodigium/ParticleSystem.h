@@ -4,7 +4,7 @@
 #include <vector>
 #include "GUIHandler.h"
 
-#define MAX_PARTICLES 32768 * 7
+#define MAX_PARTICLES 32768 * 32
 
 class ParticleSystem
 {
