@@ -459,7 +459,7 @@ void Game::LoadMainMenu()
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Player model		- REMOVE LATER???
+	// Player model - NO REMOVE!!! >:(
 	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
 		{ (float)randX, 0.0f, (float)randZ } // Pos
 	, {0.0f, 0.0f, 0.0f});

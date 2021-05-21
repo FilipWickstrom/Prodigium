@@ -511,7 +511,14 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
     // Ultra epic space creator for the aesthetics
     Text("\n\n\n\n\n\n\n\n\n");
-    Text("Press 'Escape' to return to main menu.");
+    if (options.state == MAINMENU)
+    {
+        Text("Press 'Escape' to return to main menu.");
+    }
+    else if (options.state == INGAME)
+    {
+        Text("Press 'Escape' to return to pause menu.");
+    }
     EndChild();
 
     End();
