@@ -14,6 +14,7 @@ public:
 	void SetNewTarget(const DirectX::SimpleMath::Vector3& newPos);
 	void Move(const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 	void MoveToTarget(const float& deltaTime);
+	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
 
 

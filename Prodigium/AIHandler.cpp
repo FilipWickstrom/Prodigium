@@ -75,7 +75,7 @@ void AIHandler::CreateNodes()
 		ss >> ID1 >> ID2;
 		AIHandler::instance->ConnectNodes(AIHandler::instance->GetNodeByID(ID1), AIHandler::instance->GetNodeByID(ID2));
 	}
-	AIHandler::instance->currentEnemyNode = AIHandler::instance->allNodes.at(1);
+	AIHandler::instance->currentEnemyNode = AIHandler::instance->allNodes.at(0);
 }
 
 

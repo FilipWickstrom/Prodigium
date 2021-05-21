@@ -4,7 +4,7 @@ using namespace DirectX::SimpleMath;
 Enemy::Enemy()
 {
 	this->model = new MeshObject();
-	this->model->Initialize("Monster.obj");
+	this->model->Initialize("Monster.obj", "Monster_Albedo.png", "Monster_Normal.jpg", false);
 	this->attackRange = 20.f;
 	this->speed = 40.f;
 	this->reachedTarget = false;
@@ -22,12 +22,17 @@ void Enemy::SetNewTarget(const DirectX::SimpleMath::Vector3& newPos)
 
 void Enemy::MoveToTarget(const float& deltaTime)
 {
-	this->model->position = Vector3::Lerp(this->model->position, targetPos, 2.f * deltaTime);
+	this->model->position = Vector3::Lerp(this->model->position, targetPos, 0.2f * deltaTime);
 	if ((this->model->position - targetPos).Length() < 10.f)
 	{
 		reachedTarget = true;
 	}
 	this->model->UpdateMatrix();
+}
+
+MeshObject* Enemy::GetMeshObject() const
+{
+	return this->model;
 }
 
 const bool& Enemy::HasReachedTarget() const
