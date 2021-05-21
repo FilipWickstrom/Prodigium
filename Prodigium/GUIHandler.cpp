@@ -415,7 +415,7 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& opt
 void GUIHandler::RenderBrainGUI(int playerHp, int clues, OptionsHandler& options)
 {
     float fade = 1.0f;
-    float hp = playerHp;
+    float hp = (float)playerHp;
     fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
 
     bool* isActive = new bool(true);
@@ -471,7 +471,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     
     if (options.state == MAINMENU)
     {
-        SliderInt("Difficulty", &options.difficulty, 1.0f, 5.0f);
+        SliderInt("Difficulty", &options.difficulty, 1, 5);
 
         std::string timeC = "In-game Timer: ";
 
