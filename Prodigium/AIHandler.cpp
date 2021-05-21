@@ -23,15 +23,15 @@ AIHandler::AIHandler()
 {
 	currentEnemyNode = nullptr;
 	states = EnemyStates::PATROL;
-	monster = nullptr;
+	this->monster = nullptr;
 }
 
-const bool AIHandler::Initialize(Enemy* monster)
+const bool AIHandler::Initialize()
 {
 	if (!AIHandler::instance)
 	{
-		AIHandler::instance = new AIHandler;
-		AIHandler::instance->monster = monster;
+		AIHandler::instance = new AIHandler();
+
 		return true;
 	}
 	return false;
@@ -75,7 +75,13 @@ void AIHandler::CreateNodes()
 		ss >> ID1 >> ID2;
 		AIHandler::instance->ConnectNodes(AIHandler::instance->GetNodeByID(ID1), AIHandler::instance->GetNodeByID(ID2));
 	}
-	//Connecting Nodes;
+	AIHandler::instance->currentEnemyNode = AIHandler::instance->allNodes.at(1);
+}
+
+
+void AIHandler::SetEnemy(Enemy* enemy)
+{
+	AIHandler::instance->monster = enemy;
 }
 
 void AIHandler::ConnectNodes(Node* node1, Node* node2)
@@ -84,18 +90,38 @@ void AIHandler::ConnectNodes(Node* node1, Node* node2)
 	node2->AddConnectedNode(node1);
 }
 
-void AIHandler::moveEnemy(const float& deltaTime)
+void AIHandler::MoveEnemy(const float& deltaTime)
 {
-	switch (AIHandler::instance->states)
+	if (AIHandler::instance->monster)
 	{
-	case EnemyStates::PATROL:
-		//if (AIHandler::instance->monster.)
-		//{
+		switch (AIHandler::instance->states)
+		{
+		case EnemyStates::PATROL:
+			if (AIHandler::instance->monster->HasReachedTarget())
+			{
+				AIHandler::instance->currentEnemyNode = AIHandler::instance->currentEnemyNode->GetRandomConnectedNode();
+				AIHandler::instance->monster->SetNewTarget(AIHandler::instance->currentEnemyNode->GetPos());
+				std::cout << "Current Target Pos: " << AIHandler::instance->currentEnemyNode->GetPos().x << ", " << AIHandler::instance->currentEnemyNode->GetPos().z << std::endl;
+			}
+			else
+			{
+				AIHandler::instance->monster->MoveToTarget(deltaTime);
 
-		//}
-		break;
-	default:
-		break;
+			}
+			break;
+		case EnemyStates::CHASE:
+
+			break;
+		case EnemyStates::RETREAT:
+
+			break;
+		default:
+			std::cout << "No state\n";
+			break;
+		}
+	}
+	else
+	{
 	}
 }
 

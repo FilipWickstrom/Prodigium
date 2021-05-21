@@ -19,11 +19,12 @@ private:
 public:
 	DELETE_COPY_ASSIGNMENT(AIHandler);
 	AIHandler();
-	static const bool Initialize(Enemy* monster);
+	static const bool Initialize();
 	virtual ~AIHandler();
 	static void CreateNodes();
+	static void SetEnemy(Enemy* enemy);
 	static void ConnectNodes(Node* node1, Node* node2);
-	static void moveEnemy(const float& deltaTime);
+	static void MoveEnemy(const float& deltaTime);
 	static Node* GetNodeByID(const int& id);
 };
 

@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "CameraObject.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "MainMenu.h"
 #include <thread>
 #include <omp.h>
@@ -16,6 +17,7 @@ private:
 	CameraObject tempCam;
 	MainMenu menu;
 	Player* player;
+	Enemy* enemy;
 	RandomSpotPicker picker;
 	bool running;
 	bool hasLoaded;

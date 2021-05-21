@@ -21,7 +21,7 @@ void Node::AddConnectedNode(Node* node)
 	this->connectedNodes.push_back(node);
 }
 
-const Node* Node::GetRandomConnectedNode() const
+Node* Node::GetRandomConnectedNode() const
 {
 	int generatedNumber = rand() % this->connectedNodes.size();
 

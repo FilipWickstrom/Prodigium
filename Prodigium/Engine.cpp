@@ -1,21 +1,21 @@
 #include "Engine.h"
 
-Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
+Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
 	this->playerHp = 100;
 	this->cluesCollected = 0;
 
-	if (!this->StartUp(instance, width, height))
+	if (!this->StartUp(instance, width, height, enemy))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
 	}
 
-	#ifdef _DEBUG
-		OpenConsole();
-	#endif 
+#ifdef _DEBUG
+	OpenConsole();
+#endif 
 
 
 }
@@ -80,7 +80,7 @@ void Engine::RedirectIoToConsole()
 	}
 }
 
-SceneHandler* Engine::SceneHandle()
+SceneHandler* Engine::SceneHandler()
 {
 	return &sceneHandler;
 }
@@ -102,7 +102,7 @@ void Engine::Render()
 	this->gPass.Prepare();
 	this->sceneHandler.RenderShadows();
 	this->gPass.Clear();
-	
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
@@ -155,7 +155,7 @@ void Engine::ChangeActiveTrap()
 	//this->playerSanity -= 0.2f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 }
 
-bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
+bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
 	if (!InputHandler::Initialize())
 	{
@@ -199,16 +199,14 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	
+
 	//Max blur radius is 5 for now
 	if (!this->blurPass.Initialize(5))
 	{
 		return false;
 	}
-	if (!AIHandler::Initialize(new Enemy()))
-	{
-		return false;
-	}
+	AIHandler::Initialize();
+
 	AIHandler::CreateNodes();
 	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
