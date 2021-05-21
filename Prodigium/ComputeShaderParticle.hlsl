@@ -13,7 +13,7 @@ cbuffer buffer : register(b0)
 void main( uint3 DTid : SV_DispatchThreadID )
 {
     // New position 
-    float newPos = buffer[DTid.x].position.y - 2.5f * speed.x;
+    float newPos = buffer[DTid.x].position.y - 2.f * speed.x;
     
     // Current Position
     float currentPos = buffer[DTid.x].position.y;
