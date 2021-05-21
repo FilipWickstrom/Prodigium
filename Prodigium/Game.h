@@ -31,6 +31,8 @@ private:
 	std::vector<int> trapIndices;
 
 	void Whisper();
+	void HandleScenes(const float& deltaTime);
+	void HandleGameLogic(const float& deltaTime);
 	int amountOfObjects;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);

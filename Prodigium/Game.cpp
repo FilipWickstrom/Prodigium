@@ -18,6 +18,91 @@ void Game::Whisper()
 	}
 }
 
+void Game::HandleScenes(const float& deltaTime)
+{
+	if (this->zoomIn)
+	{
+		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+		GUIHandler::ShowMainMenu(false);
+	}
+	else if (!this->zoomIn && !this->isInOptions)
+	{
+		//Ritar ut Main Menu GUI på skärmen
+		GUIHandler::ShowMainMenu(true);
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+
+	}
+
+	// Update audio while in options.
+	if (this->isInOptions)
+	{
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+	}
+	if (this->inGoal)
+	{
+		this->zoomIn = false;
+		this->menu.Switch();
+	}
+
+	// If inside meny, update with menu buffers.
+	if (!this->inGoal)
+		this->menu.Update();
+
+	if (!this->menu.IsInMenu() && !this->hasLoaded)
+	{
+		// Load game map
+		this->LoadMap();
+		GUIHandler::ShowGameGUI(true);
+		this->soundHandler.PlayOneShot(2);
+		this->soundHandler.PlayAmbient(1);
+		this->soundHandler.PlayMusic(0);
+	}
+	if (this->menu.IsInMenu() && this->hasLoaded)
+	{
+		// Load menu
+		this->LoadMainMenu();
+		this->soundHandler.PlayMusic(1);
+		this->soundHandler.PlayAmbient(1);
+	}
+
+	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldResume())
+	{
+		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+	}
+
+	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldQuit())
+		this->running = false;
+}
+
+void Game::HandleGameLogic(const float& deltaTime)
+{
+	// You collected all clues! You are WIN!!
+	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	{
+		this->menu.Switch(true);
+		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
+	}
+
+	// Return to player buffers.
+	if (this->hasLoaded)
+	{
+		this->options.gameTimer += 1 * deltaTime;
+		GUIHandler::ShowMainMenu(false);
+		GUIHandler::ShowGameGUI(true);
+		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
+		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
+		Whisper();
+	}
+}
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -296,89 +381,12 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	Graphics::SetDeltaTime(deltaTime);
-
-	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
-	{
-		this->menu.Switch(true);
-		this->ResetValues();
-		GUIHandler::ShowMainMenu(true);
-		GUIHandler::ShowGameGUI(false);
-	}
-
 	
-
 	HandleInput(deltaTime);
 
-	if (this->zoomIn)
-	{
-		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
-		GUIHandler::ShowMainMenu(false);
-	}
-	else if(!this->zoomIn && !this->isInOptions)
-	{
-		//Ritar ut Main Menu GUI på skärmen
-		GUIHandler::ShowMainMenu(true);
-		this->soundHandler.SetMusicVolume(options.musicVolume);
-		this->soundHandler.SetMasterVolume(options.masterVolume);
-		
-	}
-
-	// Update audio while in options.
-	if (this->isInOptions)
-	{
-		this->soundHandler.SetMusicVolume(options.musicVolume);
-		this->soundHandler.SetMasterVolume(options.masterVolume);
-	}
-	if (this->inGoal)
-	{
-		this->zoomIn = false;
-		this->menu.Switch();
-	}
-
-	// If inside meny, update with menu buffers.
-	if (!this->inGoal)
-		this->menu.Update();
-
-	if (!this->menu.IsInMenu() && !this->hasLoaded)
-	{
-		// Load game map
-		this->LoadMap();
-		GUIHandler::ShowGameGUI(true);
-		this->soundHandler.PlayOneShot(2);
-		this->soundHandler.PlayAmbient(1);
-		this->soundHandler.PlayMusic(0);
-	}
-	if (this->menu.IsInMenu() && this->hasLoaded)
-	{
-		// Load menu
-		this->LoadMainMenu();
-		this->soundHandler.PlayMusic(1);
-		this->soundHandler.PlayAmbient(1);
-	}
-
-	// Return to player buffers.
-	if (this->hasLoaded)
-	{
-		this->options.gameTimer += 1 * deltaTime;
-		GUIHandler::ShowMainMenu(false);
-		GUIHandler::ShowGameGUI(true);
-		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
-		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
-		Whisper();
-	}
+	HandleScenes(deltaTime);
 	
-	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
-	if (GUIHandler::ShouldResume())
-	{
-		this->isPaused = false;
-		this->soundHandler.ResumeAudio();
-	}
-		
-	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
-	if (GUIHandler::ShouldQuit())
-		this->running = false;
+	HandleGameLogic(deltaTime);
 
 	this->soundHandler.Update();
 
