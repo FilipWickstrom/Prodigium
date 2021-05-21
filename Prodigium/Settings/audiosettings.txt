@@ -1,6 +1,6 @@
-master 0.2
-sfx 0.3
-music 0.2
-ambient 0.3
-mouse_sens 2.26
+master 0.6
+sfx 1
+music 1
+ambient 1
+mouse_sens 2.29
 invert_mouse 0
