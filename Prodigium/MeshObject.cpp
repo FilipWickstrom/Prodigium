@@ -362,10 +362,7 @@ void MeshObject::Render(bool shadowPass)
 		if (!shadowPass)
 		{
 			//Set all the textures to the geometry pass pixelshader
-			for (unsigned int i = 0; i < MAXNROFTEXTURES; i++)
-			{
-				Graphics::GetContext()->PSSetShaderResources(i, 1, &this->shaderResourceViews[i]);
-			}
+			Graphics::GetContext()->PSSetShaderResources(0, MAXNROFTEXTURES, &this->shaderResourceViews[0]);
 			Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
 		}
 

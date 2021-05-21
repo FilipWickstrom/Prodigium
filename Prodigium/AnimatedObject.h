@@ -4,7 +4,6 @@
 #include "Animation.h"
 
 const UINT MAXBONES = 25;
-const UINT MAXTEXTURES = 2;
 
 /*
 Load in a model with bones, ".fbx" supported for now

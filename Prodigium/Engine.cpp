@@ -98,12 +98,13 @@ void Engine::Render()
 	{
 		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
 		this->sceneHandler.Render(*toRender);
-
 	}
-	this->gPass.Clear();
 
-	// Shadow pass
+	//Not necessary...***
+	this->gPass.Clear();
 	this->gPass.Prepare();
+	 
+	// Shadow pass
 	if (!inGame)
 	{
 		this->sceneHandler.RenderShadows();

@@ -513,4 +513,8 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 
 	//Finally draw the mesh
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+
+	//
+	/*ID3D11Buffer* nullCBuffer = nullptr;
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullCBuffer);*/
 }

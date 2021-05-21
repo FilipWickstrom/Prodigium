@@ -502,6 +502,7 @@ void Game::LoadMap()
 	options.state = INGAME;
 
 	SceneHandle()->AddScene();
+
 	this->player = new Player();
 	Engine::SceneHandle()->EditScene().Add(this->player->GetMeshObject());
 
@@ -559,6 +560,10 @@ void Game::LoadMap()
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
 	SceneHandle()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
 
+
+	//***TESTING TO ADD OTHER ANIMATED OBJECTS***
+	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,10 });
+	//*****REMOVE LATER****
 
 	/*
 		Lamps

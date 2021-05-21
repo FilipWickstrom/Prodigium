@@ -166,6 +166,7 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="OptionsHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -291,6 +292,7 @@
     <ClInclude Include="Animation.h">
       <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="OptionsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
