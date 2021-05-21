@@ -467,11 +467,11 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
         isDebugDisplay.append("OFF");
 
     Checkbox(isDebugDisplay.c_str(), &options.hasDebugInfo);
-    Text("\n\nTip:");
-    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\n\nRumors are there is also secret difficulty options somewhere!");
+    Text("Tip:");
+    Text("Difficulty will change the cooldown time for trap placement.\nBut also increase the amount of clues needed to be collected!\nRumors are there is also secret difficulty options somewhere!");
 
     // Ultra epic space creator for the aesthetics
-    Text("\n\n\n\n\n\n\n\n\n");
+    Text("\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n");
     if (options.state == MAINMENU)
     {
         Text("Press 'Escape' to return to main menu.");
