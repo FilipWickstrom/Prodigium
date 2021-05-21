@@ -342,6 +342,7 @@ void Game::HandleInput(const float& deltaTime)
 		/*
 			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
 		*/
+		/*
 		float speed = 0.1f;
 		if (this->player->GetMeshObject()->GetPosition().x > SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x)
 		{
@@ -376,6 +377,7 @@ void Game::HandleInput(const float& deltaTime)
 				{ x , -0.0f, z - speed },
 				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
 		}
+		*/
 	}
 }
 
