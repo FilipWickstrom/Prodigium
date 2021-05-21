@@ -18,6 +18,82 @@ void Game::Whisper()
 	}
 }
 
+void Game::HandleScenes(const float& deltaTime)
+{
+	if (this->zoomIn)
+	{
+		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+		GUIHandler::ShowMainMenu(false);
+	}
+	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
+	{
+		//Ritar ut Main Menu GUI på skärmen
+		GUIHandler::ShowMainMenu(true);
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+
+	}
+
+	// Update audio while in options.
+	if (this->isInOptions)
+	{
+		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetMasterVolume(options.masterVolume);
+	}
+	if (this->inGoal)
+	{
+		this->zoomIn = false;
+		this->menu.Switch();
+	}
+
+	// If inside meny, update with menu buffers.
+	if (!this->inGoal)
+		this->menu.Update();
+
+	if (!this->menu.IsInMenu() && !this->hasLoaded)
+	{
+		// Load game map
+		this->LoadMap();
+		GUIHandler::ShowGameGUI(true);
+		this->soundHandler.PlayOneShot(2);
+		this->soundHandler.PlayAmbient(1);
+		this->soundHandler.PlayMusic(0);
+	}
+	if (this->menu.IsInMenu() && this->hasLoaded)
+	{
+		// Load menu
+		this->LoadMainMenu();
+		this->soundHandler.PlayMusic(1);
+		this->soundHandler.PlayAmbient(1);
+	}
+
+	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldResume())
+	{
+		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+	}
+
+	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
+	if (GUIHandler::ShouldQuit())
+		this->running = false;
+}
+
+void Game::HandleGameLogic(const float& deltaTime)
+{
+	// Return to player buffers.
+	if (this->hasLoaded)
+	{
+		this->options.gameTimer += 1 * deltaTime;
+		GUIHandler::ShowMainMenu(false);
+		GUIHandler::ShowGameGUI(true);
+		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
+		GUIHandler::SetPlayerPos(player->GetPlayerPos());
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
+		Whisper();
+	}
+}
+
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
 	:Engine(instance, windowWidth, windowHeight)
 {
@@ -28,6 +104,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->zoomIn = false;
 	this->inGoal = false;
 	this->amountOfObjects = 0;
+	this->isInOptions = false;
 }
 
 Game::~Game()
@@ -82,7 +159,16 @@ void Game::HandleInput(const float& deltaTime)
 		GUIHandler::ShowInGameOptionsMenu(false);
 	}
 
-
+	// You collected all clues! You are WIN!!
+	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	{
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);
+		Engine::inGame = false;
+		// Set these values if you want to return to menu.
+		this->menu.Switch(true);
+		this->ResetValues();
+	}
 
 	// Start the game.
 	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
@@ -123,6 +209,11 @@ void Game::HandleInput(const float& deltaTime)
 		if (InputHandler::IsKeyPressed(Keyboard::L))
 		{
 			SceneHandle()->EditScene().GetParticles().SetActive(false);
+		}
+
+		if (InputHandler::IsKeyPressed(Keyboard::N))
+		{
+			Engine::cluesCollected++;
 		}
 
 
@@ -296,89 +387,10 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	Graphics::SetDeltaTime(deltaTime);
-
-	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
-	{
-		this->menu.Switch(true);
-		this->ResetValues();
-		GUIHandler::ShowMainMenu(true);
-		GUIHandler::ShowGameGUI(false);
-	}
-
 	
-
 	HandleInput(deltaTime);
-
-	if (this->zoomIn)
-	{
-		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
-		GUIHandler::ShowMainMenu(false);
-	}
-	else if(!this->zoomIn && !this->isInOptions)
-	{
-		//Ritar ut Main Menu GUI på skärmen
-		GUIHandler::ShowMainMenu(true);
-		this->soundHandler.SetMusicVolume(options.musicVolume);
-		this->soundHandler.SetMasterVolume(options.masterVolume);
-		
-	}
-
-	// Update audio while in options.
-	if (this->isInOptions)
-	{
-		this->soundHandler.SetMusicVolume(options.musicVolume);
-		this->soundHandler.SetMasterVolume(options.masterVolume);
-	}
-	if (this->inGoal)
-	{
-		this->zoomIn = false;
-		this->menu.Switch();
-	}
-
-	// If inside meny, update with menu buffers.
-	if (!this->inGoal)
-		this->menu.Update();
-
-	if (!this->menu.IsInMenu() && !this->hasLoaded)
-	{
-		// Load game map
-		this->LoadMap();
-		GUIHandler::ShowGameGUI(true);
-		this->soundHandler.PlayOneShot(2);
-		this->soundHandler.PlayAmbient(1);
-		this->soundHandler.PlayMusic(0);
-	}
-	if (this->menu.IsInMenu() && this->hasLoaded)
-	{
-		// Load menu
-		this->LoadMainMenu();
-		this->soundHandler.PlayMusic(1);
-		this->soundHandler.PlayAmbient(1);
-	}
-
-	// Return to player buffers.
-	if (this->hasLoaded)
-	{
-		this->options.gameTimer += 1 * deltaTime;
-		GUIHandler::ShowMainMenu(false);
-		GUIHandler::ShowGameGUI(true);
-		player->Update(SceneHandle()->EditScene().GetAllCullingObjects(), direction, deltaTime);
-		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
-		Whisper();
-	}
-	
-	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
-	if (GUIHandler::ShouldResume())
-	{
-		this->isPaused = false;
-		this->soundHandler.ResumeAudio();
-	}
-		
-	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
-	if (GUIHandler::ShouldQuit())
-		this->running = false;
+	HandleScenes(deltaTime);
+	HandleGameLogic(deltaTime);
 
 	this->soundHandler.Update();
 
@@ -398,6 +410,11 @@ bool Game::OnStart()
 {
 #ifdef _DEBUG
 	OpenConsole();
+
+	if (!DebugInfo::Initialize())
+	{
+		return false;
+	}
 #endif
 	this->menu.Init();
 	this->LoadMainMenu();
@@ -406,17 +423,11 @@ bool Game::OnStart()
 	{
 		return false;
 	}
-	
 
-#ifdef _DEBUG
-	if (!DebugInfo::Initialize())
-	{
-		return false;
-	}
-#endif
-	this->soundHandler.SetMasterVolume(0.5);
+	//Starts Music and ambient on game startup
 	this->soundHandler.PlayMusic(1);
 	this->soundHandler.PlayAmbient(1);
+
 	return true;
 }
 
@@ -459,7 +470,7 @@ void Game::LoadMainMenu()
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
 	SceneHandle()->EditScene().AddLight(L);
 
-	// Player model		- REMOVE LATER???
+	// Player model - NO REMOVE!!! >:(
 	SceneHandle()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
 		{ (float)randX, 0.0f, (float)randZ } // Pos
 	, {0.0f, 0.0f, 0.0f});
@@ -499,6 +510,7 @@ void Game::LoadMap()
 	this->soundHandler.SetAmbientVolume(options.ambientVolume);
 	this->soundHandler.SetFXVolume(options.sfxVolume);;
 
+
 	options.state = INGAME;
 
 	SceneHandle()->AddScene();
@@ -522,7 +534,26 @@ void Game::LoadMap()
 		trapIndices.push_back(SceneHandle()->EditScene().GetNumberOfObjects());
 		DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
 		std::string clue = this->picker.getRandomClue();
-		SceneHandle()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, { pos.x, -3.0f, pos.y });
+
+		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
+		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+
+		// Used to fix inconsistencies in scale and rotation.
+		if (clue == "book")
+			scale = { 0.5f, 0.5f, 0.5f };
+
+		if (clue == "drawing")
+		{
+			rotation = { 3.14159f, 3.14159f, 0.0f };
+			scale = { 0.5f, 0.5f, 0.5f };
+		}
+
+		if (clue == "mask")
+			scale = { 1.2f, 1.2f, 1.2f };
+
+		SceneHandle()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, 
+			{ pos.x, -3.0f, pos.y },
+			rotation, scale);
 		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 		L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 		L.position = { pos.x, 0.0f, pos.y , 5.0f };

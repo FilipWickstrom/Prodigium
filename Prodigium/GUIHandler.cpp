@@ -511,7 +511,14 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
     // Ultra epic space creator for the aesthetics
     Text("\n\n\n\n\n\n\n\n\n");
-    Text("Press 'Escape' to return to main menu.");
+    if (options.state == MAINMENU)
+    {
+        Text("Press 'Escape' to return to main menu.");
+    }
+    else if (options.state == INGAME)
+    {
+        Text("Press 'Escape' to return to pause menu.");
+    }
     EndChild();
 
     End();
@@ -519,17 +526,16 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     delete isActive;
 }
 
-
 void GUIHandler::RenderPauseMenu()
 {
-    SetNextWindowSize(ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.5f));
-    SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.25f, (float)Graphics::GetWindowHeight() * 0.25f));
+    SetNextWindowSize(ImVec2(260, 175));
+    SetNextWindowPos(ImVec2(((float)Graphics::GetWindowWidth() * 0.5f) - 125, ((float)Graphics::GetWindowHeight() * 0.25f) + 150));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
 
     Begin("Pause Menu", isActive, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 
-        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.33f));
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.33f));
         BeginChild("Resume Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Resume", ImVec2(250, 50)))
@@ -538,7 +544,7 @@ void GUIHandler::RenderPauseMenu()
         }
         EndChild();
 
-        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.45f));
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.45f));
         BeginChild("Options Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if (Button("Options", ImVec2(250, 50)))
@@ -550,7 +556,7 @@ void GUIHandler::RenderPauseMenu()
         EndChild();
 
 
-        SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
+        //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.6f));
         BeginChild("Quit Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if(Button("Quit", ImVec2(250, 50)))
