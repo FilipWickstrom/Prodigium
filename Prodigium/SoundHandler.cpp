@@ -154,6 +154,13 @@ void SoundHandler::PlayAmbient(const int& index)
 	}
 }
 
+void SoundHandler::SetPitch(const float& newPitch)
+{
+	this->instanceAmbient->SetPitch(newPitch);
+	this->instanceFX->SetPitch(newPitch);
+	this->instanceMusic->SetPitch(newPitch);
+}
+
 void SoundHandler::SuspendAudio()
 {
 	this->audEngine->Suspend();
