@@ -250,6 +250,11 @@ const bool GUIHandler::ShouldQuit()
     return GUIHandler::instance->shouldQuit;
 }
 
+const bool GUIHandler::InOptionsMenu()
+{
+    return GUIHandler::instance->showOptionsMenu;
+}
+
 void GUIHandler::ShowMainMenu(const bool& show)
 {
     GUIHandler::instance->showMainMenu = show;
