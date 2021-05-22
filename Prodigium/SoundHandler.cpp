@@ -1,5 +1,12 @@
 #include "SoundHandler.h"
 
+void SoundHandler::UpdateVolume()
+{
+	this->instanceMusic->SetVolume(this->musicVolume);
+	this->instanceAmbient->SetVolume(this->ambientVolume);
+	this->instanceFX->SetVolume(this->fxVolume);
+}
+
 SoundHandler::SoundHandler()
 {
 	this->audEngine = nullptr;
@@ -39,6 +46,11 @@ const bool SoundHandler::Initialize()
 	this->waveBankAmbient = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/ambient.xwb");
 	this->waveBankMusic = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/music.xwb");
 
+	int index = 0;
+	this->instanceFX = this->waveBankFX->CreateInstance(index);
+	this->instanceAmbient = this->waveBankAmbient->CreateInstance(index);
+	this->instanceMusic = this->waveBankMusic->CreateInstance(index);
+
 	return true;
 }
 
@@ -65,16 +77,19 @@ void SoundHandler::SetMasterVolume(const float& newVolume)
 void SoundHandler::SetAmbientVolume(const float& newVolume)
 {
 	this->ambientVolume = newVolume;
+	this->instanceAmbient->SetVolume(newVolume);
 }
 
 void SoundHandler::SetMusicVolume(const float& newVolume)
 {
 	this->musicVolume = newVolume;
+	this->instanceMusic->SetVolume(newVolume);
 }
 
 void SoundHandler::SetFXVolume(const float& newVolume)
 {
 	this->fxVolume = newVolume;
+	this->instanceFX->SetVolume(newVolume);
 }
 
 void SoundHandler::PlayOneShot(const int& index)

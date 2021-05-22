@@ -52,6 +52,7 @@ public:
 	static void ResumeGame();
 	static const bool ShouldResume();
 	static const bool ShouldQuit();
+	static const bool InOptionsMenu();
 	static void ShowMainMenu(const bool& show);
 	static void ShowGameGUI(const bool& show);
 	static void ShowOptionsMenu(const bool& show);

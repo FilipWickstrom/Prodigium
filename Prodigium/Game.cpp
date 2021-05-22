@@ -27,17 +27,16 @@ void Game::HandleScenes(const float& deltaTime)
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
 	{
-		//Ritar ut Main Menu GUI p? sk?rmen
+		//Ritar ut Main Menu GUI på skärmen
 		GUIHandler::ShowMainMenu(true);
-		this->soundHandler.SetMusicVolume(options.musicVolume);
-		this->soundHandler.SetMasterVolume(options.masterVolume);
-
 	}
 
 	// Update audio while in options.
 	if (this->isInOptions)
 	{
 		this->soundHandler.SetMusicVolume(options.musicVolume);
+		this->soundHandler.SetAmbientVolume(options.ambientVolume);
+		this->soundHandler.SetFXVolume(options.sfxVolume);
 		this->soundHandler.SetMasterVolume(options.masterVolume);
 	}
 	if (this->inGoal)
@@ -63,20 +62,20 @@ void Game::HandleScenes(const float& deltaTime)
 	{
 		// Load menu
 		this->LoadMainMenu();
-		this->soundHandler.PlayMusic(1);
-		this->soundHandler.PlayAmbient(1);
 	}
 
-	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
+	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldResume())
 	{
 		this->isPaused = false;
 		this->soundHandler.ResumeAudio();
 	}
 
-	//Om man trycker p? Quitknappen i GUI:t ska denna bli true, annars ?r den false
+	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
+	if (GUIHandler::InOptionsMenu())
+		this->isInOptions = true;
 }
 
 void Game::HandleGameLogic(const float& deltaTime)
@@ -89,7 +88,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::ShowGameGUI(true);
 		player->Update(SceneHandler()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		//Randomiserar varje frame om man ska f? en viskning i ?ronen, och om man ska f? s? randomiserar den vilken viskning man ska f?
+		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
 		Whisper();
 	}
 }
@@ -405,7 +404,6 @@ bool Game::OnFrame(const float& deltaTime)
 		Engine::Update(deltaTime);
 	}
 
-
 	return true;
 }
 
@@ -419,6 +417,7 @@ bool Game::OnStart()
 		return false;
 	}
 #endif
+
 	this->menu.Init();
 	this->LoadMainMenu();
 
@@ -427,10 +426,14 @@ bool Game::OnStart()
 		return false;
 	}
 
-	//Starts Music and ambient on game startup
+	this->soundHandler.SetMasterVolume(options.masterVolume);
+	this->soundHandler.SetAmbientVolume(options.ambientVolume);
+	this->soundHandler.SetFXVolume(options.sfxVolume);
+	this->soundHandler.SetMusicVolume(options.musicVolume);
+
 	this->soundHandler.PlayMusic(1);
 	this->soundHandler.PlayAmbient(1);
-
+	
 	return true;
 }
 
@@ -506,14 +509,12 @@ void Game::LoadMainMenu()
 
 	this->hasLoaded = false;
 	this->inGoal = false;
+
 }
 
 void Game::LoadMap()
 {
-	this->soundHandler.SetAmbientVolume(options.ambientVolume);
-	this->soundHandler.SetFXVolume(options.sfxVolume);;
-
-
+	
 	options.state = INGAME;
 
 	SceneHandler()->AddScene();

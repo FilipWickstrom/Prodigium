@@ -18,6 +18,8 @@ private:
 	float ambientVolume;
 	float musicVolume;
 	float fxVolume;
+
+	void UpdateVolume();
 public:
 	SoundHandler();
 	virtual ~SoundHandler();
