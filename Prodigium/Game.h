@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "CameraObject.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "MainMenu.h"
 #include <thread>
 #include "SoundHandler.h"
@@ -20,13 +21,14 @@ private:
 	CameraObject tempCam;
 	MainMenu menu;
 	Player* player;
+	Enemy* enemy;
 	SoundHandler soundHandler;
 	RandomSpotPicker picker;
 	bool running;
 	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
-	bool isPaused;
+
 	bool isInOptions;
 	std::vector<int> trapIndices;
 

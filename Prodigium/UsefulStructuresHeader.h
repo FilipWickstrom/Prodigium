@@ -1,7 +1,10 @@
 #pragma once
 #include "Texture.h"
 #include <SimpleMath.h>
-
+enum class EnemyStates
+{
+	PATROL,CHASE,RETREAT
+};
 constexpr int BUFFER_COUNT = 3;
 /*
 	Struct for usage with Vertices.
