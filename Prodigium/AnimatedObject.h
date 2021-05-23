@@ -2,6 +2,7 @@
 #include <fstream>
 #include <unordered_map>
 #include "Animation.h"
+#include "GUIHandler.h"
 
 const UINT MAXBONES = 25;
 const UINT MAXTEXTURES = 2;
