@@ -142,6 +142,9 @@
     <ClCompile Include="AIHandler.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Engine\AI</Filter>
+    </ClCompile>
     <ClCompile Include="SoundHandler.cpp">
       <Filter>Engine\Audio</Filter>
     </ClCompile>
@@ -296,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="OptionsHandler.h">
       <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Engine\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

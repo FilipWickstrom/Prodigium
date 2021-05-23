@@ -52,10 +52,12 @@ public:
 	static void ResumeGame();
 	static const bool ShouldResume();
 	static const bool ShouldQuit();
+	static const bool InOptionsMenu();
 	static void ShowMainMenu(const bool& show);
 	static void ShowGameGUI(const bool& show);
 	static void ShowOptionsMenu(const bool& show);
 	static void ShowInGameOptionsMenu(const bool& show);
+	static bool IsPaused();
 	// Returns the trap1Active bool.
 	static const bool ActiveTrap();
 };
