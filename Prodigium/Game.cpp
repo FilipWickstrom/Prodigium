@@ -282,6 +282,23 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		/*------------------MOVEMENT----------------*/
 
+		/*------Animation settings for player------*/
+		if (InputHandler::IsKeyPressed(Keyboard::NumPad1))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(true);
+			#ifdef _DEBUG
+				std::cout << "[Player] Interpolation: ON" << std::endl;
+			#endif
+		}
+		else if (InputHandler::IsKeyPressed(Keyboard::NumPad2))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(false);
+			#ifdef _DEBUG
+				std::cout << "[Player] Interpolation: OFF" << std::endl;
+			#endif
+		}
+		/*------Animation settings for player------*/
+
 		if (InputHandler::IsLMBPressed())
 		{
 			for (int i = trapIndices[0]; i < trapIndices[0] + (trapIndices.size()); i++)
@@ -593,7 +610,7 @@ void Game::LoadMap()
 
 
 	//***TESTING TO ADD OTHER ANIMATED OBJECTS***
-	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,10 });
+	//SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
 	//*****REMOVE LATER****
 
 	/*

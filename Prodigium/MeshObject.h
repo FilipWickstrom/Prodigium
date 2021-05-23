@@ -91,5 +91,7 @@ public:
 
 	void RemoveColliders();
 
+	//Animation specific
 	void ChangeAnimState(AnimationState state);
+	void InterpolateAnim(bool toggle = true);
 };

@@ -12,6 +12,7 @@ Move the bones with different animations
 If optimalization is needed:
 	- Use only 3 weights per vertex
 	- Lower total number of bones
+	- Fix search closest two keyframes in "Animation.cpp"
 */
 
 //Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
@@ -56,9 +57,12 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
 
 	AnimationState currentState;
-	
 	Animation* currentAnim;
 	std::vector<Animation*> allAnimations;
+	
+	//This setting will make the animation
+	//smoother but will cost some extra frames
+	bool useInterpolation;
 
 public:
 	//All the positions of the T-posing character
@@ -92,6 +96,7 @@ public:
 	bool Initialize(std::string animFolder);					
 	
 	void ChangeAnimState(AnimationState state);
+	void UseInterpolation(bool toggle = true);
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows

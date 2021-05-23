@@ -1,7 +1,7 @@
-master 1
-sfx 1
-music 1
-ambient 1
+master 0.1
+sfx 0.51
+music 0.5
+ambient 0.5
 mouse_sens 1.78
 invert_mouse 0
 difficulty 1

@@ -1,81 +1,95 @@
 #include "Animation.h"
 using namespace DirectX::SimpleMath;
 
-UINT Animation::GetClosestKeyframe(const std::string& boneName, const std::vector<double>& keyFrameTimes)
+std::pair<UINT, UINT> Animation::FindTwoKeyframes(const std::string& boneName, const std::vector<double>& keyFrames)
 {
-	//Find the closest keyframe to current time
-	UINT closest = 0;
+	UINT closestLeft = 0;
+	UINT closestRight = 1;
+	bool found = false;
 
-	//Search though all the keyframes to find the closest to currentFrameTime
-	for (size_t i = 1; i < keyFrameTimes.size(); i++)
+	//Searching through all keyframes to find where current time is between
+	//[EXTRA]: Could be optimized with saving previously used keyframes
+	for (UINT i = 1; i < (UINT)keyFrames.size() && !found; i++)
 	{
-		if (abs(this->currentFrameTime - keyFrameTimes[i]) < abs(this->currentFrameTime - keyFrameTimes[closest]))
+		UINT left = i;
+		UINT right = (i + 1) % (UINT)keyFrames.size();
+
+		//Current time has to be in between the two keyframes
+		if (this->currentFrameTime > keyFrames[left] &&
+			this->currentFrameTime < keyFrames[right])
 		{
-			closest = UINT(i);
+			closestLeft = left;
+			closestRight = right;
+			found = true;
 		}
 	}
-	return closest;
+	return std::pair<UINT, UINT>(closestLeft, closestRight);
 }
 
 aiVector3D Animation::InterpolatePosition(const std::string& boneName)
 {
 	//Get the closest keyframes
-	UINT closestFrame = GetClosestKeyframe(boneName, this->translations[boneName].positionTime);
-	UINT nextFrame = (closestFrame + 1) % (UINT)(this->translations[boneName].positionTime.size());
+	std::pair<UINT, UINT> frames = FindTwoKeyframes(boneName, this->translations[boneName].positionTime);
+	UINT firstFrame = frames.first;
+	UINT secondFrame = frames.second;
 
 	//Calculates a floatvalue on how close the closestFrame is compared to nextFrame
-	double closestTime = this->translations[boneName].positionTime[closestFrame];
-	double nextTime = this->translations[boneName].positionTime[nextFrame];
-	float lerpTime = float(abs(this->currentFrameTime - closestTime) / (abs(nextTime - closestTime)));
+	double firstTime = this->translations[boneName].positionTime[firstFrame];
+	double secondTime = this->translations[boneName].positionTime[secondFrame];
+	//Gets a value between 0.0f to 1.0f of how much to interpolate
+	float lerpTime = float( (this->currentFrameTime - firstTime) / (secondTime - firstTime));
 
 	//Need to convert to simplemath as ASSIMP does not have any lerp-functions
-	aiVector3D aiClosest = this->translations[boneName].position[closestFrame];
-	Vector3 closestPos = Vector3(aiClosest.x, aiClosest.y, aiClosest.z);
-	aiVector3D aiNext = this->translations[boneName].position[nextFrame];
-	Vector3 nextPos = Vector3(aiNext.x, aiNext.y, aiNext.z);
+	aiVector3D aiFirst = this->translations[boneName].position[firstFrame];
+	Vector3 firstPos = Vector3(aiFirst.x, aiFirst.y, aiFirst.z);
+	aiVector3D aiSecond = this->translations[boneName].position[secondFrame];
+	Vector3 secondPos = Vector3(aiSecond.x, aiSecond.y, aiSecond.z);
 	
 	//Finally lerp to get a position that is in between this two positions
-	Vector3 lerped = Vector3::Lerp(closestPos, nextPos, lerpTime);
+	Vector3 lerped = Vector3::Lerp(firstPos, secondPos, lerpTime);
 	return aiVector3D(lerped.x, lerped.y, lerped.z);
 }
 
 aiVector3D Animation::InterpolateScale(const std::string& boneName)
 {
-	UINT closestFrame = GetClosestKeyframe(boneName, this->translations[boneName].scaleTime);
-	UINT nextFrame = (closestFrame + 1) % (UINT)(this->translations[boneName].scaleTime.size());
+	std::pair<UINT, UINT> frames = FindTwoKeyframes(boneName, this->translations[boneName].scaleTime);
+	UINT firstFrame = frames.first;
+	UINT secondFrame = frames.second;
 
-	double closestTime = this->translations[boneName].scaleTime[closestFrame];
-	double nextTime = this->translations[boneName].scaleTime[nextFrame];
-	float lerpTime = float(abs(this->currentFrameTime - closestTime) / (abs(nextTime - closestTime)));
+	double firstTime = this->translations[boneName].scaleTime[firstFrame];
+	double secondTime = this->translations[boneName].scaleTime[secondFrame];
+	float lerpTime = float((this->currentFrameTime - firstTime) / (secondTime - firstTime));
 
-	aiVector3D aiClosest = this->translations[boneName].scale[closestFrame];
-	Vector3 closestScl = Vector3(aiClosest.x, aiClosest.y, aiClosest.z);
-	aiVector3D aiNext = this->translations[boneName].scale[nextFrame];
-	Vector3 nextScl = Vector3(aiNext.x, aiNext.y, aiNext.z);
+	aiVector3D aiFirst = this->translations[boneName].scale[firstFrame];
+	Vector3 firstScl = Vector3(aiFirst.x, aiFirst.y, aiFirst.z);
+	aiVector3D aiSecond = this->translations[boneName].scale[secondFrame];
+	Vector3 secondScl = Vector3(aiSecond.x, aiSecond.y, aiSecond.z);
 	
-	Vector3 lerped = Vector3::Lerp(closestScl, nextScl, lerpTime);
+	Vector3 lerped = Vector3::Lerp(firstScl, secondScl, lerpTime);
 	return aiVector3D(lerped.x, lerped.y, lerped.z);
 }
 
 aiQuaternion Animation::InterpolateRotation(const std::string& boneName)
 {
-	UINT closestFrame = GetClosestKeyframe(boneName, this->translations[boneName].rotationTime);
-	UINT nextFrame = (closestFrame + 1) % (UINT)(this->translations[boneName].rotationTime.size());
+	std::pair<UINT, UINT> frames = FindTwoKeyframes(boneName, this->translations[boneName].rotationTime);
+	UINT firstFrame = frames.first;
+	UINT secondFrame = frames.second;
 
-	double closestTime = this->translations[boneName].rotationTime[closestFrame];
-	double nextTime = this->translations[boneName].rotationTime[nextFrame];
-	float lerpTime = float(abs(this->currentFrameTime - closestTime) / (abs(nextTime - closestTime)));
+	double firstTime = this->translations[boneName].rotationTime[firstFrame];
+	double secondTime = this->translations[boneName].rotationTime[secondFrame];
+	float lerpTime = float((this->currentFrameTime - firstTime) / (secondTime - firstTime));
 
-	aiQuaternion aiClosest = this->translations[boneName].rotation[closestFrame];
-	Quaternion closestRot = Quaternion(aiClosest.x, aiClosest.y, aiClosest.z, aiClosest.w);
-	aiQuaternion aiNext = this->translations[boneName].rotation[nextFrame];
-	Quaternion nextRot = Quaternion(aiNext.x, aiNext.y, aiNext.z, aiNext.w);
+	aiQuaternion aiFirst = this->translations[boneName].rotation[firstFrame];
+	Quaternion firstRot = Quaternion(aiFirst.x, aiFirst.y, aiFirst.z, aiFirst.w);
+	aiQuaternion aiSecond = this->translations[boneName].rotation[secondFrame];
+	Quaternion secondRot = Quaternion(aiSecond.x, aiSecond.y, aiSecond.z, aiSecond.w);
 
 	//Need to use "Spherical linear interpolation" instead of regular "lerp"
-	Quaternion lerped = Quaternion::Slerp(closestRot, nextRot, lerpTime);
+	Quaternion lerped = Quaternion::Slerp(firstRot, secondRot, lerpTime);
+	lerped.Normalize();
 
 	//The order is a bit different between ASSIMP and Simplemath
-	return aiQuaternion(lerped.w, lerped.x, lerped.y, lerped.z).Normalize();
+	return aiQuaternion(lerped.w, lerped.x, lerped.y, lerped.z);
 }
 
 Animation::Animation()
@@ -84,7 +98,6 @@ Animation::Animation()
 	this->currentFrameTime = 0;
 	this->duration = 0;
 	this->ticksPerSecond = 0;
-	this->useInterpolation = true;
 }
 
 Animation::~Animation()
@@ -117,6 +130,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 
 	//Takes only one animation
 	const aiAnimation* animation = scene->mAnimations[0];
+	///animation->
 
 	//Set the values for this type of animation
 	this->duration = animation->mDuration;
@@ -186,7 +200,7 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 	return true;
 }
 
-void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices)
+void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices, bool interpolate)
 {	
 	//Adding to the current frame
 	this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
@@ -208,7 +222,7 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 		std::string boneName = allBones[i];
 		if (this->translations.find(boneName) != this->translations.end())
 		{
-			if (this->useInterpolation)
+			if (interpolate)
 			{
 				pos = InterpolatePosition(boneName);
 				scl = InterpolateScale(boneName);
@@ -216,9 +230,9 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 			}
 			else
 			{
-				UINT closestPos = GetClosestKeyframe(boneName, this->translations[boneName].positionTime);
-				UINT closestScl = GetClosestKeyframe(boneName, this->translations[boneName].scaleTime);
-				UINT closestRot = GetClosestKeyframe(boneName, this->translations[boneName].rotationTime);
+				UINT closestPos = FindTwoKeyframes(boneName, this->translations[boneName].positionTime).first;
+				UINT closestScl = FindTwoKeyframes(boneName, this->translations[boneName].scaleTime).first;
+				UINT closestRot = FindTwoKeyframes(boneName, this->translations[boneName].rotationTime).first;
 				pos = this->translations[boneName].position[closestPos];
 				scl = this->translations[boneName].scale[closestScl];
 				rot = this->translations[boneName].rotation[closestRot];

@@ -379,6 +379,7 @@ void MeshObject::Render(bool shadowPass)
 			ID3D11InputLayout* standardInputLayout;
 			Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
 
+
 			if (shadowPass)
 				this->animatedObj->Render(GetTransposedMatrix(), false);
 			else
@@ -517,5 +518,13 @@ void MeshObject::ChangeAnimState(AnimationState state)
 	if (this->animatedObj != nullptr)
 	{
 		this->animatedObj->ChangeAnimState(state);
+	}
+}
+
+void MeshObject::InterpolateAnim(bool toggle)
+{
+	if (this->animatedObj != nullptr)
+	{
+		this->animatedObj->UseInterpolation(toggle);
 	}
 }

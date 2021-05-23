@@ -76,12 +76,6 @@
     <ClCompile Include="MeshObject.cpp">
       <Filter>Engine\Resources\Objects\Model</Filter>
     </ClCompile>
-    <ClCompile Include="Resource.cpp">
-      <Filter>Engine\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Engine\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="CameraObject.cpp">
       <Filter>Engine\Camera</Filter>
     </ClCompile>
@@ -166,7 +160,15 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="OptionsHandler.cpp" />
+    <ClCompile Include="Resource.cpp">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsHandler.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -207,12 +209,6 @@
     </ClInclude>
     <ClInclude Include="MeshObject.h">
       <Filter>Engine\Resources\Objects\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Engine\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Engine\Resources</Filter>
     </ClInclude>
     <ClInclude Include="CameraObject.h">
       <Filter>Engine\Camera</Filter>
@@ -292,7 +288,15 @@
     <ClInclude Include="Animation.h">
       <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="OptionsHandler.h" />
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsHandler.h">
+      <Filter>Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP.HINT">
@@ -389,6 +393,9 @@
     </Filter>
     <Filter Include="Engine\Resources\Objects\Animation">
       <UniqueIdentifier>{3402cc4e-1d5e-43de-b490-9fe1959a9fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Management">
+      <UniqueIdentifier>{6e3d4a0f-7eab-456b-b9d3-2e811ee225c5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

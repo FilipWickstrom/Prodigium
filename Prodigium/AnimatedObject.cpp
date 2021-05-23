@@ -391,6 +391,7 @@ AnimatedObject::AnimatedObject()
 	this->currentState = AnimationState::IDLE;
 
 	this->currentAnim = nullptr;
+	this->useInterpolation = true;
 }
 
 AnimatedObject::~AnimatedObject()
@@ -474,11 +475,13 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			this->currentAnim->ResetCurrentTime();
 			this->currentAnim = this->allAnimations[1];
 			this->currentAnim->SetAnimationSpeed(30);
+			this->currentAnim->ResetCurrentTime();
 			break;
 		case AnimationState::IDLE2:
 			this->currentAnim->ResetCurrentTime();
 			this->currentAnim = this->allAnimations[2];
-			this->currentAnim->SetAnimationSpeed(30);
+			this->currentAnim->SetAnimationSpeed(45);
+			this->currentAnim->ResetCurrentTime();
 			break;
 		default:
 			//NONE or other
@@ -487,13 +490,18 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 	}
 }
 
+void AnimatedObject::UseInterpolation(bool toggle)
+{
+	this->useInterpolation = toggle;
+}
+
 void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
 {	
 	//Animate the object and get the new matrices
 	if (animate && this->currentState != AnimationState::NONE)
 	{
 		//Get all animated matrices at this time for every bone
-		this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices);
+		this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
 	}
 
 	//Calculate all matrices that will later be sent to the GPU
@@ -515,6 +523,7 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
 
 	//
-	/*ID3D11Buffer* nullCBuffer = nullptr;
-	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullCBuffer);*/
+	ID3D11Buffer* nullCBuffer = nullptr;
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullCBuffer);
+
 }
