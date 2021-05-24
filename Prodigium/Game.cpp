@@ -20,19 +20,11 @@ void Game::Whisper()
 
 void Game::BulletTime()
 {
-	float distance;
-	distance = DirectX::SimpleMath::Vector4(DirectX::SimpleMath::Vector4(0, 0, 0, 0) - this->player->GetPlayerPos()).Length(); //Add Enemy Pos here later
+	float distance = DirectX::SimpleMath::Vector4(this->enemy->GetMeshObject()->position - this->player->GetPlayerPos()).Length();	
+	float factor = std::max(std::min(distance, 400.0f), 5.0f) * 0.25f;
+	float speed = factor * 0.01f;
 
-	if (distance > 50)
-		this->soundHandler.SetPitch(0.0f);
-	if (distance <= 50)
-		this->soundHandler.SetPitch(-0.25f);
-	if (distance <= 48)
-		this->soundHandler.SetPitch(-0.50f);
-	if (distance <= 46)
-		this->soundHandler.SetPitch(-0.75f);
-	if (distance <= 44)
-		this->soundHandler.SetPitch(-1.0f);
+	this->soundHandler.SetPitch(speed);
 }
 
 void Game::HandleScenes(const float& deltaTime)
@@ -71,7 +63,6 @@ void Game::HandleScenes(const float& deltaTime)
 		// Load game map
 		this->LoadMap();
 		GUIHandler::ShowGameGUI(true);
-		this->soundHandler.PlayOneShot(2);
 		this->soundHandler.PlayAmbient(1);
 		this->soundHandler.PlayMusic(0);
 	}
