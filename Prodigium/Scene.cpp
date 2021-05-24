@@ -377,7 +377,7 @@ void Scene::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>&
 		{
 			if (object.second->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && object.second->IsVisible())
 			{
-				toRender[j]->RenderShadows();
+				object.second->RenderShadows();
 			}
 		}
 	}
