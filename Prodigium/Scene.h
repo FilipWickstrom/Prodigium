@@ -16,9 +16,7 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
-	
 	std::unordered_map<std::uintptr_t, MeshObject*> visibleObjects;
-	std::vector<MeshObject*> cullingObjects;
 
 	// points to the current selected object.
 	int currentObject;

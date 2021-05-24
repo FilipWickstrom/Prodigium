@@ -147,14 +147,14 @@ bool Frustum::Initialize()
 	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
 
 	DirectX::BoundingFrustum::CreateFromMatrix(this->frustumColliderOriginal, playerCam->GetProjMatrixCPU());
-	Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 50.f });
-	//Matrix transform = Matrix::CreateTranslation(playerCam->position);
+	//Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 50.f });
+	Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
 
 	// SHOWCASE PURPOSES
-	this->frustumColliderOriginal.Near = 0.1f;
-	this->frustumColliderOriginal.Far = 125.f;
+	//this->frustumColliderOriginal.Near = 0.1f;
+	//this->frustumColliderOriginal.Far = 125.f;
 
 	this->transformed = frustumColliderOriginal;
 

@@ -11,25 +11,25 @@ private:
 	struct QuadNode
 	{
 		std::vector<MeshObject*> objects;
-		Collider collider;
+		DirectX::BoundingBox bounds;
 		QuadNode* childs[CHILD_COUNT];
 
 		QuadNode();
 
-		void CalculateChildDimensions(int index, QuadNode* parent);
 	};
 
 	// Recursive call to add into Quadtree
+	void CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child);
 	void AddNodes(int level, QuadNode* node);
 	void ClearTree(QuadNode* node);
 	void AddObject(QuadNode* node);
-	void DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
+	void DrawableNodesInternal(int level, QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
+	QuadNode* root;
 
 public:
 	QuadTree(int depth = 5);
 	~QuadTree();
 
 	void BuildQuadTree(const std::vector<MeshObject*>& objects);
-	QuadNode* root;
 	void DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 };

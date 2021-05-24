@@ -11,11 +11,8 @@ void QuadTree::AddNodes(int level, QuadNode* node)
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
 		node->childs[i] = new QuadNode;
-		node->CalculateChildDimensions(i, node);
-		if (node != root)
-		{
-			AddObject(node);
-		}
+		this->CalculateChildDimensions(i, node, node->childs[i]);
+		AddObject(node->childs[i]);
 
 		AddNodes(level + 1, node->childs[i]);
 	}
@@ -39,14 +36,14 @@ void QuadTree::ClearTree(QuadNode* node)
 	delete node;
 }
 
-void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
+void QuadTree::DrawableNodesInternal(int level, QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
 {
 	if (node == nullptr)
 	{
 		return;
 	}
 
-	ContainmentType type = node->collider.boundingBox.Contains(frustum);
+	ContainmentType type = node->bounds.Contains(frustum);
 
 	if (type == ContainmentType::DISJOINT)
 	{
@@ -55,9 +52,17 @@ void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrus
 
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
-		DrawableNodesInternal(node->childs[i], frustum, out);
+		DrawableNodesInternal(level + 1, node->childs[i], frustum, out);
 	}
 
+	if (level >= depth)
+	{
+		for (int i = 0; i < (int)node->objects.size(); i++)
+		{
+			std::pair<std::uintptr_t, MeshObject*> toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(node->objects[i]), node->objects[i]);
+			out.emplace(toAdd);
+		}
+	}
 }
 
 void QuadTree::AddObject(QuadNode* node)
@@ -68,8 +73,8 @@ void QuadTree::AddObject(QuadNode* node)
 	for (int i = 1; i < (int)root->objects.size(); i++)
 	{
 		object = root->objects[i];
-		ContainmentType type = node->collider.boundingBox.Contains(root->objects[i]->modelCollider.boundingBox);
-		if (type == ContainmentType::CONTAINS)
+		ContainmentType type = node->bounds.Contains(root->objects[i]->modelCollider.boundingBox);
+		if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
 		{
 			node->objects.push_back(object);
 		}
@@ -84,8 +89,10 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		// that covers the entire terrain quad. Next project -> Create terrain class
 		// handling terrain will be much easier.
 		root = new QuadNode;
-		root->collider = objects[1]->modelCollider;
-		root->collider.boundingBox.Extents.y *= 750.f;
+		BoundingBox box;
+		box.Center = { 0.0f, 0.0f, 0.0f };
+		box.Extents = { 750.f, 750.f, 750.f };
+		root->bounds = box;
 		root->objects = objects;
 
 		this->AddNodes(0, root);
@@ -99,16 +106,10 @@ void QuadTree::DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unord
 		return;
 	}
 
-	for (int i = 0; i < CHILD_COUNT; i++)
-	{
-		this->DrawableNodesInternal(root, frustum, out);
-	}
+	this->DrawableNodesInternal(0, root, frustum, out);
 
-	//for (int i = 0; i < (int)node->objects.size(); i++)
-	//{
-	//	std::pair<std::uintptr_t, MeshObject*> toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(node->objects[i]), node->objects[i]);
-	//	out.emplace(toAdd);
-	//}
+	std::pair<std::uintptr_t, MeshObject*> toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[0]), root->objects[0]);
+	out.emplace(toAdd);
 }
 
 QuadTree::QuadTree(int depth)
@@ -130,56 +131,50 @@ QuadTree::QuadNode::QuadNode()
 	}
 }
 
-void QuadTree::QuadNode::CalculateChildDimensions(int index, QuadNode* parent)
+void QuadTree::CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child)
 {
 	using namespace DirectX;
 
-	BoundingOrientedBox parentBox = parent->collider.boundingBox;
-	BoundingOrientedBox child = parentBox;
+	BoundingBox parentBox = parent->bounds;
+	BoundingBox childBox = parentBox;
 	float halfLengthX = parentBox.Extents.x * 0.5f;
 	float halfLengthZ = parentBox.Extents.z * 0.5f;
 
 	// North West
 	if (index == 0)
 	{
-		child.Center.x -= halfLengthX;
-		child.Center.z -= halfLengthZ;
-		child.Extents.x = halfLengthX;
-		child.Extents.z = halfLengthZ;
-		parent->childs[index]->collider.boundingBox = child;
-		return;
+		childBox.Center.x -= halfLengthX;
+		childBox.Center.z -= halfLengthZ;
+		childBox.Extents.x = halfLengthX;
+		childBox.Extents.z = halfLengthZ;
 	}
 
 	// North East
-	if (index == 1)
+	else if (index == 1)
 	{
-		child.Center.x += halfLengthX;
-		child.Center.z -= halfLengthZ;
-		child.Extents.x = halfLengthX;
-		child.Extents.z = halfLengthZ;
-		parent->childs[index]->collider.boundingBox = child;
-		return;
+		childBox.Center.x += halfLengthX;
+		childBox.Center.z -= halfLengthZ;
+		childBox.Extents.x = halfLengthX;
+		childBox.Extents.z = halfLengthZ;
 	}
 
 	// South West
-	if (index == 2)
+	else if (index == 2)
 	{
-		child.Center.x -= halfLengthX;
-		child.Center.z += halfLengthZ;
-		child.Extents.x = halfLengthX;
-		child.Extents.z = halfLengthZ;
-		parent->childs[index]->collider.boundingBox = child;
-		return;
+		childBox.Center.x -= halfLengthX;
+		childBox.Center.z += halfLengthZ;
+		childBox.Extents.x = halfLengthX;
+		childBox.Extents.z = halfLengthZ;
 	}
 
 	// South East
-	if (index == 3)
+	else if (index == 3)
 	{
-		child.Center.x += halfLengthX;
-		child.Center.z += halfLengthZ;
-		child.Extents.x = halfLengthX;
-		child.Extents.z = halfLengthZ;
-		parent->childs[index]->collider.boundingBox = child;
-		return;
+		childBox.Center.x += halfLengthX;
+		childBox.Center.z += halfLengthZ;
+		childBox.Extents.x = halfLengthX;
+		childBox.Extents.z = halfLengthZ;
 	}
+
+	child->bounds = childBox;
 }
