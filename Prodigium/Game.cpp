@@ -115,7 +115,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
-		this->soundHandler.Update();
+		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position);
 		AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
 	}

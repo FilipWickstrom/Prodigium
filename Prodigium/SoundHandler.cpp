@@ -1,17 +1,16 @@
 #include "SoundHandler.h"
 
-void SoundHandler::UpdateVolume()
-{
-	this->instanceMusic->SetVolume(this->musicVolume);
-	this->instanceAmbient->SetVolume(this->ambientVolume);
-	this->instanceFX->SetVolume(this->fxVolume);
-}
-
 SoundHandler::SoundHandler()
 {
 	this->audEngine = nullptr;
 	this->waveBankFX = nullptr;
+	this->waveBankAmbient = nullptr;
+	this->waveBankMusic = nullptr;
+	this->waveBankMonster = nullptr;
 	this->instanceFX = nullptr;
+	this->instanceAmbient = nullptr;
+	this->instanceMusic = nullptr;
+	this->instanceMonster = nullptr;
 	this->masterVolume = 1.f;
 	this->ambientVolume = 1.f;
 	this->musicVolume = 1.f;
@@ -21,9 +20,13 @@ SoundHandler::SoundHandler()
 SoundHandler::~SoundHandler()
 {
 	this->instanceFX.release();
+	this->instanceAmbient.release();
+	this->instanceMusic.release();
+	this->instanceMonster.release();
 	this->waveBankFX.release();
 	this->waveBankAmbient.release();
 	this->waveBankMusic.release();
+	this->waveBankMonster.release();
 	this->audEngine.release();	
 }
 
@@ -45,6 +48,7 @@ const bool SoundHandler::Initialize()
 	this->waveBankFX = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
 	this->waveBankAmbient = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/ambient.xwb");
 	this->waveBankMusic = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/music.xwb");
+	this->waveBankMonster = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
 
 	int index = 0;
 	this->instanceFX = this->waveBankFX->CreateInstance(index);
@@ -54,7 +58,7 @@ const bool SoundHandler::Initialize()
 	return true;
 }
 
-void SoundHandler::Update()
+void SoundHandler::Update(const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos)
 {
 	if (!this->audEngine->Update())
 	{
@@ -66,6 +70,8 @@ void SoundHandler::Update()
 		}
 	}
 	this->audEngine->Update();
+	this->listner.SetPosition(listnerPos);
+	this->emitter.SetPosition(emitterPos);
 }
 
 void SoundHandler::SetMasterVolume(const float& newVolume)
@@ -90,6 +96,7 @@ void SoundHandler::SetFXVolume(const float& newVolume)
 {
 	this->fxVolume = newVolume;
 	this->instanceFX->SetVolume(newVolume);
+	this->instanceMonster->SetVolume(newVolume);
 }
 
 void SoundHandler::PlayOneShot(const int& index)
@@ -99,6 +106,19 @@ void SoundHandler::PlayOneShot(const int& index)
 		std::cout << "Index not in wave bank!" << std::endl;
 	else
 		this->instanceFX->Play();
+}
+
+void SoundHandler::PlayMonsterSounds(const int& index)
+{
+	DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags = DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters;
+	this->instanceMonster = this->waveBankFX->CreateInstance(index, flags);
+	if(!this->instanceMonster)
+		std::cout << "Index not in wave bank!" << std::endl;
+	else
+	{
+		this->instanceMonster->Play();
+		this->instanceMonster->Apply3D(this->listner, this->emitter);
+	}
 }
 
 void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
