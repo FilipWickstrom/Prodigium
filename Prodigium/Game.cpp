@@ -615,7 +615,7 @@ void Game::LoadMap()
 
 
 	//***TESTING TO ADD OTHER ANIMATED OBJECTS***
-	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,100 }, { 0,0,0 }, {3,3,3});
+	//SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,100 }, { 0,0,0 }, {3,3,3});
 	//*****REMOVE LATER****
 
 	/*

@@ -99,8 +99,8 @@ void Engine::Render()
 	}
 
 	//Not necessary...***
-	/*this->gPass.Clear();
-	this->gPass.Prepare();*/
+	this->gPass.Clear();
+	this->gPass.Prepare();
 	 
 	// Shadow pass
 	if (!inGame)
