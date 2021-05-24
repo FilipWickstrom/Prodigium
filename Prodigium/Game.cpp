@@ -474,9 +474,9 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f }
+	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f },
+		{ -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 
-	, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
@@ -485,8 +485,7 @@ void Game::LoadMainMenu()
 
 	// Player model - NO REMOVE!!! >:(
 	SceneHandler()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
-		{ (float)randX, 0.0f, (float)randZ } // Pos
-	, {0.0f, 0.0f, 0.0f});
+		{ 0.0f, 0.0f, 40.0f }, {0.0f, 3.14159f, 0.0f});
 
 	// Terrain
 	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, false, { 0.0f, -6.25f, 0.0f });

@@ -32,7 +32,7 @@ const bool MainMenu::SetUpBuffer()
 	FogBuffer fog;
 	fog.viewMatrix = this->menuView;
 	fog.cameraPos = this->eyePos;
-	fog.fogColour = { 0.6f,0.6f,0.6f,0.f };
+	fog.fogColour = { 0.2f,0.2f,0.2f,0.f };
 	fog.fogRange = 200.f;
 	fog.fogStart = 10.f;
 	desc.ByteWidth = sizeof(FogBuffer);
