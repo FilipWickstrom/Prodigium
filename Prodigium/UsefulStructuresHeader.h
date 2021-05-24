@@ -38,7 +38,7 @@ struct ViewProjMatrix
 	DirectX::SimpleMath::Matrix view;
 	DirectX::SimpleMath::Matrix projection;
 };
-struct fogBuffer
+struct FogBuffer
 {
 	float fogStart;
 	float fogEnd;

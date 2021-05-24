@@ -208,7 +208,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     float diffuseFactor = max(dot(vecToLight, normals), 0.0f);
     diff *= diffuseFactor;
 
-    if(diffuseFactor <= 0.f)
+    if (diffuseFactor <= 0.f)
     {
         return diff * shadowCoeff;
     }
@@ -278,14 +278,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
     }
 
     float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
-        //FOG
-        float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;
-        float distanceToEye = length(toEye);
     
-        float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
-        finalColor = lerp(finalColor, fogColour, fogFactor);
+    //FOG
+    float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;
+    float distanceToEye = length(toEye);
     
+    float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
+    finalColor = lerp(finalColor, fogColour, fogFactor);
     
-  
-        return finalColor;
+    return finalColor;
 }
