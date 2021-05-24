@@ -110,6 +110,9 @@ Game::~Game()
 {
 	if (this->player && !this->menu.IsInMenu())
 		delete this->player;
+
+	if (this->enemy && !this->menu.IsInMenu())
+		delete this->enemy;
 }
 
 const bool Game::IsRunning() const
@@ -473,6 +476,9 @@ void Game::LoadMainMenu()
 	Engine::inGame = false;
 	if (this->player)
 		delete this->player;
+
+	if (this->enemy)
+		delete this->enemy;
 
 	options.state = MAINMENU;
 
