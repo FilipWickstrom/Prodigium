@@ -39,18 +39,7 @@ const bool AIHandler::Initialize()
 
 AIHandler::~AIHandler()
 {
-	/*
-	for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
-	{
-		if (AIHandler::instance->allNodes[i])
-			delete AIHandler::instance->allNodes[i];
-	}
-	*/
-
-	if (AIHandler::instance)
-	{
-		delete AIHandler::instance;
-	}
+	
 }
 
 void AIHandler::CreateNodes()
@@ -147,5 +136,16 @@ Node* AIHandler::GetNodeByID(const int& id)
 
 void AIHandler::Remove()
 {
-	AIHandler::instance->~AIHandler();
+	AIHandler::instance->currentEnemyNode = nullptr;
+	AIHandler::instance->monster = nullptr;
+	for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
+	{
+		if (AIHandler::instance->allNodes[i])
+			delete AIHandler::instance->allNodes[i];
+	}
+
+	if (AIHandler::instance)
+	{
+		delete AIHandler::instance;
+	}
 }
