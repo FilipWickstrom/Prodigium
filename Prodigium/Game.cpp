@@ -529,7 +529,8 @@ void Game::LoadMap()
 	Engine::SceneHandler()->EditScene().Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
 	// Terrain
-	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
+	SceneHandler()->EditScene().Add("planeTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
+		{1000.0f, 1.0f, 1000.0f});
 
 	LightStruct L;
 
