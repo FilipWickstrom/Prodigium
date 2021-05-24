@@ -335,7 +335,7 @@ void Game::HandleInput(const float& deltaTime)
 					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
-					Engine::playerHp += (25 / options.difficulty);
+					Engine::playerHp += (25 / (this->options.difficulty * 0.5));
 				}
 			}
 		}

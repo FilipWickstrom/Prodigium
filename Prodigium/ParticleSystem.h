@@ -14,6 +14,7 @@ private:
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
 	ID3D11ComputeShader* computeShader;
+	ID3D11BlendState* alphaBlendState;
 
 	ID3D11Buffer* particleBuff;
 	ID3D11UnorderedAccessView* particleAccess;

@@ -28,14 +28,15 @@ void ParticleSystem::InternalRender()
 		Render Phase
 	*/
 	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
+	Graphics::GetContext()->OMSetBlendState(this->alphaBlendState, 0, 0xffffffff);
 	Graphics::GetContext()->CSSetConstantBuffers(0, 1, &this->speedBuffer);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
+
 
 
 	/*
 		Update Phase
 	*/
-
 	if (!GUIHandler::IsPaused())
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
@@ -55,6 +56,7 @@ void ParticleSystem::Clear()
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->OMSetBlendState(NULL, NULL, 0xffffffff);
 	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullAccess, 0);
 
 }
@@ -191,6 +193,7 @@ ParticleSystem::ParticleSystem()
 	this->particleBuff = nullptr;
 	this->particleView = nullptr;
 	this->speedBuffer = nullptr;
+	this->alphaBlendState = nullptr;
 	this->hasSetup = false;
 	this->isActive = true;
 }
@@ -213,6 +216,8 @@ ParticleSystem::~ParticleSystem()
 		this->particleView->Release();
 	if (this->speedBuffer)
 		this->speedBuffer->Release();
+	if (this->alphaBlendState)
+		this->alphaBlendState->Release();
 }
 
 bool ParticleSystem::SetUp()
@@ -272,6 +277,24 @@ bool ParticleSystem::SetUp()
 	hr = Graphics::GetDevice()->CreateBuffer(&speedDesc, 0, &this->speedBuffer);
 	if (FAILED(hr))
 		return false;
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.AlphaToCoverageEnable = true;
+	blendDesc.IndependentBlendEnable = true;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+
+	hr = Graphics::GetDevice()->CreateBlendState(&blendDesc, &this->alphaBlendState);
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
 	return true;
 }
