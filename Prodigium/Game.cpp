@@ -24,8 +24,7 @@ void Game::BulletTime()
 	float distance = DirectX::SimpleMath::Vector4(this->enemy->GetMeshObject()->position - this->player->GetPlayerPos()).Length();	
 	float factor = std::max(100.0f - distance, 0.0f);
 	float speed = factor * 0.01f;
-	this->soundHandler.SetPitch(-speed);
-	
+	this->soundHandler.SetPitch(-speed);	
 }
 
 void Game::HandleScenes(const float& deltaTime)
@@ -95,11 +94,12 @@ void Game::HandleGameLogic(const float& deltaTime)
 		this->options.gameTimer += 1 * deltaTime;
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
+
 		player->Update(SceneHandler()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
-		Whisper();
-		BulletTime();
+		
+		Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+		BulletTime(); //Slows down all sounds if you're near the enemy
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
@@ -111,6 +111,13 @@ void Game::HandleGameLogic(const float& deltaTime)
 		{
 			this->attackTimer -= 1 * deltaTime;
 		}
+	}
+
+	if (!this->isPaused && !this->menu.IsInMenu())
+	{
+		this->soundHandler.Update();
+		AIHandler::MoveEnemy(deltaTime);
+		Engine::Update(deltaTime);
 	}
 }
 
@@ -215,6 +222,7 @@ void Game::HandleInput(const float& deltaTime)
 
 	if (this->hasLoaded && !this->isPaused)
 	{
+		/*------------------SANITY TESTING----------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::G))
 		{
 			Engine::playerHp = 50;
@@ -227,6 +235,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			Engine::playerHp = 100;
 		}
+		/*------------------SANITY TESTING----------------*/
 
 		if (InputHandler::IsKeyPressed(Keyboard::K))
 		{
@@ -236,13 +245,6 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			SceneHandler()->EditScene().GetParticles().SetActive(false);
 		}
-
-		/*
-		if (InputHandler::IsKeyPressed(Keyboard::N))
-		{
-			Engine::cluesCollected++;
-		}
-		*/
 
 
 		/*------------------MOVEMENT----------------*/
@@ -336,7 +338,7 @@ void Game::HandleInput(const float& deltaTime)
 					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
-					Engine::playerHp += (25 / (this->options.difficulty * 0.5));
+					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
 				}
 			}
 		}
@@ -363,7 +365,6 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::E))
 		{
-			//this->player->Rotate(0.f, DirectX::XM_PI / 8);
 			Engine::ChangeActiveTrap();
 		}
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
@@ -381,46 +382,6 @@ void Game::HandleInput(const float& deltaTime)
 			this->soundHandler.SuspendAudio();
 		}
 
-
-		/*
-			State of the art, DOUBLE C, TRIPLE B QUADRUPLE A+ system Intelligent AI!
-		*/
-		/*
-		float speed = 0.1f;
-		if (this->player->GetMeshObject()->GetPosition().x > SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x)
-		{
-			float x = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandler()->EditScene().GetMeshObject(6).UpdateMatrix(
-				{ x + speed, -0.0f, z },
-				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
-		}
-		else if (this->player->GetMeshObject()->GetPosition().x <= SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x)
-		{
-			float x = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandler()->EditScene().GetMeshObject(6).UpdateMatrix(
-				{ x - speed, -0.0f, z },
-				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
-		}
-
-		if (this->player->GetMeshObject()->GetPosition().z > SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z)
-		{
-			float x = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandler()->EditScene().GetMeshObject(6).UpdateMatrix(
-				{ x , -0.0f, z + speed },
-				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
-		}
-		else if (this->player->GetMeshObject()->GetPosition().z <= SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z)
-		{
-			float x = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().x;
-			float z = SceneHandler()->EditScene().GetMeshObject(6).GetPosition().z;
-			SceneHandler()->EditScene().GetMeshObject(6).UpdateMatrix(
-				{ x , -0.0f, z - speed },
-				{ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
-		}
-		*/
 	}
 }
 
@@ -432,21 +393,16 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	Graphics::SetDeltaTime(deltaTime);
-	
+	/*---------------ONE---------------*/
 	HandleInput(deltaTime);
+
+	/*---------------TWO---------------*/
 	HandleScenes(deltaTime);
 	HandleGameLogic(deltaTime);
-
-	this->soundHandler.Update();
-
+	
+	/*---------------THREE---------------*/
 	Engine::ClearDisplay();
 	Engine::Render();
-
-	if (!this->isPaused && !this->menu.IsInMenu())
-	{
-		AIHandler::MoveEnemy(deltaTime);
-		Engine::Update(deltaTime);
-	}
 
 	return true;
 }
@@ -557,12 +513,10 @@ void Game::LoadMainMenu()
 
 	this->hasLoaded = false;
 	this->inGoal = false;
-
 }
 
 void Game::LoadMap()
-{
-	
+{	
 	options.state = INGAME;
 
 	SceneHandler()->AddScene();
@@ -643,11 +597,6 @@ void Game::LoadMap()
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
-
-
-	//***TESTING TO ADD OTHER ANIMATED OBJECTS***
-	//SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
-	//*****REMOVE LATER****
 
 	/*
 		Lamps
@@ -731,26 +680,6 @@ void Game::LoadMap()
 
 		SceneHandler()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	}
-
-	/*
-	// Random lights in the forests
-	for (int j = 0; j < 5; j++)
-	{
-		float x = (float)(rand() % 1500 - rand() % 1500);
-		float z = (float)(rand() % 1500 - rand() % 1500);
-		while (x > -375 && x < 750 && z > -375 && z < 275)
-		{
-			x = (float)(rand() % 1500 - rand() % 1500);
-			z = (float)(rand() % 1500 - rand() % 1500);
-		}
-
-		SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, { x, -7.0f, z }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-		L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-		L.position = { x, 25.0f, z, 30.0f };
-		SceneHandler()->EditScene().AddLight(L);
-		std::cout << "Light " << j << " is at pos: " << "x:" << x << " z:" << z << "\n";
-	}
-	*/
 
 	this->hasLoaded = true;
 	this->inGoal = true;
