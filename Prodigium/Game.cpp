@@ -9,11 +9,12 @@ DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	float shouldWhisper = (float)(rand() % 10000);
+	int whisperFactor = Engine::playerHp * 100;
+	int shouldWhisper = rand() % whisperFactor;
 
 	if (shouldWhisper > 5 && shouldWhisper < 10)
 	{
-		int index = (int)(rand() % 4 + 1);
+		int index = rand() % 4 + 1;
 		this->soundHandler.PlayOneShot(index);
 	}
 }
@@ -23,9 +24,7 @@ void Game::BulletTime()
 	float distance = DirectX::SimpleMath::Vector4(this->enemy->GetMeshObject()->position - this->player->GetPlayerPos()).Length();	
 	float factor = std::max(100.0f - distance, 0.0f);
 	float speed = factor * 0.01f;
-	speed *= -1;
-	std::cout << "Current Speed: " << speed << "\r";
-	this->soundHandler.SetPitch(speed);
+	this->soundHandler.SetPitch(-speed);
 	
 }
 
@@ -222,7 +221,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::H))
 		{
-			Engine::playerHp = 0;
+			Engine::playerHp -= 10;
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::J))
 		{
