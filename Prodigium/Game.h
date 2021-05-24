@@ -11,6 +11,9 @@
 // will also be affected by difficulty set in options, refer to "OptionsHandler".
 #define STOPCOOLDOWN 12.5f
 #define SLOWCOOLDOWN 5.0f
+#define ENEMY_ATTACK_DAMAGE 5
+#define ENEMY_ATTACK_COOLDOWN 3.5f
+#define ENEMY_ATTACK_RANGE 10.0f
 
 class Game:public Engine
 {
@@ -31,6 +34,7 @@ private:
 
 	bool isInOptions;
 	std::vector<int> trapIndices;
+	float attackTimer;
 
 	void Whisper();
 	void BulletTime();
