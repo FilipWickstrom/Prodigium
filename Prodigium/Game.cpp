@@ -101,6 +101,17 @@ void Game::HandleGameLogic(const float& deltaTime)
 		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
 		Whisper();
 		BulletTime();
+
+		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
+		{
+			Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
+		}
+
+		if (this->attackTimer > 0)
+		{
+			this->attackTimer -= 1 * deltaTime;
+		}
 	}
 }
 
@@ -114,6 +125,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->zoomIn = false;
 	this->inGoal = false;
 	this->amountOfObjects = 0;
+	this->attackTimer = 0;
 	this->isInOptions = false;
 }
 
@@ -325,7 +337,7 @@ void Game::HandleInput(const float& deltaTime)
 					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
-					Engine::playerHp += 25;
+					Engine::playerHp += (25 / (this->options.difficulty * 0.5));
 				}
 			}
 		}
@@ -482,6 +494,7 @@ void Game::ResetValues()
 	Engine::slowdown_timer = 0;
 	Engine::stopcompl_timer = 0;
 	this->options.gameTimer = 0;
+	this->attackTimer = 0;
 }
 
 void Game::LoadMainMenu()
