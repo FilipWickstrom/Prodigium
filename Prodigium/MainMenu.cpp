@@ -138,4 +138,6 @@ void MainMenu::Update()
 {
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->viewBuffer);
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &this->eyeBuffer);
+	Graphics::GetContext()->GSSetConstantBuffers(0, 1, &this->viewBuffer);
+	Graphics::GetContext()->GSSetConstantBuffers(1, 1, &this->eyeBuffer);
 }

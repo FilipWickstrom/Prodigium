@@ -469,7 +469,7 @@ void Game::LoadMainMenu()
 	// Refresh the game to a clean slate.
 	SceneHandler()->RemoveAllScenes();
 	SceneHandler()->AddScene();
-	SceneHandler()->EditScene().GetParticles().SetActive(false);
+	//SceneHandler()->EditScene().GetParticles().SetActive(false);
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
