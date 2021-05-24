@@ -1,5 +1,6 @@
 #pragma once
 #include "MeshObject.h"
+#include "QuadTree.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -8,6 +9,7 @@ class Frustum
 private:
 	DirectX::BoundingFrustum transformed;
 	DirectX::BoundingFrustum frustumColliderOriginal;
+
 #ifdef _DEBUG
 	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* iBuffer;
@@ -25,7 +27,7 @@ public:
 	void Update();
 	// Will check intersection with objects to the frustum, will out a vector of all 
 	// meshobjects that should be drawed current frame.
-	void Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out);
+	void Drawable(QuadTree*& quadTree, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 	bool Initialize();
 
 #ifdef _DEBUG

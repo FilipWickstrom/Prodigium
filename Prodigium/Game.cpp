@@ -695,4 +695,6 @@ void Game::LoadMap()
 
 	this->amountOfObjects = SceneHandler()->EditScene().GetNumberOfObjects();
 	Engine::inGame = true;
+	Engine::quadTree = new QuadTree;
+	Engine::quadTree->BuildQuadTree(SceneHandle()->EditScene().GetAllMeshObjects());
 }

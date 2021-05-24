@@ -137,19 +137,9 @@ void Frustum::Update()
 	this->frustumColliderOriginal.Transform(this->transformed, transform);
 }
 
-void Frustum::Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out)
+void Frustum::Drawable(QuadTree*& quadTree, std::unordered_map<std::uintptr_t, MeshObject*>& out)
 {
-	out.push_back(objects[0]);
-	out.push_back(objects[1]);
-	// Start on 1 to skip the player (dynamic object)
-	for (int i = 2; i < objects.size(); i++)
-	{
-		DirectX::ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingSphere);
-		if (type == DirectX::ContainmentType::CONTAINS || type == DirectX::ContainmentType::INTERSECTS)
-		{
-			out.push_back(objects[i]);
-		}
-	}
+	quadTree->DrawableNodes(this->transformed, out);
 }
 
 bool Frustum::Initialize()
@@ -157,11 +147,13 @@ bool Frustum::Initialize()
 	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
 
 	DirectX::BoundingFrustum::CreateFromMatrix(this->frustumColliderOriginal, playerCam->GetProjMatrixCPU());
+	//Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 50.f });
 	Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
+
 	// SHOWCASE PURPOSES
-	//this->frustumColliderOriginal.Near = 40.f;
+	//this->frustumColliderOriginal.Near = 0.1f;
 	//this->frustumColliderOriginal.Far = 125.f;
 
 	this->transformed = frustumColliderOriginal;

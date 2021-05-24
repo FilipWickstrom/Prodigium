@@ -34,7 +34,9 @@ CameraObject::~CameraObject()
 		delete this->frustum;
 }
 
-bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, const float& nearPlane, const float& farPlane, const float& fov, const Vector3& eyePosition, const Vector3& lookTo)
+bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight, 
+	const float& nearPlane, const float& farPlane, const float& fov, const Vector3& 
+	eyePosition, const Vector3& lookTo)
 {
 	this->defaultForward = lookTo;
 	this->defaultPosition = eyePosition;

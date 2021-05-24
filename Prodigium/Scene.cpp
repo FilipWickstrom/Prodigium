@@ -291,16 +291,23 @@ void Scene::Render()
 	}
 }
 
-void Scene::Render(const std::vector<MeshObject*>& toRender)
+void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
-	if ((int)toRender.size() > 0)
+	//if ((int)toRender.size() > 0)
+	//{
+	//	for (int i = 0; i < (int)toRender.size(); i++)
+	//	{
+	//		if (toRender[i]->IsVisible())
+	//		{
+	//			toRender[i]->Render();
+	//		}
+	//	}
+	//}
+	for (auto object : toRender)
 	{
-		for (int i = 0; i < (int)toRender.size(); i++)
+		if (object.second->IsVisible())
 		{
-			if (toRender[i]->IsVisible())
-			{
-				toRender[i]->Render();
-			}
+			object.second->Render();
 		}
 	}
 #ifdef _DEBUG
@@ -358,7 +365,7 @@ void Scene::RenderShadows()
 	this->shadowHandler->Clear();
 }
 
-void Scene::RenderShadows(const std::vector<MeshObject*>& toRender)
+void Scene::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
 	this->shadowHandler->Prepare();
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
@@ -366,12 +373,11 @@ void Scene::RenderShadows(const std::vector<MeshObject*>& toRender)
 		this->shadowHandler->Render(i);
 
 		// Loop through all objects
-		for (int j = 0; j < (int)toRender.size(); j++)
+		for (auto object : toRender)
 		{
-			// Check the distance between light source and object.
-			if (toRender[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && toRender[j]->IsVisible())
+			if (object.second->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && object.second->IsVisible())
 			{
-				toRender[j]->Render(true);
+				object.second->Render(true);
 			}
 		}
 	}
@@ -395,23 +401,27 @@ void Scene::SwitchMenuMode(bool sw)
 
 void Scene::ClearCullingObjects()
 {
-	this->cullingObjects.clear();
+	this->visibleObjects.clear();
 }
 
-std::vector<MeshObject*>& Scene::GetAllCullingObjects()
+std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllCullingObjects()
 {
-	return this->cullingObjects;
+	return this->visibleObjects;
 }
 
 #ifdef _DEBUG
-void Scene::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
+void Scene::RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
 	if ((int)toRender.size() > 0)
 	{
-		for (int i = 0; i < (int)toRender.size(); i++)
+		for (auto object : toRender)
 		{
-			toRender[i]->RenderBoundingBoxes();
+			object.second->RenderBoundingBoxes();
 		}
+		//for (int i = 0; i < (int)toRender.size(); i++)
+		//{
+		//	toRender[i]->RenderBoundingBoxes();
+		//}
 	}
 }
 #endif
