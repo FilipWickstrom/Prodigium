@@ -83,7 +83,7 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
-	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
+	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
 	toRender->clear();
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
@@ -94,7 +94,7 @@ void Engine::Render()
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
 		this->sceneHandler.Render(*toRender);
 	}
 
@@ -194,8 +194,6 @@ void Engine::ChangeActiveTrap()
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
-
-
 	if (!InputHandler::Initialize())
 	{
 		return false;

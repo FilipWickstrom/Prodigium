@@ -30,6 +30,7 @@ protected:
 
 	OptionsHandler options;
 	bool isPaused;
+	QuadTree* quadTree;
 
 private:
 	Window window;

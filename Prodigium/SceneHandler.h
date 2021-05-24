@@ -45,19 +45,19 @@ public:
 	// render the objects in current selected scene. if you're in Game.h dont touch this!
 	void Render();
 
-	void Render(const std::vector<MeshObject*>& toRender);
+	void Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 
 	// render the lights in the current selected scene.
 	void RenderLights();
 
 #ifdef _DEBUG
-	void RenderBoundingBoxes(const std::vector<MeshObject*>& toRender);
+	void RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 #endif
 
 	// render the shadows with each light.
 	void RenderShadows();
 
-	void RenderShadows(const std::vector<MeshObject*>& toRender);
+	void RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 
 	// render particles inside current scene.
 	void RenderParticles();
