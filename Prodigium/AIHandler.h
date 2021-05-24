@@ -16,11 +16,11 @@ private:
 	Enemy* monster;
 	static AIHandler* instance;
 	static std::vector<std::string> openFile(std::string filePath);
+	AIHandler();
+	virtual ~AIHandler();
 public:
 	DELETE_COPY_ASSIGNMENT(AIHandler);
-	AIHandler();
 	static const bool Initialize();
-	virtual ~AIHandler();
 	static void CreateNodes();
 	static void SetEnemy(Enemy* enemy);
 	static void ConnectNodes(Node* node1, Node* node2);
