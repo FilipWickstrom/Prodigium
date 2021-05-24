@@ -113,6 +113,8 @@ Game::~Game()
 
 	if (this->enemy && !this->menu.IsInMenu())
 		delete this->enemy;
+
+	AIHandler::Remove();
 }
 
 const bool Game::IsRunning() const
@@ -418,7 +420,7 @@ bool Game::OnFrame(const float& deltaTime)
 	Engine::ClearDisplay();
 	Engine::Render();
 
-	if (!this->isPaused)
+	if (!this->isPaused && !this->menu.IsInMenu())
 	{
 		AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
