@@ -43,7 +43,10 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
-    <FxCompile Include="AnimationVertexShader.hlsl">
+    <FxCompile Include="AnimationVS.hlsl">
+      <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimationShadowVS.hlsl">
       <Filter>Engine\Graphics\Shaders\Animation</Filter>
     </FxCompile>
   </ItemGroup>

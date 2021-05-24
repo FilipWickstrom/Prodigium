@@ -30,6 +30,11 @@ private:
 	std::string vShaderByteCode;
 	ID3D11InputLayout* inputlayout;
 
+	//Shadow specific settings
+	ID3D11VertexShader* shadowVertexShader;
+	ID3D11InputLayout* shadowInputlayout;
+	std::string shadowVShaderByteCode;
+
 	//Rendering the mesh
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
@@ -102,5 +107,6 @@ public:
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows
 	void Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate = true);
+	void RenderShadows(const DirectX::SimpleMath::Matrix& worldMatrix);
 
 };

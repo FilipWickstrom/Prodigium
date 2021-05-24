@@ -97,10 +97,6 @@ void Engine::Render()
 		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
 		this->sceneHandler.Render(*toRender);
 	}
-
-	//Not necessary...***
-	/*this->gPass.Clear();
-	this->gPass.Prepare();*/
 	 
 	// Shadow pass
 	if (!inGame)

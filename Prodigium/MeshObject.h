@@ -75,7 +75,10 @@ public:
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
 
-	void Render(bool shadowPass = false);
+	//Rendering to display
+	void Render();
+	void RenderShadows();
+
 	void UpdateBoundingBoxes();
 	void UpdateRenderCollider();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
