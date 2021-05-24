@@ -20,7 +20,8 @@ private:
 	std::vector<UINT>indexCount;
 
 public:
-	//Will be used to create colliders
+	// Mesh positions local space
+	// Used for colliders and reserved for other computations
 	std::vector<std::vector<DirectX::SimpleMath::Vector3>> meshPositions;
 	
 private:

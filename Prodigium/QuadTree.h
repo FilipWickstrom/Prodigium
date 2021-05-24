@@ -6,24 +6,31 @@
 class QuadTree
 {
 private:
+	static const int CHILD_COUNT = 4;
 	const int depth;
 	struct QuadNode
 	{
 		std::vector<MeshObject*> objects;
 		Collider collider;
-		QuadNode* childs[4] = { nullptr };
+		QuadNode* childs[CHILD_COUNT];
 
-		QuadNode(int level, const int depth);
+		QuadNode();
+
+		void CalculateChildDimensions(int index, QuadNode* parent);
 	};
 
-	QuadNode* root;
-
 	// Recursive call to add into Quadtree
-	void AddObject(MeshObject* object);
-
-	void BuildQuadTree();
+	void AddNodes(int level, QuadNode* node);
+	void ClearTree(QuadNode* node);
+	void AddObject(QuadNode* node);
 
 public:
 	QuadTree(int depth = 5);
-	~QuadTree() = default;
+	~QuadTree();
+
+	int nrOf = 0;
+
+	void BuildQuadTree(const std::vector<MeshObject*>& objects);
+	QuadNode* root;
+	void DrawableNodes(QuadNode* node, const DirectX::BoundingFrustum& frustum);
 };

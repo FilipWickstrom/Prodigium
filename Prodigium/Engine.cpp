@@ -96,7 +96,7 @@ void Engine::Render()
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
 		this->sceneHandler.Render(*toRender);
 
 	}
@@ -195,8 +195,6 @@ void Engine::ChangeActiveTrap()
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
-
-
 	if (!InputHandler::Initialize())
 	{
 		return false;

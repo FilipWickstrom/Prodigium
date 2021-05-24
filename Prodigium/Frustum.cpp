@@ -137,19 +137,37 @@ void Frustum::Update()
 	this->frustumColliderOriginal.Transform(this->transformed, transform);
 }
 
-void Frustum::Drawable(const std::vector<MeshObject*>& objects, std::vector<MeshObject*>& out)
+void Frustum::Drawable(QuadTree*& quadTree, std::vector<MeshObject*>& out)
 {
-	out.push_back(objects[0]);
-	//out.push_back(objects[1]);
-	// Start on 1 to skip the player (dynamic object)
-	for (int i = 1; i < objects.size(); i++)
-	{
-		DirectX::ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingSphere);
-		if (type == DirectX::ContainmentType::CONTAINS || type == DirectX::ContainmentType::INTERSECTS)
-		{
-			out.push_back(objects[i]);
-		}
-	}
+	using namespace DirectX;
+
+	// Push the dynamic objects into the render out vector
+	//out.push_back(quadTree->root->objects[0]);
+	//int i = (int)out.size();
+
+	//for (i; i < objects.size(); i++)
+	//{
+	//	ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingSphere);
+	//	if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
+	//	{
+	//		ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingBox);
+	//		if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
+	//		{
+	//			out.push_back(objects[i]);
+	//		}
+	//	}
+	//}
+
+	//ContainmentType type = quadTree->root->childs[0]->childs[3]->childs[3]->collider.boundingBox.Contains(this->transformed);
+
+	//if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
+	//{
+	//	std::cout << type << std::endl;
+	//	out = quadTree->root->childs[0]->childs[3]->childs[3]->objects;
+	//}
+	quadTree->nrOf = 0;
+	quadTree->DrawableNodes(quadTree->root, this->transformed);
+	std::cout << quadTree->nrOf << std::endl;
 }
 
 bool Frustum::Initialize()
@@ -157,12 +175,13 @@ bool Frustum::Initialize()
 	CameraObject* playerCam = ResourceManager::GetCamera("PlayerCam");
 
 	DirectX::BoundingFrustum::CreateFromMatrix(this->frustumColliderOriginal, playerCam->GetProjMatrixCPU());
-	Matrix transform = Matrix::CreateTranslation(playerCam->position);
+	Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 50.f });
+	//Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
 	// SHOWCASE PURPOSES
-	//this->frustumColliderOriginal.Near = 40.f;
-	//this->frustumColliderOriginal.Far = 125.f;
+	this->frustumColliderOriginal.Near = 0.1f;
+	this->frustumColliderOriginal.Far = 125.f;
 
 	this->transformed = frustumColliderOriginal;
 
@@ -172,6 +191,7 @@ bool Frustum::Initialize()
 		return false;
 	}
 #endif
+
 
 	return true;
 }

@@ -116,44 +116,82 @@ bool MeshObject::LoadTextures(std::string& diffuse, std::string& normal)
 	return true;
 }
 
-void MeshObject::BuildColliders(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max)
+void MeshObject::BuildCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, Collider& out)
 {
-	Collider collider;
 	DirectX::SimpleMath::Vector3 corners[8];
 
-	collider.boundingBox.Center.x = (max.x + min.x) / 2.f;
-	collider.boundingBox.Center.y = (max.y + min.y) / 2.f;
-	collider.boundingBox.Center.z = (max.z + min.z) / 2.f;
+	out.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	out.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	out.boundingBox.Center.z = (max.z + min.z) / 2.f;
 
-	collider.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
-	collider.boundingBox.Extents.x = (max.x - min.x) / 2.f;
-	collider.boundingBox.Extents.y = (max.y - min.y) / 2.f;
-	collider.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+	out.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	out.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	out.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	out.boundingBox.Extents.z = (max.z - min.z) / 2.f;
 
-	collider.boundingBox.GetCorners(corners);
+	out.boundingBox.GetCorners(corners);
 
 	// Front plane
-	collider.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
-	collider.planes[0].point = corners[1];
+	out.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	out.planes[0].point = corners[1];
 
 	// Back plane
-	collider.planes[1].normal = collider.planes[0].normal * -1.f;
-	collider.planes[1].point = corners[6];
+	out.planes[1].normal = out.planes[0].normal * -1.f;
+	out.planes[1].point = corners[6];
 
 	// Right side plane
-	collider.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
-	collider.planes[2].point = corners[4];
+	out.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	out.planes[2].point = corners[4];
 
 	// Left side plane
-	collider.planes[3].normal = collider.planes[2].normal * -1.f;
-	collider.planes[3].point = corners[5];
+	out.planes[3].normal = out.planes[2].normal * -1.f;
+	out.planes[3].point = corners[5];
+}
 
-	colliders.push_back(collider);
+void MeshObject::BuildRenderCollider(const Vector3& min, const Vector3& max, const std::vector<Vector3>& positions, Collider& out)
+{
+	using namespace DirectX::SimpleMath;
+
+	Vector3 corners[8];
+
+	out.boundingBox.Center.x = (max.x + min.x) / 2.f;
+	out.boundingBox.Center.y = (max.y + min.y) / 2.f;
+	out.boundingBox.Center.z = (max.z + min.z) / 2.f;
+
+	out.boundingBox.Orientation = { 0.f, 1.f, 0.f, 0.f };
+	out.boundingBox.Extents.x = (max.x - min.x) / 2.f;
+	out.boundingBox.Extents.y = (max.y - min.y) / 2.f;
+	out.boundingBox.Extents.z = (max.z - min.z) / 2.f;
+
+	out.boundingBox.GetCorners(corners);
+
+	// Front plane
+	out.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
+	out.planes[0].point = corners[1];
+
+	// Back plane
+	out.planes[1].normal = out.planes[0].normal * -1.f;
+	out.planes[1].point = corners[6];
+
+	// Right side plane
+	out.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
+	out.planes[2].point = corners[4];
+
+	// Left side plane
+	out.planes[3].normal = out.planes[2].normal * -1.f;
+	out.planes[3].point = corners[5];
+
+	DirectX::BoundingSphere::CreateFromPoints(out.boundingSphere, positions.size(),
+		&positions[0], sizeof(Vector3));
+
+	this->UpdateRenderCollider();
 }
 
 bool MeshObject::LoadColliders(bool hasColliders)
 {
-	std::vector<std::vector<DirectX::SimpleMath::Vector3>>positions;
+	using namespace DirectX::SimpleMath;
+
+	std::vector<std::vector<Vector3>>positions;
 
 	if (this->mesh != nullptr)
 	{
@@ -164,16 +202,29 @@ bool MeshObject::LoadColliders(bool hasColliders)
 		positions.push_back(this->animatedObj->meshPositions);
 	}
 
-	if (hasColliders)
+	// Gets min/max that covers the entire mesh and submeshes to build
+	// a collider that covers entire model
+	Vector3 modelMin = { FLT_MAX, FLT_MAX, FLT_MAX };
+	Vector3 modelMax = { FLT_MIN, FLT_MIN, FLT_MIN };
+	std::vector<Vector3>allPositions;
+	//Go through each of the meshes positions
+	for (size_t m = 0; m < positions.size(); m++)
 	{
-		//Go through each of the meshes positions
-		for (size_t m = 0; m < positions.size(); m++)
-		{
-			//Find the min and max of the total
-			DirectX::SimpleMath::Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
-			DirectX::SimpleMath::Vector3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
+		// Find the min and max of the submeshes to create collider 
+		// for each submesh
+		Vector3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+		Vector3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
 
-			for (size_t i = 0; i < positions[m].size(); i++)
+		for (size_t i = 0; i < positions[m].size(); i++)
+		{
+			modelMin.x = std::min(modelMin.x, positions[m][i].x);
+			modelMin.y = std::min(modelMin.y, positions[m][i].y);
+			modelMin.z = std::min(modelMin.z, positions[m][i].z);
+
+			modelMax.x = std::max(modelMax.x, positions[m][i].x);
+			modelMax.y = std::max(modelMax.y, positions[m][i].y);
+			modelMax.z = std::max(modelMax.z, positions[m][i].z);
+			if (hasColliders)
 			{
 				min.x = std::min(min.x, positions[m][i].x);
 				min.y = std::min(min.y, positions[m][i].y);
@@ -183,34 +234,32 @@ bool MeshObject::LoadColliders(bool hasColliders)
 				max.y = std::max(max.y, positions[m][i].y);
 				max.z = std::max(max.z, positions[m][i].z);
 			}
-			BuildColliders(min, max);
+			allPositions.push_back(positions[m][i]);
 		}
+		if (hasColliders)
+		{
+			Collider collider;
+			this->BuildCollider(min, max, collider);
+			colliders.push_back(collider);
+		}
+	}
+	if (hasColliders)
+	{
 		this->colliders.shrink_to_fit();
 		this->collidersOriginal = this->colliders;
 
-		#ifdef _DEBUG
+#ifdef _DEBUG
 		if (!this->CreateColliderBuffers())
 		{
 			std::cout << "Failed to create collider buffer..." << std::endl;
 			return false;
 		}
-		#endif
+#endif
 		this->UpdateBoundingBoxes();
 		this->UpdateBoundingPlanes();
 	}
 
-	std::vector<DirectX::SimpleMath::Vector3>allPositions;
-	for (size_t out = 0; out < positions.size(); out++)
-	{
-		for (size_t in = 0; in < positions[out].size(); in++)
-		{
-			allPositions.push_back(positions[out][in]);
-		}
-	}
-
-	//Sphere for the total meshobject
-	DirectX::BoundingSphere::CreateFromPoints(this->modelCollider.boundingSphere, allPositions.size(), 
-											  &allPositions[0], sizeof(DirectX::SimpleMath::Vector3));
+	this->BuildRenderCollider(modelMin, modelMax, allPositions, modelCollider);
 
 	return true;
 }
@@ -272,14 +321,14 @@ MeshObject::~MeshObject()
 		if (this->shaderResourceViews[i])
 			this->shaderResourceViews[i]->Release();
 	}
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	for (size_t i = 0; i < this->boundingBoxBuffer.size(); i++)
 	{
 		if (this->boundingBoxBuffer[i])
 			this->boundingBoxBuffer[i]->Release();
 	}
 	this->boundingBoxBuffer.clear();
-	#endif
+#endif
 	if (this->hasNormalMapBuffer)
 		this->hasNormalMapBuffer->Release();
 
@@ -290,14 +339,14 @@ MeshObject::~MeshObject()
 	this->collidersOriginal.clear();
 }
 
-bool MeshObject::Initialize(const std::string& meshObject, 
-							std::string diffuse, 
-							std::string normal, 
-							bool hasBounds, 
-							bool hasAnimation, 
-							const DirectX::SimpleMath::Vector3& pos, 
-							const DirectX::SimpleMath::Vector3& rot, 
-							const DirectX::SimpleMath::Vector3& scl)
+bool MeshObject::Initialize(const std::string& meshObject,
+	std::string diffuse,
+	std::string normal,
+	bool hasBounds,
+	bool hasAnimation,
+	const DirectX::SimpleMath::Vector3& pos,
+	const DirectX::SimpleMath::Vector3& rot,
+	const DirectX::SimpleMath::Vector3& scl)
 {
 	//Some preparation and setting
 	this->isAnimated = hasAnimation;
@@ -333,8 +382,6 @@ bool MeshObject::Initialize(const std::string& meshObject,
 
 	LoadColliders(hasBounds);
 
-	UpdateRenderBoundingBox();
-	
 	if (!CreateModelMatrixBuffer())
 	{
 		return false;
@@ -354,7 +401,7 @@ void MeshObject::SetPickUp(bool toggle)
 }
 
 void MeshObject::Render(bool shadowPass)
-{	
+{
 	//If not visible then we can ignore it
 	if (this->isVisible)
 	{
@@ -393,7 +440,7 @@ void MeshObject::Render(bool shadowPass)
 			standardVS->Release();
 			standardInputLayout->Release();
 		}
-		
+
 	}
 }
 
@@ -442,7 +489,7 @@ void MeshObject::UpdateBoundingBoxes()
 	}
 }
 
-void MeshObject::UpdateRenderBoundingBox()
+void MeshObject::UpdateRenderCollider()
 {
 	this->modelCollider.boundingSphere.Transform(this->modelCollider.boundingSphere, this->modelMatrix);
 	this->modelCollider.boundingBox.Transform(this->modelCollider.boundingBox, this->modelMatrix);

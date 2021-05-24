@@ -28,6 +28,7 @@ protected:
 	float stopcompl_timer; // Stop completely trap timer
 
 	OptionsHandler options;
+	QuadTree* quadTree;
 
 private:
 	Window window;
