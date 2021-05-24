@@ -521,7 +521,7 @@ void Game::LoadMap()
 	this->enemy = new Enemy();
 	Engine::SceneHandler()->EditScene().Add(this->player->GetMeshObject());
 	Engine::SceneHandler()->EditScene().Add(this->enemy->GetMeshObject());
-	AIHandler::SetEnemy(this->enemy);
+	AIHandler::SetEnemyAndPlayer(this->enemy, this->player);
 	// Terrain
 	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
 
@@ -564,9 +564,9 @@ void Game::LoadMap()
 		SceneHandler()->EditScene().AddLight(L);
 	}
 
-	SceneHandler()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true, false,
-		{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-		{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
+	//SceneHandler()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true, false,
+		//{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
+		//{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
 
 	// Houses around the town.
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });

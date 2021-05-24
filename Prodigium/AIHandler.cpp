@@ -1,7 +1,6 @@
 #include "AIHandler.h"
-AIHandler* AIHandler::instance = nullptr;
-
-std::vector<std::string> AIHandler::openFile(std::string filePath)
+AIHandler* AIHANDLER = nullptr;
+std::vector<std::string> AIHandler::openFile(const std::string& filePath)
 {
 	std::ifstream nodeFile;
 	nodeFile.open(filePath, std::ios::app);
@@ -19,18 +18,33 @@ std::vector<std::string> AIHandler::openFile(std::string filePath)
 
 }
 
+Node* AIHandler::FindClosestNode(const Vector3& position)
+{
+	Node* currentClosest = AIHANDLER->currentEnemyNode;
+	for (Node* currentNode : AIHANDLER->allNodes)
+	{
+		if ((currentNode->GetPos() - position).Length() < (currentClosest->GetPos() - position).Length())
+		{
+			currentClosest = currentNode;
+		}
+	}
+	return currentClosest;
+}
+
 AIHandler::AIHandler()
 {
 	currentEnemyNode = nullptr;
 	states = EnemyStates::PATROL;
 	this->monster = nullptr;
+	this->player = nullptr;
+	this->stateSwitchTime = 0.f;
 }
 
 const bool AIHandler::Initialize()
 {
-	if (!AIHandler::instance)
+	if (!AIHANDLER)
 	{
-		AIHandler::instance = new AIHandler();
+		AIHANDLER = new AIHandler();
 
 		return true;
 	}
@@ -39,9 +53,9 @@ const bool AIHandler::Initialize()
 
 AIHandler::~AIHandler()
 {
-	if (AIHandler::instance)
+	if (AIHANDLER)
 	{
-		delete AIHandler::instance;
+		delete AIHANDLER;
 	}
 }
 
@@ -64,7 +78,7 @@ void AIHandler::CreateNodes()
 		ss >> ID >> posX >> posZ;
 		Node* currentNode = new Node();
 		currentNode->Initialize({ posX, 0.f, posZ }, ID);
-		AIHandler::instance->allNodes.push_back(currentNode);
+		AIHANDLER->allNodes.push_back(currentNode);
 		currentIndex++;
 	}
 	std::cout << "Connecting Nodes\n";
@@ -73,15 +87,16 @@ void AIHandler::CreateNodes()
 		std::stringstream ss(file.at(i));
 		int ID1 = 0, ID2 = 0;
 		ss >> ID1 >> ID2;
-		AIHandler::instance->ConnectNodes(AIHandler::instance->GetNodeByID(ID1), AIHandler::instance->GetNodeByID(ID2));
+		AIHANDLER->ConnectNodes(AIHANDLER->GetNodeByID(ID1), AIHANDLER->GetNodeByID(ID2));
 	}
-	AIHandler::instance->currentEnemyNode = AIHandler::instance->allNodes.at(0);
+	AIHANDLER->currentEnemyNode = AIHANDLER->allNodes.at(0);
 }
 
 
-void AIHandler::SetEnemy(Enemy* enemy)
+void AIHandler::SetEnemyAndPlayer(Enemy* enemy, Player* player)
 {
-	AIHandler::instance->monster = enemy;
+	AIHANDLER->monster = enemy;
+	AIHANDLER->player = player;
 }
 
 void AIHandler::ConnectNodes(Node* node1, Node* node2)
@@ -92,31 +107,47 @@ void AIHandler::ConnectNodes(Node* node1, Node* node2)
 
 void AIHandler::MoveEnemy(const float& deltaTime)
 {
-	if (AIHandler::instance->monster)
+	if (AIHANDLER->monster)
 	{
-		switch (AIHandler::instance->states)
+		Vector3 DirectionVec;
+		switch (AIHANDLER->states)
 		{
 		case EnemyStates::PATROL:
-			if (AIHandler::instance->monster->HasReachedTarget())
+			if (AIHANDLER->monster->HasReachedTarget())
 			{
-				AIHandler::instance->currentEnemyNode = AIHandler::instance->currentEnemyNode->GetRandomConnectedNode();
-				AIHandler::instance->monster->SetNewTarget(AIHandler::instance->currentEnemyNode->GetPos());
-				std::cout << "Current Target Pos: " << AIHandler::instance->currentEnemyNode->GetPos().x << ", " << AIHandler::instance->currentEnemyNode->GetPos().z << std::endl;
+				AIHANDLER->currentEnemyNode = AIHANDLER->currentEnemyNode->GetRandomConnectedNode();
+				AIHANDLER->monster->SetNewTarget(AIHANDLER->currentEnemyNode->GetPos());
 			}
 			else
 			{
-				AIHandler::instance->monster->MoveToTarget(deltaTime);
+				AIHANDLER->monster->MoveToTarget(deltaTime);
+				//TODO: Add a cooldown timer between state changes
+				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
+				{
+					AIHANDLER->states = EnemyStates::CHASE;
+					std::cout << "Switching to Chase\n";
+					AIHANDLER->stateSwitchTime = omp_get_wtime();
+				}
 
 			}
 			break;
 		case EnemyStates::CHASE:
-
-			break;
-		case EnemyStates::RETREAT:
-
-			break;
-		default:
-			std::cout << "No state\n";
+			DirectionVec = (AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->getPosition());
+			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
+			{
+				AIHANDLER->monster->PlayAttackAnimation();
+			}
+			else
+			{
+				AIHANDLER->monster->Move({ DirectionVec.x, DirectionVec.z }, deltaTime);
+			}
+			if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
+			{
+				AIHANDLER->states = EnemyStates::PATROL;
+				std::cout << "Switching to Patrol\n";
+				AIHANDLER->stateSwitchTime = omp_get_wtime();
+				AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->getPosition())->GetPos());
+			}
 			break;
 		}
 	}
