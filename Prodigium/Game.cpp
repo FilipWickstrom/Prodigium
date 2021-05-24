@@ -9,13 +9,16 @@ DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	int whisperFactor = Engine::playerHp * 100;
-	int shouldWhisper = rand() % whisperFactor;
-
-	if (shouldWhisper > 5 && shouldWhisper < 10)
+	if (Engine::playerHp > 0)
 	{
-		int index = rand() % 4 + 1;
-		this->soundHandler.PlayOneShot(index);
+		int whisperFactor = Engine::playerHp * 100;
+		int shouldWhisper = rand() % whisperFactor;
+
+		if (shouldWhisper > 5 && shouldWhisper < 10)
+		{
+			int index = rand() % 4 + 1;
+			this->soundHandler.PlayOneShot(index);
+		}
 	}
 }
 
