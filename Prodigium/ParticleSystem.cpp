@@ -56,10 +56,13 @@ void ParticleSystem::Clear()
 {
 	ID3D11VertexShader* nullVShader = nullptr;
 	ID3D11UnorderedAccessView* nullAccess = nullptr;
+	ID3D11ShaderResourceView* nullShader = nullptr;
 	Graphics::GetContext()->VSSetShader(nullVShader, nullptr, 0);
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &nullShader);
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &nullShader);
 	Graphics::GetContext()->OMSetBlendState(NULL, NULL, 0xffffffff);
 	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullAccess, 0);
 

@@ -529,7 +529,7 @@ void Game::LoadMap()
 	Engine::SceneHandler()->EditScene().Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
 	// Terrain
-	SceneHandler()->EditScene().Add("planeTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
+	SceneHandler()->EditScene().Add("planeTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, 
 		{1000.0f, 1.0f, 1000.0f});
 
 	LightStruct L;
@@ -548,21 +548,26 @@ void Game::LoadMap()
 
 		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
 		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+		std::string normalmap = "";
 
 		// Used to fix inconsistencies in scale and rotation.
-		if (clue == "book")
+		if (clue == "book" || clue == "toy")
 			scale = { 0.5f, 0.5f, 0.5f };
 
-		if (clue == "drawing")
+		else if (clue == "drawing")
 		{
 			rotation = { 3.14159f, 3.14159f, 0.0f };
 			scale = { 0.5f, 0.5f, 0.5f };
+			normalmap = "drawing_normal.png";
 		}
 
-		if (clue == "mask")
+		else if (clue == "mask")
+		{
 			scale = { 1.2f, 1.2f, 1.2f };
+			normalmap = "mask_normal.png";
+		}
 
-		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, 
+		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false, 
 			{ pos.x, -3.0f, pos.y },
 			rotation, scale);
 		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };

@@ -23,6 +23,7 @@ RandomSpotPicker::RandomSpotPicker()
     cluesS[1] = "drawing";
     cluesS[2] = "mask";
     cluesS[3] = "necklace";
+    cluesS[4] = "toy";
 
     for (int i = 0; i < SPOTS; i++)
     {

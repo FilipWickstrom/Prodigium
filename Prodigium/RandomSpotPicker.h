@@ -2,7 +2,7 @@
 #include "Engine.h"
 
 #define SPOTS 13
-#define CLUES_AMOUNT 4
+#define CLUES_AMOUNT 5
 class RandomSpotPicker
 {
 private:
