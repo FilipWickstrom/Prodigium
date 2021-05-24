@@ -12,6 +12,7 @@
 #include "OptionsHandler.h"
 
 #define CLUES 4
+#define GUIHANDLER GUIHandler::instance
 
 class GUIHandler
 {
