@@ -21,10 +21,12 @@ void Game::Whisper()
 void Game::BulletTime()
 {
 	float distance = DirectX::SimpleMath::Vector4(this->enemy->GetMeshObject()->position - this->player->GetPlayerPos()).Length();	
-	float factor = std::max(std::min(distance, 400.0f), 5.0f) * 0.25f;
+	float factor = std::max(100.0f - distance, 0.0f);
 	float speed = factor * 0.01f;
-
+	speed *= -1;
+	std::cout << "Current Speed: " << speed << "\r";
 	this->soundHandler.SetPitch(speed);
+	
 }
 
 void Game::HandleScenes(const float& deltaTime)
