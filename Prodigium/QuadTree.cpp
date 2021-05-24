@@ -36,13 +36,8 @@ void QuadTree::ClearTree(QuadNode* node)
 	delete node;
 }
 
-void QuadTree::DrawableNodesInternal(int level, QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
+void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
 {
-	if (node == nullptr)
-	{
-		return;
-	}
-
 	ContainmentType type = node->bounds.Contains(frustum);
 
 	if (type == ContainmentType::DISJOINT)
@@ -52,10 +47,13 @@ void QuadTree::DrawableNodesInternal(int level, QuadNode* node, const DirectX::B
 
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
-		DrawableNodesInternal(level + 1, node->childs[i], frustum, out);
+		if (node->childs[i] != nullptr)
+		{
+			DrawableNodesInternal(node->childs[i], frustum, out);
+		}
 	}
 
-	if (level >= depth)
+	if (node->childs[0] == nullptr)
 	{
 		for (int i = 0; i < (int)node->objects.size(); i++)
 		{
@@ -106,9 +104,13 @@ void QuadTree::DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unord
 		return;
 	}
 
-	this->DrawableNodesInternal(0, root, frustum, out);
+	this->DrawableNodesInternal(root, frustum, out);
 
-	std::pair<std::uintptr_t, MeshObject*> toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[0]), root->objects[0]);
+	std::pair<std::uintptr_t, MeshObject*> toAdd;
+	toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[0]), root->objects[0]);
+	out.emplace(toAdd);
+
+	toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[1]), root->objects[1]);
 	out.emplace(toAdd);
 }
 

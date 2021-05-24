@@ -154,7 +154,7 @@ bool Frustum::Initialize()
 
 	// SHOWCASE PURPOSES
 	//this->frustumColliderOriginal.Near = 0.1f;
-	//this->frustumColliderOriginal.Far = 125.f;
+	this->frustumColliderOriginal.Far = 250.f;
 
 	this->transformed = frustumColliderOriginal;
 
