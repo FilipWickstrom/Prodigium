@@ -15,11 +15,17 @@ private:
 	ID3D11PixelShader* pixelShader;
 	ID3D11ComputeShader* computeShader;
 	ID3D11BlendState* alphaBlendState;
+	ID3D11SamplerState* sampler;
 
 	ID3D11Buffer* particleBuff;
 	ID3D11UnorderedAccessView* particleAccess;
 	ID3D11ShaderResourceView* particleView;
 	std::string vertexData;
+
+	ID3D11Texture2D* rainAlbedoTexture;
+	ID3D11Texture2D* rainOpacityTexture;
+	ID3D11ShaderResourceView* albedoView;
+	ID3D11ShaderResourceView* opacityView;
 
 	ID3D11Buffer* speedBuffer;
 

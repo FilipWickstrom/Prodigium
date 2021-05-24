@@ -21,6 +21,7 @@ struct VertexOut
 struct GSOutput
 {
     float4 pos : SV_Position;
+    float2 uv : UV;
 };
 
 
@@ -54,12 +55,21 @@ void main(point VertexOut input[1], uint primID : SV_PrimitiveID,
 		float4(position - width * right - height * up, 1.0f),
 		float4(position - width * right + height * up, 1.0f)
     };
+    
+    float2 uv_coords[4] =
+    {
+        float2(0.0f, 1.0f),
+        float2(0.0f, 0.0f),
+        float2(1.0f, 1.0f),
+        float2(1.0f, 0.0f)
+    };
 
     GSOutput geOut;
 	[unroll]
     for (int i = 0; i < 4; i++)
     {
         geOut.pos = mul(mul(positionW[i], view), proj);
+        geOut.uv = uv_coords[i];
         output.Append(geOut);
     }
 }

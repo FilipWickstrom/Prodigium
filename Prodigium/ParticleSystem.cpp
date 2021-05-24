@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 #include <fstream>
+#include "ResourceManager.h"
 
 float randomize(float upper, float lower)
 {
@@ -30,6 +31,9 @@ void ParticleSystem::InternalRender()
 	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
 	Graphics::GetContext()->OMSetBlendState(this->alphaBlendState, 0, 0xffffffff);
 	Graphics::GetContext()->CSSetConstantBuffers(0, 1, &this->speedBuffer);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->albedoView);
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &this->opacityView);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &this->sampler);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
 
 
@@ -194,6 +198,11 @@ ParticleSystem::ParticleSystem()
 	this->particleView = nullptr;
 	this->speedBuffer = nullptr;
 	this->alphaBlendState = nullptr;
+	this->albedoView = nullptr;
+	this->opacityView = nullptr;
+	this->rainAlbedoTexture = nullptr;
+	this->rainOpacityTexture = nullptr;
+	this->sampler = nullptr;
 	this->hasSetup = false;
 	this->isActive = true;
 }
@@ -218,6 +227,12 @@ ParticleSystem::~ParticleSystem()
 		this->speedBuffer->Release();
 	if (this->alphaBlendState)
 		this->alphaBlendState->Release();
+	if (this->albedoView)
+		this->albedoView->Release();
+	if (this->opacityView)
+		this->opacityView->Release();
+	if (this->sampler)
+		this->sampler->Release();
 }
 
 bool ParticleSystem::SetUp()
@@ -289,6 +304,25 @@ bool ParticleSystem::SetUp()
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+
+	this->rainAlbedoTexture = ResourceManager::GetTexture("Textures/raindrop_albedo.png");
+	this->rainOpacityTexture = ResourceManager::GetTexture("Textures/raindrop_opacity.png");
+
+	hr = Graphics::GetDevice()->CreateShaderResourceView(this->rainAlbedoTexture, NULL, &this->albedoView);
+	hr = Graphics::GetDevice()->CreateShaderResourceView(this->rainOpacityTexture, NULL, &this->opacityView);
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+	hr = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
+
 
 	hr = Graphics::GetDevice()->CreateBlendState(&blendDesc, &this->alphaBlendState);
 	if (FAILED(hr))
