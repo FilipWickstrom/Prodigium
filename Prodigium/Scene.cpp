@@ -351,7 +351,7 @@ void Scene::RenderShadows()
 			// Check the distance between light source and object.
 			if (this->objects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->objects[j]->IsVisible())
 			{
-				this->objects[j]->Render(true);
+				this->objects[j]->RenderShadows();
 			}
 		}
 	}
@@ -371,7 +371,7 @@ void Scene::RenderShadows(const std::vector<MeshObject*>& toRender)
 			// Check the distance between light source and object.
 			if (toRender[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && toRender[j]->IsVisible())
 			{
-				toRender[j]->Render(true);
+				toRender[j]->RenderShadows();
 			}
 		}
 	}

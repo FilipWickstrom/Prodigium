@@ -355,45 +355,61 @@ void MeshObject::SetPickUp(bool toggle)
 	this->isPickUp = toggle;
 }
 
-void MeshObject::Render(bool shadowPass)
-{	
-	//If not visible then we can ignore it
-	if (this->isVisible)
-	{
-		//Not necesary to do everything for shadows
-		if (!shadowPass)
-		{
-			//Set all the textures to the geometry pass pixelshader
-			Graphics::GetContext()->PSSetShaderResources(0, MAXNROFTEXTURES, &this->shaderResourceViews[0]);
-			Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
-		}
-
-		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
-
-		if (this->mesh != nullptr)
-		{
-			this->mesh->Render();
-		}
-		else if (this->animatedObj != nullptr)
-		{
-			//Standard stuff that static objects use
-			ID3D11VertexShader* standardVS;
-			Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
-			ID3D11InputLayout* standardInputLayout;
-			Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
-
-			if (shadowPass)
-				this->animatedObj->Render(GetTransposedMatrix(), false);
-			else
-				this->animatedObj->Render(GetTransposedMatrix());
-
-			//Set back the normal stuff that static objects use
-			Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
-			Graphics::GetContext()->IASetInputLayout(standardInputLayout);
-			standardVS->Release();
-			standardInputLayout->Release();
-		}
+void MeshObject::Render()
+{		
+	//Set all the textures to the geometry pass pixelshader
+	Graphics::GetContext()->PSSetShaderResources(0, MAXNROFTEXTURES, &this->shaderResourceViews[0]);
+	Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
 		
+	if (this->mesh != nullptr)
+	{
+		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+		this->mesh->Render();
+	}
+	else if (this->animatedObj != nullptr)
+	{
+		//Standard stuff that static objects use
+		//[LATER FIX IF MORE TIME] Awful solution but works for now...
+		ID3D11VertexShader* standardVS;
+		Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
+		ID3D11InputLayout* standardInputLayout;
+		Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
+
+		this->animatedObj->Render(GetTransposedMatrix());
+
+		//Set back the normal stuff that static objects use
+		Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+		Graphics::GetContext()->IASetInputLayout(standardInputLayout);
+		standardVS->Release();
+		standardInputLayout->Release();
+	}
+}
+
+void MeshObject::RenderShadows()
+{
+	//Only mesh
+	if (this->mesh != nullptr)
+	{
+		//Use default vertexshader by scene
+		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+		this->mesh->Render();
+	}
+	else if (this->animatedObj != nullptr)
+	{
+		//Standard stuff that static objects use
+		//[LATER FIX IF MORE TIME] Awful solution but works for now...
+		ID3D11VertexShader* standardVS;
+		Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
+		ID3D11InputLayout* standardInputLayout;
+		Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
+
+		this->animatedObj->RenderShadows(GetTransposedMatrix());
+
+		//Set back the normal stuff that static objects use
+		Graphics::GetContext()->VSSetShader(standardVS, nullptr, 0);
+		Graphics::GetContext()->IASetInputLayout(standardInputLayout);
+		standardVS->Release();
+		standardInputLayout->Release();
 	}
 }
 

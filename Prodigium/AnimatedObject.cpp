@@ -7,7 +7,7 @@ bool AnimatedObject::LoadVertexShader()
 	std::string shaderData;
 	std::ifstream reader;
 
-	reader.open("AnimationVertexShader.cso", std::ios::binary | std::ios::ate);
+	reader.open("AnimationVS.cso", std::ios::binary | std::ios::ate);
 	if (!reader.is_open())
 	{
 		return false;
@@ -19,12 +19,36 @@ bool AnimatedObject::LoadVertexShader()
 	shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
 
 	HRESULT hr = Graphics::GetDevice()->CreateVertexShader(shaderData.c_str(), shaderData.length(), nullptr, &this->vertexShader);
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
 	this->vShaderByteCode = shaderData;
 	shaderData.clear();
 	reader.close();
 
-	return !FAILED(hr);
+	reader.open("AnimationShadowVS.cso", std::ios::binary | std::ios::ate);
+	if (!reader.is_open())
+	{
+		return false;
+	}
+	reader.seekg(0, std::ios::end);
+	shaderData.reserve(static_cast<unsigned int>(reader.tellg()));
+	reader.seekg(0, std::ios::beg);
+
+	shaderData.assign((std::istreambuf_iterator<char>(reader)), std::istreambuf_iterator<char>());
+
+	hr = Graphics::GetDevice()->CreateVertexShader(shaderData.c_str(), shaderData.length(), nullptr, &this->shadowVertexShader);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	
+	this->shadowVShaderByteCode = shaderData;
+	shaderData.clear();
+	reader.close();
+	return true;
 }
 
 bool AnimatedObject::CreateInputLayout()
@@ -42,7 +66,27 @@ bool AnimatedObject::CreateInputLayout()
 	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 6, this->vShaderByteCode.c_str(), 
 														  this->vShaderByteCode.length(), &this->inputlayout);
 
-	return !FAILED(hr);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	D3D11_INPUT_ELEMENT_DESC shadowLayout[3] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+
+	hr = Graphics::GetDevice()->CreateInputLayout(shadowLayout, 3, this->shadowVShaderByteCode.c_str(),
+														this->shadowVShaderByteCode.length(), &this->shadowInputlayout);
+
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool AnimatedObject::CreateVertIndBuffers(const std::vector<AnimationVertex>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices)
@@ -380,6 +424,8 @@ AnimatedObject::AnimatedObject()
 {
 	this->vertexShader = nullptr;
 	this->inputlayout = nullptr;
+	this->shadowVertexShader = nullptr;
+	this->shadowInputlayout = nullptr;
 	this->vertexBuffer = nullptr;
 	this->indexBuffer = nullptr;
 	this->indexCount = 0;
@@ -400,6 +446,10 @@ AnimatedObject::~AnimatedObject()
 		this->vertexShader->Release();
 	if (this->inputlayout)
 		this->inputlayout->Release();
+	if (this->shadowVertexShader)
+		this->shadowVertexShader->Release();
+	if (this->shadowInputlayout)
+		this->shadowInputlayout->Release();
 	if (this->vertexBuffer)
 		this->vertexBuffer->Release();
 	if (this->indexBuffer)
@@ -504,14 +554,14 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 		{
 			//Get all animated matrices at this time for every bone
 			this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
+
+			//Calculate all matrices that will later be sent to the GPU
+			CalcFinalMatrix(this->rootBone, -1, worldMatrix);
+
+			//Update the array of matrices to the GPU
+			UpdateBonesCBuffer();
 		}
 	}
-
-	//Calculate all matrices that will later be sent to the GPU
-	CalcFinalMatrix(this->rootBone, -1, worldMatrix);
-
-	//Update the array of matrices to the GPU
-	UpdateBonesCBuffer();
 
 	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
 	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
@@ -525,8 +575,24 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 	//Finally draw the mesh
 	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
 
-	//
-	ID3D11Buffer* nullCBuffer = nullptr;
-	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullCBuffer);
+	ID3D11Buffer* nullBoneBuffer = nullptr;
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullBoneBuffer);
+}
 
+void AnimatedObject::RenderShadows(const DirectX::SimpleMath::Matrix& worldMatrix)
+{
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
+	Graphics::GetContext()->VSSetShader(this->shadowVertexShader, nullptr, 0);
+	Graphics::GetContext()->IASetInputLayout(this->shadowInputlayout);
+
+	UINT stride = sizeof(AnimationVertex);
+	UINT offset = 0;
+	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
+	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	//Finally draw the mesh
+	Graphics::GetContext()->DrawIndexed(this->indexCount, 0, 0);
+
+	ID3D11Buffer* nullBoneBuffer = nullptr;
+	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullBoneBuffer);
 }
