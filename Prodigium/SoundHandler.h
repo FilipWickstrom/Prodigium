@@ -34,6 +34,7 @@ public:
 					 const DirectX::SimpleMath::Vector3& emitterPos = { 0,0,0 });
 	void PlayMusic(const int& index);
 	void PlayAmbient(const int& index);
+	void SetPitch(const float& newPitch);
 	void SuspendAudio();
 	void ResumeAudio();
 };

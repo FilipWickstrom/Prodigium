@@ -18,6 +18,23 @@ void Game::Whisper()
 	}
 }
 
+void Game::BulletTime()
+{
+	float distance;
+	distance = DirectX::SimpleMath::Vector4(DirectX::SimpleMath::Vector4(0, 0, 0, 0) - this->player->GetPlayerPos()).Length(); //Add Enemy Pos here later
+
+	if (distance > 50)
+		this->soundHandler.SetPitch(0.0f);
+	if (distance <= 50)
+		this->soundHandler.SetPitch(-0.25f);
+	if (distance <= 48)
+		this->soundHandler.SetPitch(-0.50f);
+	if (distance <= 46)
+		this->soundHandler.SetPitch(-0.75f);
+	if (distance <= 44)
+		this->soundHandler.SetPitch(-1.0f);
+}
+
 void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
@@ -90,6 +107,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		//Randomiserar varje frame om man ska få en viskning i öronen, och om man ska få så randomiserar den vilken viskning man ska få
 		Whisper();
+		BulletTime();
 	}
 }
 

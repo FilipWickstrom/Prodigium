@@ -33,6 +33,7 @@ private:
 	std::vector<int> trapIndices;
 
 	void Whisper();
+	void BulletTime();
 	void HandleScenes(const float& deltaTime);
 	void HandleGameLogic(const float& deltaTime);
 	int amountOfObjects;
