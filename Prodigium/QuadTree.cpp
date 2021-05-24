@@ -88,8 +88,8 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		// handling terrain will be much easier.
 		root = new QuadNode;
 		BoundingBox box;
-		box.Center = { 0.0f, 0.0f, 0.0f };
-		box.Extents = { 750.f, 750.f, 750.f };
+		box.Center = { 0.0f, -5.25f, 0.0f };
+		box.Extents = { 750.f, 1.f, 750.f };
 		root->bounds = box;
 		root->objects = objects;
 
