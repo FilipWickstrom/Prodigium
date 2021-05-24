@@ -27,7 +27,7 @@ public:
 	void Update();
 	// Will check intersection with objects to the frustum, will out a vector of all 
 	// meshobjects that should be drawed current frame.
-	void Drawable(QuadTree*& quadTree, std::vector<MeshObject*>& out);
+	void Drawable(QuadTree*& quadTree, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 	bool Initialize();
 
 #ifdef _DEBUG

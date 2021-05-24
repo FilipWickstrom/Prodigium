@@ -85,7 +85,7 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
-	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
+	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
 	toRender->clear();
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();

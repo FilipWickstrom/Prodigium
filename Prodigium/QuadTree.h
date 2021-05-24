@@ -23,14 +23,13 @@ private:
 	void AddNodes(int level, QuadNode* node);
 	void ClearTree(QuadNode* node);
 	void AddObject(QuadNode* node);
+	void DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 
 public:
 	QuadTree(int depth = 5);
 	~QuadTree();
 
-	int nrOf = 0;
-
 	void BuildQuadTree(const std::vector<MeshObject*>& objects);
 	QuadNode* root;
-	void DrawableNodes(QuadNode* node, const DirectX::BoundingFrustum& frustum);
+	void DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 };

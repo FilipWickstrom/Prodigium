@@ -39,6 +39,27 @@ void QuadTree::ClearTree(QuadNode* node)
 	delete node;
 }
 
+void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
+{
+	if (node == nullptr)
+	{
+		return;
+	}
+
+	ContainmentType type = node->collider.boundingBox.Contains(frustum);
+
+	if (type == ContainmentType::DISJOINT)
+	{
+		return;
+	}
+
+	for (int i = 0; i < CHILD_COUNT; i++)
+	{
+		DrawableNodesInternal(node->childs[i], frustum, out);
+	}
+
+}
+
 void QuadTree::AddObject(QuadNode* node)
 {
 	using namespace DirectX;
@@ -48,7 +69,7 @@ void QuadTree::AddObject(QuadNode* node)
 	{
 		object = root->objects[i];
 		ContainmentType type = node->collider.boundingBox.Contains(root->objects[i]->modelCollider.boundingBox);
-		if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
+		if (type == ContainmentType::CONTAINS)
 		{
 			node->objects.push_back(object);
 		}
@@ -71,26 +92,23 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 	}
 }
 
-void QuadTree::DrawableNodes(QuadNode* node, const DirectX::BoundingFrustum& frustum)
+void QuadTree::DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out)
 {
-	ContainmentType type = node->collider.boundingBox.Contains(frustum);
-
-	if (type == ContainmentType::DISJOINT)
+	if (root == nullptr)
 	{
 		return;
 	}
 
-	if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
+	for (int i = 0; i < CHILD_COUNT; i++)
 	{
-		nrOf++;
-		for (int i = 0; i < CHILD_COUNT; i++)
-		{
-			if (node->childs[i] != nullptr)
-			{
-				this->DrawableNodes(node->childs[i], frustum);
-			}
-		}
+		this->DrawableNodesInternal(root, frustum, out);
 	}
+
+	//for (int i = 0; i < (int)node->objects.size(); i++)
+	//{
+	//	std::pair<std::uintptr_t, MeshObject*> toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(node->objects[i]), node->objects[i]);
+	//	out.emplace(toAdd);
+	//}
 }
 
 QuadTree::QuadTree(int depth)

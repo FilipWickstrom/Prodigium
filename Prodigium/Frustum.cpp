@@ -137,37 +137,9 @@ void Frustum::Update()
 	this->frustumColliderOriginal.Transform(this->transformed, transform);
 }
 
-void Frustum::Drawable(QuadTree*& quadTree, std::vector<MeshObject*>& out)
+void Frustum::Drawable(QuadTree*& quadTree, std::unordered_map<std::uintptr_t, MeshObject*>& out)
 {
-	using namespace DirectX;
-
-	// Push the dynamic objects into the render out vector
-	//out.push_back(quadTree->root->objects[0]);
-	//int i = (int)out.size();
-
-	//for (i; i < objects.size(); i++)
-	//{
-	//	ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingSphere);
-	//	if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
-	//	{
-	//		ContainmentType type = this->transformed.Contains(objects[i]->modelCollider.boundingBox);
-	//		if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
-	//		{
-	//			out.push_back(objects[i]);
-	//		}
-	//	}
-	//}
-
-	//ContainmentType type = quadTree->root->childs[0]->childs[3]->childs[3]->collider.boundingBox.Contains(this->transformed);
-
-	//if (type == ContainmentType::CONTAINS || type == ContainmentType::INTERSECTS)
-	//{
-	//	std::cout << type << std::endl;
-	//	out = quadTree->root->childs[0]->childs[3]->childs[3]->objects;
-	//}
-	quadTree->nrOf = 0;
-	quadTree->DrawableNodes(quadTree->root, this->transformed);
-	std::cout << quadTree->nrOf << std::endl;
+	quadTree->DrawableNodes(this->transformed, out);
 }
 
 bool Frustum::Initialize()
@@ -179,6 +151,7 @@ bool Frustum::Initialize()
 	//Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
+
 	// SHOWCASE PURPOSES
 	this->frustumColliderOriginal.Near = 0.1f;
 	this->frustumColliderOriginal.Far = 125.f;
@@ -191,7 +164,6 @@ bool Frustum::Initialize()
 		return false;
 	}
 #endif
-
 
 	return true;
 }
