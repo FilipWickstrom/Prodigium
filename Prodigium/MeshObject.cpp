@@ -340,6 +340,8 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		return false;
 	}
 
+	UpdateMatrix();
+
 	return true;
 }
 
@@ -366,9 +368,10 @@ void MeshObject::Render(bool shadowPass)
 			Graphics::GetContext()->VSSetConstantBuffers(2, 1, &this->hasNormalMapBuffer);
 		}
 
+		Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
+
 		if (this->mesh != nullptr)
 		{
-			Graphics::GetContext()->VSSetConstantBuffers(1, 1, &GetModelMatrixBuffer());
 			this->mesh->Render();
 		}
 		else if (this->animatedObj != nullptr)
@@ -378,7 +381,6 @@ void MeshObject::Render(bool shadowPass)
 			Graphics::GetContext()->VSGetShader(&standardVS, nullptr, 0);
 			ID3D11InputLayout* standardInputLayout;
 			Graphics::GetContext()->IAGetInputLayout(&standardInputLayout);
-
 
 			if (shadowPass)
 				this->animatedObj->Render(GetTransposedMatrix(), false);
