@@ -94,7 +94,11 @@ void SoundHandler::SetFXVolume(const float& newVolume)
 
 void SoundHandler::PlayOneShot(const int& index)
 {
-	this->waveBankFX->Play(index, this->fxVolume, 0, 0);
+	this->instanceFX = this->waveBankFX->CreateInstance(index);
+	if (!this->instanceFX)
+		std::cout << "Index not in wave bank!" << std::endl;
+	else
+		this->instanceFX->Play();
 }
 
 void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
