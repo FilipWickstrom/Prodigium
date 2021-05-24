@@ -23,7 +23,7 @@ private:
 	void AddNodes(int level, QuadNode* node);
 	void ClearTree(QuadNode* node);
 	void AddObject(QuadNode* node);
-	void DrawableNodesInternal(int level, QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
+	void DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrustum& frustum, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 	QuadNode* root;
 
 public:

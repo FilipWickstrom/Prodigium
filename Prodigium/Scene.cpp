@@ -293,16 +293,6 @@ void Scene::Render()
 
 void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
-	//if ((int)toRender.size() > 0)
-	//{
-	//	for (int i = 0; i < (int)toRender.size(); i++)
-	//	{
-	//		if (toRender[i]->IsVisible())
-	//		{
-	//			toRender[i]->Render();
-	//		}
-	//	}
-	//}
 	for (auto object : toRender)
 	{
 		if (object.second->IsVisible())
@@ -418,10 +408,6 @@ void Scene::RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObj
 		{
 			object.second->RenderBoundingBoxes();
 		}
-		//for (int i = 0; i < (int)toRender.size(); i++)
-		//{
-		//	toRender[i]->RenderBoundingBoxes();
-		//}
 	}
 }
 #endif
