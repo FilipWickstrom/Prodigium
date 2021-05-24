@@ -279,7 +279,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
     float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
         //FOG
-        float3 toEye = camPos - gbuffers.positionWS;
+        float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;
         float distanceToEye = length(toEye);
     
         float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
