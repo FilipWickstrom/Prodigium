@@ -209,8 +209,8 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, s
 	if (this->currentFrameTime >= this->duration)
 		this->currentFrameTime = 0;
 	//Resets to end when reached start - only when playing in revers
-	else if (this->currentFrameTime <= 0)
-		this->currentFrameTime = this->duration;
+	else if (this->currentFrameTime < 0)
+		this->currentFrameTime = this->duration + this->currentFrameTime;
 
 	aiVector3D pos;
 	aiVector3D scl;
