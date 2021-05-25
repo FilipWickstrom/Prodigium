@@ -15,7 +15,7 @@ private:
 	EnemyStates states;
 	Enemy* monster;
 	static AIHandler* instance;
-	static std::vector<std::string> openFile(std::string filePath);
+	static std::vector<std::string> OpenFile(std::string filePath);
 	AIHandler();
 	virtual ~AIHandler();
 public:

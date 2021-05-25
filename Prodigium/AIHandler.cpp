@@ -1,7 +1,7 @@
 #include "AIHandler.h"
 AIHandler* AIHandler::instance = nullptr;
 
-std::vector<std::string> AIHandler::openFile(std::string filePath)
+std::vector<std::string> AIHandler::OpenFile(std::string filePath)
 {
 	std::ifstream nodeFile;
 	nodeFile.open(filePath, std::ios::app);
@@ -45,7 +45,7 @@ AIHandler::~AIHandler()
 void AIHandler::CreateNodes()
 {
 	//Todo: Add correct nodes and add their connections
-	std::vector<std::string> file = openFile("Resources/Nodes/NodeInfo.txt");//replace with actual name
+	std::vector<std::string> file = OpenFile("Resources/Nodes/NodeInfo.txt");//replace with actual name
 	int currentIndex = 0;
 	if (file.size() == 0)
 	{
