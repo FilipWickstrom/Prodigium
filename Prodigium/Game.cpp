@@ -5,6 +5,8 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
+#define EDITSCENE SceneHandler()->EditScene()
+
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
@@ -142,6 +144,25 @@ void Game::HandleGameLogic(const float& deltaTime)
 		if (this->attackTimer > 0)
 		{
 			this->attackTimer -= 1 * deltaTime;
+		}
+
+		// Loops through all traps with monster
+		int index = 0;
+		for (int i = amountOfObjects; i < SceneHandler()->EditScene().GetNumberOfObjects(); i++)
+		{
+			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
+			{
+				if (this->typeOfTrap[index] == 0)
+				{
+					this->enemy->SetSpeedFactor(0.0f);
+				}
+				else
+				{
+					this->enemy->SetSpeedFactor(0.1f);
+				}
+				EDITSCENE.GetMeshObject(i).SetVisible(false);
+			}
+			index++;
 		}
 	}
 
@@ -383,7 +404,6 @@ void Game::HandleInput(const float& deltaTime)
 			{
 				if (this->player->GetMeshObject()->GetDistance(SceneHandler()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandler()->EditScene().GetMeshObject(i).IsVisible())
 				{
-					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
@@ -398,7 +418,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
-
+				this->typeOfTrap.push_back(0);
 				this->stopcompl_timer = STOPCOOLDOWN * this->options.difficulty;
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
@@ -407,7 +427,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 1.5f, 1.5f, 1.5f });
-
+				this->typeOfTrap.push_back(1);
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}
@@ -437,7 +457,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Graphics::SetDeltaTime(deltaTime);
 	/*---------------ONE---------------*/
-		HandleInput(deltaTime);
+	HandleInput(deltaTime);
 
 	/*---------------TWO---------------*/
 	HandleScenes(deltaTime);
@@ -587,8 +607,8 @@ void Game::LoadMap()
 	for (int i = 0; i < this->options.difficulty * 2; i++)
 	{
 		trapIndices.push_back(SceneHandler()->EditScene().GetNumberOfObjects());
-		DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
-		std::string clue = this->picker.getRandomClue();
+		DirectX::SimpleMath::Vector2 pos = this->picker.GetRandomPos();
+		std::string clue = this->picker.GetRandomClue();
 
 		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
 		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };

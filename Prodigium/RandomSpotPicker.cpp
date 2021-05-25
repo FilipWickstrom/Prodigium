@@ -35,7 +35,7 @@ RandomSpotPicker::~RandomSpotPicker()
 {
 }
 
-DirectX::SimpleMath::Vector2 RandomSpotPicker::getRandomPos()
+DirectX::SimpleMath::Vector2 RandomSpotPicker::GetRandomPos()
 {
     // Don't let any pickup get same position.
     int random = rand() % SPOTS;
@@ -49,7 +49,7 @@ DirectX::SimpleMath::Vector2 RandomSpotPicker::getRandomPos()
     return spots[random];
 }
 
-std::string RandomSpotPicker::getRandomClue()
+std::string RandomSpotPicker::GetRandomClue()
 {
     int index = rand() % CLUES_AMOUNT;
     return this->cluesS[index];
