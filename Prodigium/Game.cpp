@@ -168,6 +168,21 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
+
+	// Pause the game.
+	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::PauseGame();
+		this->isPaused = true;
+		this->soundHandler.SuspendAudio();
+	}
+
+	// Resume the game.
+	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::ResumeGame();
+	}
+
 	// Go to Options Menu
 	if (InputHandler::IsKeyPressed(Keyboard::P) && !this->hasLoaded)
 	{
@@ -380,18 +395,6 @@ void Game::HandleInput(const float& deltaTime)
 		}
 
 
-	}
-
-	// Pause the game.
-	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
-	{
-		GUIHandler::PauseGame();
-		this->isPaused = true;
-		this->soundHandler.SuspendAudio();
-	}
-	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
-	{
-		GUIHandler::ResumeGame();
 	}
 }
 
