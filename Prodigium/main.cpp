@@ -12,7 +12,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	Game game(hInstance, 1280, 1024);
+	UINT winWidth = 1920;
+	UINT winHeight = 1080;
+#ifdef _DEBUG
+	winWidth = 1280;
+	winHeight = 1024;
+#endif 
+
+	Game game(hInstance, winWidth, winHeight);
 	game.OnStart();
 	double currentFrame = 0.f, lastFrame = omp_get_wtime();
 	float deltaTime = 0.f, deltaSum = 0.f;

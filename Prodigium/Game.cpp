@@ -143,6 +143,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			else
 			{
+				Engine::playerHp = 0;
 				this->player->SetMovement(false);
 				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 			}
