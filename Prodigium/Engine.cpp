@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <omp.h>
 
 Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {

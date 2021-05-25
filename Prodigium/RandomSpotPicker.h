@@ -16,8 +16,8 @@ public:
 	RandomSpotPicker();
 	virtual ~RandomSpotPicker();
 
-	DirectX::SimpleMath::Vector2 getRandomPos();
-	std::string getRandomClue();
+	DirectX::SimpleMath::Vector2 GetRandomPos();
+	std::string GetRandomClue();
 	void Reset();
 };
 

@@ -383,7 +383,6 @@ void Game::HandleInput(const float& deltaTime)
 			{
 				if (this->player->GetMeshObject()->GetDistance(SceneHandler()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandler()->EditScene().GetMeshObject(i).IsVisible())
 				{
-					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
@@ -437,7 +436,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	Graphics::SetDeltaTime(deltaTime);
 	/*---------------ONE---------------*/
-		HandleInput(deltaTime);
+	HandleInput(deltaTime);
 
 	/*---------------TWO---------------*/
 	HandleScenes(deltaTime);
@@ -587,8 +586,8 @@ void Game::LoadMap()
 	for (int i = 0; i < this->options.difficulty * 2; i++)
 	{
 		trapIndices.push_back(SceneHandler()->EditScene().GetNumberOfObjects());
-		DirectX::SimpleMath::Vector2 pos = this->picker.getRandomPos();
-		std::string clue = this->picker.getRandomClue();
+		DirectX::SimpleMath::Vector2 pos = this->picker.GetRandomPos();
+		std::string clue = this->picker.GetRandomClue();
 
 		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
 		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
@@ -614,10 +613,11 @@ void Game::LoadMap()
 		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
 			{ pos.x, -3.0f, pos.y }, rotation, scale);
 
-		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-		L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-		L.position = { pos.x, 0.0f, pos.y , 5.0f };
-		SceneHandler()->EditScene().AddLight(L);
+	// FIX LIGHT OPTIMIZATION BEFORE ADDING LIGHTS TO CLUES
+		//L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+		//L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+		//L.position = { pos.x, 0.0f, pos.y , 5.0f };
+		//SceneHandler()->EditScene().AddLight(L);
 	}
 
 	// Houses around the town.
