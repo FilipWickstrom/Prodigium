@@ -23,7 +23,7 @@ private:
 	static GUIHandler* instance;
 
 	ImGuiIO io;
-	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI, showOptionsMenu;
+	bool trap1Active, trap2Active, isPaused, shouldQuit, shouldResume, showMainMenu, showGameGUI, showOptionsMenu, shouldReturn;
 	bool clockTimer;
 	bool showPauseMenu;
 	int imageWidth, imageHeight;
@@ -51,9 +51,11 @@ public:
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
 	static void PauseGame();
 	static void ResumeGame();
+	static void ReturnToMainMenu();
 	static const bool ShouldResume();
 	static const bool ShouldQuit();
 	static const bool InOptionsMenu();
+	static const bool ShouldReturnToMainMenu();
 	static void ShowMainMenu(const bool& show);
 	static void ShowGameGUI(const bool& show);
 	static void ShowOptionsMenu(const bool& show);

@@ -101,6 +101,17 @@ void Game::HandleScenes(const float& deltaTime)
 		this->running = false;
 	if (GUIHandler::InOptionsMenu())
 		this->isInOptions = true;
+	if (GUIHandler::ShouldReturnToMainMenu())
+	{
+		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+		Engine::inGame = false;
+		// Set these values if you want to return to menu.
+		this->menu.Switch(true);
+		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);		
+	}
 }
 
 void Game::HandleGameLogic(const float& deltaTime)
@@ -471,6 +482,11 @@ void Game::ResetValues()
 	Engine::stopcompl_timer = 0;
 	this->options.gameTimer = 0;
 	this->attackTimer = 0;
+	this->monsterSoundTimer = 0;
+	
+	this->soundHandler.SetPitch(0.0f);
+	this->soundHandler.PlayMusic(1);
+	this->soundHandler.PlayAmbient(1);
 }
 
 void Game::LoadMainMenu()

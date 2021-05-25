@@ -240,6 +240,12 @@ void GUIHandler::ResumeGame()
     GUIHANDLER->shouldResume = true;
 }
 
+void GUIHandler::ReturnToMainMenu()
+{
+    GUIHANDLER->isPaused = false;
+    GUIHANDLER->shouldReturn = true;
+}
+
 const bool GUIHandler::ShouldResume()
 {
     return GUIHANDLER->shouldResume;
@@ -253,6 +259,11 @@ const bool GUIHandler::ShouldQuit()
 const bool GUIHandler::InOptionsMenu()
 {
     return GUIHANDLER->showOptionsMenu;
+}
+
+const bool GUIHandler::ShouldReturnToMainMenu()
+{
+    return GUIHANDLER->shouldReturn;
 }
 
 void GUIHandler::ShowMainMenu(const bool& show)
@@ -495,7 +506,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
 void GUIHandler::RenderPauseMenu()
 {
-    SetNextWindowSize(ImVec2(260, 175));
+    SetNextWindowSize(ImVec2(260, 225));
     SetNextWindowPos(ImVec2(((float)Graphics::GetWindowWidth() * 0.5f) - 125, ((float)Graphics::GetWindowHeight() * 0.25f) + 150));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
@@ -508,6 +519,14 @@ void GUIHandler::RenderPauseMenu()
         if(Button("Resume", ImVec2(250, 50)))
         {
             ResumeGame();
+        }
+        EndChild();
+
+        BeginChild("Return to Main Menu Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
+        SetWindowFontScale(1.5f);
+        if (Button("Main Menu", ImVec2(250, 50)))
+        {
+            ReturnToMainMenu();
         }
         EndChild();
 
@@ -539,6 +558,7 @@ void GUIHandler::RenderPauseMenu()
 
 void GUIHandler::RenderMainMenu()
 {
+    GUIHandler::instance->shouldReturn = false;
     bool* isActive = new bool;
     SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 150, (float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2(500, 600), 0);
