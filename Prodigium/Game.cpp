@@ -147,12 +147,22 @@ void Game::HandleGameLogic(const float& deltaTime)
 		}
 
 		// Loops through all traps with monster
+		int index = 0;
 		for (int i = amountOfObjects; i < SceneHandler()->EditScene().GetNumberOfObjects(); i++)
 		{
-			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f)
+			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
 			{
-				this->enemy->SetSpeedFactor(0.01f);
+				if (this->typeOfTrap[index] == 0)
+				{
+					this->enemy->SetSpeedFactor(0.0f);
+				}
+				else
+				{
+					this->enemy->SetSpeedFactor(0.1f);
+				}
+				EDITSCENE.GetMeshObject(i).SetVisible(false);
 			}
+			index++;
 		}
 	}
 
@@ -408,7 +418,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
-
+				this->typeOfTrap.push_back(0);
 				this->stopcompl_timer = STOPCOOLDOWN * this->options.difficulty;
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
@@ -417,7 +427,7 @@ void Game::HandleInput(const float& deltaTime)
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 1.5f, 1.5f, 1.5f });
-
+				this->typeOfTrap.push_back(1);
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}

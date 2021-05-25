@@ -34,6 +34,7 @@ private:
 
 	bool isInOptions;
 	std::vector<int> trapIndices;
+	std::vector<int> typeOfTrap;
 	float attackTimer;
 	float monsterSoundTimer;
 
