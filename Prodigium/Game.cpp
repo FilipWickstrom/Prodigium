@@ -5,6 +5,8 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
+#define EDITSCENE SceneHandler()->EditScene()
+
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
@@ -142,6 +144,15 @@ void Game::HandleGameLogic(const float& deltaTime)
 		if (this->attackTimer > 0)
 		{
 			this->attackTimer -= 1 * deltaTime;
+		}
+
+		// Loops through all traps with monster
+		for (int i = amountOfObjects; i < SceneHandler()->EditScene().GetNumberOfObjects(); i++)
+		{
+			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f)
+			{
+				this->enemy->SetSpeedFactor(0.01f);
+			}
 		}
 	}
 

@@ -22,7 +22,7 @@ cbuffer LightsInfo : register(b0)
     float4 info;
 }
 
-#define LIGHT_FADE 300
+#define LIGHT_FADE 250
 static const float density = 0.007f;
 static const float gradient = 0.2f;
 cbuffer Camera : register(b1)

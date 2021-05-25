@@ -5,7 +5,9 @@ class Enemy
 private:
 	MeshObject* model;
 	float speed;
+	float speedFactor;
 	float attackRange;
+	float speedDegradeCooldown;
 	DirectX::SimpleMath::Vector3 targetPos;
 	bool reachedTarget;
 public:
@@ -16,7 +18,6 @@ public:
 	void MoveToTarget(const float& deltaTime);
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
-
-
+	void SetSpeedFactor(float factor);
 };
 

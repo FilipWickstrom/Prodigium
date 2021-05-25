@@ -60,7 +60,7 @@ void AIHandler::CreateNodes()
 		float posX = 0, posZ = 0;
 		ss >> ID >> posX >> posZ;
 		Node* currentNode = new Node();
-		currentNode->Initialize({ posX, 0.f, posZ }, ID);
+		currentNode->Initialize({ posX, -3.f, posZ }, ID);
 		AIHandler::instance->allNodes.push_back(currentNode);
 		currentIndex++;
 	}
