@@ -30,6 +30,20 @@ void Game::BulletTime()
 	this->soundHandler.SetPitch(-speed);
 }
 
+void Game::MonsterSounds(const float& deltaTime)
+{
+	if (this->monsterSoundTimer <= 0)
+	{
+		int index = rand() % 4 + 1;
+		this->soundHandler.PlayMonsterSounds(index);
+		this->monsterSoundTimer = 5;
+	}
+	else if (this->monsterSoundTimer > 0)
+	{
+		this->monsterSoundTimer -= 1 * deltaTime;
+	}
+}
+
 void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
@@ -88,6 +102,17 @@ void Game::HandleScenes(const float& deltaTime)
 		this->running = false;
 	if (GUIHandler::InOptionsMenu())
 		this->isInOptions = true;
+	if (GUIHandler::ShouldReturnToMainMenu())
+	{
+		this->isPaused = false;
+		this->soundHandler.ResumeAudio();
+		Engine::inGame = false;
+		// Set these values if you want to return to menu.
+		this->menu.Switch(true);
+		this->ResetValues();
+		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(false);		
+	}
 }
 
 void Game::HandleGameLogic(const float& deltaTime)
@@ -101,9 +126,12 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		player->Update(SceneHandler()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-
-		Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-		BulletTime(); //Slows down all sounds if you're near the enemy
+		if (!this->isPaused)
+		{
+			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			BulletTime(); //Slows down all sounds if you're near the enemy
+			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
+		}
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
@@ -119,7 +147,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
-		this->soundHandler.Update();
+		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position);
 		AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
 	}
@@ -136,6 +164,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->inGoal = false;
 	this->amountOfObjects = 0;
 	this->attackTimer = 0;
+	this->monsterSoundTimer = 0;
 	this->isInOptions = false;
 }
 
@@ -168,6 +197,21 @@ void Game::HandleInput(const float& deltaTime)
 	InputHandler::UpdateKeyboardAndMouse();
 
 	direction = { 0.f, 0.f };
+
+
+	// Pause the game.
+	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::PauseGame();
+		this->isPaused = true;
+		this->soundHandler.SuspendAudio();
+	}
+
+	// Resume the game.
+	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::ResumeGame();
+	}
 
 	// Go to Options Menu
 	if (InputHandler::IsKeyPressed(Keyboard::P) && !this->hasLoaded)
@@ -379,12 +423,7 @@ void Game::HandleInput(const float& deltaTime)
 
 			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::Escape))
-		{
-			GUIHandler::PauseGame();
-			this->isPaused = true;
-			this->soundHandler.SuspendAudio();
-		}
+
 
 	}
 }
@@ -454,6 +493,11 @@ void Game::ResetValues()
 	Engine::stopcompl_timer = 0;
 	this->options.gameTimer = 0;
 	this->attackTimer = 0;
+	this->monsterSoundTimer = 0;
+	
+	this->soundHandler.SetPitch(0.0f);
+	this->soundHandler.PlayMusic(1);
+	this->soundHandler.PlayAmbient(1);
 }
 
 void Game::LoadMainMenu()

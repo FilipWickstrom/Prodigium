@@ -56,6 +56,15 @@ void main(point VertexOut input[1], uint primID : SV_PrimitiveID,
 		float4(position - width * right + height * up, 1.0f)
     };
     
+    if(position.y <= 1.0f)
+    {
+        positionW[0] = float4(position + width * right - height * up, 1.0f);
+        positionW[1] = float4(position + width * right + height * up, 1.0f);
+        positionW[2] = float4(position - width * right - height * up, 1.0f);
+        positionW[3] = float4(position - width * right + height * up, 1.0f);
+    }
+    
+    
     float2 uv_coords[4] =
     {
         float2(0.0f, 1.0f),
