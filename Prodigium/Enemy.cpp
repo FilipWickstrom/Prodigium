@@ -4,7 +4,7 @@ using namespace DirectX::SimpleMath;
 Enemy::Enemy()
 {
 	this->model = new MeshObject();
-	this->model->Initialize("Monster.obj", "Monster_Albedo.png", "Monster_Normal.jpg", true, false, { 1.0f, -3.0f, 1.0f });
+	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", false, true, { 1.0f, -3.0f, 1.0f });
 	this->attackRange = 20.f;
 	this->speed = 30.f;
 	this->reachedTarget = false;

@@ -55,7 +55,7 @@ void Game::HandleScenes(const float& deltaTime)
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
 	{
-		//Ritar ut Main Menu GUI på skärmen
+		//Ritar ut Main Menu GUI p? sk?rmen
 		GUIHandler::ShowMainMenu(true);
 	}
 
@@ -92,14 +92,14 @@ void Game::HandleScenes(const float& deltaTime)
 		this->LoadMainMenu();
 	}
 
-	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
+	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
 	if (GUIHandler::ShouldResume())
 	{
 		this->isPaused = false;
 		this->soundHandler.ResumeAudio();
 	}
 
-	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
+	//Om man trycker p? Quitknappen i GUI:t ska denna bli true, annars ?r den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 	if (GUIHandler::InOptionsMenu())
@@ -137,13 +137,39 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
-			Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) > 0)
+			{
+				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			}
+			else
+			{
+				Engine::playerHp = 0;
+				this->player->SetMovement(false);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+			}
 			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
 		}
 
 		if (this->attackTimer > 0)
 		{
 			this->attackTimer -= 1 * deltaTime;
+		}
+
+		//Check if the current animation has ended
+		if (this->player->GetMeshObject()->HasAnimationEnded())
+		{
+			AnimationState currentState = this->player->GetMeshObject()->GetAnimState();
+
+			//Go from the current state to another when ended
+			switch (currentState)
+			{
+			case AnimationState::PICKUP:
+				this->player->SetMovement(true);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
+				break;
+			default:
+				break;
+			};
 		}
 
 		// Loops through all traps with monster
@@ -164,7 +190,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
-	}
+	}	
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
@@ -319,79 +345,84 @@ void Game::HandleInput(const float& deltaTime)
 
 
 		/*------------------MOVEMENT----------------*/
-		//Forward
-		if (InputHandler::IsKeyHeld(Keyboard::W))
+
+		if (this->player->IsMoving())
 		{
-			//Sprint
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+			//Forward
+			if (InputHandler::IsKeyHeld(Keyboard::W))
 			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+				//Sprint
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+				}
+				direction.x = 1.f;
 			}
-			else
+			else if (InputHandler::IsKeyReleased(Keyboard::W))
 			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
 			}
-			direction.x = 1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::W))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
+
+			//Backward
+			else if (InputHandler::IsKeyHeld(Keyboard::S))
+			{
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
+				}
+				direction.x = -1.f;
+			}
+			else if (InputHandler::IsKeyReleased(Keyboard::S))
+			{
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
+			}
+
+			//Sideways
+			if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+			}
+			if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+			}
 		}
 
-		//Backward
-		if (InputHandler::IsKeyHeld(Keyboard::S))
-		{
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
-			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
-			}
-			else
-			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
-			}
-			direction.x = -1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::S))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
-		}
-
-		//Sideways
-		if (InputHandler::IsKeyHeld(Keyboard::A))
-		{
-			direction.y = -1.f;
-		}
-		if (InputHandler::IsKeyHeld(Keyboard::D))
-		{
-			direction.y = 1.f;
-		}
 		/*------------------MOVEMENT----------------*/
 
 		/*------Animation settings for player------*/
-		if (InputHandler::IsKeyPressed(Keyboard::NumPad1))
+		if (InputHandler::IsKeyPressed(Keyboard::D9))
 		{
 			this->player->GetMeshObject()->InterpolateAnim(true);
 #ifdef _DEBUG
 			std::cout << "[Player] Interpolation: ON" << std::endl;
 #endif
 		}
-		else if (InputHandler::IsKeyPressed(Keyboard::NumPad2))
+		else if (InputHandler::IsKeyPressed(Keyboard::D0))
 		{
 			this->player->GetMeshObject()->InterpolateAnim(false);
 #ifdef _DEBUG
@@ -406,7 +437,9 @@ void Game::HandleInput(const float& deltaTime)
 			{
 				if (this->player->GetMeshObject()->GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
 				{
-					EDITSCENE.GetMeshObject(i).SetVisible(false);
+					this->player->SetMovement(false);
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
+					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
 				}
@@ -541,38 +574,42 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	EDITSCENE.Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f },
-		{ -0.25f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
-
+	//Collision not needed in the menu. Set "hasBounds" to false
+	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
 	EDITSCENE.AddLight(L);
 
-	// Player model - NO REMOVE!!! >:(
-	EDITSCENE.Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
-		{ 0.0f, 0.0f, 40.0f }, { 0.0f, 3.14159f, 0.0f });
+	//Add player with specific animation
+	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
+	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+
+	//Add animated monster in background
+	SceneHandler()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
 
 	// Terrain
-	EDITSCENE.Add("tempTerrain.obj", "dirt_color.png", "", true, false, { 0.0f, -6.25f, 0.0f });
-
+	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
+	
 	// Ominous House
-	EDITSCENE.Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-
+	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
@@ -595,7 +632,7 @@ void Game::LoadMap()
 	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
 	// Terrain
-	EDITSCENE.Add("planeTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandler()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;

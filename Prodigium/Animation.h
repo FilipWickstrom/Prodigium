@@ -17,6 +17,10 @@ private:
 	double currentFrameTime;
 	double duration;				//How many frames the animation is
 	double ticksPerSecond;			//Framerate of the animation
+	
+	//Special for animations that should not loop
+	bool loopable;
+	bool reachedEnd;
 
 	struct Translation
 	{
@@ -46,10 +50,15 @@ public:
 	~Animation();
 
 	//Load in the animation. Only takes the bones that was loaded from the object
-	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, int animSpeed = 0);
+	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, bool looping = true, int animSpeed = 0);
 
 	//Gets the animation matrices at this time
-	void GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices, bool interpolate = true);
+	void GetAnimationMatrices(const std::vector<std::string>& allBones, 
+							 std::vector<DirectX::SimpleMath::Matrix>& animMatrices, 
+							 bool interpolate = true);
+
 	void SetAnimationSpeed(int animSpeed);
 	void ResetCurrentTime();
+	void ResetReachedEnd();
+	bool HasReachedEnd();
 };
