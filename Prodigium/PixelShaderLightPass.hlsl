@@ -261,7 +261,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     
     for (int i = 1; i < info.x; i++)
     {
-        if (length(camPos.xyz - lights[i].position.xyz) < 300)
+        if (length(camPos.xyz - lights[i].position.xyz) < 300 || lights[i].att.w == 0)
         {
             switch (lights[i].att.w)
             {
