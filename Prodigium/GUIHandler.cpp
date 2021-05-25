@@ -516,9 +516,9 @@ void GUIHandler::RenderPauseMenu()
         SetWindowFontScale(1.5f);
         if (Button("Options", ImVec2(250, 50)))
         {
-            this->showOptionsMenu = true;
-            this->showGameGUI = false;
-            this->showPauseMenu = false;
+            GUIHANDLER->showOptionsMenu = true;
+            GUIHANDLER->showGameGUI = false;
+            GUIHANDLER->showPauseMenu = false;
         }
         EndChild();
 

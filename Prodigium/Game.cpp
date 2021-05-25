@@ -378,13 +378,20 @@ void Game::HandleInput(const float& deltaTime)
 
 			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
 		}
-		if (InputHandler::IsKeyPressed(Keyboard::Escape))
-		{
-			GUIHandler::PauseGame();
-			this->isPaused = true;
-			this->soundHandler.SuspendAudio();
-		}
 
+
+	}
+
+	// Pause the game.
+	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::PauseGame();
+		this->isPaused = true;
+		this->soundHandler.SuspendAudio();
+	}
+	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	{
+		GUIHandler::ResumeGame();
 	}
 }
 
