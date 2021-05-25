@@ -46,6 +46,8 @@ Player::Player()
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
 	this->playerModel->UpdateBoundingBoxes();
+
+	this->moving = true;
 }
 
 Player::~Player()
@@ -69,18 +71,21 @@ void Player::Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objec
 
 void Player::Move(Vector2& direction, const float& deltaTime)
 {
-	Matrix rotation = Matrix::CreateRotationY(this->playerCam->rotation.y);
-	this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
-	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
+	if (this->moving)
+	{
+		Matrix rotation = Matrix::CreateRotationY(this->playerCam->rotation.y);
+		this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
+		this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 
-	this->playerModel->position +=
-		(this->playerModel->forward * speed * deltaTime * direction.x) +
-		(this->playerModel->right * speed * deltaTime * direction.y);
+		this->playerModel->position +=
+			(this->playerModel->forward * speed * deltaTime * direction.x) +
+			(this->playerModel->right * speed * deltaTime * direction.y);
 
-	// Moves character in the direction of camera
-	this->RotatePlayer();
-	this->playerModel->UpdateMatrix();
-	this->playerModel->UpdateBoundingBoxes();
+		// Moves character in the direction of camera
+		this->RotatePlayer();
+		this->playerModel->UpdateMatrix();
+		this->playerModel->UpdateBoundingBoxes();
+	}
 }
 
 void Player::RotateCamera(const float& pitch, const float& yaw)
@@ -164,4 +169,14 @@ bool Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 	}
 
 	return false;
+}
+
+void Player::SetMovement(bool toggle)
+{
+	this->moving = toggle;
+}
+
+bool Player::IsMoving()
+{
+	return this->moving;
 }

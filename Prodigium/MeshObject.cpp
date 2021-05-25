@@ -340,13 +340,13 @@ MeshObject::~MeshObject()
 }
 
 bool MeshObject::Initialize(const std::string& meshObject,
-	std::string diffuse,
-	std::string normal,
-	bool hasBounds,
-	bool hasAnimation,
-	const DirectX::SimpleMath::Vector3& pos,
-	const DirectX::SimpleMath::Vector3& rot,
-	const DirectX::SimpleMath::Vector3& scl)
+							std::string diffuse,
+							std::string normal,
+							bool hasBounds,
+							bool hasAnimation,
+							const DirectX::SimpleMath::Vector3& pos,
+							const DirectX::SimpleMath::Vector3& rot,
+							const DirectX::SimpleMath::Vector3& scl)
 {
 	//Some preparation and setting
 	this->isAnimated = hasAnimation;
@@ -592,4 +592,24 @@ void MeshObject::InterpolateAnim(bool toggle)
 	{
 		this->animatedObj->UseInterpolation(toggle);
 	}
+}
+
+bool MeshObject::HasAnimationEnded()
+{
+	bool ended = false;
+	if (this->animatedObj != nullptr)
+	{
+		ended = this->animatedObj->AnimationReachedEnd();
+	}
+	return ended;
+}
+
+AnimationState MeshObject::GetAnimState()
+{
+	AnimationState state = AnimationState::NONE;
+	if (this->animatedObj != nullptr)
+	{
+		state = this->animatedObj->GetAnimationState();
+	}
+	return state;
 }

@@ -334,43 +334,52 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 	return true;
 }
 
-bool AnimatedObject::LoadAnimations(std::string animFolder)
+void AnimatedObject::LoadAnimations(std::string animFolder)
 {
 	std::string walkRunFile = animFolder + "/" + animFolder + "_Walk_Run.fbx";
 	std::string idleFile = animFolder + "/" + animFolder + "_Idle.fbx";
 	std::string idle2File = animFolder + "/" + animFolder + "_Idle2.fbx";
+	std::string deathFile = animFolder + "/" + animFolder + "_Dead.fbx";
+	std::string pickupFile = animFolder + "/" + animFolder + "_Pickup.fbx";
 
 	//Load in walk/run animation
 	Animation* walkRunAnim = new Animation();
-	if (!walkRunAnim->Load(walkRunFile, this->boneMap))
+	if (walkRunAnim->Load(walkRunFile, this->boneMap))
 	{
-		std::cout << "Failed to load run/walk animation ..." << std::endl;
-		return false;
+		this->allAnimations[AnimationState::WALKFORWARD] = walkRunAnim;
+		this->allAnimations[AnimationState::WALKBACKWARD] = walkRunAnim;
+		this->allAnimations[AnimationState::RUNFORWARD] = walkRunAnim;
+		this->allAnimations[AnimationState::RUNBACKWARD] = walkRunAnim;
 	}
-	this->allAnimations.push_back(walkRunAnim);
 
 	//Load in idle 1 animation
 	Animation* idleAnim = new Animation();
-	if (!idleAnim->Load(idleFile, this->boneMap))
+	if (idleAnim->Load(idleFile, this->boneMap))
 	{
-		std::cout << "Failed to load idle animation 1..." << std::endl;
-		return false;
+		this->allAnimations[AnimationState::IDLE] = idleAnim;
+		this->currentState = AnimationState::IDLE;
 	}
-	this->allAnimations.push_back(idleAnim);
 	
 	//Load in idle 2 animation
 	Animation* idle2Anim = new Animation();
-	if (!idle2Anim->Load(idle2File, this->boneMap))
+	if (idle2Anim->Load(idle2File, this->boneMap))
 	{
-		std::cout << "Failed to load idle animation 2..." << std::endl;
-		return false;
+		this->allAnimations[AnimationState::IDLE2] = idle2Anim;
 	}
-	this->allAnimations.push_back(idle2Anim);
 
-	//Set idle animation from start
-	this->currentAnim = this->allAnimations[1];
+	//Load in death animation
+	Animation* deathAnim = new Animation();
+	if (deathAnim->Load(deathFile, this->boneMap, false))
+	{
+		this->allAnimations[AnimationState::DEAD] = deathAnim;
+	}
 
-	return true;
+	//Load in pickup animation
+	Animation* pickupAnim = new Animation();
+	if (pickupAnim->Load(pickupFile, this->boneMap, false))
+	{
+		this->allAnimations[AnimationState::PICKUP] = pickupAnim;
+	}
 }
 
 bool AnimatedObject::CreateBonesCBuffer()
@@ -434,9 +443,7 @@ AnimatedObject::AnimatedObject()
 	this->modelMatrices.resize(MAXBONES, Matrix::Identity);
 	this->animatedMatrices.resize(MAXBONES, Matrix::Identity);
 	this->finalMatrices.resize(MAXBONES, Matrix::Identity);
-	this->currentState = AnimationState::IDLE;
-
-	this->currentAnim = nullptr;
+	this->currentState = AnimationState::NONE;
 	this->useInterpolation = true;
 }
 
@@ -457,7 +464,12 @@ AnimatedObject::~AnimatedObject()
 	if (this->boneMatricesBuffer)
 		this->boneMatricesBuffer->Release();
 
-	this->allAnimations.clear();
+	this->animatedMatrices.clear();
+	this->modelMatrices.clear();
+	this->finalMatrices.clear();
+
+	this->allAnimations.clear();	//Need to delete inside of it?
+	this->boneMap.clear();
 }
 
 bool AnimatedObject::Initialize(std::string animFolder)
@@ -486,63 +498,95 @@ bool AnimatedObject::Initialize(std::string animFolder)
 		return false;
 	}
 	
-	if (!LoadAnimations(animFolder))
-	{
-		std::cout << "Failed to load one of the animations..." << std::endl;
-		return false;
-	}
+	LoadAnimations(animFolder);
 
 	return true;
 }
 
 void AnimatedObject::ChangeAnimState(AnimationState state)
 {
-	//State has been set previously
+	//Change animation if we are not already on it
 	if (this->currentState != state)
 	{
-		this->currentState = state;
-
-		//Switching state to other
-		switch (this->currentState)
+		//Check if the animation even exists
+		if (this->allAnimations.find(state) != this->allAnimations.end())
 		{
-		case AnimationState::WALKFORWARD:
-			this->currentAnim = this->allAnimations[0];
-			this->currentAnim->SetAnimationSpeed(120);
-			break;
-		case AnimationState::WALKBACKWARD:
-			this->currentAnim = this->allAnimations[0];
-			this->currentAnim->SetAnimationSpeed(-120);
-			break;
-		case AnimationState::RUNFORWARD:
-			this->currentAnim = this->allAnimations[0];
-			this->currentAnim->SetAnimationSpeed(200);
-			break;
-		case AnimationState::RUNBACKWARD:
-			this->currentAnim = this->allAnimations[0];
-			this->currentAnim->SetAnimationSpeed(-200);
-			break;
-		case AnimationState::IDLE:
-			this->currentAnim->ResetCurrentTime();
-			this->currentAnim = this->allAnimations[1];
-			this->currentAnim->SetAnimationSpeed(30);
-			this->currentAnim->ResetCurrentTime();
-			break;
-		case AnimationState::IDLE2:
-			this->currentAnim->ResetCurrentTime();
-			this->currentAnim = this->allAnimations[2];
-			this->currentAnim->SetAnimationSpeed(45);
-			this->currentAnim->ResetCurrentTime();
-			break;
-		default:
-			//NONE or other
-			break;
-		};
+			AnimationState previousState = this->currentState;
+			
+			//Reset values from previous states
+			switch (previousState)
+			{
+			case AnimationState::IDLE:
+				this->allAnimations[previousState]->ResetCurrentTime();
+				break;
+			case AnimationState::IDLE2:
+				this->allAnimations[previousState]->ResetCurrentTime();
+				break;
+			case AnimationState::DEAD:
+				this->allAnimations[previousState]->ResetReachedEnd();
+				break;
+			case AnimationState::PICKUP:
+				this->allAnimations[previousState]->ResetReachedEnd();
+				break;
+			default:
+				break;
+			};
+
+			this->currentState = state;
+
+			//Doing this depending 
+			switch (this->currentState)
+			{
+			case AnimationState::WALKFORWARD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(120);
+				break;
+			case AnimationState::WALKBACKWARD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(-120);
+				break;
+			case AnimationState::RUNFORWARD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(200);
+				break;
+			case AnimationState::RUNBACKWARD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(-200);
+				break;
+			case AnimationState::IDLE:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(30);
+				this->allAnimations[this->currentState]->ResetCurrentTime();
+				break;
+			case AnimationState::IDLE2:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(45);
+				this->allAnimations[this->currentState]->ResetCurrentTime();
+				break;
+			case AnimationState::DEAD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(30);
+				this->allAnimations[this->currentState]->ResetCurrentTime();
+				break;
+			case AnimationState::PICKUP:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(150);
+				this->allAnimations[this->currentState]->ResetCurrentTime();
+				break;
+			default:
+				//NONE or other
+				break;
+			};
+		}
 	}
+	
 }
 
 void AnimatedObject::UseInterpolation(bool toggle)
 {
 	this->useInterpolation = toggle;
+}
+
+bool AnimatedObject::AnimationReachedEnd()
+{
+	return this->allAnimations[this->currentState]->HasReachedEnd();
+}
+
+const AnimationState& AnimatedObject::GetAnimationState()
+{
+	return this->currentState;
 }
 
 void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
@@ -553,7 +597,7 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 		if (animate && this->currentState != AnimationState::NONE)
 		{
 			//Get all animated matrices at this time for every bone
-			this->currentAnim->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
+			this->allAnimations[this->currentState]->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
 
 			//Calculate all matrices that will later be sent to the GPU
 			CalcFinalMatrix(this->rootBone, -1, worldMatrix);
