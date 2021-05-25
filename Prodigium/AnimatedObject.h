@@ -88,17 +88,13 @@ private:
 	
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string animFolder);
-	bool LoadAnimations(std::string animFolder);
+	void LoadAnimations(std::string animFolder);
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
 	
-	//Change animation back to default when we reached end,
-	//for some special animations
-	void ChangeAnimOnEnd();
-
 public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
@@ -107,6 +103,8 @@ public:
 	
 	void ChangeAnimState(AnimationState state);
 	void UseInterpolation(bool toggle = true);
+	bool AnimationReachedEnd();
+	const AnimationState& GetAnimationState();
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows

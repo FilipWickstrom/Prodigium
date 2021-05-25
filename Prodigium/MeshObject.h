@@ -93,4 +93,6 @@ public:
 	//Animation specific
 	void ChangeAnimState(AnimationState state);
 	void InterpolateAnim(bool toggle = true);
+	bool HasAnimationEnded();
+	AnimationState GetAnimState();
 };

@@ -56,6 +56,7 @@ public:
 	void GetAnimationMatrices(const std::vector<std::string>& allBones, 
 							 std::vector<DirectX::SimpleMath::Matrix>& animMatrices, 
 							 bool interpolate = true);
+
 	void SetAnimationSpeed(int animSpeed);
 	void ResetCurrentTime();
 	void ResetReachedEnd();

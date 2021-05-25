@@ -8,6 +8,7 @@ private:
 	float speed;
 	CameraObject* playerCam;
 	MeshObject* playerModel;
+	bool moving;
 
 private:
 	void RotatePlayer();
@@ -25,4 +26,7 @@ public:
 	MeshObject* GetMeshObject() const;
 
 	bool CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
+
+	void SetMovement(bool toggle);
+	bool IsMoving();
 };

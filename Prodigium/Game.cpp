@@ -106,13 +106,38 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
-			Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) > 0)
+			{
+				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			}
+			else
+			{
+				this->player->SetMovement(false);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+			}
 			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
 		}
 
 		if (this->attackTimer > 0)
 		{
 			this->attackTimer -= 1 * deltaTime;
+		}
+
+		//Check if the current animation has ended
+		if (this->player->GetMeshObject()->HasAnimationEnded())
+		{
+			AnimationState currentState = this->player->GetMeshObject()->GetAnimState();
+
+			//Go from the current state to another when ended
+			switch (currentState)
+			{
+			case AnimationState::PICKUP:
+				this->player->SetMovement(true);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
+				break;
+			default:
+				break;
+			};
 		}
 	}
 
@@ -251,73 +276,71 @@ void Game::HandleInput(const float& deltaTime)
 
 
 		/*------------------MOVEMENT----------------*/
-		//Forward
-		if (InputHandler::IsKeyHeld(Keyboard::W))
-		{
-			//Sprint
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
-			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
-			}
-			else
-			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
-			}
-			direction.x = 1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::W))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
-		}
 
-		//Backward
-		else if (InputHandler::IsKeyHeld(Keyboard::S))
+		if (this->player->IsMoving())
 		{
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+			//Forward
+			if (InputHandler::IsKeyHeld(Keyboard::W))
 			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
+				//Sprint
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+				}
+				direction.x = 1.f;
 			}
-			else
+			else if (InputHandler::IsKeyReleased(Keyboard::W))
 			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
 			}
-			direction.x = -1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::S))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
-		}
 
-		//Sideways
-		else if (InputHandler::IsKeyHeld(Keyboard::A))
-		{
-			direction.y = -1.f;
-		}
-		else if (InputHandler::IsKeyHeld(Keyboard::D))
-		{
-			direction.y = 1.f;
-		}
+			//Backward
+			else if (InputHandler::IsKeyHeld(Keyboard::S))
+			{
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
+				}
+				direction.x = -1.f;
+			}
+			else if (InputHandler::IsKeyReleased(Keyboard::S))
+			{
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
+			}
 
-		//JUST FOR TESTING. ADD TO WHEN GAMEOVER***
-		if (InputHandler::IsKeyPressed(Keyboard::D9))
-		{
-			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+			//Sideways
+			if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+			}
+			if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+			}
 		}
 
 		/*------------------MOVEMENT----------------*/
@@ -346,6 +369,7 @@ void Game::HandleInput(const float& deltaTime)
 				if (this->player->GetMeshObject()->GetDistance(SceneHandler()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandler()->EditScene().GetMeshObject(i).IsVisible())
 				{
 					std::cout << i << std::endl;
+					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
@@ -493,8 +517,10 @@ void Game::LoadMainMenu()
 	SceneHandler()->EditScene().AddLight(L);
 
 	//Add player with specific animation
-	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
-	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);
+	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
+	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 
 	//Add animated monster in background
 	SceneHandler()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });

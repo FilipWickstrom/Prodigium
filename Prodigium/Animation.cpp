@@ -104,6 +104,16 @@ Animation::Animation()
 
 Animation::~Animation()
 {
+	for (auto& item : this->translations)
+	{
+		item.second.position.clear();
+		item.second.positionTime.clear();
+		item.second.rotation.clear();
+		item.second.rotationTime.clear();
+		item.second.scale.clear();
+		item.second.scaleTime.clear();
+	}
+	this->translations.clear();
 }
 
 bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, bool looping, int animSpeed)
@@ -220,7 +230,9 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones,
 				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
 			}
 			else
+			{
 				this->currentFrameTime = 0;
+			}
 		}
 
 		//Resets to end when reached start - only when playing in revers
@@ -232,7 +244,9 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones,
 				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
 			}
 			else
+			{ 
 				this->currentFrameTime = this->duration + this->currentFrameTime;
+			}
 		}
 
 		aiVector3D pos;

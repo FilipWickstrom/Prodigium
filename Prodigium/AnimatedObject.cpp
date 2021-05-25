@@ -334,7 +334,7 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 	return true;
 }
 
-bool AnimatedObject::LoadAnimations(std::string animFolder)
+void AnimatedObject::LoadAnimations(std::string animFolder)
 {
 	std::string walkRunFile = animFolder + "/" + animFolder + "_Walk_Run.fbx";
 	std::string idleFile = animFolder + "/" + animFolder + "_Idle.fbx";
@@ -380,8 +380,6 @@ bool AnimatedObject::LoadAnimations(std::string animFolder)
 	{
 		this->allAnimations[AnimationState::PICKUP] = pickupAnim;
 	}
-
-	return true;
 }
 
 bool AnimatedObject::CreateBonesCBuffer()
@@ -466,7 +464,12 @@ AnimatedObject::~AnimatedObject()
 	if (this->boneMatricesBuffer)
 		this->boneMatricesBuffer->Release();
 
-	this->allAnimations.clear();
+	this->animatedMatrices.clear();
+	this->modelMatrices.clear();
+	this->finalMatrices.clear();
+
+	this->allAnimations.clear();	//Need to delete inside of it?
+	this->boneMap.clear();
 }
 
 bool AnimatedObject::Initialize(std::string animFolder)
@@ -495,11 +498,7 @@ bool AnimatedObject::Initialize(std::string animFolder)
 		return false;
 	}
 	
-	if (!LoadAnimations(animFolder))
-	{
-		std::cout << "Failed to load one of the animations..." << std::endl;
-		return false;
-	}
+	LoadAnimations(animFolder);
 
 	return true;
 }
@@ -575,25 +574,19 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 	
 }
 
-void AnimatedObject::ChangeAnimOnEnd()
-{
-	if (this->allAnimations[this->currentState]->HasReachedEnd())
-	{
-		switch (this->currentState)
-		{
-		case AnimationState::PICKUP:
-			ChangeAnimState(AnimationState::IDLE);
-			break;
-		//Add more if needed
-		default:
-			break;
-		};
-	}
-}
-
 void AnimatedObject::UseInterpolation(bool toggle)
 {
 	this->useInterpolation = toggle;
+}
+
+bool AnimatedObject::AnimationReachedEnd()
+{
+	return this->allAnimations[this->currentState]->HasReachedEnd();
+}
+
+const AnimationState& AnimatedObject::GetAnimationState()
+{
+	return this->currentState;
 }
 
 void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
@@ -605,7 +598,6 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 		{
 			//Get all animated matrices at this time for every bone
 			this->allAnimations[this->currentState]->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
-			ChangeAnimOnEnd();
 
 			//Calculate all matrices that will later be sent to the GPU
 			CalcFinalMatrix(this->rootBone, -1, worldMatrix);
