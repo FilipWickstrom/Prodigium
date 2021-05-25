@@ -33,8 +33,6 @@ public:
 	void SetFXVolume(const float& newVolume);
 	void PlayOneShot(const int& index);
 	void PlayMonsterSounds(const int& index);
-	void PlayLooping(const int& index, const bool& use3D = false, const DirectX::SimpleMath::Vector3& listnerPos = { 0,0,0 }, 
-					 const DirectX::SimpleMath::Vector3& emitterPos = { 0,0,0 });
 	void PlayMusic(const int& index);
 	void PlayAmbient(const int& index);
 	void SetPitch(const float& newPitch);

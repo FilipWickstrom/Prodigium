@@ -45,6 +45,7 @@ const bool SoundHandler::Initialize()
 
 	this->audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
 	this->audEngine->SetMasterVolume(this->masterVolume);
+	this->audEngine->SetReverb(DirectX::Reverb_City);
 	this->waveBankFX = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
 	this->waveBankAmbient = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/ambient.xwb");
 	this->waveBankMusic = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/music.xwb");
@@ -119,39 +120,6 @@ void SoundHandler::PlayMonsterSounds(const int& index)
 	{
 		this->instanceMonster->Play();
 		this->instanceMonster->Apply3D(this->listner, this->emitter);
-	}
-}
-
-void SoundHandler::PlayLooping(const int& index, const bool& use3D, const DirectX::SimpleMath::Vector3& listnerPos,
-							   const DirectX::SimpleMath::Vector3& emitterPos)
-{
-	if (!use3D)
-	{
-		this->instanceFX = this->waveBankFX->CreateInstance(index);
-		if (!this->instanceFX)
-			std::cout << "Index not in wave bank!" << std::endl;
-		else
-		{
-			this->instanceFX->SetVolume(this->fxVolume);
-			this->instanceFX->Play(true);
-		}
-	}
-	else
-	{		
-		this->instanceFX = this->waveBankFX->CreateInstance(index, DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters);
-		if(!this->instanceFX)
-			std::cout << "Index not in wave bank!" << std::endl;
-		else
-		{
-			DirectX::AudioListener listner;
-			listner.SetPosition(listnerPos);
-			DirectX::AudioEmitter emitter;
-			emitter.SetPosition(emitterPos);
-
-			this->instanceFX->SetVolume(this->fxVolume);
-			this->instanceFX->Apply3D(listner, emitter);
-			this->instanceFX->Play(true);
-		}
 	}
 }
 

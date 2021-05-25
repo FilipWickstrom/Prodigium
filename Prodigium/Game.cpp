@@ -113,9 +113,9 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
-			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-			//BulletTime(); //Slows down all sounds if you're near the enemy
-			MonsterSounds(deltaTime);
+			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			BulletTime(); //Slows down all sounds if you're near the enemy
+			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
