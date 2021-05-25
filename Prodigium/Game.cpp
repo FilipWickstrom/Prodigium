@@ -170,7 +170,6 @@ void Game::HandleGameLogic(const float& deltaTime)
 				break;
 			};
 		}
-	}
 
 		// Loops through all traps with monster
 		int index = 0;
@@ -190,7 +189,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
-	}
+	}	
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
