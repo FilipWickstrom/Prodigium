@@ -54,6 +54,7 @@ const bool SoundHandler::Initialize()
 	this->instanceFX = this->waveBankFX->CreateInstance(index);
 	this->instanceAmbient = this->waveBankAmbient->CreateInstance(index);
 	this->instanceMusic = this->waveBankMusic->CreateInstance(index);
+	this->instanceMonster = this->waveBankMonster->CreateInstance(index);
 
 	return true;
 }
@@ -70,8 +71,8 @@ void SoundHandler::Update(const DirectX::SimpleMath::Vector3& listnerPos, const 
 		}
 	}
 	this->audEngine->Update();
-	this->listner.SetPosition(listnerPos);
-	this->emitter.SetPosition(emitterPos);
+	this->listner.Update(listnerPos, DirectX::SimpleMath::Vector3(0, 1, 0), 1);
+	this->emitter.Update(emitterPos, DirectX::SimpleMath::Vector3(0, 1, 0), 1);
 }
 
 void SoundHandler::SetMasterVolume(const float& newVolume)

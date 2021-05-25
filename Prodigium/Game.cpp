@@ -27,6 +27,20 @@ void Game::BulletTime()
 	this->soundHandler.SetPitch(-speed);	
 }
 
+void Game::MonsterSounds(const float& deltaTime)
+{
+	if (this->monsterSoundTimer <= 0)
+	{
+		int index = rand() % 4 + 1;
+		this->soundHandler.PlayMonsterSounds(index);
+		this->monsterSoundTimer = 5;
+	}
+	else if (this->monsterSoundTimer > 0)
+	{
+		this->monsterSoundTimer -= 1 * deltaTime;
+	}
+}
+
 void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
@@ -97,9 +111,12 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		player->Update(SceneHandler()->EditScene().GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
-		
-		Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-		BulletTime(); //Slows down all sounds if you're near the enemy
+		if (!this->isPaused)
+		{
+			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			//BulletTime(); //Slows down all sounds if you're near the enemy
+			MonsterSounds(deltaTime);
+		}
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
@@ -132,6 +149,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->inGoal = false;
 	this->amountOfObjects = 0;
 	this->attackTimer = 0;
+	this->monsterSoundTimer = 0;
 	this->isInOptions = false;
 }
 

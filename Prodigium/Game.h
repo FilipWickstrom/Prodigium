@@ -35,9 +35,11 @@ private:
 	bool isInOptions;
 	std::vector<int> trapIndices;
 	float attackTimer;
+	float monsterSoundTimer;
 
 	void Whisper();
 	void BulletTime();
+	void MonsterSounds(const float& deltaTime);
 	void HandleScenes(const float& deltaTime);
 	void HandleGameLogic(const float& deltaTime);
 	int amountOfObjects;
