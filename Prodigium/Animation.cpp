@@ -98,13 +98,15 @@ Animation::Animation()
 	this->currentFrameTime = 0;
 	this->duration = 0;
 	this->ticksPerSecond = 0;
+	this->loopable = true;
+	this->reachedEnd = false;
 }
 
 Animation::~Animation()
 {
 }
 
-bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, int animSpeed)
+bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, bool looping, int animSpeed)
 {
 	Assimp::Importer importer;
 	
@@ -114,9 +116,10 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 											aiProcess_FlipWindingOrder |	//Make clockwise order
 											aiProcess_MakeLeftHanded);
 
+	//The file either was not possible to open or does not simply exists
 	if (!scene || !scene->mRootNode)
 	{
-		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
+		//std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
 		importer.FreeScene();
 		return false;
 	}
@@ -130,7 +133,6 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 
 	//Takes only one animation
 	const aiAnimation* animation = scene->mAnimations[0];
-	///animation->
 
 	//Set the values for this type of animation
 	this->duration = animation->mDuration;
@@ -191,58 +193,80 @@ bool Animation::Load(std::string filename, std::unordered_map<std::string, UINT>
 
 	#ifdef _DEBUG
 		//Writing out some stats
-		std::cout << "Animation: '" << filename << "' has " << this->nrOfBones << " bones" << std::endl;
-		std::cout << "Duration: " << this->duration << std::endl;
-		std::cout << "Ticks per second: " << this->ticksPerSecond << std::endl;
+		std::cout << "Animation: '" << filename << "' has been loaded" << std::endl;
 	#endif
 
+	this->loopable = looping;
 	importer.FreeScene();
 	return true;
 }
 
-void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices, bool interpolate)
+void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones, 
+									 std::vector<DirectX::SimpleMath::Matrix>& animMatrices, 
+									 bool interpolate)
 {	
-	//Adding to the current frame
-	this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
-	
-	//Resets to start when reached end
-	if (this->currentFrameTime >= this->duration)
-		this->currentFrameTime = 0;
-	//Resets to end when reached start - only when playing in revers
-	else if (this->currentFrameTime < 0)
-		this->currentFrameTime = this->duration + this->currentFrameTime;
-
-	aiVector3D pos;
-	aiVector3D scl;
-	aiQuaternion rot;
-
-	for (UINT i = 0; i < allBones.size(); i++)
+	//Keep going as long as we have not reached end of a non-looping animation
+	if (!this->reachedEnd)
 	{
-		Matrix animation = Matrix::Identity;
-		std::string boneName = allBones[i];
-		if (this->translations.find(boneName) != this->translations.end())
+		//Adding to the current frame
+		this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
+
+		//Resets to start when reached end
+		if (this->currentFrameTime >= this->duration)
 		{
-			if (interpolate)
+			if (!this->loopable)
 			{
-				pos = InterpolatePosition(boneName);
-				scl = InterpolateScale(boneName);
-				rot = InterpolateRotation(boneName);
+				this->reachedEnd = true;
+				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
 			}
 			else
-			{
-				UINT closestPos = FindTwoKeyframes(boneName, this->translations[boneName].positionTime).first;
-				UINT closestScl = FindTwoKeyframes(boneName, this->translations[boneName].scaleTime).first;
-				UINT closestRot = FindTwoKeyframes(boneName, this->translations[boneName].rotationTime).first;
-				pos = this->translations[boneName].position[closestPos];
-				scl = this->translations[boneName].scale[closestScl];
-				rot = this->translations[boneName].rotation[closestRot];
-			}
-
-			aiMatrix4x4 aiMat = aiMatrix4x4(scl, rot, pos);
-			animation = Matrix(&aiMat.a1);
+				this->currentFrameTime = 0;
 		}
-		animMatrices[i] = animation;
-	}
+
+		//Resets to end when reached start - only when playing in revers
+		else if (this->currentFrameTime < 0)
+		{
+			if (!this->loopable)
+			{
+				this->reachedEnd = true;
+				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
+			}
+			else
+				this->currentFrameTime = this->duration + this->currentFrameTime;
+		}
+
+		aiVector3D pos;
+		aiVector3D scl;
+		aiQuaternion rot;
+
+		for (UINT i = 0; i < allBones.size(); i++)
+		{
+			Matrix animation = Matrix::Identity;
+			std::string boneName = allBones[i];
+			if (this->translations.find(boneName) != this->translations.end())
+			{
+				if (interpolate)
+				{
+					pos = InterpolatePosition(boneName);
+					scl = InterpolateScale(boneName);
+					rot = InterpolateRotation(boneName);
+				}
+				else
+				{
+					UINT closestPos = FindTwoKeyframes(boneName, this->translations[boneName].positionTime).first;
+					UINT closestScl = FindTwoKeyframes(boneName, this->translations[boneName].scaleTime).first;
+					UINT closestRot = FindTwoKeyframes(boneName, this->translations[boneName].rotationTime).first;
+					pos = this->translations[boneName].position[closestPos];
+					scl = this->translations[boneName].scale[closestScl];
+					rot = this->translations[boneName].rotation[closestRot];
+				}
+
+				aiMatrix4x4 aiMat = aiMatrix4x4(scl, rot, pos);
+				animation = Matrix(&aiMat.a1);
+			}
+			animMatrices[i] = animation;
+		}
+	}	
 }
 
 void Animation::SetAnimationSpeed(int animSpeed)
@@ -257,4 +281,15 @@ void Animation::SetAnimationSpeed(int animSpeed)
 void Animation::ResetCurrentTime()
 {
 	this->currentFrameTime = 0;
+}
+
+void Animation::ResetReachedEnd()
+{
+	if (this->reachedEnd)
+		this->reachedEnd = false;
+}
+
+bool Animation::HasReachedEnd()
+{
+	return this->reachedEnd;
 }

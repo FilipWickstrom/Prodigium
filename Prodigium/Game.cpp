@@ -279,7 +279,7 @@ void Game::HandleInput(const float& deltaTime)
 		}
 
 		//Backward
-		if (InputHandler::IsKeyHeld(Keyboard::S))
+		else if (InputHandler::IsKeyHeld(Keyboard::S))
 		{
 			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
 			{
@@ -305,14 +305,21 @@ void Game::HandleInput(const float& deltaTime)
 		}
 
 		//Sideways
-		if (InputHandler::IsKeyHeld(Keyboard::A))
+		else if (InputHandler::IsKeyHeld(Keyboard::A))
 		{
 			direction.y = -1.f;
 		}
-		if (InputHandler::IsKeyHeld(Keyboard::D))
+		else if (InputHandler::IsKeyHeld(Keyboard::D))
 		{
 			direction.y = 1.f;
 		}
+
+		//JUST FOR TESTING. ADD TO WHEN GAMEOVER***
+		if (InputHandler::IsKeyPressed(Keyboard::D9))
+		{
+			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+		}
+
 		/*------------------MOVEMENT----------------*/
 
 		/*------Animation settings for player------*/
@@ -339,6 +346,7 @@ void Game::HandleInput(const float& deltaTime)
 				if (this->player->GetMeshObject()->GetDistance(SceneHandler()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandler()->EditScene().GetMeshObject(i).IsVisible())
 				{
 					std::cout << i << std::endl;
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
@@ -474,7 +482,8 @@ void Game::LoadMainMenu()
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f }
+	//Collision not needed in the menu. Set "hasBounds" to false
+	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }
 
 	, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
@@ -483,16 +492,18 @@ void Game::LoadMainMenu()
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	// Player model - NO REMOVE!!! >:(
-	SceneHandler()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
-		{ (float)randX, 0.0f, (float)randZ } // Pos
-	, {0.0f, 0.0f, 0.0f});
+	//Add player with specific animation
+	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);
+
+	//Add animated monster in background
+	SceneHandler()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
 
 	// Terrain
-	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, false, { 0.0f, -6.25f, 0.0f });
+	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
 	
 	// Ominous House
-	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
@@ -500,13 +511,13 @@ void Game::LoadMainMenu()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
