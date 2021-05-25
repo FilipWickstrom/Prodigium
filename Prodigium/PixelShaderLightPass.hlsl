@@ -22,7 +22,7 @@ cbuffer LightsInfo : register(b0)
     float4 info;
 }
 
-#define TEMPCOUNT 9
+#define LIGHT_FADE 300
 static const float density = 0.007f;
 static const float gradient = 0.2f;
 cbuffer Camera : register(b1)
@@ -261,7 +261,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     
     for (int i = 1; i < info.x; i++)
     {
-        if (length(camPos.xyz - lights[i].position.xyz) < 300 || lights[i].att.w == 0)
+        if (length(camPos.xyz - lights[i].position.xyz) < LIGHT_FADE || lights[i].att.w == 0)
         {
             switch (lights[i].att.w)
             {
