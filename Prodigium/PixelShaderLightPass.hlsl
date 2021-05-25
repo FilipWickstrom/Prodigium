@@ -261,19 +261,22 @@ float4 main(PixelShaderInput input) : SV_TARGET
     
     for (int i = 1; i < info.x; i++)
     {
-        switch (lights[i].att.w)
+        if (length(camPos.xyz - lights[i].position.xyz) < 300)
         {
-            case 0:
-                lightColor += doDirectional(i, gbuffers, specular);
-                break;
-            case 1:
-                lightColor += doPointLight(i, gbuffers, specular);
-                break;
-            case 2:
-                lightColor += doSpotlight(i, gbuffers, specular);
-                break;
-            default:
-                break;
+            switch (lights[i].att.w)
+            {
+                case 0:
+                    lightColor += doDirectional(i, gbuffers, specular);
+                    break;
+                case 1:
+                    lightColor += doPointLight(i, gbuffers, specular);
+                    break;
+                case 2:
+                    lightColor += doSpotlight(i, gbuffers, specular);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
