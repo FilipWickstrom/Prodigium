@@ -5,6 +5,8 @@ void QuadTree::AddNodes(int level, QuadNode* node)
 {
 	if (level >= this->depth)
 	{
+		AddObject(node);
+
 		return;
 	}
 
@@ -12,19 +14,12 @@ void QuadTree::AddNodes(int level, QuadNode* node)
 	{
 		node->childs[i] = new QuadNode;
 		this->CalculateChildDimensions(i, node, node->childs[i]);
-		AddObject(node->childs[i]);
-
 		AddNodes(level + 1, node->childs[i]);
 	}
 }
 
 void QuadTree::ClearTree(QuadNode* node)
 {
-	if (node == nullptr)
-	{
-		return;
-	}
-
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
 		if (node->childs[i] != nullptr)
@@ -68,7 +63,7 @@ void QuadTree::AddObject(QuadNode* node)
 	using namespace DirectX;
 	MeshObject* object;
 
-	for (int i = 1; i < (int)root->objects.size(); i++)
+	for (int i = 2; i < (int)root->objects.size(); i++)
 	{
 		object = root->objects[i];
 		ContainmentType type = node->bounds.Contains(root->objects[i]->modelCollider.boundingBox);
@@ -89,7 +84,7 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		root = new QuadNode;
 		BoundingBox box;
 		box.Center = { 0.0f, -5.25f, 0.0f };
-		box.Extents = { 750.f, 1.f, 750.f };
+		box.Extents = { 750.f, 6.0f, 750.f };
 		root->bounds = box;
 		root->objects = objects;
 
@@ -122,7 +117,10 @@ QuadTree::QuadTree(int depth)
 
 QuadTree::~QuadTree()
 {
-	this->ClearTree(root);
+	if (root != nullptr)
+	{
+		this->ClearTree(root);
+	}
 }
 
 QuadTree::QuadNode::QuadNode()
