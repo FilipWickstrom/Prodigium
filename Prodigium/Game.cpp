@@ -137,17 +137,19 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
-			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) > 0)
+			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
 			{
 				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
 			}
-			else
-			{
-				Engine::playerHp = 0;
-				this->player->SetMovement(false);
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
-			}
 			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
+		}
+
+		//When player is dead
+		if (Engine::playerHp <= 0)
+		{
+			Engine::playerHp = 0;
+			this->player->SetMovement(false);
+			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 		}
 
 		if (this->attackTimer > 0)
