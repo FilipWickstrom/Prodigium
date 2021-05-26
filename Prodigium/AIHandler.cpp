@@ -41,6 +41,7 @@ AIHandler::AIHandler()
 	this->monster = nullptr;
 	this->player = nullptr;
 	this->stateSwitchTime = 0.f;
+	this->nrOfAstar = 0;
 }
 
 const bool AIHandler::Initialize()
@@ -182,6 +183,7 @@ Node* AIHandler::GetNodeByID(const int& id)
 void AIHandler::AStarSearch()
 {
 	std::vector<Node*> closedList, openList;
+	AIHANDLER->path.clear();
 	Node* startingNode = AIHANDLER->currentEnemyNode, * goalNode = AIHANDLER->currentEnemyNode;
 	openList.push_back(startingNode);
 	startingNode->SetFGH(0.f, 0.f, 0.f);
@@ -190,11 +192,11 @@ void AIHandler::AStarSearch()
 	{
 		goalNode = AIHANDLER->GetRandomNode();
 	}
+	std::cout << "Destination: " << goalNode->GetID() << std::endl;;
 	Node* nodeToAdd = nullptr;
 	int index = 0;
 	while (!openList.empty() && nodeToAdd != goalNode)
 	{
-		std::cout << "Iteration: " << index << "\r";
 		nodeToAdd = openList.at(0);
 		int indexToPop = 0;
 		bool stop = false;
@@ -225,8 +227,9 @@ void AIHandler::AStarSearch()
 				if (neighbor->GetF() == FLT_MAX)
 				{
 					float tempF = 0, tempG = 0, tempH = 0;
+
 					tempG = nodeToAdd->GetG() + (nodeToAdd->GetPos() - neighbor->GetPos()).Length();
-					tempH = sqrt(pow(nodeToAdd->GetPos().x - goalNode->GetPos().x, 2) + pow(nodeToAdd->GetPos().y - goalNode->GetPos().y, 2)); //Using euclidean distance
+					tempH = (goalNode->GetPos() - nodeToAdd->GetPos()).Length(); //Using euclidean distance
 					tempF = tempG + tempH;
 					neighbor->SetFGH(tempF, tempG, tempH);
 				}
@@ -258,7 +261,6 @@ void AIHandler::AStarSearch()
 				}
 			}
 		}
-
 		closedList.push_back(nodeToAdd);
 
 		index++;
@@ -266,25 +268,19 @@ void AIHandler::AStarSearch()
 	}
 
 	AIHANDLER->TracePath(startingNode, goalNode);
-	for (Node* node : closedList)
+	for (unsigned int i = 0; i < AIHANDLER->allNodes.size(); i++)
 	{
-		node->ResetFGH();
-		node->ResetParent();
+		AIHANDLER->allNodes.at(i)->ResetFGH();
+		AIHANDLER->allNodes.at(i)->ResetParent();
 	}
-	for (Node* node : openList)
-	{
-		node->ResetFGH();
-		node->ResetParent();
-	}
+
 }
 void AIHandler::TracePath(Node* src, Node* dst)
 {
-	AIHANDLER->path;
 	Node* currentNode = dst;
 	while (currentNode != src)
 	{
 		AIHANDLER->path.insert(AIHANDLER->path.begin(), currentNode);
 		currentNode = currentNode->GetParent();
 	}
-	std::cout << "Destination: " << dst->GetID() << std::endl;;
 }

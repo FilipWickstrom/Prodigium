@@ -20,6 +20,7 @@ private:
 	EnemyStates states;
 	Enemy* monster;
 	Player* player;
+	int nrOfAstar;
 	double stateSwitchTime;
 	static AIHandler* instance;
 	static std::vector<std::string> openFile(const std::string& filePath);
