@@ -13,6 +13,6 @@ float4 main(VertexOut input) : SV_TARGET
     float3 color = albedoTex.Sample(samp, input.uv).rgb;
     float opacity = opacityTex.Sample(samp, input.uv).r;
 	
-    return float4(color, (opacity * 10));
+    return float4(color, (opacity * 2.5));
     //return float4(1.0f, 1.0f, 1.0f, 1.0f);
 }
