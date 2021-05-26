@@ -12,7 +12,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-	UINT winWidth = 1920;
+	UINT winWidth = 1720;
 	UINT winHeight = 1080;
 #ifdef _DEBUG
 	winWidth = 1280;

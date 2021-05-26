@@ -5,7 +5,7 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
-#define EDITSCENE SceneHandler()->EditScene()
+#define EDITSCENE SceneHandle()->EditScene()
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
@@ -439,7 +439,7 @@ void Game::HandleInput(const float& deltaTime)
 				{
 					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
-					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+					SceneHandle()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
 				}
@@ -567,15 +567,15 @@ void Game::LoadMainMenu()
 	options.state = MAINMENU;
 
 	// Refresh the game to a clean slate.
-	SceneHandler()->RemoveAllScenes();
-	SceneHandler()->AddScene();
+	SceneHandle()->RemoveAllScenes();
+	SceneHandle()->AddScene();
 	//EDITSCENE.GetParticles().SetActive(false);
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
 	//Collision not needed in the menu. Set "hasBounds" to false
-	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
@@ -585,17 +585,17 @@ void Game::LoadMainMenu()
 	//Add player with specific animation
 	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
 	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
-	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
-	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
+	SceneHandle()->EditScene().GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 
 	//Add animated monster in background
-	SceneHandler()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
+	SceneHandle()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
 
 	// Terrain
-	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
+	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
 	
 	// Ominous House
-	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
@@ -603,13 +603,13 @@ void Game::LoadMainMenu()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
@@ -625,14 +625,14 @@ void Game::LoadMap()
 {
 	options.state = INGAME;
 
-	SceneHandler()->AddScene();
+	SceneHandle()->AddScene();
 	this->player = new Player();
 	this->enemy = new Enemy();
 	Engine::EDITSCENE.Add(this->player->GetMeshObject());
 	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
 	// Terrain
-	SceneHandler()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandle()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;

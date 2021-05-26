@@ -51,7 +51,7 @@ public:
 	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	virtual ~Engine();
 
-	SceneHandler* SceneHandler();
+	SceneHandler* SceneHandle();
 	void ClearDisplay();
 	void Render();
 	void Update(const float& deltaTime);
