@@ -46,10 +46,10 @@ const bool SoundHandler::Initialize()
 	this->audEngine = std::make_unique<DirectX::AudioEngine>( eFlags );
 	this->audEngine->SetMasterVolume(this->masterVolume);
 	this->audEngine->SetReverb(DirectX::Reverb_City);
-	this->waveBankFX = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
+	this->waveBankFX = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/sfx.xwb");
 	this->waveBankAmbient = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/ambient.xwb");
 	this->waveBankMusic = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/music.xwb");
-	this->waveBankMonster = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/prodigium.xwb");
+	this->waveBankMonster = std::make_unique<DirectX::WaveBank>(this->audEngine.get(), L"media/monster.xwb");
 
 	int index = 0;
 	this->instanceFX = this->waveBankFX->CreateInstance(index);
@@ -57,10 +57,14 @@ const bool SoundHandler::Initialize()
 	this->instanceMusic = this->waveBankMusic->CreateInstance(index);
 	this->instanceMonster = this->waveBankMonster->CreateInstance(index);
 
+	this->emitter.ChannelCount = 2;
+	this->emitter.CurveDistanceScaler = 75.f;
+
 	return true;
 }
 
-void SoundHandler::Update(const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos)
+void SoundHandler::Update(const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos,
+						  const DirectX::SimpleMath::Vector3& listnerForward, const DirectX::SimpleMath::Vector3& emitterForward)
 {
 	if (!this->audEngine->Update())
 	{
@@ -71,9 +75,12 @@ void SoundHandler::Update(const DirectX::SimpleMath::Vector3& listnerPos, const 
 			std::cerr << "Critical Error Occurred with Audio Device!" << std::endl;
 		}
 	}
-	this->audEngine->Update();
+	this->listner.SetOrientation(listnerForward, DirectX::SimpleMath::Vector3(0, 1, 0));
 	this->listner.Update(listnerPos, DirectX::SimpleMath::Vector3(0, 1, 0), 1);
+	this->emitter.SetOrientation(emitterForward, DirectX::SimpleMath::Vector3(0, 1, 0));
 	this->emitter.Update(emitterPos, DirectX::SimpleMath::Vector3(0, 1, 0), 1);
+	this->instanceMonster->Apply3D(this->listner, this->emitter);
+	this->audEngine->Update();
 }
 
 void SoundHandler::SetMasterVolume(const float& newVolume)
@@ -98,7 +105,7 @@ void SoundHandler::SetFXVolume(const float& newVolume)
 {
 	this->fxVolume = newVolume;
 	this->instanceFX->SetVolume(newVolume);
-	this->instanceMonster->SetVolume(newVolume);
+	this->instanceMonster->SetVolume(newVolume * 10.f);
 }
 
 void SoundHandler::PlayOneShot(const int& index)
@@ -113,13 +120,12 @@ void SoundHandler::PlayOneShot(const int& index)
 void SoundHandler::PlayMonsterSounds(const int& index)
 {
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS flags = DirectX::SoundEffectInstance_Use3D | DirectX::SoundEffectInstance_ReverbUseFilters;
-	this->instanceMonster = this->waveBankFX->CreateInstance(index, flags);
+	this->instanceMonster = this->waveBankMonster->CreateInstance(index, flags);
 	if(!this->instanceMonster)
 		std::cout << "Index not in wave bank!" << std::endl;
 	else
 	{
 		this->instanceMonster->Play();
-		this->instanceMonster->Apply3D(this->listner, this->emitter);
 	}
 }
 

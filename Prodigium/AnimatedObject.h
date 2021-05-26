@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "Animation.h"
 #include "GUIHandler.h"
+#include "Resource.h"
 
 const UINT MAXBONES = 25;
 
@@ -22,7 +23,7 @@ enum class AnimationState
 	NONE, IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, DEAD, PICKUP
 };
 
-class AnimatedObject
+class AnimatedObject : public Resource 
 {
 private:
 	//Needs a seperate vertexshader and input for it

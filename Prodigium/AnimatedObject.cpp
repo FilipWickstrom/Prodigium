@@ -1,5 +1,4 @@
 #include "AnimatedObject.h"
-#include "ResourceManager.h"
 using namespace DirectX::SimpleMath;
 
 bool AnimatedObject::LoadVertexShader()
@@ -430,6 +429,7 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const Dir
 }
 
 AnimatedObject::AnimatedObject()
+	:Resource(ResourceType::ANIMATEDOBJ)
 {
 	this->vertexShader = nullptr;
 	this->inputlayout = nullptr;
@@ -562,7 +562,7 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 				this->allAnimations[this->currentState]->ResetCurrentTime();
 				break;
 			case AnimationState::PICKUP:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(150);
+				this->allAnimations[this->currentState]->SetAnimationSpeed(250);
 				this->allAnimations[this->currentState]->ResetCurrentTime();
 				break;
 			default:
