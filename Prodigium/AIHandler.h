@@ -14,6 +14,8 @@ class AIHandler
 {
 private:
 	std::vector<Node*> allNodes;
+	std::vector<Node*> path;
+
 	Node* currentEnemyNode;
 	EnemyStates states;
 	Enemy* monster;
@@ -21,7 +23,10 @@ private:
 	double stateSwitchTime;
 	static AIHandler* instance;
 	static std::vector<std::string> openFile(const std::string& filePath);
+	Node* GetRandomNode();
 	Node* FindClosestNode(const DirectX::SimpleMath::Vector3& position);
+	static void AStarSearch();
+	static void TracePath(Node* src, Node* dst);
 public:
 	DELETE_COPY_ASSIGNMENT(AIHandler);
 	AIHandler();

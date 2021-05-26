@@ -304,7 +304,7 @@ void Scene::Render(const std::vector<MeshObject*>& toRender)
 		}
 	}
 #ifdef _DEBUG
-	std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
 #endif
 }
 

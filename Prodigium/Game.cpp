@@ -564,10 +564,6 @@ void Game::LoadMap()
 		SceneHandler()->EditScene().AddLight(L);
 	}
 
-	//SceneHandler()->EditScene().Add("cube.obj", "cat_bagoverhead.jpg", "", true, false,
-		//{ this->player->GetMeshObject()->GetPosition().x, 0.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
-		//{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }); // Rotation
-
 	// Houses around the town.
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -50.0f });

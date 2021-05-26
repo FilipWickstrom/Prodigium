@@ -17,7 +17,10 @@ std::vector<std::string> AIHandler::openFile(const std::string& filePath)
 	return allLines;
 
 }
-
+Node* AIHandler::GetRandomNode()
+{
+	return allNodes.at(rand() % allNodes.size());
+}
 Node* AIHandler::FindClosestNode(const Vector3& position)
 {
 	Node* currentClosest = AIHANDLER->currentEnemyNode;
@@ -75,7 +78,8 @@ void AIHandler::CreateNodes()
 		std::stringstream ss(file.at(currentIndex));
 		int ID = 0;
 		float posX = 0, posZ = 0;
-		ss >> ID >> posX >> posZ;
+		int cost = 0;
+		ss >> ID >> posX >> posZ >> cost;
 		Node* currentNode = new Node();
 		currentNode->Initialize({ posX, 0.f, posZ }, ID);
 		AIHANDLER->allNodes.push_back(currentNode);
@@ -115,19 +119,26 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 		case EnemyStates::PATROL:
 			if (AIHANDLER->monster->HasReachedTarget())
 			{
-				AIHANDLER->currentEnemyNode = AIHANDLER->currentEnemyNode->GetRandomConnectedNode();
-				AIHANDLER->monster->SetNewTarget(AIHANDLER->currentEnemyNode->GetPos());
+				if (AIHANDLER->path.size() > 0)
+				{
+					AIHANDLER->currentEnemyNode = AIHANDLER->path.at(0);
+					AIHANDLER->monster->SetNewTarget(AIHANDLER->path.at(0)->GetPos());
+					AIHANDLER->path.erase(AIHANDLER->path.begin());
+				}
+				else
+				{
+					AStarSearch();
+				}
 			}
 			else
 			{
 				AIHANDLER->monster->MoveToTarget(deltaTime);
-				//TODO: Add a cooldown timer between state changes
-				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
-				{
-					AIHANDLER->states = EnemyStates::CHASE;
-					std::cout << "Switching to Chase\n";
-					AIHANDLER->stateSwitchTime = omp_get_wtime();
-				}
+				//if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
+				//{
+				//	AIHANDLER->states = EnemyStates::CHASE;
+				//	std::cout << "Switching to Chase\n";
+				//	AIHANDLER->stateSwitchTime = omp_get_wtime();
+				//}
 
 			}
 			break;
@@ -166,4 +177,114 @@ Node* AIHandler::GetNodeByID(const int& id)
 		}
 	}
 	return nullptr;
+}
+
+void AIHandler::AStarSearch()
+{
+	std::vector<Node*> closedList, openList;
+	Node* startingNode = AIHANDLER->currentEnemyNode, * goalNode = AIHANDLER->currentEnemyNode;
+	openList.push_back(startingNode);
+	startingNode->SetFGH(0.f, 0.f, 0.f);
+	startingNode->SetParent(startingNode);
+	while (goalNode == AIHANDLER->currentEnemyNode)
+	{
+		goalNode = AIHANDLER->GetRandomNode();
+	}
+	Node* nodeToAdd = nullptr;
+	int index = 0;
+	while (!openList.empty() && nodeToAdd != goalNode)
+	{
+		std::cout << "Iteration: " << index << "\r";
+		nodeToAdd = openList.at(0);
+		int indexToPop = 0;
+		bool stop = false;
+		for (unsigned int i = 0; i < openList.size(); i++)
+		{
+			if (openList.at(i)->GetF() < nodeToAdd->GetF())
+			{
+				nodeToAdd = openList.at(i);
+				indexToPop = i;
+			}
+		}
+		openList.erase(openList.begin() + indexToPop);
+		std::vector<Node*> neighbors = nodeToAdd->GetConnectedNodes();
+
+		for (Node* neighbor : neighbors)
+		{
+			if (neighbor->GetParent() != nodeToAdd && neighbor != nodeToAdd)
+			{
+				if (!neighbor->GetParent())
+				{
+					neighbor->SetParent(nodeToAdd);
+				}
+				if (neighbor == goalNode)
+				{
+					nodeToAdd = goalNode;
+					break;
+				}
+				if (neighbor->GetF() == FLT_MAX)
+				{
+					float tempF = 0, tempG = 0, tempH = 0;
+					tempG = nodeToAdd->GetG() + (nodeToAdd->GetPos() - neighbor->GetPos()).Length();
+					tempH = sqrt(pow(nodeToAdd->GetPos().x - goalNode->GetPos().x, 2) + pow(nodeToAdd->GetPos().y - goalNode->GetPos().y, 2)); //Using euclidean distance
+					tempF = tempG + tempH;
+					neighbor->SetFGH(tempF, tempG, tempH);
+				}
+				stop = false;
+				for (unsigned int i = 0; i < openList.size() && !stop; i++)
+				{
+					if (openList.at(i)->GetID() == neighbor->GetID())
+					{
+						stop = true;
+					}
+				}
+				if (closedList.size() > 0)
+				{
+					for (unsigned int i = 0; i < closedList.size() && !stop; i++)
+					{
+						if (closedList.at(i)->GetID() == neighbor->GetID())
+						{
+							stop = true;
+						}
+					}
+					if (!stop)
+					{
+						openList.push_back(neighbor);
+					}
+				}
+				else
+				{
+					openList.push_back(neighbor);
+				}
+			}
+		}
+
+		closedList.push_back(nodeToAdd);
+
+		index++;
+
+	}
+
+	AIHANDLER->TracePath(startingNode, goalNode);
+	for (Node* node : closedList)
+	{
+		node->ResetFGH();
+		node->ResetParent();
+	}
+	for (Node* node : openList)
+	{
+		node->ResetFGH();
+		node->ResetParent();
+	}
+}
+void AIHandler::TracePath(Node* src, Node* dst)
+{
+	AIHANDLER->path;
+	Node* currentNode = dst;
+	while (currentNode != src)
+	{
+		AIHANDLER->path.insert(AIHANDLER->path.begin(), currentNode);
+		currentNode = currentNode->GetParent();
+	}
+	std::cout << "Destination: " << dst->GetID() << std::endl;;
 }
