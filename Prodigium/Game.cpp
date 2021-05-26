@@ -151,6 +151,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			Engine::playerHp = 0;
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+			this->soundHandler.PlayOneShot(0);
 		}
 
 		if (this->attackTimer > 0)
