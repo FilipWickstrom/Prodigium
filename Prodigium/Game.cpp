@@ -673,6 +673,10 @@ void Game::LoadMap()
 			scale = { 1.2f, 1.2f, 1.2f };
 			normalmap = "mask_normal.png";
 		}
+		else if (clue == "knife")
+		{
+			scale = { 0.25f, 0.25f, 0.25f };
+		}
 
 		EDITSCENE.Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
 			{ pos.x, -3.0f, pos.y }, rotation, scale);
