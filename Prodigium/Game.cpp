@@ -97,7 +97,9 @@ void Game::HandleScenes(const float& deltaTime)
 	if (GUIHandler::ShouldResume())
 	{
 		this->isPaused = false;
+		Engine::isPaused = false;
 		this->soundHandler.ResumeAudio();
+		GUIHandler::ShowGameGUI(true);
 	}
 
 	//Om man trycker p? Quitknappen i GUI:t ska denna bli true, annars ?r den false
@@ -124,15 +126,13 @@ void Game::HandleGameLogic(const float& deltaTime)
 	if (this->hasLoaded)
 	{
 		this->options.gameTimer += 1 * deltaTime;
-		GUIHandler::ShowMainMenu(false);
-		GUIHandler::ShowGameGUI(true);
-
+		
 		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
-			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-			//BulletTime(); //Slows down all sounds if you're near the enemy
+			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			BulletTime(); //Slows down all sounds if you're near the enemy
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
@@ -202,6 +202,8 @@ void Game::HandleGameLogic(const float& deltaTime)
 		AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
 	}
+
+	Engine::isPaused = this->isPaused;
 }
 
 Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight)
@@ -254,14 +256,19 @@ void Game::HandleInput(const float& deltaTime)
 	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
 		GUIHandler::PauseGame();
+		GUIHandler::ShowGameGUI(false);
 		this->isPaused = true;
+		Engine::isPaused = true;
 		this->soundHandler.SuspendAudio();
 	}
 
 	// Resume the game.
-	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
+	else if (!GUIHandler::InOptionsMenu() && this->hasLoaded && this->isPaused && InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
 		GUIHandler::ResumeGame();
+		GUIHandler::ShowGameGUI(true);
+		this->isPaused = false;
+		Engine::isPaused = false;
 	}
 
 	// Go to Options Menu
@@ -283,7 +290,7 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->isInOptions = false;
 		GUIHandler::ShowOptionsMenu(false);
-		GUIHandler::ShowMainMenu(true);
+		GUIHandler::ShowGameGUI(true);
 	}
 
 	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->hasLoaded && options.state == 2)
@@ -635,6 +642,7 @@ void Game::LoadMap()
 	Engine::EDITSCENE.Add(this->player->GetMeshObject());
 	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
+	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain
 	SceneHandle()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });

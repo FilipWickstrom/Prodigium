@@ -177,8 +177,8 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         SetUpGUIStyleGame();
         GUIHANDLER->RenderTrapGUI(timer1, timer2, options);
         GUIHANDLER->RenderBrainGUI(playerHp, clues, options);
-        if (GUIHANDLER->isPaused && GUIHandler::instance->showPauseMenu)
-            GUIHANDLER->RenderPauseMenu();
+        /*if (GUIHANDLER->isPaused && GUIHandler::instance->showPauseMenu)
+            GUIHANDLER->RenderPauseMenu();*/
     }
     if (GUIHANDLER->showOptionsMenu)
     {
@@ -188,7 +188,8 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         GetIO().MouseDrawCursor = true;
         GUIHANDLER->RenderOptionsMenu(options);
     }
-    
+    if (GUIHANDLER->isPaused && GUIHANDLER->showPauseMenu)
+        GUIHANDLER->RenderPauseMenu();
 
 	EndFrame();
 	ImGui::Render();
@@ -285,7 +286,7 @@ void GUIHandler::ShowInGameOptionsMenu(const bool& show)
 {
     if (!show)
     {
-        GUIHANDLER->showGameGUI = true;
+        GUIHANDLER->showGameGUI = false;
         GUIHANDLER->showOptionsMenu = false;
         GUIHANDLER->showPauseMenu = true;
     }

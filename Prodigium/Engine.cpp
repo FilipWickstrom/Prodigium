@@ -139,12 +139,17 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (this->options.hasBlur)
+	if (!this->isPaused && this->options.hasBlur && this->playerSanity != 1.0f)
 	{
 		//Render the blur depending on sanity
 		//1.0f is full sanity = no blur
 		//0.0f is no sanitiy = max blur
 		this->blurPass.Render(this->playerSanity);
+	}
+
+	if (this->isPaused)
+	{
+		this->blurPass.Render(0);
 	}
 
 	Graphics::BindBackBuffer();
