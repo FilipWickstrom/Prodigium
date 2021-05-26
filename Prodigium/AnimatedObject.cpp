@@ -52,17 +52,18 @@ bool AnimatedObject::LoadVertexShader()
 
 bool AnimatedObject::CreateInputLayout()
 {
-	D3D11_INPUT_ELEMENT_DESC geometryLayout[6] =
+	D3D11_INPUT_ELEMENT_DESC geometryLayout[7] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"SPECULAR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 6, this->vShaderByteCode.c_str(), 
+	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 7, this->vShaderByteCode.c_str(), 
 														  this->vShaderByteCode.length(), &this->inputlayout);
 
 	if (FAILED(hr))
@@ -200,6 +201,17 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 				std::vector<AnimationVertex> vertices;
 				vertices.reserve(mesh->mNumVertices);
 
+				//Load in material
+				const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+				float shiniess = 0.0f;
+				aiColor4D specular = { 0.0f,0.0f,0.0f,0.0f };
+
+				if (material != nullptr)
+				{
+					aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shiniess);
+					aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
+				}
+
 				/*--------Loading all vertices for the mesh---------*/
 				for (UINT i = 0; i < mesh->mNumVertices; i++)
 				{
@@ -208,6 +220,8 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 					temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 					temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 					temp.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
+					//Add material
+					temp.specular = { specular.r, specular.g, specular.b, shiniess };
 					//Bone ID and Weights are set to 0 by default
 					vertices.push_back(temp);
 

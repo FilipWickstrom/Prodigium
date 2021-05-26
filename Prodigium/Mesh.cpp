@@ -98,8 +98,18 @@ bool Mesh::LoadFile(std::string filename)
 		const aiMesh* mesh = scene->mMeshes[m];
 		std::vector<Vertex> vertices;
 		vertices.reserve(mesh->mNumVertices);
-
 		positions.reserve(mesh->mNumVertices);
+
+		//Load in material
+		const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		float shiniess = 0.0f;
+		aiColor4D specular = { 0.0f,0.0f,0.0f,0.0f };
+
+		if (material != nullptr)
+		{
+			aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shiniess);
+			aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
+		}
 
 		//Loading in all the vertices to the right structure
 		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
@@ -109,6 +119,8 @@ bool Mesh::LoadFile(std::string filename)
 			temp.normal = { mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z };
 			temp.uv = { mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y };
 			temp.tangent = { mesh->mTangents[v].x, mesh->mTangents[v].y, mesh->mTangents[v].z };
+			//Add material
+			temp.specular = { specular.r, specular.g, specular.b, shiniess };
 			vertices.push_back(temp);
 
 			//Adding all the vertices positions to an temp vector

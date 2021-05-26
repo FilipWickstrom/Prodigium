@@ -5,7 +5,7 @@ enum class EnemyStates
 {
 	PATROL,CHASE,RETREAT
 };
-constexpr int BUFFER_COUNT = 3;
+constexpr int BUFFER_COUNT = 4;
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.
@@ -16,6 +16,7 @@ struct Vertex
 	DirectX::SimpleMath::Vector2 uv = {};
 	DirectX::SimpleMath::Vector3 normal = {};
 	DirectX::SimpleMath::Vector3 tangent = {};
+	DirectX::SimpleMath::Vector4 specular = {};
 };
 
 /*
@@ -86,8 +87,9 @@ struct AnimationVertex
 	DirectX::SimpleMath::Vector2 uv = {};
 	DirectX::SimpleMath::Vector3 normal = {};
 	DirectX::SimpleMath::Vector3 tangent = {};
-	DirectX::XMUINT4 boneIDs = {};
+	DirectX::XMUINT4			 boneIDs = {};
 	DirectX::SimpleMath::Vector4 boneWeights = {};
+	DirectX::SimpleMath::Vector4 specular = {};
 };
 
 struct ParticleVertex
