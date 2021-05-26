@@ -72,7 +72,7 @@ void Engine::RedirectIoToConsole()
 	}
 }
 
-SceneHandler* Engine::SceneHandler()
+SceneHandler* Engine::SceneHandle()
 {
 	return &sceneHandler;
 }

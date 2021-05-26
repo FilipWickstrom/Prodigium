@@ -332,21 +332,18 @@ MeshObject::~MeshObject()
 	if (this->hasNormalMapBuffer)
 		this->hasNormalMapBuffer->Release();
 
-	if (this->animatedObj)
-		delete this->animatedObj;
-
 	this->colliders.clear();
 	this->collidersOriginal.clear();
 }
 
 bool MeshObject::Initialize(const std::string& meshObject,
-	std::string diffuse,
-	std::string normal,
-	bool hasBounds,
-	bool hasAnimation,
-	const DirectX::SimpleMath::Vector3& pos,
-	const DirectX::SimpleMath::Vector3& rot,
-	const DirectX::SimpleMath::Vector3& scl)
+							std::string diffuse,
+							std::string normal,
+							bool hasBounds,
+							bool hasAnimation,
+							const DirectX::SimpleMath::Vector3& pos,
+							const DirectX::SimpleMath::Vector3& rot,
+							const DirectX::SimpleMath::Vector3& scl)
 {
 	//Some preparation and setting
 	this->isAnimated = hasAnimation;
@@ -355,10 +352,11 @@ bool MeshObject::Initialize(const std::string& meshObject,
 	//Load in animation
 	if (hasAnimation)
 	{
-		this->animatedObj = new AnimatedObject();
-		if (!this->animatedObj->Initialize(meshObject))
+		//Get the animated object from the resource manager 
+		this->animatedObj = ResourceManager::GetAnimateObject(meshObject);
+		if (this->animatedObj == nullptr)
 		{
-			std::cout << "Failed to initialize animated object..." << std::endl;
+			std::cout << "Failed to get a animated object from resourceManager..." << std::endl;
 			return false;
 		}
 	}
@@ -592,4 +590,24 @@ void MeshObject::InterpolateAnim(bool toggle)
 	{
 		this->animatedObj->UseInterpolation(toggle);
 	}
+}
+
+bool MeshObject::HasAnimationEnded()
+{
+	bool ended = false;
+	if (this->animatedObj != nullptr)
+	{
+		ended = this->animatedObj->AnimationReachedEnd();
+	}
+	return ended;
+}
+
+AnimationState MeshObject::GetAnimState()
+{
+	AnimationState state = AnimationState::NONE;
+	if (this->animatedObj != nullptr)
+	{
+		state = this->animatedObj->GetAnimationState();
+	}
+	return state;
 }

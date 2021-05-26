@@ -5,7 +5,7 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
-#define EDITSCENE SceneHandler()->EditScene()
+#define EDITSCENE SceneHandle()->EditScene()
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
@@ -56,7 +56,7 @@ void Game::HandleScenes(const float& deltaTime)
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
 	{
-		//Ritar ut Main Menu GUI på skärmen
+		//Ritar ut Main Menu GUI p? sk?rmen
 		GUIHandler::ShowMainMenu(true);
 	}
 
@@ -93,14 +93,14 @@ void Game::HandleScenes(const float& deltaTime)
 		this->LoadMainMenu();
 	}
 
-	//Om man trycker på Resumeknappen i GUI:t ska denna bli true, annars är den false
+	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
 	if (GUIHandler::ShouldResume())
 	{
 		this->isPaused = false;
 		this->soundHandler.ResumeAudio();
 	}
 
-	//Om man trycker på Quitknappen i GUI:t ska denna bli true, annars är den false
+	//Om man trycker p? Quitknappen i GUI:t ska denna bli true, annars ?r den false
 	if (GUIHandler::ShouldQuit())
 		this->running = false;
 	if (GUIHandler::InOptionsMenu())
@@ -127,7 +127,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::ShowMainMenu(false);
 		GUIHandler::ShowGameGUI(true);
 
-		player->Update(SceneHandler()->EditScene().GetAllCullingObjects(), direction, deltaTime);
+		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
@@ -138,8 +138,19 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
 		{
-			Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
+			{
+				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
+			}
 			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
+		}
+
+		//When player is dead
+		if (Engine::playerHp <= 0)
+		{
+			Engine::playerHp = 0;
+			this->player->SetMovement(false);
+			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 		}
 
 		if (this->attackTimer > 0)
@@ -147,9 +158,26 @@ void Game::HandleGameLogic(const float& deltaTime)
 			this->attackTimer -= 1 * deltaTime;
 		}
 
+		//Check if the current animation has ended
+		if (this->player->GetMeshObject()->HasAnimationEnded())
+		{
+			AnimationState currentState = this->player->GetMeshObject()->GetAnimState();
+
+			//Go from the current state to another when ended
+			switch (currentState)
+			{
+			case AnimationState::PICKUP:
+				this->player->SetMovement(true);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
+				break;
+			default:
+				break;
+			};
+		}
+
 		// Loops through all traps with monster
 		int index = 0;
-		for (int i = amountOfObjects; i < SceneHandler()->EditScene().GetNumberOfObjects(); i++)
+		for (int i = amountOfObjects; i < EDITSCENE.GetNumberOfObjects(); i++)
 		{
 			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
 			{
@@ -165,7 +193,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
-	}
+	}	
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
@@ -280,6 +308,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// Go back to Menu
+	/*
 	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
 	{
 		Engine::inGame = false;
@@ -289,6 +318,7 @@ void Game::HandleInput(const float& deltaTime)
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
 	}
+	*/
 
 	if (this->hasLoaded && !this->isPaused)
 	{
@@ -313,84 +343,89 @@ void Game::HandleInput(const float& deltaTime)
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::L))
 		{
-			SceneHandler()->EditScene().GetParticles().SetActive(false);
+			EDITSCENE.GetParticles().SetActive(false);
 		}
 
 
 		/*------------------MOVEMENT----------------*/
-		//Forward
-		if (InputHandler::IsKeyHeld(Keyboard::W))
+
+		if (this->player->IsMoving())
 		{
-			//Sprint
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+			//Forward
+			if (InputHandler::IsKeyHeld(Keyboard::W))
 			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+				//Sprint
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNFORWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+				}
+				direction.x = 1.f;
 			}
-			else
+			else if (InputHandler::IsKeyReleased(Keyboard::W))
 			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKFORWARD);
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
 			}
-			direction.x = 1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::W))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
+
+			//Backward
+			else if (InputHandler::IsKeyHeld(Keyboard::S))
+			{
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
+				}
+				direction.x = -1.f;
+			}
+			else if (InputHandler::IsKeyReleased(Keyboard::S))
+			{
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
+			}
+
+			//Sideways
+			if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+			}
+			if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+			}
 		}
 
-		//Backward
-		if (InputHandler::IsKeyHeld(Keyboard::S))
-		{
-			if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
-			{
-				this->player->Sprint();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNBACKWARD);
-			}
-			else
-			{
-				this->player->Walk();
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
-			}
-			direction.x = -1.f;
-		}
-		else if (InputHandler::IsKeyReleased(Keyboard::S))
-		{
-			//Randomize idle state
-			AnimationState state;
-			if (rand() % 2 == 0)
-				state = AnimationState::IDLE;
-			else
-				state = AnimationState::IDLE2;
-			this->player->GetMeshObject()->ChangeAnimState(state);
-		}
-
-		//Sideways
-		if (InputHandler::IsKeyHeld(Keyboard::A))
-		{
-			direction.y = -1.f;
-		}
-		if (InputHandler::IsKeyHeld(Keyboard::D))
-		{
-			direction.y = 1.f;
-		}
 		/*------------------MOVEMENT----------------*/
 
 		/*------Animation settings for player------*/
-		if (InputHandler::IsKeyPressed(Keyboard::NumPad1))
+		if (InputHandler::IsKeyPressed(Keyboard::D9))
 		{
 			this->player->GetMeshObject()->InterpolateAnim(true);
 #ifdef _DEBUG
 			std::cout << "[Player] Interpolation: ON" << std::endl;
 #endif
 		}
-		else if (InputHandler::IsKeyPressed(Keyboard::NumPad2))
+		else if (InputHandler::IsKeyPressed(Keyboard::D0))
 		{
 			this->player->GetMeshObject()->InterpolateAnim(false);
 #ifdef _DEBUG
@@ -403,9 +438,11 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			for (int i = trapIndices[0]; i < trapIndices[0] + (trapIndices.size()); i++)
 			{
-				if (this->player->GetMeshObject()->GetDistance(SceneHandler()->EditScene().GetMeshObject(i)) < 5.0f && SceneHandler()->EditScene().GetMeshObject(i).IsVisible())
+				if (this->player->GetMeshObject()->GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
 				{
-					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+					this->player->SetMovement(false);
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
+					SceneHandle()->EditScene().GetMeshObject(i).SetVisible(false);
 					Engine::cluesCollected++;
 					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
 				}
@@ -415,7 +452,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
-				SceneHandler()->EditScene().Add("BearTrap_Triangulated.obj", "BearTrapAlbedo.png", "", false, false,
+				EDITSCENE.Add("BearTrap_Triangulated.obj", "BearTrapAlbedo.png", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
@@ -424,7 +461,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
-				SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false,
+				EDITSCENE.Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 1.5f, 1.5f, 1.5f });
@@ -533,51 +570,55 @@ void Game::LoadMainMenu()
 	options.state = MAINMENU;
 
 	// Refresh the game to a clean slate.
-	SceneHandler()->RemoveAllScenes();
-	SceneHandler()->AddScene();
-	//SceneHandler()->EditScene().GetParticles().SetActive(false);
+	SceneHandle()->RemoveAllScenes();
+	SceneHandle()->AddScene();
+	//EDITSCENE.GetParticles().SetActive(false);
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
 
-	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f },
-		{ -0.25f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
-
+	//Collision not needed in the menu. Set "hasBounds" to false
+	SceneHandle()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	// Player model - NO REMOVE!!! >:(
-	SceneHandler()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
-		{ 0.0f, 0.0f, 40.0f }, { 0.0f, 3.14159f, 0.0f });
+	//Add player with specific animation
+	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
+	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
+	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
+	SceneHandle()->EditScene().GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+
+	//Add animated monster in background
+	SceneHandle()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
 
 	// Terrain
-	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, false, { 0.0f, -6.25f, 0.0f });
-
+	SceneHandle()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", false, false, { 0.0f, -6.25f, 0.0f });
+	
 	// Ominous House
-	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-
+	SceneHandle()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandle()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
+	EDITSCENE.Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
 	this->hasLoaded = false;
 	this->inGoal = false;
@@ -587,14 +628,14 @@ void Game::LoadMap()
 {
 	options.state = INGAME;
 
-	SceneHandler()->AddScene();
+	SceneHandle()->AddScene();
 	this->player = new Player();
 	this->enemy = new Enemy();
-	Engine::SceneHandler()->EditScene().Add(this->player->GetMeshObject());
-	Engine::SceneHandler()->EditScene().Add(this->enemy->GetMeshObject());
+	Engine::EDITSCENE.Add(this->player->GetMeshObject());
+	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
 	AIHandler::SetEnemy(this->enemy);
 	// Terrain
-	SceneHandler()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandle()->EditScene().Add("planeTerrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;
@@ -603,11 +644,11 @@ void Game::LoadMap()
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
 	for (int i = 0; i < this->options.difficulty * 2; i++)
 	{
-		trapIndices.push_back(SceneHandler()->EditScene().GetNumberOfObjects());
+		trapIndices.push_back(EDITSCENE.GetNumberOfObjects());
 		DirectX::SimpleMath::Vector2 pos = this->picker.GetRandomPos();
 		std::string clue = this->picker.GetRandomClue();
 
@@ -632,97 +673,97 @@ void Game::LoadMap()
 			normalmap = "mask_normal.png";
 		}
 
-		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
+		EDITSCENE.Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
 			{ pos.x, -3.0f, pos.y }, rotation, scale);
 
 		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 		L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
 		L.position = { pos.x, 0.0f, pos.y , 5.0f };
-		SceneHandler()->EditScene().AddLight(L);
+		EDITSCENE.AddLight(L);
 	}
 
 	// Houses around the town.
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -50.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -50.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	EDITSCENE.Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
 
 	/*
 		Lamps
 	*/
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 575.0f, 25.0f, 50.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -45.0f, 25.0f, -100.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 130.0f, 25.0f, 0.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 30.0f, 25.0f, 0.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 190.0f, 25.0f, 90.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 30.0f, 25.0f, 100.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 130.0f, 25.0f, 100.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
-	SceneHandler()->EditScene().Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 325.0f, 25.0f, -75.0f, 30.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
 	// Big momma house
-	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
+	EDITSCENE.Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -91.0f, 12.f, 50.0f, 40.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
 	// Big momma house 2
 	L.direction = { 0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
-	SceneHandler()->EditScene().AddLight(L);
+	EDITSCENE.AddLight(L);
 
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
@@ -735,7 +776,7 @@ void Game::LoadMap()
 			z = (float)(rand() % 1500 - rand() % 1500);
 		}
 
-		SceneHandler()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+		EDITSCENE.Add("shittytree.obj", "puke_color.png", "", false, false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	}
 
 	for (int i = 0; i < 50; i++)
@@ -748,14 +789,14 @@ void Game::LoadMap()
 			z = (float)(rand() % 1500 - rand() % 1500);
 		}
 
-		SceneHandler()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
+		EDITSCENE.Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	}
 
 
-	this->amountOfObjects = SceneHandler()->EditScene().GetNumberOfObjects();
+	this->amountOfObjects = EDITSCENE.GetNumberOfObjects();
 	Engine::inGame = true;
 	Engine::quadTree = new QuadTree;
-	Engine::quadTree->BuildQuadTree(SceneHandler()->EditScene().GetAllMeshObjects());
+	Engine::quadTree->BuildQuadTree(EDITSCENE.GetAllMeshObjects());
 
 	this->inGoal = true;
 }

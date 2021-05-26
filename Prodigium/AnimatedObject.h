@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "Animation.h"
 #include "GUIHandler.h"
+#include "Resource.h"
 
 const UINT MAXBONES = 25;
 
@@ -19,10 +20,10 @@ If optimalization is needed:
 //Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
 enum class AnimationState
 {
-	IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 7
+	NONE, IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, DEAD, PICKUP
 };
 
-class AnimatedObject
+class AnimatedObject : public Resource 
 {
 private:
 	//Needs a seperate vertexshader and input for it
@@ -61,11 +62,11 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix> animatedMatrices;	//Matrices that will be calculated from saved animation information
 	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
-
-	AnimationState currentState;
-	Animation* currentAnim;
-	std::vector<Animation*> allAnimations;
 	
+	//Handles which state we are on and what animation to use
+	AnimationState currentState;
+	std::unordered_map<AnimationState, Animation*> allAnimations;
+
 	//This setting will make the animation
 	//smoother but will cost some extra frames
 	bool useInterpolation;
@@ -88,13 +89,13 @@ private:
 	
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string animFolder);
-	bool LoadAnimations(std::string animFolder);
+	void LoadAnimations(std::string animFolder);
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
-
+	
 public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
@@ -103,10 +104,11 @@ public:
 	
 	void ChangeAnimState(AnimationState state);
 	void UseInterpolation(bool toggle = true);
+	bool AnimationReachedEnd();
+	const AnimationState& GetAnimationState();
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows
 	void Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate = true);
 	void RenderShadows(const DirectX::SimpleMath::Matrix& worldMatrix);
-
 };

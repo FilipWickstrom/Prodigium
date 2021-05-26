@@ -433,7 +433,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.8f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
     SetWindowFontScale(1.22f);
 
-    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n\n\n\n");
+    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\nOpen menu with 'Escape'\n\n\n");
     SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
