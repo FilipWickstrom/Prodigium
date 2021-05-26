@@ -68,10 +68,8 @@ void ShadowHandler::ClearHistory()
 
 bool ShadowHandler::SetupMapArray()
 {
-
 	// Allows for dynamic input of shadows maps
 	this->ClearHistory();
-
 
 	this->LoadVertexShader();
 	this->viewPort.TopLeftX = 0.0f;
@@ -81,7 +79,6 @@ bool ShadowHandler::SetupMapArray()
 	this->viewPort.MinDepth = 0.0f;
 	this->viewPort.MaxDepth = 1.0f;
 
-	// to do: compile all textures into map.
 	HRESULT hr, hr2, hr3;
 	D3D11_TEXTURE2D_DESC texDesc;
 	texDesc.Width = SHADOWWIDTH;
@@ -112,7 +109,10 @@ bool ShadowHandler::SetupMapArray()
 	srvDesc.Texture2DArray.MipLevels = 1;
 	srvDesc.Texture2DArray.MostDetailedMip = 0;
 
-	hr2 = Graphics::GetDevice()->CreateShaderResourceView(this->shadowMapArray, &srvDesc, &this->arrayView);
+	if (SUCCEEDED(hr))
+	{
+		hr2 = Graphics::GetDevice()->CreateShaderResourceView(this->shadowMapArray, &srvDesc, &this->arrayView);
+	}
 	assert(SUCCEEDED(hr2));
 
 	// Description for the buffer containing all the light information.
@@ -144,7 +144,7 @@ bool ShadowHandler::SetupMapArray()
 		return !FAILED(shr);
 	}
 
-	return SUCCEEDED(hr2);
+	return true;
 }
 
 ShadowHandler::ShadowHandler()
@@ -224,11 +224,6 @@ void ShadowHandler::Clear()
 	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
 	ID3D11DepthStencilView* nullDepth = nullptr;
 	ID3D11Buffer* nuller = nullptr;
-	/*
-		HERE IS WHERE SKYBOX IS BEING REMOVED FOR SOME REASON!!
-	*/
-	//Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, cleanTargets, nullDepth);
-	//Graphics::GetContext()->VSSetConstantBuffers(0, 1, &nuller);
 	Graphics::SetMainWindowViewport();
 }
 
