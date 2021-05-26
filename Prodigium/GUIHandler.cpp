@@ -177,8 +177,6 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         SetUpGUIStyleGame();
         GUIHANDLER->RenderTrapGUI(timer1, timer2, options);
         GUIHANDLER->RenderBrainGUI(playerHp, clues, options);
-        /*if (GUIHANDLER->isPaused && GUIHandler::instance->showPauseMenu)
-            GUIHANDLER->RenderPauseMenu();*/
     }
     if (GUIHANDLER->showOptionsMenu)
     {
