@@ -136,7 +136,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
-		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0)
+		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0 && !this->isPaused)
 		{
 			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
 			{
@@ -154,7 +154,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			this->soundHandler.PlayOneShot(0);
 		}
 
-		if (this->attackTimer > 0)
+		if (this->attackTimer > 0 && !this->isPaused)
 		{
 			this->attackTimer -= 1 * deltaTime;
 		}
@@ -199,7 +199,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
 		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
-		//AIHandler::MoveEnemy(deltaTime);
+		AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
 	}
 }
