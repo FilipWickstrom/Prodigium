@@ -36,13 +36,14 @@ void Game::MonsterSounds(const float& deltaTime)
 {
 	if (this->monsterSoundTimer <= 0)
 	{
-		int index = rand() % 4 + 1;
-		this->soundHandler.PlayMonsterSounds(index);
+		int index = rand() % 4;
 		this->monsterSoundTimer = 5;
+		this->soundHandler.PlayMonsterSounds(index);
 	}
-	else if (this->monsterSoundTimer > 0)
+	else
 	{
 		this->monsterSoundTimer -= 1 * deltaTime;
+		std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
 	}
 }
 
@@ -130,8 +131,8 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
-			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-			BulletTime(); //Slows down all sounds if you're near the enemy
+			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			//BulletTime(); //Slows down all sounds if you're near the enemy
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
@@ -168,8 +169,8 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
-		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position);
-		AIHandler::MoveEnemy(deltaTime);
+		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
+		//AIHandler::MoveEnemy(deltaTime);
 		Engine::Update(deltaTime);
 	}
 }

@@ -26,7 +26,8 @@ public:
 	SoundHandler();
 	virtual ~SoundHandler();
 	const bool Initialize();
-	void Update(const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos);
+	void Update(const DirectX::SimpleMath::Vector3& listnerPos, const DirectX::SimpleMath::Vector3& emitterPos, 
+				const DirectX::SimpleMath::Vector3& listnerForward, const DirectX::SimpleMath::Vector3& emitterForward);
 	void SetMasterVolume(const float& newVolume);
 	void SetAmbientVolume(const float& newVolume);
 	void SetMusicVolume(const float& newVolume);
