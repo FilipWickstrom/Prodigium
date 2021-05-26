@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib prod_knife.mtl
+mtllib Materials/knife.mtl
 g default
 v 0.970769 0.235188 10.443537
 v 1.265540 0.416106 4.480493
