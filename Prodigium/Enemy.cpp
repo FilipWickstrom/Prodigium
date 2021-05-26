@@ -25,23 +25,17 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->targetPos = newPos;
 	this->reachedTarget = false;
 
-	this->model->forward = this->targetPos - this->model->position;
-	this->model->forward.Normalize();
-	this->targetDir = this->model->forward;
-
-	//float angle = acos(currentDir.Dot(targetDir));
-	//this->model->rotation.y += angle;
+	this->targetDir = this->targetPos - this->model->position;
+	this->targetDir.Normalize();
 }
 
 void Enemy::MoveToTarget(const float& deltaTime)
 {
-	//this->model->position += this->model->forward * this->speed * deltaTime;
-
-	Vector3 currentDir = this->model->forward;
-	targetDir.Normalize();
-
-	float angle = acos(currentDir.Dot(targetDir));
-	this->model->rotation.y = angle;
+	float angle = acos(this->model->forward.Dot(targetDir));
+	Quaternion rot = Quaternion::CreateFromAxisAngle(Vector3::Up, angle);
+	this->model->forward = Vector3::Transform(Vector3(0.0f, 0.0f, -1.0f), rot);
+	this->model->rotation.y += angle * speed * deltaTime;
+	this->model->position += this->model->forward * this->speed * deltaTime;
 
 	if ((this->model->position - targetPos).Length() < 10.f)
 	{
