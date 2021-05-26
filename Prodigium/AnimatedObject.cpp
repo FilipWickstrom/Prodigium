@@ -1,5 +1,4 @@
 #include "AnimatedObject.h"
-#include "ResourceManager.h"
 using namespace DirectX::SimpleMath;
 
 bool AnimatedObject::LoadVertexShader()
@@ -430,6 +429,7 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const Dir
 }
 
 AnimatedObject::AnimatedObject()
+	:Resource(ResourceType::ANIMATEDOBJ)
 {
 	this->vertexShader = nullptr;
 	this->inputlayout = nullptr;
