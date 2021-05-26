@@ -641,7 +641,8 @@ void LightPass::Prepare()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
-	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, this->shaderResources);
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, this->shaderResources);
+	Graphics::GetContext()->PSSetShaderResources(6, 1, &this->shaderResources[3]);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

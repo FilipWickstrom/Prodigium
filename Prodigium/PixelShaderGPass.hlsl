@@ -9,6 +9,7 @@ struct PixelShaderInput
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
     float4 tangent : TANGENT;
+    float4 viewPosNorm : SSAO;
 };
 
 struct PixelShaderOutput
@@ -16,6 +17,7 @@ struct PixelShaderOutput
     float4 positionWS : SV_Target0;
     float4 colour     : SV_Target1;
     float4 normalWS   : SV_Target2;
+    float4 viewPosNorm : SV_Target3;
 };
 
 PixelShaderOutput main(PixelShaderInput input)
@@ -44,5 +46,6 @@ PixelShaderOutput main(PixelShaderInput input)
         output.normalWS = float4(input.normalWS, 0.0f);
     
     output.colour =  output.colour;
+    output.viewPosNorm = input.viewPosNorm;
     return output;
 }

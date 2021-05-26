@@ -5,7 +5,7 @@ enum class EnemyStates
 {
 	PATROL,CHASE,RETREAT
 };
-constexpr int BUFFER_COUNT = 3;
+constexpr int BUFFER_COUNT = 4;
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.

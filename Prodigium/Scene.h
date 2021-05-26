@@ -3,6 +3,7 @@
 #include "MeshObject.h"
 #include "ShadowHandler.h"
 #include "ParticleSystem.h"
+#include "SSAO.h"
 
 #define SHADOWRANGE 125.0f
 struct InfoStruct
@@ -51,6 +52,11 @@ private:
 		For rendering particles
 	*/
 	ParticleSystem particles;
+
+	/*
+		For rendering SSAO
+	*/
+	SSAO SSAOcclusion;
 
 public:
 

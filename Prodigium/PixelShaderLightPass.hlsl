@@ -2,6 +2,7 @@
 Texture2D G_positionWS : register(t0);
 Texture2D G_colour : register(t1);
 Texture2D G_normalWS : register(t2);
+Texture2D G_normalView : register(t6);
 SamplerState anisotropic : register(s0);
 
 /*
