@@ -555,7 +555,7 @@ void Game::LoadMainMenu()
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
+	//SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
 	this->hasLoaded = false;
 	this->inGoal = false;
@@ -583,42 +583,42 @@ void Game::LoadMap()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	for (int i = 0; i < this->options.difficulty * 2; i++)
-	{
-		trapIndices.push_back(SceneHandler()->EditScene().GetNumberOfObjects());
-		DirectX::SimpleMath::Vector2 pos = this->picker.GetRandomPos();
-		std::string clue = this->picker.GetRandomClue();
+	//for (int i = 0; i < this->options.difficulty * 2; i++)
+	//{
+	//	trapIndices.push_back(SceneHandler()->EditScene().GetNumberOfObjects());
+	//	DirectX::SimpleMath::Vector2 pos = this->picker.GetRandomPos();
+	//	std::string clue = this->picker.GetRandomClue();
 
-		SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
-		SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
-		std::string normalmap = "";
+	//	SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f };
+	//	SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f };
+	//	std::string normalmap = "";
 
-		// Used to fix inconsistencies in scale and rotation.
-		if (clue == "book" || clue == "toy")
-			scale = { 0.5f, 0.5f, 0.5f };
+	//	// Used to fix inconsistencies in scale and rotation.
+	//	if (clue == "book" || clue == "toy")
+	//		scale = { 0.5f, 0.5f, 0.5f };
 
-		else if (clue == "drawing")
-		{
-			rotation = { 3.14159f, 3.14159f, 0.0f };
-			scale = { 0.5f, 0.5f, 0.5f };
-			normalmap = "drawing_normal.png";
-		}
+	//	else if (clue == "drawing")
+	//	{
+	//		rotation = { 3.14159f, 3.14159f, 0.0f };
+	//		scale = { 0.5f, 0.5f, 0.5f };
+	//		normalmap = "drawing_normal.png";
+	//	}
 
-		else if (clue == "mask")
-		{
-			scale = { 1.2f, 1.2f, 1.2f };
-			normalmap = "mask_normal.png";
-		}
+	//	else if (clue == "mask")
+	//	{
+	//		scale = { 1.2f, 1.2f, 1.2f };
+	//		normalmap = "mask_normal.png";
+	//	}
 
-		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
-			{ pos.x, -3.0f, pos.y }, rotation, scale);
+	//	SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", normalmap, false, false,
+	//		{ pos.x, -3.0f, pos.y }, rotation, scale);
 
-	// FIX LIGHT OPTIMIZATION BEFORE ADDING LIGHTS TO CLUES
-		//L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-		//L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
-		//L.position = { pos.x, 0.0f, pos.y , 5.0f };
-		//SceneHandler()->EditScene().AddLight(L);
-	}
+	//// FIX LIGHT OPTIMIZATION BEFORE ADDING LIGHTS TO CLUES
+	//	//L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
+	//	//L.attentuate = { 0.4f, 0.5f, 0.0f, 1.0f };
+	//	//L.position = { pos.x, 0.0f, pos.y , 5.0f };
+	//	//SceneHandler()->EditScene().AddLight(L);
+	//}
 
 	// Houses around the town.
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });
@@ -704,31 +704,31 @@ void Game::LoadMap()
 	SceneHandler()->EditScene().AddLight(L);
 
 	// Tree galore!! aka Performance test
-	for (int i = 0; i < 1500; i++)
-	{
-		float x = (float)(rand() % 1500 - rand() % 1500);
-		float z = (float)(rand() % 1500 - rand() % 1500);
-		while (x > -375 && x < 750 && z > -375 && z < 275)
-		{
-			x = (float)(rand() % 1500 - rand() % 1500);
-			z = (float)(rand() % 1500 - rand() % 1500);
-		}
+	//for (int i = 0; i < 1500; i++)
+	//{
+	//	float x = (float)(rand() % 1500 - rand() % 1500);
+	//	float z = (float)(rand() % 1500 - rand() % 1500);
+	//	while (x > -375 && x < 750 && z > -375 && z < 275)
+	//	{
+	//		x = (float)(rand() % 1500 - rand() % 1500);
+	//		z = (float)(rand() % 1500 - rand() % 1500);
+	//	}
 
-		SceneHandler()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	}
+	//	SceneHandler()->EditScene().Add("shittytree.obj", "puke_color.png", "", false, false, { x, -5.5f, z }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	//}
 
-	for (int i = 0; i < 50; i++)
-	{
-		float x = (float)(rand() % 1500 - rand() % 1500);
-		float z = (float)(rand() % 1500 - rand() % 1500);
-		while (x > -375 && x < 750 && z > -375 && z < 275)
-		{
-			x = (float)(rand() % 1500 - rand() % 1500);
-			z = (float)(rand() % 1500 - rand() % 1500);
-		}
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	float x = (float)(rand() % 1500 - rand() % 1500);
+	//	float z = (float)(rand() % 1500 - rand() % 1500);
+	//	while (x > -375 && x < 750 && z > -375 && z < 275)
+	//	{
+	//		x = (float)(rand() % 1500 - rand() % 1500);
+	//		z = (float)(rand() % 1500 - rand() % 1500);
+	//	}
 
-		SceneHandler()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
-	}
+	//	SceneHandler()->EditScene().Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
+	//}
 
 
 	this->amountOfObjects = SceneHandler()->EditScene().GetNumberOfObjects();

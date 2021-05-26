@@ -7,6 +7,7 @@ private:
 	float speed;
 	float attackRange;
 	DirectX::SimpleMath::Vector3 targetPos;
+	DirectX::SimpleMath::Vector3 targetDir;
 	bool reachedTarget;
 public:
 	Enemy();
@@ -16,7 +17,5 @@ public:
 	void MoveToTarget(const float& deltaTime);
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
-
-
 };
 
