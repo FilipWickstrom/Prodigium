@@ -24,6 +24,7 @@ struct VertexShaderInput
     float3 tangent      : TANGENT;
     uint4 boneIDs       : BONEIDS;
     float4 boneWeights  : BONEWEIGHTS;
+    float4 specular     : SPECULAR;
 };
 
 struct VertexShaderOutput
@@ -33,8 +34,8 @@ struct VertexShaderOutput
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
     float4 tangent    : TANGENT;
+    float4 specular   : SPECULAR;
 };
-
 
 VertexShaderOutput main(VertexShaderInput input)
 {
@@ -56,11 +57,13 @@ VertexShaderOutput main(VertexShaderInput input)
     output.positionWS = mul(float4(input.position, 1.0f), world);
     
     output.normalWS = normalize(mul(input.normal, (float3x3) world));
-      
+    
     output.texCoord = input.texCoord;
     
     // Last spot is for if it has normal map or not.
     output.tangent = float4(mul(input.tangent, (float3x3) world), hasNormalMap.x);
       
+    output.specular = input.specular;
+    
 	return output;
 }
