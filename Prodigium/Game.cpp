@@ -141,7 +141,6 @@ void Game::HandleGameLogic(const float& deltaTime)
 		//When player is dead
 		if (player->GetHealth() <= 0)
 		{
-			std::cout << "is dead\n";
 			this->player->SetHealth(0);
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
@@ -578,6 +577,7 @@ void Game::ResetValues()
 void Game::LoadMainMenu()
 {
 	Engine::inGame = false;
+	AIHandler::Remove();
 	if (this->player)
 		delete this->player;
 
@@ -585,7 +585,6 @@ void Game::LoadMainMenu()
 		delete this->enemy;
 
 	options.state = MAINMENU;
-
 	// Refresh the game to a clean slate.
 	SceneHandler()->RemoveAllScenes();
 	SceneHandler()->AddScene();
@@ -654,6 +653,7 @@ void Game::LoadMap()
 	//Enemy
 	this->enemy = new Enemy();
 	EDITSCENE.Add(this->enemy->GetMeshObject());
+	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain

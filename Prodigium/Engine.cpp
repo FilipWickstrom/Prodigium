@@ -234,9 +234,6 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	{
 		return false;
 	}
-	AIHandler::Initialize();
-
-	AIHandler::CreateNodes();
 
 	return true;
 }

@@ -50,8 +50,13 @@ const bool AIHandler::Initialize()
 	if (!AIHANDLER)
 	{
 		AIHANDLER = new AIHandler();
-
+		AIHANDLER->CreateNodes();
 		return true;
+	}
+	else
+	{
+		std::cout << "Was already Initialized\n";
+		AIHANDLER->CreateNodes();
 	}
 	return false;
 }
@@ -288,16 +293,20 @@ void AIHandler::TracePath(Node* src, Node* dst)
 
 void AIHandler::Remove()
 {
-	AIHandler::instance->currentEnemyNode = nullptr;
-	AIHandler::instance->monster = nullptr;
-	for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
-	{
-		if (AIHandler::instance->allNodes[i])
-			delete AIHandler::instance->allNodes[i];
-	}
-
 	if (AIHandler::instance)
 	{
+		AIHandler::instance->currentEnemyNode = nullptr;
+		AIHandler::instance->monster = nullptr;
+		for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
+		{
+			if (AIHandler::instance->allNodes[i])
+				delete AIHandler::instance->allNodes[i];
+		}
+
 		delete AIHandler::instance;
+	}
+	else
+	{
+		std::cout << "Couldn't delete AIHandler\n";
 	}
 }
