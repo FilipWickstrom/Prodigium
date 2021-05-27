@@ -3,7 +3,7 @@ Texture2D G_positionWS   : register(t0);
 Texture2D G_colour       : register(t1);
 Texture2D G_normalWS     : register(t2);
 Texture2D G_specular     : register(t7);    //LATER FIX WITH ALIGNMENT
-Texture2D G_normalView : register(t6);
+Texture2D ssaoMap : register(t6);
 SamplerState anisotropic : register(s0);
 
 
@@ -261,7 +261,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     Do light calculations
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
-    float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
+    float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
     
     for (int i = 1; i < info.x; i++)
