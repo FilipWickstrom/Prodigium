@@ -301,7 +301,7 @@ void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRend
 		}
 	}
 #ifdef _DEBUG
-	std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
 #endif
 }
 
