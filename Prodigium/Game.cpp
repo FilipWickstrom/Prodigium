@@ -127,8 +127,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->options.gameTimer += 1 * deltaTime;
 		
-		
-		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
+		player->Update(EDITSCENE.GetAllStaticObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
@@ -447,7 +446,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
-				EDITSCENE.Add("trap_bear.obj", "BearTrapAlbedo.png", "", false, false,
+				EDITSCENE.AddDynamicObject("trap_bear.obj", "BearTrapAlbedo.png", "", true, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
@@ -456,7 +455,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
-				EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false,
+				EDITSCENE.AddDynamicObject("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", true, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 1.5f, 1.5f, 1.5f });
@@ -476,8 +475,6 @@ void Game::HandleInput(const float& deltaTime)
 
 			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
 		}
-
-
 	}
 }
 
@@ -633,15 +630,16 @@ void Game::LoadMap()
 	
 	//Add player with the standard idle animation from start
 	this->player = new Player();
-	Engine::EDITSCENE.Add(this->player->GetMeshObject());
+	Engine::EDITSCENE.AddDynamicObject(this->player->GetMeshObject());
 	this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
 
 	//Enemy
 	this->enemy = new Enemy();
-	EDITSCENE.Add(this->enemy->GetMeshObject());
+	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
-	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+	// 
 	// Terrain
 	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });

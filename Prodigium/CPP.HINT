@@ -1,2 +1,3 @@
 #define DELETE_COPY_ASSIGNMENT(className) className(const className& other) = delete; className(const className&& other) = delete; className& operator=(const className& other) = delete; className& operator=(const className&& other) = delete;
 #define EDITSCENE SceneHandler()->EditScene()
+#define LERP(a, b, f)		(a + f * (b - a))

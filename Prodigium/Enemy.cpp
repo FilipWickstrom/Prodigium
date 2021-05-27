@@ -1,11 +1,12 @@
 #include "Enemy.h"
+#include "UsefulHeader.h"
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 Enemy::Enemy()
 {
-	this->model = new MeshObject();
-	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", false, true, { 1.0f, -3.0f, 1.0f });
+	this->model = new MeshObject;
+	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", true, true, { 1.0f, -3.0f, 1.0f });
 	this->attackRange = 20.f;
 	this->speed = 1.f;
 	this->reachedTarget = false;
@@ -14,9 +15,10 @@ Enemy::Enemy()
 	this->model->up = { 0.0f, 1.0f, 0.0f };
 	this->model->up.Normalize();
 	this->angle = 0.0f;
-	this->model->rotation = { 0.0f, 1.0f, 0.0f };
 	this->speedFactor = 1.0f;
 	this->speedDegradeCooldown = 0;
+
+	this->model->collidersOriginal[0].boundingBox.Extents.x /= 3.f;
 	this->lastAttack = 0;
 }
 
@@ -59,6 +61,8 @@ void Enemy::Move(const DirectX::SimpleMath::Vector2& direction, const float& del
 
 void Enemy::MoveToTarget(const float& deltaTime)
 {
+	const float ROTATION_SPEED = 5.f;
+
 	// Update speed factor.
 	this->speedDegradeCooldown = std::max(this->speedDegradeCooldown, 0.0f);
 	if (this->speedDegradeCooldown > 0)
@@ -66,17 +70,12 @@ void Enemy::MoveToTarget(const float& deltaTime)
 	if (this->speedDegradeCooldown < 0)
 		this->speedFactor = 1.0f;
 
-	//Vector3 source = this->model->forward;
-	this->model->forward = targetPos - this->model->position;
-	this->model->forward = Vector3::Lerp(this->model->forward, this->targetDir, 25.f * deltaTime);
+	this->model->forward = Vector3::Lerp(this->model->forward, this->targetDir, this->speed * deltaTime);
 	this->model->forward.Normalize();
 
-	Vector3 currentRot = { 0.0f, this->model->rotation.y, 0.0f };
-	Vector3 targetRot = { 0.0f, this->angle, 0.0f };
+	this->model->rotation.y = LERP(this->model->rotation.y, this->angle, ROTATION_SPEED * deltaTime);
 
-	this->model->rotation.y = Vector3::Lerp(currentRot, targetRot, 5.f * deltaTime).y;
-
-	this->model->position += this->model->forward * (this->speed * this->speedFactor) * deltaTime;
+	this->model->position += this->model->forward * this->speed * this->speedFactor * deltaTime;
 
 	if ((this->model->position - targetPos).Length() < 10.f)
 	{
@@ -140,5 +139,3 @@ void Enemy::SetSpeedFactor(float factor)
 		this->speedDegradeCooldown = 5.0f;
 	}
 }
-
-
