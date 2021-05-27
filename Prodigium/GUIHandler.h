@@ -1,17 +1,17 @@
 #pragma once
 #include "UsefulHeader.h"
+#include "Graphics.h"
+#include "Window.h"
+#include "OptionsHandler.h"
 #pragma warning(push, 0)
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
-#pragma warning(pop)
-#include "Graphics.h"
-#include "Window.h"
 #include <stb/stb_image.h>
 #include <SimpleMath.h>
-#include "OptionsHandler.h"
+#pragma warning(pop)
 
-#define CLUES 4
+constexpr int CLUES = 4;
 #define GUIHANDLER GUIHandler::instance
 
 class GUIHandler
@@ -34,7 +34,7 @@ private:
 	ID3D11ShaderResourceView* textureOutline;
 	void RenderDebugGUI();
 	void RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& options);
-	void RenderBrainGUI(int playerHp, int clues, OptionsHandler& options);
+	void RenderBrainGUI(int health, int clues, OptionsHandler& options);
 	void RenderOptionsMenu(OptionsHandler& options);
 
 	void RenderPauseMenu();
@@ -45,7 +45,7 @@ private:
 public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
-	static void Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options);
+	static void Render(int health, int clues, float& timer1, float& timer2, OptionsHandler& options);
 	static void Shutdown();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);

@@ -1,6 +1,6 @@
 #define MAXWEIGHTSIZE 24
 
-RWTexture2D<float4> backBuffer : register(u0);
+RWTexture2D<unorm float4> backBuffer : register(u0);
 
 cbuffer BlurSettings : register(b5)
 {

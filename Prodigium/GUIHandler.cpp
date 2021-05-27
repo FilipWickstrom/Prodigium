@@ -143,7 +143,7 @@ const bool GUIHandler::Initialize(const HWND& window)
     return true;
 }
 
-void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, OptionsHandler& options)
+void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, OptionsHandler& options)
 {
     if (GUIHANDLER->isPaused)
     {
@@ -176,7 +176,7 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
     {
         SetUpGUIStyleGame();
         GUIHANDLER->RenderTrapGUI(timer1, timer2, options);
-        GUIHANDLER->RenderBrainGUI(playerHp, clues, options);
+        GUIHANDLER->RenderBrainGUI(health, clues, options);
     }
     if (GUIHANDLER->showOptionsMenu)
     {
@@ -187,7 +187,10 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         GUIHANDLER->RenderOptionsMenu(options);
     }
     if (GUIHANDLER->isPaused && GUIHANDLER->showPauseMenu)
+    {
+        SetUpGUIStyleGame();
         GUIHANDLER->RenderPauseMenu();
+    }
 
 	EndFrame();
 	ImGui::Render();
@@ -389,10 +392,10 @@ void GUIHandler::RenderTrapGUI(float& timer1, float& timer2, OptionsHandler& opt
     delete trap2;
 }
 
-void GUIHandler::RenderBrainGUI(int playerHp, int clues, OptionsHandler& options)
+void GUIHandler::RenderBrainGUI(int health, int clues, OptionsHandler& options)
 {
     float fade = 1.0f;
-    float hp = (float)playerHp;
+    float hp = (float)health;
     fade = std::max(std::min(hp, 100.0f), 10.0f) * 0.01f;
 
     bool* isActive = new bool(true);
@@ -403,7 +406,7 @@ void GUIHandler::RenderBrainGUI(int playerHp, int clues, OptionsHandler& options
     , ImVec2(1, 1), ImVec4(fade, fade, fade, fade));
     End();
 
-    std::string rest(std::to_string(playerHp));
+    std::string rest(std::to_string(health));
     rest.append(" / 100");
     SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() - 200, 200));
     SetNextWindowSize(ImVec2(500, 500), 0);

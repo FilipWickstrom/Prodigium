@@ -159,7 +159,7 @@ float GameObject::GetDistance(const GameObject& otherObject) const
 	return dist;
 }
 
-float GameObject::GetDistance(const DirectX::SimpleMath::Vector4& otherObject) const
+float GameObject::GetDistance(const Vector4& otherObject) const
 {
 	float dist = Vector3(otherObject - this->position).Length();
 	if (dist < 0)

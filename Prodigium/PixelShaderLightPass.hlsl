@@ -33,6 +33,11 @@ cbuffer Camera : register(b1)
     float fogRange;
 }
 
+cbuffer ssaoBuffer : register(b5)
+{
+    float4 ssaoInfo;
+}
+
 struct LightViewProj
 {
     matrix lightView;
@@ -285,7 +290,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular)) * ssao;
+    
+    float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular));
+    
+    if(ssaoInfo.x >= 1)
+    {
+        finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular)) * ssao;
+    }
     
     //FOG
     float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;

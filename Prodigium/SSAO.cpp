@@ -129,7 +129,7 @@ bool SSAO::SetupTexture()
 {
 	HRESULT hr;
 	D3D11_TEXTURE2D_DESC tDesc;
-	tDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	tDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	tDesc.Width = Graphics::GetWindowWidth();
 	tDesc.Height = Graphics::GetWindowHeight();
 	tDesc.ArraySize = 1;
