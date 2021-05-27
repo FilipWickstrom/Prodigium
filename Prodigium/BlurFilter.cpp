@@ -119,12 +119,7 @@ void BlurFilter::UpdateBlurRadius(float sanity)
 			this->useBlurFilter = false;
 		}
 		else if (blurRad != this->blurSettings.blurRadius)
-		{
-
-		#ifdef _DEBUG
-			std::cout << "Changed blur to " << blurRad << std::endl;	//REMOVE LATER***
-		#endif
-			
+		{	
 			this->useBlurFilter = true;
 			this->blurSettings.blurRadius = blurRad;
 			

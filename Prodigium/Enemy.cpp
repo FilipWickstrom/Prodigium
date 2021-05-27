@@ -7,7 +7,7 @@ Enemy::Enemy()
 	this->model = new MeshObject();
 	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", false, true, { 1.0f, -3.0f, 1.0f });
 	this->attackRange = 20.f;
-	this->speed = 20.f;
+	this->speed = 1.f;
 	this->reachedTarget = false;
 	this->model->forward = { 0.0f, 0.0f, -1.0f };
 	this->model->forward.Normalize();
@@ -17,6 +17,7 @@ Enemy::Enemy()
 	this->model->rotation = { 0.0f, 1.0f, 0.0f };
 	this->speedFactor = 1.0f;
 	this->speedDegradeCooldown = 0;
+	this->lastAttack = 0;
 }
 
 Enemy::~Enemy()
@@ -49,6 +50,13 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->angle = -theta;
 }
 
+void Enemy::Move(const DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
+{
+
+	this->model->position += {direction.x* speed* deltaTime, 0.f, direction.y* speed* deltaTime};
+	this->model->UpdateMatrix();
+}
+
 void Enemy::MoveToTarget(const float& deltaTime)
 {
 	// Update speed factor.
@@ -77,6 +85,41 @@ void Enemy::MoveToTarget(const float& deltaTime)
 
 	this->model->UpdateMatrix();
 	this->model->UpdateBoundingBoxes();
+}
+
+const float& Enemy::GetAttackRange() const
+{
+	return this->attackRange;
+}
+
+void Enemy::PlayAttackAnimation()
+{
+}
+
+const bool Enemy::CanAttack() const
+{
+	return (omp_get_wtime() - lastAttack > 3);
+}
+
+void Enemy::Attack(Player* player)
+{
+	this->lastAttack = omp_get_wtime();
+	player->IncreaseHealth(-20);
+}
+
+const DirectX::SimpleMath::Vector3& Enemy::getPosition() const
+{
+	return this->model->position;
+}
+
+const bool Enemy::IsCloseToPlayer(const DirectX::SimpleMath::Vector3& playerPos)
+{
+	bool toReturn = false;
+	if ((this->model->position - playerPos).Length() < 50.f)
+	{
+		toReturn = true;
+	}
+	return toReturn;
 }
 
 MeshObject* Enemy::GetMeshObject() const

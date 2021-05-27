@@ -5,15 +5,15 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
-#define EDITSCENE SceneHandle()->EditScene()
+#define EDITSCENE SceneHandler()->EditScene()
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	if (Engine::playerHp > 0)
+	if (player->GetHealth() > 0)
 	{
-		int whisperFactor = Engine::playerHp * 100;
+		int whisperFactor = player->GetHealth() * 100;
 		int shouldWhisper = rand() % whisperFactor;
 
 		if (shouldWhisper > 5 && shouldWhisper < 10)
@@ -43,7 +43,7 @@ void Game::MonsterSounds(const float& deltaTime)
 	else
 	{
 		this->monsterSoundTimer -= 1 * deltaTime;
-		std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
+		//std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
 	}
 }
 
@@ -127,6 +127,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->options.gameTimer += 1 * deltaTime;
 		
+		
 		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
@@ -136,19 +137,11 @@ void Game::HandleGameLogic(const float& deltaTime)
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
-		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0 && !this->isPaused)
-		{
-			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
-			{
-				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
-			}
-			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
-		}
 
 		//When player is dead
-		if (Engine::playerHp <= 0)
+		if (player->GetHealth() <= 0)
 		{
-			Engine::playerHp = 0;
+			this->player->SetHealth(0);
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 			this->soundHandler.PlayOneShot(0);
@@ -200,7 +193,6 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
 		AIHandler::MoveEnemy(deltaTime);
-		Engine::Update(deltaTime);
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -298,7 +290,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	if ( this->player && this->player->GetCollectedClues() >= (this->options.difficulty * 2))
 	{
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
@@ -332,15 +324,15 @@ void Game::HandleInput(const float& deltaTime)
 		/*------------------SANITY TESTING----------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::G))
 		{
-			Engine::playerHp = 50;
+			this->player->IncreaseHealth(50);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::H))
 		{
-			Engine::playerHp -= 10;
+			this->player->SetHealth(0);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::J))
 		{
-			Engine::playerHp = 100;
+			this->player->SetHealth(100);
 		}
 		/*------------------SANITY TESTING----------------*/
 
@@ -445,9 +437,9 @@ void Game::HandleInput(const float& deltaTime)
 				{
 					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
-					SceneHandle()->EditScene().GetMeshObject(i).SetVisible(false);
-					Engine::cluesCollected++;
-					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
+					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+					this->player->IncreaseCollectedClues();
+					this->player->IncreaseHealth((int)(25 / (this->options.difficulty * 0.5)));
 				}
 			}
 		}
@@ -506,7 +498,27 @@ bool Game::OnFrame(const float& deltaTime)
 
 	/*---------------THREE---------------*/
 	Engine::ClearDisplay();
-	Engine::Render();
+	Engine::Render(this->player);
+
+	if (!this->isPaused && player)
+	{
+		AIHandler::MoveEnemy(deltaTime);
+		// So we don't go over a certain value
+		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
+
+		if (this->slowdown_timer > 0.0f)
+		{
+			this->slowdown_timer -= 1.0f * deltaTime;
+			this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
+		}
+
+		if (this->stopcompl_timer > 0.0f)
+		{
+			this->stopcompl_timer -= 1.0f * deltaTime;
+			this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
+		}
+	}
+
 
 	return true;
 }
@@ -544,9 +556,9 @@ bool Game::OnStart()
 void Game::ResetValues()
 {
 	// Reset values
-	Engine::playerHp = 100;
-	Engine::playerSanity = 1.0f;
-	Engine::cluesCollected = 0;
+	this->player->SetHealth(100);
+	this->player->SetSanity(1.f);
+	this->player->SetCollectedClues(0);
 	this->inGoal = false;
 	this->menu.Reset();
 	this->picker.Reset();
@@ -564,6 +576,7 @@ void Game::ResetValues()
 void Game::LoadMainMenu()
 {
 	Engine::inGame = false;
+	AIHandler::Remove();
 	if (this->player)
 		delete this->player;
 
@@ -571,12 +584,12 @@ void Game::LoadMainMenu()
 		delete this->enemy;
 
 	options.state = MAINMENU;
-
 	// Refresh the game to a clean slate.
-	SceneHandle()->RemoveAllScenes();
-	SceneHandle()->AddScene();
-	
-	//Load here for smoother placing in-game
+	SceneHandler()->RemoveAllScenes();
+	SceneHandler()->AddScene();
+
+	int randX = rand() % 80 - rand() % 80;
+	int randZ = rand() % 60 + 10;
 	EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
 	//Static objects
@@ -612,7 +625,7 @@ void Game::LoadMap()
 {
 	options.state = INGAME;
 
-	SceneHandle()->AddScene();
+	SceneHandler()->AddScene();
 	
 	//Add player with the standard idle animation from start
 	this->player = new Player();
@@ -621,11 +634,12 @@ void Game::LoadMap()
 
 	//Enemy
 	this->enemy = new Enemy();
-	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
-	AIHandler::SetEnemy(this->enemy);
+	EDITSCENE.Add(this->enemy->GetMeshObject());
+	AIHandler::Initialize();
+	AIHandler::SetEnemyAndPlayer(enemy, player);
 	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain
-	SceneHandle()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;
