@@ -277,7 +277,7 @@ bool SSAO::SetupPreparations()
 
 	unsigned int thickness = Graphics::GetWindowWidth() * Graphics::GetWindowHeight();
 	DirectX::XMFLOAT4* vecL = new DirectX::XMFLOAT4[thickness];
-	for (int i = 0; i < thickness; i++)
+	for (unsigned int i = 0; i < thickness; i++)
 	{
 		vecL[i] = DirectX::XMFLOAT4(RandF(-1.0f, 1.0f),
 			RandF(-1.0f, 1.0f), RandF(0.0f, 1.0f), 1.0f);
