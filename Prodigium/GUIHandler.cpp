@@ -187,7 +187,10 @@ void GUIHandler::Render(int playerHp, int clues, float& timer1, float& timer2, O
         GUIHANDLER->RenderOptionsMenu(options);
     }
     if (GUIHANDLER->isPaused && GUIHANDLER->showPauseMenu)
+    {
+        SetUpGUIStyleGame();
         GUIHANDLER->RenderPauseMenu();
+    }
 
 	EndFrame();
 	ImGui::Render();
