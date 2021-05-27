@@ -375,17 +375,6 @@ void Game::HandleInput(const float& deltaTime)
 				}
 				direction.x = 1.f;
 			}
-			else if (InputHandler::IsKeyReleased(Keyboard::W))
-			{
-				//Randomize idle state
-				AnimationState state;
-				if (rand() % 4 == 0)
-					state = AnimationState::IDLE2;
-				else
-					state = AnimationState::IDLE;
-				this->player->GetMeshObject()->ChangeAnimState(state);
-			}
-
 			//Backward
 			else if (InputHandler::IsKeyHeld(Keyboard::S))
 			{
@@ -401,7 +390,23 @@ void Game::HandleInput(const float& deltaTime)
 				}
 				direction.x = -1.f;
 			}
-			else if (InputHandler::IsKeyReleased(Keyboard::S))
+			//Sideways
+			else if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
+			}
+			else if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
+			}
+
+			//When any of movementkeys is released go back to idle animation
+			else if (InputHandler::IsKeyReleased(Keyboard::W) || 
+					 InputHandler::IsKeyReleased(Keyboard::S) ||
+					 InputHandler::IsKeyReleased(Keyboard::A) ||
+					 InputHandler::IsKeyReleased(Keyboard::D) )
 			{
 				//Randomize idle state
 				AnimationState state;
@@ -410,16 +415,6 @@ void Game::HandleInput(const float& deltaTime)
 				else
 					state = AnimationState::IDLE;
 				this->player->GetMeshObject()->ChangeAnimState(state);
-			}
-
-			//Sideways
-			if (InputHandler::IsKeyHeld(Keyboard::A))
-			{
-				direction.y = -1.f;
-			}
-			if (InputHandler::IsKeyHeld(Keyboard::D))
-			{
-				direction.y = 1.f;
 			}
 		}
 

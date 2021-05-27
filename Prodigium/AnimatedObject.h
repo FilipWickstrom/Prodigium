@@ -17,10 +17,15 @@ If optimalization is needed:
 	- Fix search closest two keyframes in "Animation.cpp"
 */
 
-//Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
+//Switch between states of animations
 enum class AnimationState
 {
-	NONE, IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, DEAD, PICKUP
+	NONE, 
+	IDLE, IDLE2, 
+	WALKFORWARD, WALKBACKWARD, 
+	RUNFORWARD, RUNBACKWARD, 
+	LEFTSTRAFE, RIGHTSTRAFE, 
+	DEAD, PICKUP
 };
 
 class AnimatedObject : public Resource 
