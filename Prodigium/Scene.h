@@ -134,6 +134,8 @@ public:
 	// render the particles inside the scene.
 	void RenderParticles();
 
+	void RenderSSAO();
+
 	void SwitchMenuMode(bool sw = true);
 
 	void ClearCullingObjects();

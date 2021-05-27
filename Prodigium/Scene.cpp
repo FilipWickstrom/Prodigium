@@ -384,6 +384,11 @@ void Scene::RenderParticles()
 
 }
 
+void Scene::RenderSSAO()
+{
+	this->SSAOcclusion.Render();
+}
+
 void Scene::SwitchMenuMode(bool sw)
 {
 	this->menuMode = sw;

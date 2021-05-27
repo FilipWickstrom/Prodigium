@@ -70,6 +70,11 @@ void GeometryPass::ClearScreen()
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 }
 
+void GeometryPass::BindSSAO()
+{
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->gBuffer.shaderResourceViews[4]);
+}
+
 bool GeometryPass::CreateGBuffer()
 {
 	HRESULT hr;

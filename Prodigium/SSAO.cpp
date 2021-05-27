@@ -33,8 +33,19 @@ void SSAO::InternalRender()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	Graphics::GetContext()->IASetInputLayout(this->inputQuad);
+	Graphics::GetContext()->PSSetShader(this->pixelShader, nullptr, 0);
+	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &this->randomVecShaderView);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &this->sampler);
+	Graphics::GetContext()->PSSetConstantBuffers(0, 1, &this->ssaoBuffer);
+	Graphics::GetContext()->VSSetConstantBuffers(1, 1, &this->ssaoBuffer);
 
 	// Render Phase
+}
+
+void SSAO::Clear()
+{
 }
 
 bool SSAO::LoadShaders()
@@ -216,6 +227,84 @@ bool SSAO::SetupPreparations()
 		DirectX::XMStoreFloat4(&this->randomVectors[i], v);
 	}
 
+	unsigned int thickness = Graphics::GetWindowWidth() * Graphics::GetWindowHeight();
+	DirectX::XMFLOAT4* vec = new DirectX::XMFLOAT4[thickness];
+	for (int i = 0; i < thickness; i++)
+	{
+		vec[i] = DirectX::XMFLOAT4(randomizeL(1.0f, -1.0f),
+			randomizeL(1.0f, -1.0f), randomizeL(1.0f, 0.0f), 1.0f);
+	}
+
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = Graphics::GetWindowWidth();
+	desc.Height = Graphics::GetWindowHeight();
+	desc.MipLevels = 1;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+	desc.Usage = D3D11_USAGE_IMMUTABLE;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.ArraySize = 1;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = vec;
+	data.SysMemPitch = Graphics::GetWindowWidth() * 4;
+	data.SysMemSlicePitch = 0;
+
+	result = Graphics::GetDevice()->CreateTexture2D(&desc, &data, &this->randomVecTexture);
+	if (FAILED(result))
+	{
+		delete[] vec;
+		return false;
+	}
+	else
+		result = Graphics::GetDevice()->CreateShaderResourceView(this->randomVecTexture, NULL, &this->randomVecShaderView);
+	delete[] vec;
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MaxAnisotropy = 16;
+	samplerDesc.BorderColor[0] = samplerDesc.BorderColor[1] = samplerDesc.BorderColor[2] = samplerDesc.BorderColor[3] = 1e5f;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	result = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
+
+	SSAOBuffer strt;
+	for (int i = 0; i < corners; i++)
+	{
+		strt.frustumCorners[i] = this->frustumCorners[i];
+	}
+	for (int i = 0; i < samples; i++)
+	{
+		strt.randomVectors[i] = this->randomVectors[i];
+	}
+
+	/*
+	
+		SSAO Buffer Containing frustumCorners and randomVectors
+
+	*/
+
+	D3D11_BUFFER_DESC bDesc;
+	bDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	bDesc.CPUAccessFlags = 0;
+	bDesc.MiscFlags = 0;
+	bDesc.ByteWidth = sizeof(SSAOBuffer);
+
+	data.pSysMem = &strt;
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
+
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bDesc, &data, &this->ssaoBuffer);
+
 	return !FAILED(result);
 }
 
@@ -229,6 +318,9 @@ SSAO::SSAO()
     this->pixelShader = nullptr;
     this->vertexShader = nullptr;
 	this->indexBuffer = nullptr;
+	this->randomVecTexture = nullptr;
+	this->randomVecShaderView = nullptr;
+	this->ssaoBuffer = nullptr;
 
     this->vertexData = "";
     this->hasSetup = false;
@@ -252,6 +344,12 @@ SSAO::~SSAO()
         this->SSAOMap->Release();
 	if (this->indexBuffer)
 		this->indexBuffer->Release();
+	if (this->randomVecTexture)
+		this->randomVecTexture->Release();
+	if (this->randomVecShaderView)
+		this->randomVecShaderView->Release();
+	if (this->ssaoBuffer)
+		this->ssaoBuffer->Release();
 }
 
 void SSAO::Render()
