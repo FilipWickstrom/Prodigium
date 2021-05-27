@@ -52,17 +52,18 @@ bool AnimatedObject::LoadVertexShader()
 
 bool AnimatedObject::CreateInputLayout()
 {
-	D3D11_INPUT_ELEMENT_DESC geometryLayout[6] =
+	D3D11_INPUT_ELEMENT_DESC geometryLayout[7] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"BONEIDS", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"BONEWEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"SPECULAR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 6, this->vShaderByteCode.c_str(), 
+	HRESULT hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 7, this->vShaderByteCode.c_str(), 
 														  this->vShaderByteCode.length(), &this->inputlayout);
 
 	if (FAILED(hr))
@@ -200,6 +201,17 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 				std::vector<AnimationVertex> vertices;
 				vertices.reserve(mesh->mNumVertices);
 
+				//Load in material
+				const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+				float shiniess = 0.0f;
+				aiColor4D specular = { 0.0f,0.0f,0.0f,0.0f };
+
+				if (material != nullptr)
+				{
+					aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shiniess);
+					aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
+				}
+
 				/*--------Loading all vertices for the mesh---------*/
 				for (UINT i = 0; i < mesh->mNumVertices; i++)
 				{
@@ -208,6 +220,8 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 					temp.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 					temp.uv = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 					temp.tangent = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
+					//Add material
+					temp.specular = { specular.r, specular.g, specular.b, shiniess };
 					//Bone ID and Weights are set to 0 by default
 					vertices.push_back(temp);
 
@@ -335,25 +349,33 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 
 void AnimatedObject::LoadAnimations(std::string animFolder)
 {
-	std::string walkRunFile = animFolder + "/" + animFolder + "_Walk_Run.fbx";
+	std::string forwardFile = animFolder + "/" + animFolder + "_Forward.fbx";
+	std::string backwardFile = animFolder + "/" + animFolder + "_Backward.fbx";
 	std::string idleFile = animFolder + "/" + animFolder + "_Idle.fbx";
 	std::string idle2File = animFolder + "/" + animFolder + "_Idle2.fbx";
+	std::string strafeFile = animFolder + "/" + animFolder + "_Strafe.fbx";
 	std::string deathFile = animFolder + "/" + animFolder + "_Dead.fbx";
 	std::string pickupFile = animFolder + "/" + animFolder + "_Pickup.fbx";
 
-	//Load in walk/run animation
-	Animation* walkRunAnim = new Animation();
-	if (walkRunAnim->Load(walkRunFile, this->boneMap))
+	//Load in forward movement animation
+	Animation* forwardAnim = new Animation();
+	if (forwardAnim->Load(forwardFile, this->boneMap, true, 120))
 	{
-		this->allAnimations[AnimationState::WALKFORWARD] = walkRunAnim;
-		this->allAnimations[AnimationState::WALKBACKWARD] = walkRunAnim;
-		this->allAnimations[AnimationState::RUNFORWARD] = walkRunAnim;
-		this->allAnimations[AnimationState::RUNBACKWARD] = walkRunAnim;
+		this->allAnimations[AnimationState::WALKFORWARD] = forwardAnim;
+		this->allAnimations[AnimationState::RUNFORWARD] = forwardAnim;
+	}
+
+	//Load in backward movement animation
+	Animation* backwardAnim = new Animation();
+	if (backwardAnim->Load(backwardFile, this->boneMap, true, 120))
+	{
+		this->allAnimations[AnimationState::WALKBACKWARD] = backwardAnim;
+		this->allAnimations[AnimationState::RUNBACKWARD] = backwardAnim;
 	}
 
 	//Load in idle 1 animation
 	Animation* idleAnim = new Animation();
-	if (idleAnim->Load(idleFile, this->boneMap))
+	if (idleAnim->Load(idleFile, this->boneMap, true, 30))
 	{
 		this->allAnimations[AnimationState::IDLE] = idleAnim;
 		this->currentState = AnimationState::IDLE;
@@ -361,21 +383,29 @@ void AnimatedObject::LoadAnimations(std::string animFolder)
 	
 	//Load in idle 2 animation
 	Animation* idle2Anim = new Animation();
-	if (idle2Anim->Load(idle2File, this->boneMap))
+	if (idle2Anim->Load(idle2File, this->boneMap, true, 45))
 	{
 		this->allAnimations[AnimationState::IDLE2] = idle2Anim;
 	}
 
+	//Load in strafe animation
+	Animation* strafeAnim = new Animation();
+	if (strafeAnim->Load(strafeFile, this->boneMap, true, 40))
+	{
+		this->allAnimations[AnimationState::LEFTSTRAFE] = strafeAnim;
+		this->allAnimations[AnimationState::RIGHTSTRAFE] = strafeAnim;
+	}
+
 	//Load in death animation
 	Animation* deathAnim = new Animation();
-	if (deathAnim->Load(deathFile, this->boneMap, false))
+	if (deathAnim->Load(deathFile, this->boneMap, false, 30))
 	{
 		this->allAnimations[AnimationState::DEAD] = deathAnim;
 	}
 
 	//Load in pickup animation
 	Animation* pickupAnim = new Animation();
-	if (pickupAnim->Load(pickupFile, this->boneMap, false))
+	if (pickupAnim->Load(pickupFile, this->boneMap, false, 250))
 	{
 		this->allAnimations[AnimationState::PICKUP] = pickupAnim;
 	}
@@ -517,16 +547,15 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			switch (previousState)
 			{
 			case AnimationState::IDLE:
-				this->allAnimations[previousState]->ResetCurrentTime();
-				break;
 			case AnimationState::IDLE2:
+			case AnimationState::LEFTSTRAFE:
+			case AnimationState::RIGHTSTRAFE:
 				this->allAnimations[previousState]->ResetCurrentTime();
 				break;
 			case AnimationState::DEAD:
-				this->allAnimations[previousState]->ResetReachedEnd();
-				break;
 			case AnimationState::PICKUP:
 				this->allAnimations[previousState]->ResetReachedEnd();
+				this->allAnimations[previousState]->ResetCurrentTime();
 				break;
 			default:
 				break;
@@ -534,39 +563,28 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 
 			this->currentState = state;
 
-			//Doing this depending 
+			//Change speed on some animations that share the same file
 			switch (this->currentState)
 			{
 			case AnimationState::WALKFORWARD:
 				this->allAnimations[this->currentState]->SetAnimationSpeed(120);
 				break;
-			case AnimationState::WALKBACKWARD:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(-120);
-				break;
 			case AnimationState::RUNFORWARD:
 				this->allAnimations[this->currentState]->SetAnimationSpeed(200);
 				break;
+			case AnimationState::WALKBACKWARD:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(120);
+				break;
 			case AnimationState::RUNBACKWARD:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(-200);
+				this->allAnimations[this->currentState]->SetAnimationSpeed(200);
 				break;
-			case AnimationState::IDLE:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(30);
-				this->allAnimations[this->currentState]->ResetCurrentTime();
+			case AnimationState::LEFTSTRAFE:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(-40);
 				break;
-			case AnimationState::IDLE2:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(45);
-				this->allAnimations[this->currentState]->ResetCurrentTime();
-				break;
-			case AnimationState::DEAD:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(30);
-				this->allAnimations[this->currentState]->ResetCurrentTime();
-				break;
-			case AnimationState::PICKUP:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(250);
-				this->allAnimations[this->currentState]->ResetCurrentTime();
+			case AnimationState::RIGHTSTRAFE:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(40);
 				break;
 			default:
-				//NONE or other
 				break;
 			};
 		}

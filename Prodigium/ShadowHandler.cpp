@@ -215,15 +215,15 @@ const int ShadowHandler::NrOfShadows() const
 void ShadowHandler::RenderLightPass()
 {
 	this->shadows[0]->RenderLightPass();
-	Graphics::GetContext()->PSSetShaderResources(5, 1, &this->lightArrayView);
-	Graphics::GetContext()->PSSetShaderResources(4, 1, &this->arrayView);
+	Graphics::GetContext()->PSSetShaderResources( 5/*BUFFER_COUNT + 2*/, 1, &this->lightArrayView);	//6
+	Graphics::GetContext()->PSSetShaderResources(4/*BUFFER_COUNT + 1*/, 1, &this->arrayView);		//5
 }
 
 void ShadowHandler::Clear()
 {
-	ID3D11RenderTargetView* cleanTargets[BUFFER_COUNT] = { nullptr };
-	ID3D11DepthStencilView* nullDepth = nullptr;
-	ID3D11Buffer* nuller = nullptr;
+	ID3D11ShaderResourceView* nullSRV = nullptr;
+	Graphics::GetContext()->PSSetShaderResources(5/*BUFFER_COUNT + 2*/, 1, &nullSRV);	//6
+	Graphics::GetContext()->PSSetShaderResources(4/*BUFFER_COUNT + 1*/, 1, &nullSRV);	//5
 	Graphics::SetMainWindowViewport();
 }
 

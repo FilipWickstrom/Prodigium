@@ -154,15 +154,16 @@ bool GeometryPass::CreateInputLayout()
 {
 	HRESULT hr;
 
-	D3D11_INPUT_ELEMENT_DESC geometryLayout[4] =
+	D3D11_INPUT_ELEMENT_DESC geometryLayout[5] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"SPECULAR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 4, this->vShaderByteCode.c_str(), this->vShaderByteCode.length(), &inputLayout);
+	hr = Graphics::GetDevice()->CreateInputLayout(geometryLayout, 5, this->vShaderByteCode.c_str(), this->vShaderByteCode.length(), &inputLayout);
 
 	if (FAILED(hr))
 	{
@@ -627,7 +628,11 @@ void LightPass::Clear()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBufferNull, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBufferNull, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN, 0);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
-	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
+	
+	//LATER FIX***
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, shaderResourceNull);
+	Graphics::GetContext()->PSSetShaderResources(6, 1, shaderResourceNull);
+	
 	Graphics::GetContext()->OMSetDepthStencilState(nullState, 0);
 }
 
@@ -641,6 +646,11 @@ void LightPass::Prepare()
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
+	
+	//LATER FIX***
+	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, this->shaderResources);
+	Graphics::GetContext()->PSSetShaderResources(7, 1, &this->shaderResources[4]);
+
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, this->shaderResources);
 	Graphics::GetContext()->PSSetShaderResources(6, 1, &this->shaderResources[3]);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);

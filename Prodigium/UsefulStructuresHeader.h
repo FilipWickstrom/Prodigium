@@ -16,6 +16,7 @@ struct Vertex
 	DirectX::SimpleMath::Vector2 uv = {};
 	DirectX::SimpleMath::Vector3 normal = {};
 	DirectX::SimpleMath::Vector3 tangent = {};
+	DirectX::SimpleMath::Vector4 specular = {};
 };
 
 /*
@@ -86,8 +87,9 @@ struct AnimationVertex
 	DirectX::SimpleMath::Vector2 uv = {};
 	DirectX::SimpleMath::Vector3 normal = {};
 	DirectX::SimpleMath::Vector3 tangent = {};
-	DirectX::XMUINT4 boneIDs = {};
+	DirectX::XMUINT4			 boneIDs = {};
 	DirectX::SimpleMath::Vector4 boneWeights = {};
+	DirectX::SimpleMath::Vector4 specular = {};
 };
 
 struct ParticleVertex

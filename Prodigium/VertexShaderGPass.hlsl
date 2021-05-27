@@ -19,7 +19,8 @@ struct VertexShaderInput
     float3 position : POSITION;
     float2 texCoord : TEXCOORD;
     float3 normal   : NORMAL;
-    float3 tangent : TANGENT;
+    float3 tangent  : TANGENT;
+    float4 specular : SPECULAR;
 };
 
 struct VertexShaderOutput
@@ -28,7 +29,8 @@ struct VertexShaderOutput
     float4 positionWS : POSITIONWS;
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
-    float4 tangent : TANGENT;
+    float4 tangent    : TANGENT;
+    float4 specular   : SPECULAR;
     float4 viewPosNorm : SSAO;
 };
 
@@ -52,6 +54,9 @@ VertexShaderOutput main(VertexShaderInput input)
     float4 viewPos = mul(mul(float4(input.position, 1.0f), world), view);
     float3 viewNormal = normalize(mul(input.normal, (float3x3) mul(world, view)));
     output.viewPosNorm = float4(viewNormal.xyz, viewPos.z);
+
+    
+    output.specular = input.specular;
 
 	return output;
 }

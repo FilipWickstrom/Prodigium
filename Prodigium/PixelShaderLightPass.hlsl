@@ -1,13 +1,11 @@
 //Gbuffers
-Texture2D G_positionWS : register(t0);
-Texture2D G_colour : register(t1);
-Texture2D G_normalWS : register(t2);
+Texture2D G_positionWS   : register(t0);
+Texture2D G_colour       : register(t1);
+Texture2D G_normalWS     : register(t2);
+Texture2D G_specular     : register(t7);    //LATER FIX WITH ALIGNMENT
 Texture2D G_normalView : register(t6);
 SamplerState anisotropic : register(s0);
 
-/*
-Cbuffer with lights?
-*/
 
 struct lightBuffer
 {
@@ -51,6 +49,7 @@ struct GBuffers
     float4 positionWS;
     float4 diffuseColor;
     float4 normalWS;
+    float4 specular;
 };
 
 GBuffers GetGBuffers(float2 texCoords)
@@ -59,6 +58,7 @@ GBuffers GetGBuffers(float2 texCoords)
     output.positionWS = G_positionWS.Sample(anisotropic, texCoords);
     output.diffuseColor = G_colour.Sample(anisotropic, texCoords);
     output.normalWS = G_normalWS.Sample(anisotropic, texCoords);
+    output.specular = G_specular.Sample(anisotropic, texCoords);
     return output;
 }
 
@@ -132,8 +132,8 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     float3 reflection = reflect(-lightVector, normals);
     // --change to camera pos--
     float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-    spec *= pow(max(dot(reflection, toEye), 0.0f), 32.0f);
-
+    spec *= pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
+    
     float3 direction = normalize(lights[index].direction.xyz);
 
     // Nice effect to fade the lgiht at the rim of the cone
@@ -156,7 +156,8 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.05f;
     attenuation = max(attenuation, 0);
         
-    s += spec * attenuation * spot * shadowCoeff;
+    float4 matSpec = float4(buff.specular.xyz, 1.0f);
+    s += spec * matSpec * attenuation * spot * shadowCoeff;
     diff *= attenuation * spot * shadowCoeff;
 
     
@@ -182,9 +183,10 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
     
     float3 v = reflect(-lightVec, normals);
     float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-    float specFactor = pow(max(dot(v, toEye), 0.0f), 32.0f);
+    float specFactor = pow(max(dot(v, toEye), 0.0f), buff.specular.w);
 
-    s += spec * specFactor;
+    float4 matSpec = float4(buff.specular.xyz, 1.0f);
+    s += spec * matSpec * specFactor;
 
     return diff;
 }
@@ -217,7 +219,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     //Specular
     float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
     float3 reflection = normalize(reflect(-vecToLight, normals));
-    float specular = pow(max(dot(reflection, toEye), 0.0f), 32.0f);
+    float specular = pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
         
     float range = lights[index].position.w;
     float d = max(distance - range, 0);
@@ -232,9 +234,10 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     // attenuation == 1 when d == 0
     attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.1f;
     attenuation = max(attenuation, 0);
-           
+    
     // Add upp the specular
-    s += spec * specular * attenuation * shadowCoeff;
+    float4 matSpec = float4(buff.specular.xyz, 1.0f);
+    s += spec * matSpec * specular * attenuation * shadowCoeff;
             
     diff *= attenuation;
         
