@@ -63,4 +63,5 @@ public:
 
 	bool Initialize(int maxBlurRadius = 5);
 	void Render(float blurPercentage);
+	void Render(float blurPercentage, ID3D11UnorderedAccessView& textureView);
 };

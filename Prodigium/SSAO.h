@@ -57,6 +57,8 @@ private:
 
 public:
 
+	ID3D11UnorderedAccessView* ssaoMapAccess;
+
 	SSAO();
 	~SSAO();
 

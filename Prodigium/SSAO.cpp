@@ -356,7 +356,15 @@ bool SSAO::SetupPreparations()
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 
-	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&bDesc, &data, &this->ssaoBuffer);
+	result = Graphics::GetDevice()->CreateBuffer(&bDesc, &data, &this->ssaoBuffer);
+
+	/*
+	
+		UNORDERED ACCESS VIEW
+	
+	*/
+
+	result = Graphics::GetDevice()->CreateUnorderedAccessView(this->SSAOMap, NULL, &this->ssaoMapAccess);
 
 	return !FAILED(result);
 }
@@ -374,6 +382,7 @@ SSAO::SSAO()
 	this->randomVecTexture = nullptr;
 	this->randomVecShaderView = nullptr;
 	this->ssaoBuffer = nullptr;
+	this->ssaoMapAccess = nullptr;
 
     this->vertexData = "";
     this->hasSetup = false;
@@ -405,6 +414,8 @@ SSAO::~SSAO()
 		this->ssaoBuffer->Release();
 	if (this->sampler)
 		this->sampler->Release();
+	if (this->ssaoMapAccess)
+		this->ssaoMapAccess->Release();
 }
 
 void SSAO::Render()

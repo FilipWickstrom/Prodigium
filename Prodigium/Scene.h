@@ -136,6 +136,7 @@ public:
 
 	void RenderSSAO();
 	void RenderSSAOLightPass();
+	ID3D11UnorderedAccessView& GetSSAOAccessView();
 
 	void SwitchMenuMode(bool sw = true);
 

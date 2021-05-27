@@ -394,6 +394,11 @@ void Scene::RenderSSAOLightPass()
 	this->SSAOcclusion.RenderLightPass();
 }
 
+ID3D11UnorderedAccessView& Scene::GetSSAOAccessView()
+{
+	return *this->SSAOcclusion.ssaoMapAccess;
+}
+
 void Scene::SwitchMenuMode(bool sw)
 {
 	this->menuMode = sw;
