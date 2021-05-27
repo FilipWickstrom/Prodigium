@@ -21,10 +21,6 @@ class Engine
 {
 protected:
 
-	float playerSanity; // Blur
-	int playerHp; // Health
-	int cluesCollected; // clues
-
 	float slowdown_timer; // Slow down trap timer
 	float stopcompl_timer; // Stop completely trap timer
 
@@ -41,21 +37,19 @@ private:
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
-private:
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	void RedirectIoToConsole();
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
-
 	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	virtual ~Engine();
 
-	SceneHandler* SceneHandle();
+	SceneHandler* SceneHandler();
 	void ClearDisplay();
-	void Render();
-	void Update(const float& deltaTime);
+	void Render(Player* player);
 	void OpenConsole();
+	void ToggleSSAO(bool toggle);
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;

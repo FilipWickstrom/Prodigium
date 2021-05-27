@@ -5,15 +5,15 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
-#define EDITSCENE SceneHandle()->EditScene()
+#define EDITSCENE SceneHandler()->EditScene()
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	if (Engine::playerHp > 0)
+	if (player->GetHealth() > 0)
 	{
-		int whisperFactor = Engine::playerHp * 100;
+		int whisperFactor = player->GetHealth() * 100;
 		int shouldWhisper = rand() % whisperFactor;
 
 		if (shouldWhisper > 5 && shouldWhisper < 10)
@@ -43,7 +43,7 @@ void Game::MonsterSounds(const float& deltaTime)
 	else
 	{
 		this->monsterSoundTimer -= 1 * deltaTime;
-		std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
+		//std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
 	}
 }
 
@@ -51,7 +51,7 @@ void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
 	{
-		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+		this->menu.ZoomIn({ 30.0f, -22.0f, 63.0f, 1.0f }, deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
@@ -127,6 +127,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->options.gameTimer += 1 * deltaTime;
 		
+		
 		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
@@ -136,19 +137,11 @@ void Game::HandleGameLogic(const float& deltaTime)
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
-		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0 && !this->isPaused)
-		{
-			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
-			{
-				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
-			}
-			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
-		}
 
 		//When player is dead
-		if (Engine::playerHp <= 0)
+		if (player->GetHealth() <= 0)
 		{
-			Engine::playerHp = 0;
+			this->player->SetHealth(0);
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 			this->soundHandler.PlayOneShot(0);
@@ -200,7 +193,6 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
 		AIHandler::MoveEnemy(deltaTime);
-		Engine::Update(deltaTime);
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -290,7 +282,6 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->isInOptions = false;
 		GUIHandler::ShowOptionsMenu(false);
-		GUIHandler::ShowGameGUI(true);
 	}
 
 	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->hasLoaded && options.state == 2)
@@ -299,7 +290,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	if ( this->player && this->player->GetCollectedClues() >= (this->options.difficulty * 2))
 	{
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
@@ -333,15 +324,15 @@ void Game::HandleInput(const float& deltaTime)
 		/*------------------SANITY TESTING----------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::G))
 		{
-			Engine::playerHp = 50;
+			this->player->IncreaseHealth(50);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::H))
 		{
-			Engine::playerHp -= 10;
+			this->player->SetHealth(0);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::J))
 		{
-			Engine::playerHp = 100;
+			this->player->SetHealth(100);
 		}
 		/*------------------SANITY TESTING----------------*/
 
@@ -359,6 +350,18 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (this->player->IsMoving())
 		{
+			//Sideways
+			if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
+			}
+			else if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
+			}
+
 			//Forward
 			if (InputHandler::IsKeyHeld(Keyboard::W))
 			{
@@ -389,17 +392,6 @@ void Game::HandleInput(const float& deltaTime)
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
 				}
 				direction.x = -1.f;
-			}
-			//Sideways
-			else if (InputHandler::IsKeyHeld(Keyboard::A))
-			{
-				direction.y = -1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
-			}
-			else if (InputHandler::IsKeyHeld(Keyboard::D))
-			{
-				direction.y = 1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
 			}
 
 			//When any of movementkeys is released go back to idle animation
@@ -445,9 +437,9 @@ void Game::HandleInput(const float& deltaTime)
 				{
 					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
-					SceneHandle()->EditScene().GetMeshObject(i).SetVisible(false);
-					Engine::cluesCollected++;
-					Engine::playerHp += (int)(25 / (this->options.difficulty * 0.5));
+					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+					this->player->IncreaseCollectedClues();
+					this->player->IncreaseHealth((int)(25 / (this->options.difficulty * 0.5)));
 				}
 			}
 		}
@@ -506,7 +498,27 @@ bool Game::OnFrame(const float& deltaTime)
 
 	/*---------------THREE---------------*/
 	Engine::ClearDisplay();
-	Engine::Render();
+	Engine::Render(this->player);
+
+	if (!this->isPaused && player)
+	{
+		AIHandler::MoveEnemy(deltaTime);
+		// So we don't go over a certain value
+		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
+
+		if (this->slowdown_timer > 0.0f)
+		{
+			this->slowdown_timer -= 1.0f * deltaTime;
+			this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
+		}
+
+		if (this->stopcompl_timer > 0.0f)
+		{
+			this->stopcompl_timer -= 1.0f * deltaTime;
+			this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
+		}
+	}
+
 
 	return true;
 }
@@ -544,9 +556,9 @@ bool Game::OnStart()
 void Game::ResetValues()
 {
 	// Reset values
-	Engine::playerHp = 100;
-	Engine::playerSanity = 1.0f;
-	Engine::cluesCollected = 0;
+	this->player->SetHealth(100);
+	this->player->SetSanity(1.f);
+	this->player->SetCollectedClues(0);
 	this->inGoal = false;
 	this->menu.Reset();
 	this->picker.Reset();
@@ -564,6 +576,7 @@ void Game::ResetValues()
 void Game::LoadMainMenu()
 {
 	Engine::inGame = false;
+	AIHandler::Remove();
 	if (this->player)
 		delete this->player;
 
@@ -571,56 +584,42 @@ void Game::LoadMainMenu()
 		delete this->enemy;
 
 	options.state = MAINMENU;
-
 	// Refresh the game to a clean slate.
-	SceneHandle()->RemoveAllScenes();
-	SceneHandle()->AddScene();
+	SceneHandler()->RemoveAllScenes();
+	SceneHandler()->AddScene();
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
+	EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
-	//Collision not needed in the menu. Set "hasBounds" to false
-	SceneHandle()->EditScene().Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	//Static objects
+	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	EDITSCENE.Add("clue_toy.obj", "toy_albedo.png", "", false, false, {-22.0f, -30.0f, 80.0f}, {0.0f, 0.78f, 0.0f}, {0.5f, 0.5f, 0.5f});
+	EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, {-30.0f, -3.0f, 80.0f}, {-0.52f, 3.14f, 0.0f}, {1.0f, 1.0f, 1.0f});
+	EDITSCENE.Add("clue_book.obj", "book_albedo.png", "", false, false, {42.0f, -22.0f, 58.0f}, {0.0f, 2.35f, 0.0f}, {0.5f, 0.5f, 0.5f});
+	EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, {44.0f, -22.0f, 58.0f}, {1.9f, 0.0f, 0.0f}, {1.5f, 1.5f, 1.5f});
+	EDITSCENE.Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, {0.5f, 0.5f, 0.5f});
+
+	//Animated Objects
+	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35.0f, -23.0f, 70.0f }, {0.0f, 1.57f, 0.0f}, {2.0f, 2.0f, 2.0f});
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
+	
+	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
+
+	//Varde Ljus
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
+	L.position = { 20.0f, 0.0f, 20.0f, 35.0f };
+	EDITSCENE.AddLight(L);
+	L.direction = { 0.3f, 1.0f, 0.0f, 1.5f };
+	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
+	L.position = { -20.0f, 0.0f, 20.0f, 35.0f };
 	EDITSCENE.AddLight(L);
 
-	//Add player with specific animation
-	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
-	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
-	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
-	SceneHandle()->EditScene().GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
-
-	//Add animated monster in background
-	SceneHandle()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
-
-	// Terrain
-	SceneHandle()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },{ 1000.0f, 1.0f, 1000.0f });
-
-	// Ominous House
-	SceneHandle()->EditScene().Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-	
-	// Directional light
-	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
-	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
-	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
-	EDITSCENE.AddLight(L);
-
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
-	EDITSCENE.AddLight(L);
-
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
-	EDITSCENE.AddLight(L);
-
-	EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
+	ToggleSSAO(false);
+	EDITSCENE.GetParticles().SetActive(false);
 
 	this->hasLoaded = false;
 	this->inGoal = false;
@@ -630,7 +629,7 @@ void Game::LoadMap()
 {
 	options.state = INGAME;
 
-	SceneHandle()->AddScene();
+	SceneHandler()->AddScene();
 	
 	//Add player with the standard idle animation from start
 	this->player = new Player();
@@ -639,11 +638,12 @@ void Game::LoadMap()
 
 	//Enemy
 	this->enemy = new Enemy();
-	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
-	AIHandler::SetEnemy(this->enemy);
+	EDITSCENE.Add(this->enemy->GetMeshObject());
+	AIHandler::Initialize();
+	AIHandler::SetEnemyAndPlayer(enemy, player);
 	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain
-	SceneHandle()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;
@@ -809,6 +809,7 @@ void Game::LoadMap()
 	Engine::inGame = true;
 	Engine::quadTree = new QuadTree;
 	Engine::quadTree->BuildQuadTree(EDITSCENE.GetAllMeshObjects());
+	ToggleSSAO(true);
 
 	this->inGoal = true;
 }
