@@ -176,7 +176,7 @@ void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, Opt
     {
         SetUpGUIStyleGame();
         GUIHANDLER->RenderTrapGUI(timer1, timer2, options);
-        GUIHANDLER->RenderBrainGUI(playerHp, clues, options);
+        GUIHANDLER->RenderBrainGUI(health, clues, options);
     }
     if (GUIHANDLER->showOptionsMenu)
     {

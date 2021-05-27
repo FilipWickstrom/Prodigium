@@ -5,15 +5,15 @@
 #include "GUIHandler.h"
 #include <omp.h>
 
-#define EDITSCENE SceneHandle()->EditScene()
+#define EDITSCENE SceneHandler()->EditScene()
 
 DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	if (Engine::playerHp > 0)
+	if (player->GetHealth() > 0)
 	{
-		int whisperFactor = Engine::playerHp * 100;
+		int whisperFactor = player->GetHealth() * 100;
 		int shouldWhisper = rand() % whisperFactor;
 
 		if (shouldWhisper > 5 && shouldWhisper < 10)
@@ -127,6 +127,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->options.gameTimer += 1 * deltaTime;
 		
+		
 		player->Update(EDITSCENE.GetAllCullingObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
@@ -136,19 +137,12 @@ void Game::HandleGameLogic(const float& deltaTime)
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
-		if (this->player->GetMeshObject()->GetDistance(SimpleMath::Vector4{ this->enemy->GetMeshObject()->GetPosition().x, this->enemy->GetMeshObject()->GetPosition().y, this->enemy->GetMeshObject()->GetPosition().z , 1.0f }) < ENEMY_ATTACK_RANGE && this->attackTimer <= 0 && !this->isPaused)
-		{
-			if (Engine::playerHp - (ENEMY_ATTACK_DAMAGE * this->options.difficulty) >= 0)
-			{
-				Engine::playerHp -= ENEMY_ATTACK_DAMAGE * this->options.difficulty;
-			}
-			this->attackTimer = ENEMY_ATTACK_COOLDOWN;
-		}
 
 		//When player is dead
-		if (Engine::playerHp <= 0)
+		if (player->GetHealth() <= 0)
 		{
-			Engine::playerHp = 0;
+			std::cout << "is dead\n";
+			this->player->SetHealth(0);
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 			this->soundHandler.PlayOneShot(0);
@@ -200,7 +194,6 @@ void Game::HandleGameLogic(const float& deltaTime)
 	{
 		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
 		AIHandler::MoveEnemy(deltaTime);
-		Engine::Update(deltaTime);
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -593,8 +586,8 @@ void Game::LoadMainMenu()
 	options.state = MAINMENU;
 
 	// Refresh the game to a clean slate.
-	SceneHandle()->RemoveAllScenes();
-	SceneHandle()->AddScene();
+	SceneHandler()->RemoveAllScenes();
+	SceneHandler()->AddScene();
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
@@ -610,17 +603,17 @@ void Game::LoadMainMenu()
 	//Add player with specific animation
 	/*SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
 	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);*/
-	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
-	SceneHandler()->EditScene().GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
+	EDITSCENE.GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 
 	//Add animated monster in background
-	SceneHandle()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
+	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
 
 	// Terrain
-	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },{ 1000.0f, 1.0f, 1000.0f });
+	EDITSCENE.Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },{ 1000.0f, 1.0f, 1000.0f });
 
 	// Ominous House
-	SceneHandler()->EditScene().Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
@@ -628,13 +621,13 @@ void Game::LoadMainMenu()
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	EDITSCENE.AddLight(L);
 
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	SceneHandler()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
@@ -650,7 +643,7 @@ void Game::LoadMap()
 {
 	options.state = INGAME;
 
-	SceneHandle()->AddScene();
+	SceneHandler()->AddScene();
 	
 	//Add player with the standard idle animation from start
 	this->player = new Player();
@@ -659,11 +652,11 @@ void Game::LoadMap()
 
 	//Enemy
 	this->enemy = new Enemy();
-	Engine::EDITSCENE.Add(this->enemy->GetMeshObject());
-	AIHandler::SetEnemy(this->enemy);
+	EDITSCENE.Add(this->enemy->GetMeshObject());
+	AIHandler::SetEnemyAndPlayer(enemy, player);
 	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain
-	SceneHandle()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;

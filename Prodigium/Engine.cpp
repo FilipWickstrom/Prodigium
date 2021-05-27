@@ -70,7 +70,7 @@ void Engine::RedirectIoToConsole()
 	}
 }
 
-SceneHandler* Engine::SceneHandle()
+SceneHandler* Engine::SceneHandler()
 {
 	return &sceneHandler;
 }
@@ -146,7 +146,7 @@ void Engine::Render(Player* player)
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (!this->isPaused && player && this->options.hasBlur && this->player.GetSanity() != 1.0f)
+	if (!this->isPaused && player && this->options.hasBlur && player->GetSanity() != 1.0f)
 	{
 		//Render the blur depending on sanity
 		//1.0f is full sanity = no blur

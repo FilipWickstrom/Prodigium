@@ -21,10 +21,6 @@ class Engine
 {
 protected:
 
-	float playerSanity; // Blur
-	int playerHp; // Health
-	int cluesCollected; // clues
-
 	float slowdown_timer; // Slow down trap timer
 	float stopcompl_timer; // Stop completely trap timer
 
