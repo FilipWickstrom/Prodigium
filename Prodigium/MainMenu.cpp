@@ -118,9 +118,9 @@ void MainMenu::ZoomIn(DirectX::SimpleMath::Vector4 endPos, const float& deltaTim
 void MainMenu::Reset()
 {
 	DirectX::SimpleMath::Vector3 eye = { 0, 5, 0 };
-	DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookToLH(eye, { 0.0f, eye.y + 0.00001f, eye.z + 50.0f }, { 0.0f, 1.0f, 0.0f });
+	DirectX::SimpleMath::Matrix view = DirectX::XMMatrixLookToLH(eye, { 0.0f, eye.y - 23.0f, eye.z + 50.0f }, { 0.0f, 1.0f, 0.0f });
 
-	DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PI * 0.5f, (float)(Graphics::GetWindowWidth() / Graphics::GetWindowHeight()), 0.1f, 400.0f);
+	DirectX::SimpleMath::Matrix proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PI * 0.45f, (float)(Graphics::GetWindowWidth() / Graphics::GetWindowHeight()), 0.1f, 400.0f);
 	this->menuView = view.Transpose();
 	this->menuProj = proj.Transpose();
 	Package pack;
