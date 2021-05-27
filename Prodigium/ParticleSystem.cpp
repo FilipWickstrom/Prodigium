@@ -347,7 +347,7 @@ bool ParticleSystem::UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, D
 
 	// Changes the speed factor, highest being 1.0 aka normal speed.
 	float factor = std::max(std::min(dist, 400.0f), 5.0f) * 0.25f;
-	float speed = factor * 0.01f;
+	float speed = factor * 0.02f;
 
 	DirectX::SimpleMath::Vector4 package = { speed, speed, speed, speed };
 	D3D11_MAPPED_SUBRESOURCE submap;

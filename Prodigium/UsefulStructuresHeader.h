@@ -6,6 +6,7 @@ enum class EnemyStates
 	PATROL,CHASE,RETREAT
 };
 constexpr int BUFFER_COUNT = 5;
+constexpr float FULL_CIRCLE = 6.283185f;
 /*
 	Struct for usage with Vertices.
 	Try to have it as general as possible for possible reusage.
