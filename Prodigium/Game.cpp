@@ -51,7 +51,7 @@ void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
 	{
-		this->menu.ZoomIn({ 0.0f, 15.0f, 100.0f, 1.0f }, deltaTime, this->inGoal);
+		this->menu.ZoomIn({ 35.0f, -23.0f, 60.0f, 1.0f }, deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
@@ -290,7 +290,6 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->isInOptions = false;
 		GUIHandler::ShowOptionsMenu(false);
-		GUIHandler::ShowGameGUI(true);
 	}
 
 	if (InputHandler::IsKeyPressed(Keyboard::Escape) && this->hasLoaded && options.state == 2)
@@ -576,54 +575,11 @@ void Game::LoadMainMenu()
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
-
-	/*
-	int randX = rand() % 80 - rand() % 80;
-	int randZ = rand() % 60 + 10;
-
-	//Collision not needed in the menu. Set "hasBounds" to false
-	SceneHandle()->EditScene().Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 35.0f, 85.0f }, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
-	LightStruct L;
-	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
-	L.position = { 0.0, 40.0f, 60.0f, 35.0f };
-	EDITSCENE.AddLight(L);
-
-	//Add player with specific animation
-	SceneHandler()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,30.0f});
-	SceneHandler()->EditScene().GetMeshObject(SceneHandler()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::IDLE2);
-	SceneHandle()->EditScene().Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, {0,-5,80.0f});
-	SceneHandle()->EditScene().GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
-
-	//Add animated monster in background
-	SceneHandle()->EditScene().Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { 60,-5, 110.0f }, { 0,0.5,0 });
-
-	// Terrain
-	SceneHandle()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -6.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },{ 1000.0f, 1.0f, 1000.0f });
-
-	// Ominous House
-	SceneHandle()->EditScene().Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", false, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
 	
-	// Directional light
-	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
-	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
-	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
-	EDITSCENE.AddLight(L);
-
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { -25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { -25.0, 25.0f, 50.0f, 30.0f };
-	EDITSCENE.AddLight(L);
-
-	SceneHandle()->EditScene().Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", false, false, { 25.0f, -7.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
-	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
-	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
-	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
-	EDITSCENE.AddLight(L);
-	*/
+	//Load here for smoother placing in-game
 	EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
+	//Static objects
 	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, {1.5f, 1.5f, 1.5f});
 	EDITSCENE.Add("clue_toy.obj", "toy_albedo.png", "", false, false, {-22.0f, -30.0f, 80.0f}, {0.0f, 0.78f, 0.0f}, {0.5f, 0.5f, 0.5f});
 	EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, {-30.0f, -3.0f, 80.0f}, {-0.52f, 3.14f, 0.0f}, {1.0f, 1.0f, 1.0f});
@@ -631,10 +587,9 @@ void Game::LoadMainMenu()
 	EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, {44.0f, -22.0f, 58.0f}, {1.9f, 0.0f, 0.0f}, {1.5f, 1.5f, 1.5f});
 	EDITSCENE.Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, {0.5f, 0.5f, 0.5f});
 
-
-	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35,-23,70.0f }, {0.0f, 1.57f, 0.0f}, {2.0f, 2.0f, 2.0f});
+	//Animated Objects
+	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35.0f, -23.0f, 70.0f }, {0.0f, 1.57f, 0.0f}, {2.0f, 2.0f, 2.0f});
 	EDITSCENE.GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
-
 	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
 	
 	//Varde Ljus
