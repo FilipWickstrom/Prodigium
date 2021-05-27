@@ -122,7 +122,7 @@ void BlurFilter::UpdateBlurRadius(float sanity)
 		{
 
 		#ifdef _DEBUG
-			std::cout << "Changed blur to " << blurRad << std::endl;	//REMOVE LATER***
+			//std::cout << "Changed blur to " << blurRad << std::endl;	//REMOVE LATER***
 		#endif
 			
 			this->useBlurFilter = true;

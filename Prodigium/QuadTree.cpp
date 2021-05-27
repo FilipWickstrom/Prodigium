@@ -63,7 +63,7 @@ void QuadTree::AddObject(QuadNode* node)
 	using namespace DirectX;
 	MeshObject* object;
 
-	for (int i = 2; i < (int)root->objects.size(); i++)
+	for (int i = 0; i < (int)root->objects.size(); i++)
 	{
 		object = root->objects[i];
 		ContainmentType type = node->bounds.Contains(root->objects[i]->modelCollider.boundingBox);

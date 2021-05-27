@@ -109,17 +109,20 @@ Scene::~Scene()
 	{
 		delete this->objects[i];
 	}
-
+	for (int i = 0; i < (int)dynamicObjects.size(); i++)
+	{
+		delete this->dynamicObjects[i];
+	}
 }
 
-void Scene::Add(const std::string& objFile, 
-				const std::string& diffuseTxt, 
-				const std::string& normalTxt, 
-				bool hasBounds, 
-				bool hasAnimation, 
-				const Vector3& position,
-				const Vector3& rotation, 
-				const Vector3& scale)
+void Scene::Add(const std::string& objFile,
+	const std::string& diffuseTxt,
+	const std::string& normalTxt,
+	bool hasBounds,
+	bool hasAnimation,
+	const Vector3& position,
+	const Vector3& rotation,
+	const Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.
@@ -172,6 +175,32 @@ void Scene::Add(MeshObject* object)
 	{
 		this->objects.push_back(object);
 		this->currentObject = (int)objects.size() - 1;
+	}
+}
+
+void Scene::AddDynamicObject(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, bool hasAnimation, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, const DirectX::SimpleMath::Vector3& scale)
+{
+	/*
+		Create a new MeshObject from input.
+	*/
+	MeshObject* newObject = new MeshObject;
+	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, hasAnimation, position, rotation, scale))
+	{
+		this->dynamicObjects.push_back(newObject);
+	}
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "Failed to add object" << std::endl;
+#endif
+	}
+}
+
+void Scene::AddDynamicObject(MeshObject* object)
+{
+	if (object != nullptr)
+	{
+		this->dynamicObjects.push_back(object);
 	}
 }
 
@@ -269,6 +298,11 @@ void Scene::RemoveAllObjects()
 		this->objects.pop_back();
 	}
 	this->Pop();
+	while ((int)dynamicObjects.size() > 0)
+	{
+		delete this->dynamicObjects[(int)this->dynamicObjects.size() - 1];
+		this->dynamicObjects.pop_back();
+	}
 }
 
 void Scene::Pop()
@@ -277,6 +311,8 @@ void Scene::Pop()
 	{
 		delete this->objects[(unsigned int)this->objects.size() - 1];
 		this->objects.pop_back();
+		delete this->dynamicObjects[(unsigned int)this->dynamicObjects.size() - 1];
+		this->dynamicObjects.pop_back();
 	}
 }
 
@@ -291,9 +327,9 @@ void Scene::Render()
 	}
 }
 
-void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void Scene::RenderStaticObjects()
 {
-	for (auto object : toRender)
+	for (auto object : this->staticObjects)
 	{
 		if (object.second->IsVisible())
 		{
@@ -303,6 +339,17 @@ void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRend
 #ifdef _DEBUG
 	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
 #endif
+}
+
+void Scene::RenderDynamicObjects()
+{
+	if ((int)this->dynamicObjects.size() > 0)
+	{
+		for (int i = 0; i < (int)this->dynamicObjects.size(); i++)
+		{
+			this->dynamicObjects[i]->Render();
+		}
+	}
 }
 
 void Scene::RenderLights()
@@ -355,7 +402,7 @@ void Scene::RenderShadows()
 	this->shadowHandler->Clear();
 }
 
-void Scene::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void Scene::RenderStaticShadows()
 {
 	this->shadowHandler->Prepare();
 	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
@@ -363,11 +410,32 @@ void Scene::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>&
 		this->shadowHandler->Render(i);
 
 		// Loop through all objects
-		for (auto object : toRender)
+		for (auto object : this->staticObjects)
 		{
 			if (object.second->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && object.second->IsVisible())
 			{
 				object.second->RenderShadows();
+			}
+		}
+	}
+	this->shadowHandler->Clear();
+}
+
+void Scene::RenderDynamicShadows()
+{
+	this->shadowHandler->Prepare();
+
+	for (int i = 0; i < shadowHandler->NrOfShadows(); i++)
+	{
+		this->shadowHandler->Render(i);
+
+		// Loop through all objects
+		for (int j = 0; j < (int)dynamicObjects.size(); j++)
+		{
+			// Check the distance between light source and object.
+			if (this->dynamicObjects[j]->GetDistance(this->shadowHandler->GetShadow(i).GetPos()) < SHADOWRANGE && this->dynamicObjects[j]->IsVisible())
+			{
+				this->dynamicObjects[j]->RenderShadows();
 			}
 		}
 	}
@@ -406,23 +474,28 @@ void Scene::SwitchMenuMode(bool sw)
 
 void Scene::ClearCullingObjects()
 {
-	this->visibleObjects.clear();
+	this->staticObjects.clear();
 }
 
-std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllCullingObjects()
+std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllStaticObjects()
 {
-	return this->visibleObjects;
+	return this->staticObjects;
 }
 
 #ifdef _DEBUG
-void Scene::RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void Scene::RenderStaticBoundingBoxes()
 {
-	if ((int)toRender.size() > 0)
+	for (auto object : this->staticObjects)
 	{
-		for (auto object : toRender)
-		{
-			object.second->RenderBoundingBoxes();
-		}
+		object.second->RenderBoundingBoxes();
+	}
+}
+
+void Scene::RenderDynamicBoundingBoxes()
+{
+	for (int i = 0; i < (int)this->dynamicObjects.size(); i++)
+	{
+		this->dynamicObjects[i]->RenderBoundingBoxes();
 	}
 }
 #endif

@@ -67,7 +67,7 @@ void Engine::RedirectIoToConsole()
 		std::cerr.clear();
 		std::wcin.clear();
 		std::cin.clear();
-	
+
 		consoleOpen = true;
 	}
 }
@@ -84,8 +84,8 @@ void Engine::ClearDisplay()
 
 void Engine::Render()
 {
-	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
-	toRender->clear();
+	this->sceneHandler.EditScene().GetAllStaticObjects().clear();
+
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
@@ -95,10 +95,10 @@ void Engine::Render()
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
-		this->sceneHandler.Render(*toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, this->sceneHandler.EditScene().GetAllStaticObjects());
+		this->sceneHandler.RenderAllObjects();
 	}
-	 
+
 	// Shadow pass
 	if (!inGame)
 	{
@@ -106,17 +106,15 @@ void Engine::Render()
 	}
 	else
 	{
-		this->sceneHandler.RenderShadows(*toRender);
+		this->sceneHandler.RenderAllShadows();
 	}
 	this->gPass.Clear();
-
 
 	// SSAO PHASE
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
 	this->blurPass.Render(0.1f, this->sceneHandler.EditScene().GetSSAOAccessView());
-
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
@@ -129,10 +127,10 @@ void Engine::Render()
 #ifdef _DEBUG
 	if (inGame)
 	{
+		//DebugInfo::Prepare();
+		//ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
 		DebugInfo::Prepare();
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
-		DebugInfo::Prepare();
-		this->sceneHandler.RenderBoundingBoxes(*toRender);
+		this->sceneHandler.RenderAllBoundingBoxes();
 
 		DebugInfo::Clear();
 	}
@@ -190,7 +188,7 @@ void Engine::Update(const float& deltaTime)
 		this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
 	}
 
-	
+
 }
 
 void Engine::OpenConsole()
