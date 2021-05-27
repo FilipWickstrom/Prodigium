@@ -352,6 +352,18 @@ void Game::HandleInput(const float& deltaTime)
 
 		if (this->player->IsMoving())
 		{
+			//Sideways
+			if (InputHandler::IsKeyHeld(Keyboard::A))
+			{
+				direction.y = -1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
+			}
+			else if (InputHandler::IsKeyHeld(Keyboard::D))
+			{
+				direction.y = 1.f;
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
+			}
+
 			//Forward
 			if (InputHandler::IsKeyHeld(Keyboard::W))
 			{
@@ -382,17 +394,6 @@ void Game::HandleInput(const float& deltaTime)
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKBACKWARD);
 				}
 				direction.x = -1.f;
-			}
-			//Sideways
-			else if (InputHandler::IsKeyHeld(Keyboard::A))
-			{
-				direction.y = -1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
-			}
-			else if (InputHandler::IsKeyHeld(Keyboard::D))
-			{
-				direction.y = 1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
 			}
 
 			//When any of movementkeys is released go back to idle animation
