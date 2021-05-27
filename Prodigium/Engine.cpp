@@ -4,8 +4,6 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
-	this->playerHp = 100;
-	this->cluesCollected = 0;
 	this->stopcompl_timer = 0;
 	this->slowdown_timer = 0;
 #ifdef _DEBUG
@@ -66,7 +64,7 @@ void Engine::RedirectIoToConsole()
 		std::cerr.clear();
 		std::wcin.clear();
 		std::cin.clear();
-	
+
 		consoleOpen = true;
 	}
 }
@@ -81,7 +79,7 @@ void Engine::ClearDisplay()
 	Graphics::ClearDisplay();
 }
 
-void Engine::Render()
+void Engine::Render(Player* player)
 {
 	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
 	toRender->clear();
@@ -141,44 +139,27 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (this->options.hasBlur)
+	if (this->options.hasBlur && player)
 	{
 		//Render the blur depending on sanity
 		//1.0f is full sanity = no blur
 		//0.0f is no sanitiy = max blur
-		this->blurPass.Render(this->playerSanity);
+		this->blurPass.Render(player->GetSanity());
 	}
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
-	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer, this->options);
+	if (player)
+	{
+		GUIHandler::Render(player->GetHealth(), player->GetCollectedClues(), this->stopcompl_timer, this->slowdown_timer, this->options);
+	}
+	else
+	{
+		GUIHandler::Render(0, 0, this->stopcompl_timer, this->slowdown_timer, this->options);
+	}
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
-}
-
-void Engine::Update(const float& deltaTime)
-{
-	// So we don't go over a certain value
-	this->playerHp = std::min(this->playerHp, 100);
-	this->cluesCollected = std::min(this->cluesCollected, (this->options.difficulty * 2));
-
-	// Update the sanity depending on the health.
-	this->playerSanity = this->playerHp * 0.01f;
-
-	if (this->slowdown_timer > 0.0f)
-	{
-		this->slowdown_timer -= 1.0f * deltaTime;
-		this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
-	}
-
-	if (this->stopcompl_timer > 0.0f)
-	{
-		this->stopcompl_timer -= 1.0f * deltaTime;
-		this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
-	}
-
-	
 }
 
 void Engine::OpenConsole()
@@ -193,8 +174,6 @@ void Engine::ChangeActiveTrap()
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
-
-
 	if (!InputHandler::Initialize())
 	{
 		return false;
@@ -246,7 +225,6 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 	AIHandler::Initialize();
 
 	AIHandler::CreateNodes();
-	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	return true;
 }

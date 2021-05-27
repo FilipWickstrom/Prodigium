@@ -127,7 +127,7 @@ void Game::HandleInput(const float& deltaTime)
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 	//Updates the keyboard and mouse with new info about their current state.
-	
+
 	InputHandler::UpdateKeyboardAndMouse();
 
 	direction = { 0.f, 0.f };
@@ -160,7 +160,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// You collected all clues! You are WIN!!
-	if (Engine::cluesCollected >= (this->options.difficulty * 2))
+	if ( this->player && this->player->GetCollectedClues() >= (this->options.difficulty * 2))
 	{
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
@@ -191,15 +191,15 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		if (InputHandler::IsKeyPressed(Keyboard::G))
 		{
-			Engine::playerHp = 50;
+			this->player->IncreaseHealth(50);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::H))
 		{
-			Engine::playerHp = 0;
+			this->player->SetHealth(0);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::J))
 		{
-			Engine::playerHp = 100;
+			this->player->SetHealth(100);
 		}
 
 		if (InputHandler::IsKeyPressed(Keyboard::K))
@@ -292,8 +292,8 @@ void Game::HandleInput(const float& deltaTime)
 				{
 					std::cout << i << std::endl;
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
-					Engine::cluesCollected++;
-					Engine::playerHp += 25;
+					this->player->IncreaseCollectedClues();
+					this->player->IncreaseHealth(25);
 				}
 			}
 		}
@@ -313,8 +313,8 @@ void Game::HandleInput(const float& deltaTime)
 				SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
-					{1.5f, 1.5f, 1.5f}); 
-				
+					{ 1.5f, 1.5f, 1.5f });
+
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}
@@ -389,7 +389,7 @@ bool Game::OnFrame(const float& deltaTime)
 	// 3. Render
 
 	Graphics::SetDeltaTime(deltaTime);
-	
+
 	HandleInput(deltaTime);
 	HandleScenes(deltaTime);
 	HandleGameLogic(deltaTime);
@@ -397,12 +397,25 @@ bool Game::OnFrame(const float& deltaTime)
 	this->soundHandler.Update();
 
 	Engine::ClearDisplay();
-	Engine::Render();
+	Engine::Render(this->player);
 
-	if (!this->isPaused)
+	if (!this->isPaused && player)
 	{
 		AIHandler::MoveEnemy(deltaTime);
-		Engine::Update(deltaTime);
+		// So we don't go over a certain value
+		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
+
+		if (this->slowdown_timer > 0.0f)
+		{
+			this->slowdown_timer -= 1.0f * deltaTime;
+			this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
+		}
+
+		if (this->stopcompl_timer > 0.0f)
+		{
+			this->stopcompl_timer -= 1.0f * deltaTime;
+			this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
+		}
 	}
 
 
@@ -437,9 +450,9 @@ bool Game::OnStart()
 void Game::ResetValues()
 {
 	// Reset values
-	Engine::playerHp = 100;
-	Engine::playerSanity = 1.0f;
-	Engine::cluesCollected = 0;
+	this->player->SetHealth(100);
+	this->player->SetSanity(1.f);
+	this->player->SetCollectedClues(0);
 	this->inGoal = false;
 	this->menu.Reset();
 	this->picker.Reset();
@@ -466,7 +479,7 @@ void Game::LoadMainMenu()
 
 	SceneHandler()->EditScene().Add("ProdigiumText_TRIANGULATED.obj", "ProdigiumTextAlbedo.png", "", true, false, { 0.0f, 35.0f, 85.0f }
 
-	, { -0.25f, 0.0f, 0.0f }, {1.5f, 1.5f, 1.5f});
+	, { -0.25f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
@@ -476,14 +489,14 @@ void Game::LoadMainMenu()
 	// Player model - NO REMOVE!!! >:(
 	SceneHandler()->EditScene().Add("LowPoly_Character_Menu.obj", "Char_Albedo.png", "Char_Normal.jpg", true, false,
 		{ (float)randX, 0.0f, (float)randZ } // Pos
-	, {0.0f, 0.0f, 0.0f});
+	, { 0.0f, 0.0f, 0.0f });
 
 	// Terrain
 	SceneHandler()->EditScene().Add("tempTerrain.obj", "dirt_color.png", "", true, false, { 0.0f, -6.25f, 0.0f });
-	
+
 	// Ominous House
 	SceneHandler()->EditScene().Add("House2_SubMeshes.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 0.0f, 0.0f, 150.0f }, { 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-	
+
 	// Directional light
 	L.direction = { 0.f, -1.0f, -1.0f, 1.2f };
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
@@ -502,7 +515,7 @@ void Game::LoadMainMenu()
 	L.position = { 25.0, 25.0f, 50.0f, 30.0f };
 	SceneHandler()->EditScene().AddLight(L);
 
-	SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, {0.0f, -100.0f, 0.0f});
+	SceneHandler()->EditScene().Add("BarbWireTrap_Triangulated.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
 	this->hasLoaded = false;
 	this->inGoal = false;
@@ -555,7 +568,7 @@ void Game::LoadMap()
 		if (clue == "mask")
 			scale = { 1.2f, 1.2f, 1.2f };
 
-		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false, 
+		SceneHandler()->EditScene().Add(clue + "_OBJ.obj", clue + "_albedo.png", "", false, false,
 			{ pos.x, -3.0f, pos.y },
 			rotation, scale);
 		L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
@@ -578,7 +591,7 @@ void Game::LoadMap()
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
-	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, {0.0f, 3.14159f, 0.0f});
+	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
 	SceneHandler()->EditScene().Add("House1_SubMeshes.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });

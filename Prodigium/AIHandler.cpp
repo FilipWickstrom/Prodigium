@@ -134,20 +134,26 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			else
 			{
 				AIHANDLER->monster->MoveToTarget(deltaTime);
-				//if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
-				//{
-				//	AIHANDLER->states = EnemyStates::CHASE;
-				//	std::cout << "Switching to Chase\n";
-				//	AIHANDLER->stateSwitchTime = omp_get_wtime();
-				//}
-
+				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
+				{
+					AIHANDLER->states = EnemyStates::CHASE;
+					std::cout << "Switching to Chase\n";
+					AIHANDLER->stateSwitchTime = omp_get_wtime();
+					AIHANDLER->path.clear();
+				}
 			}
 			break;
 		case EnemyStates::CHASE:
 			DirectionVec = (AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->getPosition());
-			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
+			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() <= AIHANDLER->monster->GetAttackRange())
 			{
-				AIHANDLER->monster->PlayAttackAnimation();
+				if (AIHANDLER->monster->CanAttack())
+				{
+					AIHANDLER->monster->PlayAttackAnimation();
+					AIHANDLER->monster->Attack(AIHANDLER->player);
+					std::cout << "Attacking\n";
+				}
+
 			}
 			else
 			{
@@ -162,9 +168,6 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			break;
 		}
-	}
-	else
-	{
 	}
 }
 

@@ -47,6 +47,17 @@ void Enemy::PlayAttackAnimation()
 {
 }
 
+const bool& Enemy::CanAttack() const
+{
+	return (omp_get_wtime() - lastAttack > 3);
+}
+
+void Enemy::Attack(Player* player)
+{
+	this->lastAttack = omp_get_wtime();
+	player->IncreaseHealth(-20.f);
+}
+
 const DirectX::SimpleMath::Vector3& Enemy::getPosition() const
 {
 	return this->model->position;

@@ -9,8 +9,8 @@
 #include "RandomSpotPicker.h"
 
 // will also be affected by difficulty set in options, refer to "OptionsHandler".
-#define STOPCOOLDOWN 12.5f
-#define SLOWCOOLDOWN 5.0f
+constexpr float STOPCOOLDOWN = 12.5f;
+constexpr float SLOWCOOLDOWN = 5.0f;
 
 class Game:public Engine
 {
