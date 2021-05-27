@@ -70,6 +70,11 @@ void GeometryPass::ClearScreen()
 	Graphics::GetContext()->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1, 0);
 }
 
+void GeometryPass::BindSSAO()
+{
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->gBuffer.shaderResourceViews[3]);
+}
+
 bool GeometryPass::CreateGBuffer()
 {
 	HRESULT hr;
@@ -619,6 +624,7 @@ void LightPass::Clear()
 	ID3D11SamplerState* samplerStateNull = nullptr;
 	ID3D11DepthStencilState* nullState = nullptr;
 	ID3D11ShaderResourceView* shaderResourceNull[BUFFER_COUNT] = { nullptr };
+	ID3D11ShaderResourceView* singleSRVNull = nullptr;
 	UINT stride = 0;
 	UINT offset = 0;
 
@@ -634,6 +640,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->PSSetShaderResources(6, 1, shaderResourceNull);
 	
 	Graphics::GetContext()->OMSetDepthStencilState(nullState, 0);
+	Graphics::GetContext()->PSSetShaderResources(6, 1, &singleSRVNull);
 }
 
 void LightPass::Prepare()
@@ -652,7 +659,6 @@ void LightPass::Prepare()
 	Graphics::GetContext()->PSSetShaderResources(7, 1, &this->shaderResources[4]);
 
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, this->shaderResources);
-	Graphics::GetContext()->PSSetShaderResources(6, 1, &this->shaderResources[3]);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

@@ -247,6 +247,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 float4 main(PixelShaderInput input) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
+    float4 ssao = ssaoMap.Sample(anisotropic, input.texCoord);
     
     float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * gbuffers.diffuseColor;
     
@@ -284,7 +285,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
+    float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular)) * ssao;
     
     //FOG
     float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;

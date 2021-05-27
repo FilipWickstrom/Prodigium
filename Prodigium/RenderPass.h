@@ -73,6 +73,7 @@ public:
 	~GeometryPass();
 
 	void ClearScreen();
+	void BindSSAO();
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
 

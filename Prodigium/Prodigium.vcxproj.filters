@@ -49,6 +49,12 @@
     <FxCompile Include="AnimationShadowVS.hlsl">
       <Filter>Engine\Graphics\Shaders\Animation</Filter>
     </FxCompile>
+    <FxCompile Include="SSAOVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\SSAO</Filter>
+    </FxCompile>
+    <FxCompile Include="SSAOPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\SSAO</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -174,6 +180,9 @@
     </ClCompile>
     <ClCompile Include="OptionsHandler.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -405,6 +414,9 @@
     </Filter>
     <Filter Include="Engine\Resources\Management">
       <UniqueIdentifier>{6e3d4a0f-7eab-456b-b9d3-2e811ee225c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\SSAO">
+      <UniqueIdentifier>{5ec1e407-2da7-484b-9bcd-b6bcafd0c3bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

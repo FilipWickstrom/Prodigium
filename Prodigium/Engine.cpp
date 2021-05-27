@@ -110,9 +110,17 @@ void Engine::Render()
 	}
 	this->gPass.Clear();
 
+
+	// SSAO PHASE
+	this->gPass.BindSSAO();
+	this->sceneHandler.EditScene().RenderSSAO();
+	this->gPass.Clear();
+
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
+	this->sceneHandler.EditScene().RenderSSAOLightPass();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 

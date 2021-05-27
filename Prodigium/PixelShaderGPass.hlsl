@@ -48,6 +48,7 @@ PixelShaderOutput main(PixelShaderInput input)
         output.normalWS = float4(input.normalWS, 0.0f);
 
     output.colour =  output.colour;
+    input.viewPosNorm.xyz = normalize(input.viewPosNorm.xyz);
     output.viewPosNorm = input.viewPosNorm;
  
     output.specularGB = input.specular;
