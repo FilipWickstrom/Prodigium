@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <omp.h>
 
 Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
 {
@@ -69,7 +70,7 @@ void Engine::RedirectIoToConsole()
 	}
 }
 
-SceneHandler* Engine::SceneHandler()
+SceneHandler* Engine::SceneHandle()
 {
 	return &sceneHandler;
 }
@@ -81,7 +82,7 @@ void Engine::ClearDisplay()
 
 void Engine::Render(Player* player)
 {
-	std::vector<MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
+	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
 	toRender->clear();
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
@@ -92,14 +93,11 @@ void Engine::Render(Player* player)
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(this->sceneHandler.EditScene().GetAllMeshObjects(), *toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
 		this->sceneHandler.Render(*toRender);
-
 	}
-	this->gPass.Clear();
-
+	 
 	// Shadow pass
-	this->gPass.Prepare();
 	if (!inGame)
 	{
 		this->sceneHandler.RenderShadows();
@@ -110,9 +108,18 @@ void Engine::Render(Player* player)
 	}
 	this->gPass.Clear();
 
+
+	// SSAO PHASE
+	this->gPass.BindSSAO();
+	this->sceneHandler.EditScene().RenderSSAO();
+	this->gPass.Clear();
+	this->blurPass.Render(0.5f, this->sceneHandler.EditScene().GetSSAOAccessView());
+
+
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
 	this->sceneHandler.RenderLights();
+	this->sceneHandler.EditScene().RenderSSAOLightPass();
 	this->lightPass.Prepare();
 	this->lightPass.Clear();
 
@@ -139,12 +146,17 @@ void Engine::Render(Player* player)
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (this->options.hasBlur && player)
+	if (!this->isPaused && player && this->options.hasBlur && this->player.GetSanity() != 1.0f)
 	{
 		//Render the blur depending on sanity
 		//1.0f is full sanity = no blur
 		//0.0f is no sanitiy = max blur
 		this->blurPass.Render(player->GetSanity());
+	}
+
+	if (this->isPaused)
+	{
+		this->blurPass.Render(0);
 	}
 
 	Graphics::BindBackBuffer();

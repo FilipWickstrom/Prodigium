@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 #include <fstream>
+#include "ResourceManager.h"
 
 float randomize(float upper, float lower)
 {
@@ -28,14 +29,18 @@ void ParticleSystem::InternalRender()
 		Render Phase
 	*/
 	Graphics::GetContext()->OMSetDepthStencilState(nullptr, 0);
+	Graphics::GetContext()->OMSetBlendState(this->alphaBlendState, 0, 0xffffffff);
 	Graphics::GetContext()->CSSetConstantBuffers(0, 1, &this->speedBuffer);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->albedoView);
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &this->opacityView);
+	Graphics::GetContext()->PSSetSamplers(0, 1, &this->sampler);
 	Graphics::GetContext()->DrawInstanced(1, MAX_PARTICLES, 0, 0);
+
 
 
 	/*
 		Update Phase
 	*/
-
 	if (!GUIHandler::IsPaused())
 	{
 		ID3D11ShaderResourceView* nullSRV = nullptr;
@@ -51,10 +56,14 @@ void ParticleSystem::Clear()
 {
 	ID3D11VertexShader* nullVShader = nullptr;
 	ID3D11UnorderedAccessView* nullAccess = nullptr;
+	ID3D11ShaderResourceView* nullShader = nullptr;
 	Graphics::GetContext()->VSSetShader(nullVShader, nullptr, 0);
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &nullShader);
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &nullShader);
+	Graphics::GetContext()->OMSetBlendState(NULL, NULL, 0xffffffff);
 	Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullAccess, 0);
 
 }
@@ -191,6 +200,12 @@ ParticleSystem::ParticleSystem()
 	this->particleBuff = nullptr;
 	this->particleView = nullptr;
 	this->speedBuffer = nullptr;
+	this->alphaBlendState = nullptr;
+	this->albedoView = nullptr;
+	this->opacityView = nullptr;
+	this->rainAlbedoTexture = nullptr;
+	this->rainOpacityTexture = nullptr;
+	this->sampler = nullptr;
 	this->hasSetup = false;
 	this->isActive = true;
 }
@@ -213,6 +228,14 @@ ParticleSystem::~ParticleSystem()
 		this->particleView->Release();
 	if (this->speedBuffer)
 		this->speedBuffer->Release();
+	if (this->alphaBlendState)
+		this->alphaBlendState->Release();
+	if (this->albedoView)
+		this->albedoView->Release();
+	if (this->opacityView)
+		this->opacityView->Release();
+	if (this->sampler)
+		this->sampler->Release();
 }
 
 bool ParticleSystem::SetUp()
@@ -273,6 +296,43 @@ bool ParticleSystem::SetUp()
 	if (FAILED(hr))
 		return false;
 
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.AlphaToCoverageEnable = true;
+	blendDesc.IndependentBlendEnable = true;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
+
+	this->rainAlbedoTexture = ResourceManager::GetTexture("Textures/raindrop_albedo.png");
+	this->rainOpacityTexture = ResourceManager::GetTexture("Textures/raindrop_opacity.png");
+
+	hr = Graphics::GetDevice()->CreateShaderResourceView(this->rainAlbedoTexture, NULL, &this->albedoView);
+	hr = Graphics::GetDevice()->CreateShaderResourceView(this->rainOpacityTexture, NULL, &this->opacityView);
+
+	D3D11_SAMPLER_DESC samplerDesc = {};
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 4;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+	hr = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
+
+
+	hr = Graphics::GetDevice()->CreateBlendState(&blendDesc, &this->alphaBlendState);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
 	return true;
 }
 
@@ -287,7 +347,7 @@ bool ParticleSystem::UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, D
 
 	// Changes the speed factor, highest being 1.0 aka normal speed.
 	float factor = std::max(std::min(dist, 400.0f), 5.0f) * 0.25f;
-	float speed = factor * 0.01f;
+	float speed = factor * 0.02f;
 
 	DirectX::SimpleMath::Vector4 package = { speed, speed, speed, speed };
 	D3D11_MAPPED_SUBRESOURCE submap;

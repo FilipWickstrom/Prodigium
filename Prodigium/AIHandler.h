@@ -23,6 +23,9 @@ private:
 	int nrOfAstar;
 	double stateSwitchTime;
 	static AIHandler* instance;
+	static std::vector<std::string> OpenFile(std::string filePath);
+	AIHandler();
+	virtual ~AIHandler();
 	static std::vector<std::string> openFile(const std::string& filePath);
 	Node* GetRandomNode();
 	Node* FindClosestNode(const DirectX::SimpleMath::Vector3& position);
@@ -30,13 +33,12 @@ private:
 	static void TracePath(Node* src, Node* dst);
 public:
 	DELETE_COPY_ASSIGNMENT(AIHandler);
-	AIHandler();
 	static const bool Initialize();
-	virtual ~AIHandler();
 	static void CreateNodes();
 	static void SetEnemyAndPlayer(Enemy* enemy, Player* player);
 	static void ConnectNodes(Node* node1, Node* node2);
 	static void MoveEnemy(const float& deltaTime);
 	static Node* GetNodeByID(const int& id);
+	static void Remove();
 };
 

@@ -19,11 +19,6 @@ struct Collider
 	DirectX::BoundingSphere boundingSphere;
 };
 
-struct SphereCollider
-{
-	DirectX::BoundingSphere boundingSphere;
-};
-
 class MeshObject : public GameObject
 {
 private:
@@ -51,7 +46,8 @@ public:
 
 private:
 	bool LoadTextures(std::string& diffuse, std::string& normal);
-	void BuildColliders(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max);
+	void BuildCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, Collider& out);
+	void BuildRenderCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, const std::vector<DirectX::SimpleMath::Vector3>& positions, Collider& out);
 	bool LoadColliders(bool hasColliders);
 	
 	// Updates the planes of a boundingBox to account for rotation
@@ -79,9 +75,12 @@ public:
 	void SetVisible(bool toggle = true);
 	void SetPickUp(bool toggle = true);
 
-	void Render(bool shadowPass = false);
+	//Rendering to display
+	void Render();
+	void RenderShadows();
+
 	void UpdateBoundingBoxes();
-	void UpdateRenderBoundingBox();
+	void UpdateRenderCollider();
 	void UpdateBoundingBoxes(const DirectX::SimpleMath::Matrix& transform);
 	const bool IsVisible() const;
 	
@@ -91,5 +90,9 @@ public:
 
 	void RemoveColliders();
 
+	//Animation specific
 	void ChangeAnimState(AnimationState state);
+	void InterpolateAnim(bool toggle = true);
+	bool HasAnimationEnded();
+	AnimationState GetAnimState();
 };

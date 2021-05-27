@@ -32,7 +32,7 @@ const bool MainMenu::SetUpBuffer()
 	FogBuffer fog;
 	fog.viewMatrix = this->menuView;
 	fog.cameraPos = this->eyePos;
-	fog.fogColour = { 0.6f,0.6f,0.6f,0.f };
+	fog.fogColour = { 0.2f,0.2f,0.2f,0.f };
 	fog.fogRange = 200.f;
 	fog.fogStart = 10.f;
 	desc.ByteWidth = sizeof(FogBuffer);
@@ -138,4 +138,6 @@ void MainMenu::Update()
 {
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &this->viewBuffer);
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &this->eyeBuffer);
+	Graphics::GetContext()->GSSetConstantBuffers(0, 1, &this->viewBuffer);
+	Graphics::GetContext()->GSSetConstantBuffers(1, 1, &this->eyeBuffer);
 }

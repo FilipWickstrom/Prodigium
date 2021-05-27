@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "CameraObject.h"
+#include "AnimatedObject.h"
 
 // The resourceManager will manage all the resources(Assets) in the game. 
 // Remember to inherit from Resource.h for every type of asset. 
@@ -23,6 +24,7 @@ private:
 	std::unordered_map<std::string, Resource*> meshes;
 	std::unordered_map<std::string, Resource*> audio;
 	std::unordered_map<std::string, CameraObject*> cameras;
+	std::unordered_map<std::string, Resource*> animatedObjects;
 
 	ResourceManager();
 	virtual ~ResourceManager();
@@ -33,6 +35,7 @@ private:
 
 	ID3D11Texture2D* GetTextureInternal(const std::string& key);
 	Mesh* GetMeshInternal(const std::string& key);
+	AnimatedObject* GetAnimObjIternal(const std::string& key);
 
 protected:
 	UINT referenceCount;
@@ -55,4 +58,7 @@ public:
 	static CameraObject* GetCamera(const std::string& key);
 
 	static void RemoveCamera(std::string key);
+
+	static AnimatedObject* GetAnimateObject(std::string key);
+
 };

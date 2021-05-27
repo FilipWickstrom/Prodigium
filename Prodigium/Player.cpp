@@ -25,7 +25,7 @@ void Player::RotatePlayer()
 Player::Player()
 {
 	this->playerModel = new MeshObject();
-	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, {0, DirectX::XM_PI,0});
+	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
 
 	Vector3 cameraOffset = { 0.0f, 7.5f, -20.f };
 	Vector3 cameraForward = this->playerModel->colliders[0].boundingBox.Center - cameraOffset;
@@ -40,7 +40,7 @@ Player::Player()
 	this->playerCam = new CameraObject;
 	ResourceManager::AddCamera("PlayerCam", playerCam);
 	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, cameraForward);
-	
+
 	//Fixes the large hitbox of the tposing player
 	this->playerModel->collidersOriginal[0].boundingBox.Extents.x = this->playerModel->collidersOriginal[0].boundingBox.Extents.x / 3.f;
 	this->playerModel->colliders[0].boundingBox.Extents.x = this->playerModel->colliders[0].boundingBox.Extents.x / 3.f;
@@ -48,6 +48,8 @@ Player::Player()
 	// Force update to rotate to correct direction of player
 	this->playerModel->UpdateMatrix();
 	this->playerModel->UpdateBoundingBoxes();
+
+	this->moving = true;
 }
 
 Player::~Player()
@@ -55,7 +57,7 @@ Player::~Player()
 	ResourceManager::RemoveCamera("PlayerCam");
 }
 
-void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
+void Player::Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
 {
 	if (direction.Length() > 0.0f)
 	{
@@ -71,18 +73,21 @@ void Player::Update(const std::vector<MeshObject*>& objects, DirectX::SimpleMath
 
 void Player::Move(Vector2& direction, const float& deltaTime)
 {
-	Matrix rotation = Matrix::CreateRotationY(this->playerCam->rotation.y);
-	this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
-	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
+	if (this->moving)
+	{
+		Matrix rotation = Matrix::CreateRotationY(this->playerCam->rotation.y);
+		this->playerModel->forward = Vector3::TransformNormal(Vector3(0.0f, 0.0f, 1.0f), rotation);
+		this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 
-	this->playerModel->position +=
-		(this->playerModel->forward * speed * deltaTime * direction.x) +
-		(this->playerModel->right * speed * deltaTime * direction.y);
+		this->playerModel->position +=
+			(this->playerModel->forward * speed * deltaTime * direction.x) +
+			(this->playerModel->right * speed * deltaTime * direction.y);
 
-	// Moves character in the direction of camera
-	this->RotatePlayer();
-	this->playerModel->UpdateMatrix();
-	this->playerModel->UpdateBoundingBoxes();
+		// Moves character in the direction of camera
+		this->RotatePlayer();
+		this->playerModel->UpdateMatrix();
+		this->playerModel->UpdateBoundingBoxes();
+	}
 }
 
 void Player::RotateCamera(const float& pitch, const float& yaw)
@@ -161,62 +166,70 @@ MeshObject* Player::GetMeshObject() const
 	return this->playerModel;
 }
 
-void Player::TakeDamage(const float& damage)
+bool Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
 {
-
-}
-
-bool Player::CheckCollision(const std::vector<MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
-{
-	for (int i = 1; i < (int)objects.size(); i++)
+	for (auto object : objects)
 	{
-		for (int j = 0; j < objects[i]->colliders.size(); j++)
+		if (object.second != this->playerModel)
 		{
-			if (this->playerModel->colliders[0].boundingBox.Intersects(objects[i]->colliders[j].boundingBox))
+			for (int j = 0; j < object.second->colliders.size(); j++)
 			{
-				// Project the u vector onto the plane normal to get a length down to the player position
-				// Take that length - the halflength of current OBB to get the difference. 
-				// If the difference is positive and it's the smallest of all sides, we know the colliding plane
-				Vector3 u = this->playerModel->position - objects[i]->position;
-
-				float lastDistance = FLT_MAX;
-				int index = 0;
-				Vector3 halfLengths = objects[i]->colliders[j].boundingBox.Extents;
-				for (int k = 0; k < 4; k++)
+				if (this->playerModel->colliders[0].boundingBox.Intersects(object.second->colliders[j].boundingBox))
 				{
-					Vector3 n = objects[i]->colliders[j].planes[k].normal;
-					float dot = u.Dot(n);
-					float currentDistance = 0.0f;
+					// Project the u vector onto the plane normal to get a length down to the player position
+					// Take that length - the halflength of current OBB to get the difference. 
+					// If the difference is positive and it's the smallest of all sides, we know the colliding plane
+					Vector3 u = this->playerModel->position - object.second->position;
 
-					if (dot < 0.0000f)
+					float lastDistance = FLT_MAX;
+					int index = 0;
+					Vector3 halfLengths = object.second->colliders[j].boundingBox.Extents;
+					for (int k = 0; k < 4; k++)
 					{
-						continue;
-					}
-					float projectedLength = (dot * n).Length();
+						Vector3 n = object.second->colliders[j].planes[k].normal;
+						float dot = u.Dot(n);
+						float currentDistance = 0.0f;
 
-					if (k == 0 || k == 1)
-					{
-						currentDistance = projectedLength - halfLengths.z;
-					}
-					else
-					{
-						currentDistance = projectedLength - halfLengths.x;
-					}
+						if (dot < 0.0000f)
+						{
+							continue;
+						}
+						float projectedLength = (dot * n).Length();
 
-					if (currentDistance < lastDistance && currentDistance > 0.000f)
-					{
-						index = k;
-						lastDistance = currentDistance;
+						if (k == 0 || k == 1)
+						{
+							currentDistance = projectedLength - halfLengths.z;
+						}
+						else
+						{
+							currentDistance = projectedLength - halfLengths.x;
+						}
+
+						if (currentDistance < lastDistance && currentDistance > 0.000f)
+						{
+							index = k;
+							lastDistance = currentDistance;
+						}
 					}
+					this->playerModel->position += object.second->colliders[j].planes[index].normal * speed * deltaTime;
+					this->playerModel->UpdateMatrix();
+					this->playerModel->UpdateBoundingBoxes();
+
+					return true;
 				}
-				this->playerModel->position += objects[i]->colliders[j].planes[index].normal * speed * deltaTime;
-				this->playerModel->UpdateMatrix();
-				this->playerModel->UpdateBoundingBoxes();
-
-				return true;
 			}
 		}
 	}
 
 	return false;
+}
+
+void Player::SetMovement(bool toggle)
+{
+	this->moving = toggle;
+}
+
+bool Player::IsMoving()
+{
+	return this->moving;
 }

@@ -117,11 +117,11 @@ void SetUpGUIStyleGame()
 
 const bool GUIHandler::Initialize(const HWND& window)
 {
-    if (!GUIHandler::instance)
+    if (!GUIHANDLER)
     {
-        GUIHandler::instance = new GUIHandler;
+        GUIHANDLER = new GUIHandler;
         CreateContext();
-        GUIHandler::instance->io = GetIO();
+        GUIHANDLER->io = GetIO();
 
         ImGui_ImplDX11_Init(Graphics::GetDevice(), Graphics::GetContext());
         ImGui_ImplWin32_Init(window);
@@ -145,7 +145,7 @@ const bool GUIHandler::Initialize(const HWND& window)
 
 void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, OptionsHandler& options)
 {
-    if (GUIHandler::instance->isPaused)
+    if (GUIHANDLER->isPaused)
     {
         GetIO().WantCaptureMouse = true;
         GetIO().WantCaptureKeyboard = true;
@@ -164,31 +164,30 @@ void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, Opt
     if (options.hasDebugInfo)
     {
         SetUpGUIStyleDEBUG();
-        GUIHandler::instance->RenderDebugGUI();
+        GUIHANDLER->RenderDebugGUI();
     }
 
-    if (GUIHandler::instance->showMainMenu)
+    if (GUIHANDLER->showMainMenu)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderMainMenu();
+        GUIHANDLER->RenderMainMenu();
     }
-    if (GUIHandler::instance->showGameGUI)
+    if (GUIHANDLER->showGameGUI)
     {
         SetUpGUIStyleGame();
-        GUIHandler::instance->RenderTrapGUI(timer1, timer2, options);
-        GUIHandler::instance->RenderBrainGUI(health, clues, options);
-        if (GUIHandler::instance->isPaused && GUIHandler::instance->showPauseMenu)
-            GUIHandler::instance->RenderPauseMenu();
+        GUIHANDLER->RenderTrapGUI(timer1, timer2, options);
+        GUIHANDLER->RenderBrainGUI(playerHp, clues, options);
     }
-    if (GUIHandler::instance->showOptionsMenu)
+    if (GUIHANDLER->showOptionsMenu)
     {
         SetUpGUIStyleGame();
         GetIO().WantCaptureMouse = true;
         GetIO().WantCaptureKeyboard = true;
         GetIO().MouseDrawCursor = true;
-        GUIHandler::instance->RenderOptionsMenu(options);
+        GUIHANDLER->RenderOptionsMenu(options);
     }
-    
+    if (GUIHANDLER->isPaused && GUIHANDLER->showPauseMenu)
+        GUIHANDLER->RenderPauseMenu();
 
 	EndFrame();
 	ImGui::Render();
@@ -200,89 +199,105 @@ void GUIHandler::Shutdown()
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	DestroyContext();
-    if (GUIHandler::instance)
+    if (GUIHANDLER)
     {
-        delete GUIHandler::instance;
+        delete GUIHANDLER;
     }
 }
 
 void GUIHandler::ChangeActiveTrap()
 {
-    if (GUIHandler::instance->trap1Active)
+    if (GUIHANDLER->trap1Active)
     {
-        GUIHandler::instance->trap1Active = false;
-        GUIHandler::instance->trap2Active = true;
+        GUIHANDLER->trap1Active = false;
+        GUIHANDLER->trap2Active = true;
     }
-    else if (GUIHandler::instance->trap2Active)
+    else if (GUIHANDLER->trap2Active)
     {
-        GUIHandler::instance->trap2Active = false;
-        GUIHandler::instance->trap1Active = true;
+        GUIHANDLER->trap2Active = false;
+        GUIHANDLER->trap1Active = true;
     }
-    else if (!GUIHandler::instance->trap1Active && !GUIHandler::instance->trap2Active)
-        GUIHandler::instance->trap1Active = true;
+    else if (!GUIHANDLER->trap1Active && !GUIHANDLER->trap2Active)
+        GUIHANDLER->trap1Active = true;
 }
 
 void GUIHandler::SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos)
 {
-    GUIHandler::instance->playerPos = playerPos;
+    GUIHANDLER->playerPos = playerPos;
 }
 
 void GUIHandler::PauseGame()
 {
-    GUIHandler::instance->isPaused = true;
-    GUIHandler::instance->shouldResume = false;
-    GUIHandler::instance->showPauseMenu = true;
+    GUIHANDLER->isPaused = true;
+    GUIHANDLER->shouldResume = false;
+    GUIHANDLER->showPauseMenu = true;
 }
 
 void GUIHandler::ResumeGame()
 {
-    GUIHandler::instance->isPaused = false;
-    GUIHandler::instance->shouldResume = true;
+    GUIHANDLER->isPaused = false;
+    GUIHANDLER->shouldResume = true;
+}
+
+void GUIHandler::ReturnToMainMenu()
+{
+    GUIHANDLER->isPaused = false;
+    GUIHANDLER->shouldReturn = true;
 }
 
 const bool GUIHandler::ShouldResume()
 {
-    return GUIHandler::instance->shouldResume;
+    return GUIHANDLER->shouldResume;
 }
 
 const bool GUIHandler::ShouldQuit()
 {
-    return GUIHandler::instance->shouldQuit;
+    return GUIHANDLER->shouldQuit;
+}
+
+const bool GUIHandler::InOptionsMenu()
+{
+    return GUIHANDLER->showOptionsMenu;
+}
+
+const bool GUIHandler::ShouldReturnToMainMenu()
+{
+    return GUIHANDLER->shouldReturn;
 }
 
 void GUIHandler::ShowMainMenu(const bool& show)
 {
-    GUIHandler::instance->showMainMenu = show;
+    GUIHANDLER->showMainMenu = show;
 }
 
 void GUIHandler::ShowGameGUI(const bool& show)
 {
-    GUIHandler::instance->showGameGUI = show;
+    GUIHANDLER->showGameGUI = show;
 }
 
 void GUIHandler::ShowOptionsMenu(const bool& show)
 {
-    GUIHandler::instance->showOptionsMenu = show;
+    GUIHANDLER->showOptionsMenu = show;
 }
 
 void GUIHandler::ShowInGameOptionsMenu(const bool& show)
 {
     if (!show)
     {
-        GUIHandler::instance->showGameGUI = true;
-        GUIHandler::instance->showOptionsMenu = false;
-        GUIHandler::instance->showPauseMenu = true;
+        GUIHANDLER->showGameGUI = false;
+        GUIHANDLER->showOptionsMenu = false;
+        GUIHANDLER->showPauseMenu = true;
     }
 }
 
 bool GUIHandler::IsPaused()
 {
-    return GUIHandler::instance->isPaused;
+    return GUIHANDLER->isPaused;
 }
 
 const bool GUIHandler::ActiveTrap()
 {
-    return GUIHandler::instance->trap1Active;
+    return GUIHANDLER->trap1Active;
 }
 
 void GUIHandler::RenderDebugGUI()
@@ -417,7 +432,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
     BeginChild("SLIDERS", ImVec2((float)Graphics::GetWindowWidth() * 0.5f, (float)Graphics::GetWindowHeight() * 0.8f), true, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBackground);
     SetWindowFontScale(1.22f);
 
-    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\n\n\n\n\n");
+    Text("\n\n\nHow to play:\nLook around with Mouse\nMovement with W A S D\nPickup clues with LMB\nPlace traps with RMB\nSwitch traps with E\nOpen menu with 'Escape'\n\n\n");
     SliderFloat("Master Volume", &options.masterVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("SFX Volume", &options.sfxVolume, 0.0f, 1.0f, "%.2f");
     SliderFloat("Ambient Volume", &options.ambientVolume, 0.0f, 1.0f, "%.2f");
@@ -490,7 +505,7 @@ void GUIHandler::RenderOptionsMenu(OptionsHandler& options)
 
 void GUIHandler::RenderPauseMenu()
 {
-    SetNextWindowSize(ImVec2(260, 175));
+    SetNextWindowSize(ImVec2(260, 225));
     SetNextWindowPos(ImVec2(((float)Graphics::GetWindowWidth() * 0.5f) - 125, ((float)Graphics::GetWindowHeight() * 0.25f) + 150));
     SetNextWindowBgAlpha(0.5);
     bool* isActive = new bool;
@@ -506,14 +521,22 @@ void GUIHandler::RenderPauseMenu()
         }
         EndChild();
 
+        BeginChild("Return to Main Menu Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
+        SetWindowFontScale(1.5f);
+        if (Button("Main Menu", ImVec2(250, 50)))
+        {
+            ReturnToMainMenu();
+        }
+        EndChild();
+
         //SetNextWindowPos(ImVec2((float)Graphics::GetWindowWidth() * 0.5f - 125, (float)Graphics::GetWindowHeight() * 0.45f));
         BeginChild("Options Button", ImVec2(250, 50), isActive, ImGuiWindowFlags_NoTitleBar);
         SetWindowFontScale(1.5f);
         if (Button("Options", ImVec2(250, 50)))
         {
-            this->showOptionsMenu = true;
-            this->showGameGUI = false;
-            this->showPauseMenu = false;
+            GUIHANDLER->showOptionsMenu = true;
+            GUIHANDLER->showGameGUI = false;
+            GUIHANDLER->showPauseMenu = false;
         }
         EndChild();
 
@@ -534,6 +557,7 @@ void GUIHandler::RenderPauseMenu()
 
 void GUIHandler::RenderMainMenu()
 {
+    GUIHandler::instance->shouldReturn = false;
     bool* isActive = new bool;
     SetNextWindowPos(ImVec2((float)(Graphics::GetWindowWidth() / 2) - 150, (float)Graphics::GetWindowHeight() - 150));
     SetNextWindowSize(ImVec2(500, 600), 0);
@@ -549,7 +573,7 @@ void GUIHandler::RenderMainMenu()
 
 void GUIHandler::QuitGame()
 {
-    GUIHandler::instance->shouldQuit = true;
+    GUIHANDLER->shouldQuit = true;
 }
 
 bool GUIHandler::LoadTextureFromFile(const char* filename, ID3D11ShaderResourceView** out_srv, int *out_width, int *out_height)

@@ -43,8 +43,17 @@
     <FxCompile Include="BlurFilterCS.hlsl">
       <Filter>Engine\Graphics\Shaders\BlurFilter</Filter>
     </FxCompile>
-    <FxCompile Include="AnimationVertexShader.hlsl">
+    <FxCompile Include="AnimationVS.hlsl">
       <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
+    <FxCompile Include="AnimationShadowVS.hlsl">
+      <Filter>Engine\Graphics\Shaders\Animation</Filter>
+    </FxCompile>
+    <FxCompile Include="SSAOVertexShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\SSAO</Filter>
+    </FxCompile>
+    <FxCompile Include="SSAOPixelShader.hlsl">
+      <Filter>Engine\Graphics\Shaders\SSAO</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,12 +84,6 @@
     </ClCompile>
     <ClCompile Include="MeshObject.cpp">
       <Filter>Engine\Resources\Objects\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Resource.cpp">
-      <Filter>Engine\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Engine\Resources</Filter>
     </ClCompile>
     <ClCompile Include="CameraObject.cpp">
       <Filter>Engine\Camera</Filter>
@@ -169,6 +172,18 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Engine\Resources\Objects\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Resource.cpp">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsHandler.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -209,12 +224,6 @@
     </ClInclude>
     <ClInclude Include="MeshObject.h">
       <Filter>Engine\Resources\Objects\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Engine\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Engine\Resources</Filter>
     </ClInclude>
     <ClInclude Include="CameraObject.h">
       <Filter>Engine\Camera</Filter>
@@ -293,6 +302,15 @@
     </ClInclude>
     <ClInclude Include="Animation.h">
       <Filter>Engine\Resources\Objects\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Engine\Resources\Management</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsHandler.h">
+      <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Engine\AI</Filter>
@@ -393,6 +411,12 @@
     </Filter>
     <Filter Include="Engine\Resources\Objects\Animation">
       <UniqueIdentifier>{3402cc4e-1d5e-43de-b490-9fe1959a9fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Resources\Management">
+      <UniqueIdentifier>{6e3d4a0f-7eab-456b-b9d3-2e811ee225c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Graphics\Shaders\SSAO">
+      <UniqueIdentifier>{5ec1e407-2da7-484b-9bcd-b6bcafd0c3bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -17,10 +17,10 @@ private:
 	double currentFrameTime;
 	double duration;				//How many frames the animation is
 	double ticksPerSecond;			//Framerate of the animation
-
-	//This setting will make the animation
-	//smoother but will cost some extra frames
-	bool useInterpolation;
+	
+	//Special for animations that should not loop
+	bool loopable;
+	bool reachedEnd;
 
 	struct Translation
 	{
@@ -37,8 +37,8 @@ private:
 	//Every bone has it own positions, scale and rotation on each frame
 	std::unordered_map<std::string, Translation> translations;
 
-	//Finding the closest keyframe to the current frametime
-	UINT GetClosestKeyframe(const std::string& boneName, const std::vector<double>& keyFrameTimes);
+	//Finds the two keyframes that current time is in between
+	std::pair<UINT, UINT> FindTwoKeyframes(const std::string& boneName, const std::vector<double>& keyFrames);
 
 	//Interpolating between two positions, scales or rotations
 	aiVector3D InterpolatePosition(const std::string& boneName);
@@ -50,10 +50,15 @@ public:
 	~Animation();
 
 	//Load in the animation. Only takes the bones that was loaded from the object
-	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, int animSpeed = 0);
+	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, bool looping = true, int animSpeed = 0);
 
 	//Gets the animation matrices at this time
-	void GetAnimationMatrices(const std::vector<std::string>& allBones, std::vector<DirectX::SimpleMath::Matrix>& animMatrices);
+	void GetAnimationMatrices(const std::vector<std::string>& allBones, 
+							 std::vector<DirectX::SimpleMath::Matrix>& animMatrices, 
+							 bool interpolate = true);
+
 	void SetAnimationSpeed(int animSpeed);
 	void ResetCurrentTime();
+	void ResetReachedEnd();
+	bool HasReachedEnd();
 };

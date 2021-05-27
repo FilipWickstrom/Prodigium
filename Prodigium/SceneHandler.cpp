@@ -100,7 +100,7 @@ void SceneHandler::Render()
 	}
 }
 
-void SceneHandler::Render(const std::vector<MeshObject*>& toRender)
+void SceneHandler::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
 	if ((int)this->scenes.size() > 0)
 	{
@@ -126,7 +126,7 @@ void SceneHandler::RenderShadows()
 	}
 }
 
-void SceneHandler::RenderShadows(const std::vector<MeshObject*>& toRender)
+void SceneHandler::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
 	if ((int)this->scenes.size() > 0)
 	{
@@ -143,7 +143,7 @@ void SceneHandler::RenderParticles()
 }
 
 #ifdef _DEBUG
-void SceneHandler::RenderBoundingBoxes(const std::vector<MeshObject*>& toRender)
+void SceneHandler::RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
 {
 	if((int)this->scenes.size() > 0)
 	{

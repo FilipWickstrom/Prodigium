@@ -2,7 +2,7 @@
 #include "Engine.h"
 
 #define SPOTS 13
-#define CLUES_AMOUNT 4
+#define CLUES_AMOUNT 6
 class RandomSpotPicker
 {
 private:
@@ -16,8 +16,8 @@ public:
 	RandomSpotPicker();
 	virtual ~RandomSpotPicker();
 
-	DirectX::SimpleMath::Vector2 getRandomPos();
-	std::string getRandomClue();
+	DirectX::SimpleMath::Vector2 GetRandomPos();
+	std::string GetRandomClue();
 	void Reset();
 };
 

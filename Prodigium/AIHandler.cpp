@@ -1,6 +1,7 @@
 #include "AIHandler.h"
-AIHandler* AIHANDLER = nullptr;
-std::vector<std::string> AIHandler::openFile(const std::string& filePath)
+AIHandler* AIHandler::instance = nullptr;
+
+std::vector<std::string> AIHandler::OpenFile(std::string filePath)
 {
 	std::ifstream nodeFile;
 	nodeFile.open(filePath, std::ios::app);
@@ -57,16 +58,13 @@ const bool AIHandler::Initialize()
 
 AIHandler::~AIHandler()
 {
-	if (AIHANDLER)
-	{
-		delete AIHANDLER;
-	}
+	
 }
 
 void AIHandler::CreateNodes()
 {
 	//Todo: Add correct nodes and add their connections
-	std::vector<std::string> file = openFile("Resources/Nodes/NodeInfo.txt");//replace with actual name
+	std::vector<std::string> file = OpenFile("Resources/Nodes/NodeInfo.txt");//replace with actual name
 	int currentIndex = 0;
 	if (file.size() == 0)
 	{
@@ -82,7 +80,7 @@ void AIHandler::CreateNodes()
 		int cost = 0;
 		ss >> ID >> posX >> posZ >> cost;
 		Node* currentNode = new Node();
-		currentNode->Initialize({ posX, 0.f, posZ }, ID);
+		currentNode->Initialize({ posX, -3.f, posZ }, ID);
 		AIHANDLER->allNodes.push_back(currentNode);
 		currentIndex++;
 	}
@@ -285,5 +283,21 @@ void AIHandler::TracePath(Node* src, Node* dst)
 	{
 		AIHANDLER->path.insert(AIHANDLER->path.begin(), currentNode);
 		currentNode = currentNode->GetParent();
+	}
+}
+
+void AIHandler::Remove()
+{
+	AIHandler::instance->currentEnemyNode = nullptr;
+	AIHandler::instance->monster = nullptr;
+	for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
+	{
+		if (AIHandler::instance->allNodes[i])
+			delete AIHandler::instance->allNodes[i];
+	}
+
+	if (AIHandler::instance)
+	{
+		delete AIHandler::instance;
 	}
 }

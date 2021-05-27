@@ -7,11 +7,15 @@ class Enemy
 private:
 	MeshObject* model;
 	float speed;
+	float speedFactor;
 	float attackRange;
+	float speedDegradeCooldown;
 	DirectX::SimpleMath::Vector3 targetPos;
 	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f,0.f,1.f };
 	float lastAttack;
+	DirectX::SimpleMath::Vector3 targetDir;
 	bool reachedTarget;
+	float angle;
 public:
 	Enemy();
 	virtual ~Enemy();
@@ -26,7 +30,6 @@ public:
 	const bool IsCloseToPlayer(const DirectX::SimpleMath::Vector3& playerPos);
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
-
-
+	void SetSpeedFactor(float factor);
 };
 

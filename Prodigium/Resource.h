@@ -5,7 +5,8 @@ enum class ResourceType
 {
 	TEXTURE,
 	MESH,
-	AUDIO
+	AUDIO,
+	ANIMATEDOBJ
 };
 
 class Resource

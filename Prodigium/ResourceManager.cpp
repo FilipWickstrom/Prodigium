@@ -10,6 +10,7 @@ ResourceManager::ResourceManager()
 	this->textures = {};
 	this->meshes = {};
 	this->audio = {};
+	this->animatedObjects = {};
 	this->referenceCount = 0;
 }
 
@@ -39,6 +40,16 @@ ResourceManager::~ResourceManager()
 		}
 	}
 	this->cameras.clear();
+
+	for (auto it = this->animatedObjects.begin(); it != this->animatedObjects.end(); it++)
+	{
+		if (it->second)
+		{
+			delete it->second;
+		}
+	}
+	this->animatedObjects.clear();
+
 }
 
 void ResourceManager::Initialize()
@@ -111,6 +122,9 @@ void ResourceManager::AddResource(std::string key, Resource* resource)
 	case ResourceType::AUDIO:
 		this->audio.emplace(key, resource);
 		break;
+	case ResourceType::ANIMATEDOBJ:
+		this->animatedObjects.emplace(key, resource);
+		break;
 	default:
 		return;
 	}
@@ -176,6 +190,27 @@ Mesh* ResourceManager::GetMeshInternal(const std::string& key)
 	return dynamic_cast<Mesh*>(found->second);
 }
 
+AnimatedObject* ResourceManager::GetAnimObjIternal(const std::string& key)
+{
+	auto found = instance->animatedObjects.find(key);
+
+	if (found == instance->animatedObjects.end())
+	{
+		AnimatedObject* animObj = new AnimatedObject();
+		if (!animObj->Initialize(key))
+		{
+			delete animObj;
+			return nullptr;
+		}
+
+		AddResource(key, animObj);
+
+		return animObj;
+	}
+
+	return dynamic_cast<AnimatedObject*>(found->second);
+}
+
 const UINT ResourceManager::GetReferenceCount()
 {
 	return ResourceManager::instance->referenceCount;
@@ -230,4 +265,16 @@ void ResourceManager::RemoveCamera(std::string key)
 		delete instance->cameras[key];
 		instance->cameras.erase(key);
 	}
+}
+
+AnimatedObject* ResourceManager::GetAnimateObject(std::string key)
+{
+	AnimatedObject* rv = instance->GetAnimObjIternal(key);
+
+	if (rv == nullptr)
+	{
+		std::cout << "Resource is nullptr!" << std::endl;
+	}
+
+	return rv;
 }

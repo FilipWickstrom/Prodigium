@@ -19,6 +19,19 @@
 
 class Engine
 {
+protected:
+
+	float playerSanity; // Blur
+	int playerHp; // Health
+	int cluesCollected; // clues
+
+	float slowdown_timer; // Slow down trap timer
+	float stopcompl_timer; // Stop completely trap timer
+
+	OptionsHandler options;
+	bool isPaused;
+	QuadTree* quadTree;
+
 private:
 	Window window;
 	GeometryPass gPass;
@@ -30,16 +43,6 @@ private:
 	
 	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
 	void RedirectIoToConsole();
-protected:
-
-
-
-	float slowdown_timer; // Slow down trap timer
-	float stopcompl_timer; // Stop completely trap timer
-
-	OptionsHandler options;
-	bool isPaused;
-
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)

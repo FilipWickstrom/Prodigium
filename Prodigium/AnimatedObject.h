@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include "Animation.h"
 #include "GUIHandler.h"
+#include "Resource.h"
 
 const UINT MAXBONES = 25;
-const UINT MAXTEXTURES = 2;
 
 /*
 Load in a model with bones, ".fbx" supported for now
@@ -14,21 +14,32 @@ Move the bones with different animations
 If optimalization is needed:
 	- Use only 3 weights per vertex
 	- Lower total number of bones
+	- Fix search closest two keyframes in "Animation.cpp"
 */
 
-//Switch between states of animations //ADD LEFT AND RIGHT STRAFE?
+//Switch between states of animations
 enum class AnimationState
 {
-	IDLE, IDLE2, WALKFORWARD, WALKBACKWARD, RUNFORWARD, RUNBACKWARD, NONE, NROFSTATE = 7
+	NONE, 
+	IDLE, IDLE2, 
+	WALKFORWARD, WALKBACKWARD, 
+	RUNFORWARD, RUNBACKWARD, 
+	LEFTSTRAFE, RIGHTSTRAFE, 
+	DEAD, PICKUP
 };
 
-class AnimatedObject
+class AnimatedObject : public Resource 
 {
 private:
 	//Needs a seperate vertexshader and input for it
 	ID3D11VertexShader* vertexShader;
 	std::string vShaderByteCode;
 	ID3D11InputLayout* inputlayout;
+
+	//Shadow specific settings
+	ID3D11VertexShader* shadowVertexShader;
+	ID3D11InputLayout* shadowInputlayout;
+	std::string shadowVShaderByteCode;
 
 	//Rendering the mesh
 	ID3D11Buffer* vertexBuffer;
@@ -56,11 +67,14 @@ private:
 	std::vector<DirectX::SimpleMath::Matrix> animatedMatrices;	//Matrices that will be calculated from saved animation information
 	std::vector<DirectX::SimpleMath::Matrix> modelMatrices;		//
 	std::vector<DirectX::SimpleMath::Matrix> finalMatrices;		//Final matrices that the GPU will use
-
-	AnimationState currentState;
 	
-	Animation* currentAnim;
-	std::vector<Animation*> allAnimations;
+	//Handles which state we are on and what animation to use
+	AnimationState currentState;
+	std::unordered_map<AnimationState, Animation*> allAnimations;
+
+	//This setting will make the animation
+	//smoother but will cost some extra frames
+	bool useInterpolation;
 
 public:
 	//All the positions of the T-posing character
@@ -80,13 +94,13 @@ private:
 	
 	//Load in a mesh with a skeleton
 	bool LoadRiggedMesh(std::string animFolder);
-	bool LoadAnimations(std::string animFolder);
+	void LoadAnimations(std::string animFolder);
 
 	bool CreateBonesCBuffer();
 	void UpdateBonesCBuffer();
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
-
+	
 public:
 	AnimatedObject();
 	virtual ~AnimatedObject();
@@ -94,9 +108,12 @@ public:
 	bool Initialize(std::string animFolder);					
 	
 	void ChangeAnimState(AnimationState state);
+	void UseInterpolation(bool toggle = true);
+	bool AnimationReachedEnd();
+	const AnimationState& GetAnimationState();
 
 	//With animate set to false, we can render without changing pose.
 	//Can be used when rendering shadows
 	void Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate = true);
-
+	void RenderShadows(const DirectX::SimpleMath::Matrix& worldMatrix);
 };

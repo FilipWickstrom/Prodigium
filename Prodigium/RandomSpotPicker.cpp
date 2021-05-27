@@ -23,6 +23,8 @@ RandomSpotPicker::RandomSpotPicker()
     cluesS[1] = "drawing";
     cluesS[2] = "mask";
     cluesS[3] = "necklace";
+    cluesS[4] = "toy";
+    cluesS[5] = "knife";
 
     for (int i = 0; i < SPOTS; i++)
     {
@@ -34,21 +36,21 @@ RandomSpotPicker::~RandomSpotPicker()
 {
 }
 
-DirectX::SimpleMath::Vector2 RandomSpotPicker::getRandomPos()
+DirectX::SimpleMath::Vector2 RandomSpotPicker::GetRandomPos()
 {
     // Don't let any pickup get same position.
     int random = rand() % SPOTS;
     while(picked[random] == 1)
         random = rand() % SPOTS;
 
-#ifdef _DEBUG
-    std::cout << "x: " << spots[random].x << " z:" << spots[random].y << "\n";
-#endif
+//#ifdef _DEBUG
+//    std::cout << "x: " << spots[random].x << " z:" << spots[random].y << "\n";
+//#endif
     picked[random] = 1;
     return spots[random];
 }
 
-std::string RandomSpotPicker::getRandomClue()
+std::string RandomSpotPicker::GetRandomClue()
 {
     int index = rand() % CLUES_AMOUNT;
     return this->cluesS[index];

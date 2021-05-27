@@ -3,6 +3,7 @@
 #include "MeshObject.h"
 #include "ShadowHandler.h"
 #include "ParticleSystem.h"
+#include "SSAO.h"
 
 #define SHADOWRANGE 125.0f
 struct InfoStruct
@@ -16,8 +17,7 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
-	
-	std::vector<MeshObject*> cullingObjects;
+	std::unordered_map<std::uintptr_t, MeshObject*> visibleObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -52,6 +52,11 @@ private:
 		For rendering particles
 	*/
 	ParticleSystem particles;
+
+	/*
+		For rendering SSAO
+	*/
+	SSAO SSAOcclusion;
 
 public:
 
@@ -113,25 +118,29 @@ public:
 	// loop through all objects and call their render function.
 	void Render();
 
-	void Render(const std::vector<MeshObject*>& toRender);
+	void Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 
 	// loop through all lights are bind them to the light pass
 	void RenderLights();
 
 #ifdef _DEBUG
-	void RenderBoundingBoxes(const std::vector<MeshObject*>& toRender);
+	void RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 #endif
 
 	// render all shadows to be prepared for the light pass
 	void RenderShadows();
-	void RenderShadows(const std::vector<MeshObject*>& toRender);
+	void RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
 
 	// render the particles inside the scene.
 	void RenderParticles();
+
+	void RenderSSAO();
+	void RenderSSAOLightPass();
+	ID3D11UnorderedAccessView& GetSSAOAccessView();
 
 	void SwitchMenuMode(bool sw = true);
 
 	void ClearCullingObjects();
 
-	std::vector<MeshObject*>& GetAllCullingObjects();
+	std::unordered_map<std::uintptr_t, MeshObject*>& GetAllCullingObjects();
 };

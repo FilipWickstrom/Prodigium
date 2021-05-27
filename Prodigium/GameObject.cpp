@@ -70,6 +70,7 @@ bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vect
 	return !FAILED(hr);
 }
 
+
 bool GameObject::UpdateMatrix()
 {
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * 
