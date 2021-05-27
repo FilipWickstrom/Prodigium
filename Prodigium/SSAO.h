@@ -61,4 +61,5 @@ public:
 	~SSAO();
 
 	void Render();
+	void RenderLightPass();
 };

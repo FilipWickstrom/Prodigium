@@ -2,11 +2,16 @@
 #include <iostream>
 #include <fstream>
 #include "Graphics.h"
+#include "UsefulStructuresHeader.h"
 
-float randomizeL(float upper, float lower)
+static float RandF()
 {
-	float ret = (float)(rand() % (int)(upper - lower)) + lower;
-	return ret;
+	return (float)(rand()) / (float)RAND_MAX;
+}
+
+static float RandF(float a, float b)
+{
+	return a + RandF() * (b - a);
 }
 
 using namespace DirectX::SimpleMath;
@@ -27,6 +32,7 @@ bool SSAO::Setup()
 
 void SSAO::InternalRender()
 {
+	ID3D11DepthStencilView* nullDepth = nullptr;
 	// Prepare Phase
 	UINT offset = 0;
 	UINT stride = sizeof(QuadVertex);
@@ -35,6 +41,7 @@ void SSAO::InternalRender()
 	Graphics::GetContext()->IASetInputLayout(this->inputQuad);
 	Graphics::GetContext()->PSSetShader(this->pixelShader, nullptr, 0);
 	Graphics::GetContext()->VSSetShader(this->vertexShader, nullptr, 0);
+	Graphics::GetContext()->OMSetRenderTargets(1, &this->SSAORenderTarget, nullDepth);
 	
 	Graphics::GetContext()->PSSetShaderResources(1, 1, &this->randomVecShaderView);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &this->sampler);
@@ -42,10 +49,24 @@ void SSAO::InternalRender()
 	Graphics::GetContext()->VSSetConstantBuffers(1, 1, &this->ssaoBuffer);
 
 	// Render Phase
+	Graphics::GetContext()->DrawIndexed(6, 0, 0);
+
+	this->Clear();
 }
 
 void SSAO::Clear()
 {
+	ID3D11DepthStencilView* nullStencil = nullptr;
+	ID3D11ShaderResourceView* nullResView = nullptr;
+	ID3D11Buffer* nullBuff = nullptr;
+	ID3D11RenderTargetView* nullTargets[BUFFER_COUNT] = { nullptr };
+	Graphics::GetContext()->OMSetRenderTargets(BUFFER_COUNT, nullTargets, nullStencil);
+	Graphics::GetContext()->PSSetShaderResources(6, 1, &nullResView);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &nullResView);
+	Graphics::GetContext()->PSSetShaderResources(1, 1, &nullResView);
+
+	Graphics::GetContext()->PSSetConstantBuffers(0, 1, &nullBuff);
+	Graphics::GetContext()->PSSetConstantBuffers(10, 1, &nullBuff);
 }
 
 bool SSAO::LoadShaders()
@@ -143,8 +164,7 @@ bool SSAO::SetupPreparations()
 
 	result = Graphics::GetDevice()->CreateInputLayout(input, 3, this->vertexData.c_str(),
 		this->vertexData.length(), &this->inputQuad);
-	if (FAILED(result))
-		return false;
+	assert(SUCCEEDED(result));
 
 	QuadVertex verts[4] =
 	{
@@ -221,18 +241,18 @@ bool SSAO::SetupPreparations()
 
 	for (int i = 0; i < samples; i++)
 	{
-		float randL = randomizeL(1.0f, 0.05f);
+		float randL = RandF(0.05f, 1.0f);
 		// Scale vector with the randomized scalar
 		Vector4 v = DirectX::XMVector4Normalize(DirectX::XMVectorScale(DirectX::XMLoadFloat4(&vec[i]), randL));
 		DirectX::XMStoreFloat4(&this->randomVectors[i], v);
 	}
 
 	unsigned int thickness = Graphics::GetWindowWidth() * Graphics::GetWindowHeight();
-	DirectX::XMFLOAT4* vec = new DirectX::XMFLOAT4[thickness];
+	DirectX::XMFLOAT4* vecL = new DirectX::XMFLOAT4[thickness];
 	for (int i = 0; i < thickness; i++)
 	{
-		vec[i] = DirectX::XMFLOAT4(randomizeL(1.0f, -1.0f),
-			randomizeL(1.0f, -1.0f), randomizeL(1.0f, 0.0f), 1.0f);
+		vecL[i] = DirectX::XMFLOAT4(RandF(-1.0f, 1.0f),
+			RandF(-1.0f, 1.0f), RandF(0.0f, 1.0f), 1.0f);
 	}
 
 	D3D11_TEXTURE2D_DESC desc;
@@ -248,20 +268,20 @@ bool SSAO::SetupPreparations()
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = vec;
-	data.SysMemPitch = Graphics::GetWindowWidth() * 4;
-	data.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA vData;
+	vData.pSysMem = &(vecL[0]);
+	vData.SysMemPitch = Graphics::GetWindowWidth() * 4;
+	vData.SysMemSlicePitch = 0;
 
-	result = Graphics::GetDevice()->CreateTexture2D(&desc, &data, &this->randomVecTexture);
+	result = Graphics::GetDevice()->CreateTexture2D(&desc, &vData, &this->randomVecTexture);
 	if (FAILED(result))
 	{
-		delete[] vec;
+		delete[] vecL;
 		return false;
 	}
 	else
 		result = Graphics::GetDevice()->CreateShaderResourceView(this->randomVecTexture, NULL, &this->randomVecShaderView);
-	delete[] vec;
+	delete[] vecL;
 
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -350,6 +370,8 @@ SSAO::~SSAO()
 		this->randomVecShaderView->Release();
 	if (this->ssaoBuffer)
 		this->ssaoBuffer->Release();
+	if (this->sampler)
+		this->sampler->Release();
 }
 
 void SSAO::Render()
@@ -360,4 +382,9 @@ void SSAO::Render()
     }
     else
         this->InternalRender();
+}
+
+void SSAO::RenderLightPass()
+{
+	Graphics::GetContext()->PSSetShaderResources(6, 1, &this->SSAOResView);
 }

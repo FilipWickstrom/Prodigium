@@ -11,14 +11,14 @@ cbuffer ssaoBuffer : register(b1)
 struct VertexIn
 {
     float3 position : POSITION;
-    float3 index : FARPLANEINDEX;
+    float3 index : INDEX;
     float2 uv : UV;
 };
 
 struct VertexOut
 {
     float4 position : SV_POSITION;
-    float3 index : FARPLANEINDEX;
+    float3 index : INDEX;
     float2 uv : UV;
 };
 

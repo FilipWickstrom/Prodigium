@@ -301,7 +301,7 @@ void Scene::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRend
 		}
 	}
 #ifdef _DEBUG
-	std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
 #endif
 }
 
@@ -387,6 +387,11 @@ void Scene::RenderParticles()
 void Scene::RenderSSAO()
 {
 	this->SSAOcclusion.Render();
+}
+
+void Scene::RenderSSAOLightPass()
+{
+	this->SSAOcclusion.RenderLightPass();
 }
 
 void Scene::SwitchMenuMode(bool sw)

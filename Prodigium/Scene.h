@@ -135,6 +135,7 @@ public:
 	void RenderParticles();
 
 	void RenderSSAO();
+	void RenderSSAOLightPass();
 
 	void SwitchMenuMode(bool sw = true);
 

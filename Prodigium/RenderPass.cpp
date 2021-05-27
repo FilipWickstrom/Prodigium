@@ -72,7 +72,7 @@ void GeometryPass::ClearScreen()
 
 void GeometryPass::BindSSAO()
 {
-	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->gBuffer.shaderResourceViews[4]);
+	Graphics::GetContext()->PSSetShaderResources(0, 1, &this->gBuffer.shaderResourceViews[3]);
 }
 
 bool GeometryPass::CreateGBuffer()
@@ -647,7 +647,6 @@ void LightPass::Prepare()
 	Graphics::GetContext()->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT - 1, this->shaderResources);
-	Graphics::GetContext()->PSSetShaderResources(6, 1, &this->shaderResources[3]);
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

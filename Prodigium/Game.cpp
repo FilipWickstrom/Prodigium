@@ -573,7 +573,6 @@ void Game::LoadMainMenu()
 	// Refresh the game to a clean slate.
 	SceneHandle()->RemoveAllScenes();
 	SceneHandle()->AddScene();
-	//EDITSCENE.GetParticles().SetActive(false);
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
@@ -718,7 +717,6 @@ void Game::LoadMap()
 		Lamps
 	*/
 
-	/*
 	EDITSCENE.Add("Lamp1_SubMesh.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
@@ -798,7 +796,6 @@ void Game::LoadMap()
 
 		EDITSCENE.Add("shittymountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	}
-	*/
 
 
 	this->amountOfObjects = EDITSCENE.GetNumberOfObjects();

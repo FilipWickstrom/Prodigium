@@ -23,8 +23,8 @@ cbuffer viewProjection : register(b10)
 
 struct VertexOut
 {
-    float4 position : POSITION;
-    float3 index : FARPLANEINDEX;
+    float4 position : SV_POSITION;
+    float3 index : INDEX;
     float2 uv : UV;
 };
 
