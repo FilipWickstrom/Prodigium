@@ -647,6 +647,7 @@ void Game::LoadMainMenu()
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -20.0f, 0.0f, 20.0f, 35.0f };
 	EDITSCENE.AddLight(L);
+	ToggleSSAO(false);
 
 	this->hasLoaded = false;
 	this->inGoal = false;
@@ -835,6 +836,7 @@ void Game::LoadMap()
 	Engine::inGame = true;
 	Engine::quadTree = new QuadTree;
 	Engine::quadTree->BuildQuadTree(EDITSCENE.GetAllMeshObjects());
+	ToggleSSAO(true);
 
 	this->inGoal = true;
 }

@@ -533,6 +533,22 @@ bool LightPass::CreateDepthStencilState()
 	return !FAILED(hr);
 }
 
+bool LightPass::CreateSSAOTurnOffBuffer()
+{
+	HRESULT hr;
+
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = sizeof(Vector4);
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, NULL, &this->turnOffSSAO);
+
+	return SUCCEEDED(hr);
+}
+
 LightPass::LightPass()
 {
 	this->iBuffer = nullptr;
@@ -540,6 +556,7 @@ LightPass::LightPass()
 	this->pShader = nullptr;
 	this->renderedImage = nullptr;
 	this->renderTarget = nullptr;
+	this->turnOffSSAO = nullptr;
 	this->vBuffer = nullptr;
 	this->vShader = nullptr;
 	this->pShader = nullptr;
@@ -571,11 +588,27 @@ LightPass::~LightPass()
 		this->sampler->Release();
 	if (this->noDepth)
 		this->noDepth->Release();
+	if (this->turnOffSSAO)
+		this->turnOffSSAO->Release();
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (this->shaderResources[i])
 			this->shaderResources[i]->Release();
 	}
+}
+
+void LightPass::ToggleSSAO(bool toggle)
+{
+	Vector4 package = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	if (!toggle)
+		package = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	D3D11_MAPPED_SUBRESOURCE submap;
+	HRESULT hr = Graphics::GetContext()->Map(this->turnOffSSAO, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &package, sizeof(Vector4));
+
+	Graphics::GetContext()->Unmap(this->turnOffSSAO, 0);
 }
 
 bool LightPass::Initialize()
@@ -609,6 +642,9 @@ bool LightPass::Initialize()
 	{
 		return false;
 	}
+
+	if (!CreateSSAOTurnOffBuffer())
+		return false;
 
 
 	return true;
@@ -662,6 +698,8 @@ void LightPass::Prepare()
 
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	Graphics::GetContext()->PSSetConstantBuffers(5, 1, &this->turnOffSSAO);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
 }

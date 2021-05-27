@@ -56,6 +56,7 @@ public:
 	void Render();
 	void Update(const float& deltaTime);
 	void OpenConsole();
+	void ToggleSSAO(bool toggle);
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;

@@ -198,6 +198,11 @@ void Engine::OpenConsole()
 	this->RedirectIoToConsole();
 }
 
+void Engine::ToggleSSAO(bool toggle)
+{
+	this->lightPass.ToggleSSAO(toggle);
+}
+
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
