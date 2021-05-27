@@ -14,10 +14,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	UINT winWidth = 1720;
 	UINT winHeight = 1080;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	winWidth = 1280;
 	winHeight = 1024;
-#endif 
+//#endif 
 
 	Game game(hInstance, winWidth, winHeight);
 	game.OnStart();
