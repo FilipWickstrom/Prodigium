@@ -144,13 +144,19 @@ void Engine::Render()
 		//Render the blur depending on sanity
 		//1.0f is full sanity = no blur
 		//0.0f is no sanitiy = max blur
-		this->blurPass.Render(this->playerSanity);
+		//this->blurPass.ChangeBlur(Percentage);
 	}
 
 	if (this->isPaused)
 	{
-		this->blurPass.Render(0);
+		this->blurPass.ChangeBlur(BlurState::RAD10);
 	}
+	else
+	{
+		this->blurPass.ChangeBlur(BlurState::NOBLUR);
+	}
+
+	this->blurPass.Render();
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
@@ -239,8 +245,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	//Max blur radius is 5 for now
-	if (!this->blurPass.Initialize(5))
+	if (!this->blurPass.Initialize())
 	{
 		return false;
 	}
