@@ -302,6 +302,8 @@ void AIHandler::Remove()
 			if (AIHandler::instance->allNodes[i])
 				delete AIHandler::instance->allNodes[i];
 		}
+		for (int i = 0; i < (int)AIHandler::instance->allNodes.size(); i++)
+			AIHANDLER->allNodes.pop_back();
 
 		delete AIHandler::instance;
 	}

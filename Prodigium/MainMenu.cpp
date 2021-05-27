@@ -54,7 +54,7 @@ MainMenu::MainMenu()
 	this->distToGoal = 99999;
 
 	// Start pos
-	this->eyePos = { 0.0f, 2.f, -1.0f, 1.0f };
+	this->eyePos = { 0.0f, 3.f, -1.0f, 1.0f };
 }
 
 MainMenu::~MainMenu()
