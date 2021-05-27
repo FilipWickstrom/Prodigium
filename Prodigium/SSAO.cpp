@@ -154,6 +154,12 @@ bool SSAO::SetupTexture()
 
 bool SSAO::SetupPreparations()
 {
+	/*
+	
+		INPUT LAYOUT
+
+	*/
+
 	HRESULT result;
 	D3D11_INPUT_ELEMENT_DESC input[3] =
 	{
@@ -165,6 +171,12 @@ bool SSAO::SetupPreparations()
 	result = Graphics::GetDevice()->CreateInputLayout(input, 3, this->vertexData.c_str(),
 		this->vertexData.length(), &this->inputQuad);
 	assert(SUCCEEDED(result));
+
+	/*
+	
+		VERTEX BUFFER
+
+	*/
 
 	QuadVertex verts[4] =
 	{
@@ -192,6 +204,12 @@ bool SSAO::SetupPreparations()
 	if (FAILED(result))
 		return false;
 
+	/*
+	
+		INDEX BUFFER
+	
+	*/
+
 	UINT indices[6] =
 	{
 		1,2,3,
@@ -208,6 +226,12 @@ bool SSAO::SetupPreparations()
 	if (FAILED(result))
 		return false;
 
+
+	/*
+	
+		View Frustum Vectors for each corner and vectors going in different directions.
+	
+	*/
 	float fov = DirectX::XM_PI * 0.5f;
 	float farZ = 500.0f;
 
@@ -247,6 +271,10 @@ bool SSAO::SetupPreparations()
 		DirectX::XMStoreFloat4(&this->randomVectors[i], v);
 	}
 
+	/*
+		TEXTURE2D CONTAINING RANDOM VECTORS
+	*/
+
 	unsigned int thickness = Graphics::GetWindowWidth() * Graphics::GetWindowHeight();
 	DirectX::XMFLOAT4* vecL = new DirectX::XMFLOAT4[thickness];
 	for (int i = 0; i < thickness; i++)
@@ -283,6 +311,12 @@ bool SSAO::SetupPreparations()
 		result = Graphics::GetDevice()->CreateShaderResourceView(this->randomVecTexture, NULL, &this->randomVecShaderView);
 	delete[] vecL;
 
+	/*
+	
+		SAMPLER STATE
+
+	*/
+
 	D3D11_SAMPLER_DESC samplerDesc;
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -296,22 +330,21 @@ bool SSAO::SetupPreparations()
 
 	result = Graphics::GetDevice()->CreateSamplerState(&samplerDesc, &this->sampler);
 
-	SSAOBuffer strt;
-	for (int i = 0; i < corners; i++)
-	{
-		strt.frustumCorners[i] = this->frustumCorners[i];
-	}
-	for (int i = 0; i < samples; i++)
-	{
-		strt.randomVectors[i] = this->randomVectors[i];
-	}
-
 	/*
-	
-		SSAO Buffer Containing frustumCorners and randomVectors
+
+	SSAO Buffer Containing frustumCorners and randomVectors
 
 	*/
 
+	SSAOBuffer sBuff;
+	for (int i = 0; i < corners; i++)
+	{
+		sBuff.frustumCorners[i] = this->frustumCorners[i];
+	}
+	for (int i = 0; i < samples; i++)
+	{
+		sBuff.randomVectors[i] = this->randomVectors[i];
+	}
 	D3D11_BUFFER_DESC bDesc;
 	bDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -319,7 +352,7 @@ bool SSAO::SetupPreparations()
 	bDesc.MiscFlags = 0;
 	bDesc.ByteWidth = sizeof(SSAOBuffer);
 
-	data.pSysMem = &strt;
+	data.pSysMem = &(sBuff);
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 

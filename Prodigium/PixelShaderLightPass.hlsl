@@ -282,7 +282,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    float4 finalColor = (saturate(lightColor) * ssao * gbuffers.diffuseColor + ambient) + saturate(specular);
+    float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular)) * ssao;
     
     //FOG
     float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;

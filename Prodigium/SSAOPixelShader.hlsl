@@ -1,9 +1,9 @@
 #define CORNERS 4
 #define SAMPLES 14
-#define radius 1.f
-#define start 0.5f
-#define end 10.0f
-#define eps 1.f
+#define radius .5f
+#define start 1.f
+#define end 2.0f
+#define eps .1f
 
 Texture2D viewNormPosTexture : register(t0);
 Texture2D randomVecTexture : register(t1);
@@ -38,7 +38,6 @@ float4 main(VertexOut input) : SV_TARGET
     float3 position = (depth / farPlaneVector.z) * farPlaneVector;
     float occlusion = 0.0f;
     float3 randomVector = randomVecTexture.Sample(normSamp, input.uv).xyz;
-
 	[unroll(SAMPLES)]
     for (int i = 0; i < SAMPLES; i++)
     {
@@ -51,18 +50,17 @@ float4 main(VertexOut input) : SV_TARGET
         tex.y = -texPoint.y / texPoint.w / 2.0f + 0.5f;
         float texDepth = viewNormPosTexture.Sample(normSamp, tex.xy).w;
         float3 pot = (texDepth / offPoint.z) * offPoint;
-        float depthDist = position.z - pot.z;
+        float depthDiff = position.z - pot.z;
         float d = max(dot(normal, normalize(pot - position)), 0.0f);
+
         float occ = 0.0f;
-        if (depthDist > eps)
-        {
-            occ = (end - depthDist) / (end - start);
-        }
-        float o = depthDist * d * occ;
+        if (depthDiff > eps)
+            occ = (end - depthDiff) / (end - start);
+        float o = depthDiff * d * occ;
+		
         occlusion += o;
     }
-
     occlusion /= SAMPLES;
     float result = 1.0f - occlusion;
-    return saturate(pow(result, 16.0f));
+    return saturate(pow(result, 4.0f));
 }
