@@ -9,7 +9,9 @@ private:
 	float attackRange;
 	float speedDegradeCooldown;
 	DirectX::SimpleMath::Vector3 targetPos;
+	DirectX::SimpleMath::Vector3 targetDir;
 	bool reachedTarget;
+	float angle;
 public:
 	Enemy();
 	virtual ~Enemy();
