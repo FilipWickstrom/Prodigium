@@ -623,6 +623,7 @@ void LightPass::Clear()
 	ID3D11SamplerState* samplerStateNull = nullptr;
 	ID3D11DepthStencilState* nullState = nullptr;
 	ID3D11ShaderResourceView* shaderResourceNull[BUFFER_COUNT] = { nullptr };
+	ID3D11ShaderResourceView* singleSRVNull = nullptr;
 	UINT stride = 0;
 	UINT offset = 0;
 
@@ -634,6 +635,7 @@ void LightPass::Clear()
 	Graphics::GetContext()->PSSetSamplers(0, 1, &samplerStateNull);
 	Graphics::GetContext()->PSSetShaderResources(0, BUFFER_COUNT, shaderResourceNull);
 	Graphics::GetContext()->OMSetDepthStencilState(nullState, 0);
+	Graphics::GetContext()->PSSetShaderResources(6, 1, &singleSRVNull);
 }
 
 void LightPass::Prepare()

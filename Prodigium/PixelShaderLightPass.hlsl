@@ -2,6 +2,7 @@
 Texture2D G_positionWS : register(t0);
 Texture2D G_colour : register(t1);
 Texture2D G_normalWS : register(t2);
+Texture2D ssaoMap : register(t6);
 SamplerState anisotropic : register(s0);
 
 /*
@@ -243,6 +244,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 float4 main(PixelShaderInput input) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
+    float4 ssao = ssaoMap.Sample(anisotropic, input.texCoord);
     
     float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * gbuffers.diffuseColor;
     
@@ -280,7 +282,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
+    float4 finalColor = (saturate(lightColor) * ssao * gbuffers.diffuseColor + ambient) + saturate(specular);
     
     //FOG
     float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;
