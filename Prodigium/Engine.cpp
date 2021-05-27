@@ -149,7 +149,8 @@ void Engine::Render()
 
 	if (this->isPaused)
 	{
-		this->blurPass.ChangeBlur(BlurState::RAD10);
+		//More effective to change sigma to higher than adding more in radius
+		this->blurPass.ChangeBlur(BlurState::RAD4, 10.0f);
 	}
 	else
 	{

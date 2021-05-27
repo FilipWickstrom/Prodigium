@@ -41,9 +41,8 @@ bool BlurFilter::CreateSettingsBuffer()
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 
-	this->blurSettings.blurRadius = 1;
 	this->blurSettings.useVerticalBlur = true;
-	GenerateGaussFilter(this->blurSettings.blurRadius);
+	GenerateGaussFilter((UINT)BlurState::RAD1);
 
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->blurSettings;
@@ -61,6 +60,8 @@ void BlurFilter::GenerateGaussFilter(UINT radius, float sigma)
 	else if (radius < MINRADIUS)
 		radius = MINRADIUS;
 
+	this->blurSettings.blurRadius = radius;
+
 	//If not sigma is picked we calculate it to fit with the curve
 	if (sigma == 0)
 		sigma = float(radius / 2.0f);
@@ -71,16 +72,16 @@ void BlurFilter::GenerateGaussFilter(UINT radius, float sigma)
 		this->blurSettings.weights[x] = weight;
 	}
 
+	//Calculate the total sum
 	float total = 0.0f;
-
-	//Normalize the values
-	for (UINT i = 0; i < radius; i++)
+	for (UINT i = 1; i <= radius; i++)
 	{
 		total += this->blurSettings.weights[i];
 	}
 	total *= 2;
-	total += this->blurSettings.weights[radius];
+	total += this->blurSettings.weights[0];
 
+	//Normalize each value
 	for (UINT i = 0; i <= radius; i++)
 	{
 		this->blurSettings.weights[i] /= total;
@@ -150,8 +151,7 @@ void BlurFilter::ChangeBlur(BlurState state, float sigma)
 	if (this->currentState != state)
 	{
 		this->currentState = state;
-		GenerateGaussFilter((int)state, sigma);
-		this->blurSettings.blurRadius = (UINT)state;
+		GenerateGaussFilter((UINT)state, sigma);
 		UpdateBlurSettings();
 	}
 }

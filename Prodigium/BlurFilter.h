@@ -5,32 +5,31 @@
 #include "Graphics.h"
 
 const double PI = 3.14159265359;
-const UINT MAXRADIUS = 15;	//Not good for performance
+const UINT MAXWEIGHT = 8;
+const UINT MAXRADIUS = MAXWEIGHT - 1;	//Bad for performance
 const UINT MINRADIUS = 1;
-const UINT MAXWEIGHTS = 16;
 
 /*
 Guassian blur filter that makes everything
 blurry on the screen, but still so that you 
 can see objects better than flat box blur.
 
-- In Render(float percentage): 0.0f to 1.0f
-  which is how much blur to use. 1.0f is maxblur 
-  which is going to use maxradius.
+The filter is rendered in two passess
+like a cross instead of like a square. 
+Fastest way of doing it
 
-  Update:
-  * More memory effective blur
-  * 
+Last update:
+	* More memory effective blur: 
+		- less weights as constant buffer
+		- from 112 bytes to 48 bytes in cb
 */
 
 enum class BlurState
 {
-	NOBLUR = 0,
-	MINBLUR = MINRADIUS,
-	RAD2, RAD3, RAD4, RAD5,  RAD6,
-	RAD7, RAD8, RAD9, RAD10, RAD11,
-	RAD12,RAD13,RAD14,
-	MAXBLUR = MAXRADIUS
+	NOBLUR, RAD1, 
+	RAD2, RAD3, 
+	RAD4, RAD5, 
+	RAD6, RAD7
 };
 
 class BlurFilter
@@ -47,10 +46,13 @@ private:
 		UINT blurRadius;
 		bool useVerticalBlur;
 		float padding[2];
-		float weights[MAXWEIGHTS];
+		float weights[MAXWEIGHT];
 	} blurSettings;
 
 	BlurState currentState;
+	//BlurState lastState;		//do avoid calculating same if it's already been made
+	
+	//BlurState screenBlur; for the player
 
 private:
 	//Creating directx buffers and shaders
@@ -71,4 +73,6 @@ public:
 	void ChangeBlur(BlurState state, float sigma = 0.0f);
 	//void ChangeBlur(float percentage);	//1.0f = 100% blur aka maxblur and 0.0f is no blur
 	void Render();
+
+	//void RenderUAV(uav, BlurState);
 };
