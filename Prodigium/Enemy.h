@@ -12,7 +12,7 @@ private:
 	float speedDegradeCooldown;
 	DirectX::SimpleMath::Vector3 targetPos;
 	const DirectX::SimpleMath::Vector3 defaultForward = { 0.f,0.f,1.f };
-	float lastAttack;
+	double lastAttack;
 	DirectX::SimpleMath::Vector3 targetDir;
 	bool reachedTarget;
 	float angle;
@@ -24,7 +24,7 @@ public:
 	void MoveToTarget(const float& deltaTime);
 	const float& GetAttackRange() const;
 	void PlayAttackAnimation();
-	const bool& CanAttack() const;
+	const bool CanAttack() const;
 	void Attack(Player* player);
 	const DirectX::SimpleMath::Vector3& getPosition() const;
 	const bool IsCloseToPlayer(const DirectX::SimpleMath::Vector3& playerPos);

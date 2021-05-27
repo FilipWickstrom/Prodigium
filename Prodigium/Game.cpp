@@ -43,7 +43,7 @@ void Game::MonsterSounds(const float& deltaTime)
 	else
 	{
 		this->monsterSoundTimer -= 1 * deltaTime;
-		std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
+		//std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
 	}
 }
 

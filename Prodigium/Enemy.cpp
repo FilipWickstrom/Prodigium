@@ -7,7 +7,7 @@ Enemy::Enemy()
 	this->model = new MeshObject();
 	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", false, true, { 1.0f, -3.0f, 1.0f });
 	this->attackRange = 20.f;
-	this->speed = 20.f;
+	this->speed = 1.f;
 	this->reachedTarget = false;
 	this->model->forward = { 0.0f, 0.0f, -1.0f };
 	this->model->forward.Normalize();
@@ -17,6 +17,7 @@ Enemy::Enemy()
 	this->model->rotation = { 0.0f, 1.0f, 0.0f };
 	this->speedFactor = 1.0f;
 	this->speedDegradeCooldown = 0;
+	this->lastAttack = 0;
 }
 
 Enemy::~Enemy()
@@ -95,7 +96,7 @@ void Enemy::PlayAttackAnimation()
 {
 }
 
-const bool& Enemy::CanAttack() const
+const bool Enemy::CanAttack() const
 {
 	return (omp_get_wtime() - lastAttack > 3);
 }
@@ -103,7 +104,7 @@ const bool& Enemy::CanAttack() const
 void Enemy::Attack(Player* player)
 {
 	this->lastAttack = omp_get_wtime();
-	player->IncreaseHealth(-20.f);
+	player->IncreaseHealth(-20);
 }
 
 const DirectX::SimpleMath::Vector3& Enemy::getPosition() const

@@ -58,7 +58,7 @@ const bool AIHandler::Initialize()
 
 AIHandler::~AIHandler()
 {
-	
+
 }
 
 void AIHandler::CreateNodes()
@@ -143,7 +143,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			break;
 		case EnemyStates::CHASE:
 			DirectionVec = (AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->getPosition());
-			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() <= AIHANDLER->monster->GetAttackRange())
+			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
 			{
 				if (AIHANDLER->monster->CanAttack())
 				{

@@ -1,17 +1,17 @@
 #pragma once
 #include "UsefulHeader.h"
+#include "Graphics.h"
+#include "Window.h"
+#include "OptionsHandler.h"
 #pragma warning(push, 0)
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
-#pragma warning(pop)
-#include "Graphics.h"
-#include "Window.h"
 #include <stb/stb_image.h>
 #include <SimpleMath.h>
-#include "OptionsHandler.h"
+#pragma warning(pop)
 
-#define CLUES 4
+constexpr int CLUES = 4;
 #define GUIHANDLER GUIHandler::instance
 
 class GUIHandler
