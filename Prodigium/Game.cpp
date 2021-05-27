@@ -51,7 +51,7 @@ void Game::HandleScenes(const float& deltaTime)
 {
 	if (this->zoomIn)
 	{
-		this->menu.ZoomIn({ 35.0f, -23.0f, 60.0f, 1.0f }, deltaTime, this->inGoal);
+		this->menu.ZoomIn({ 30.0f, -22.0f, 63.0f, 1.0f }, deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
@@ -592,6 +592,8 @@ void Game::LoadMainMenu()
 	EDITSCENE.GetMeshObject(SceneHandle()->EditScene().GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
 	
+	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
+
 	//Varde Ljus
 	LightStruct L;
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
