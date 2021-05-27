@@ -115,7 +115,7 @@ void Engine::Render()
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
-	this->blurPass.Render(0.1f, this->sceneHandler.EditScene().GetSSAOAccessView());
+	this->blurPass.Render(0.5f, this->sceneHandler.EditScene().GetSSAOAccessView());
 
 
 	//Bind only 1 render target, backbuffer
