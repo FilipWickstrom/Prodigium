@@ -269,13 +269,22 @@ void MeshObject::UpdateBoundingPlanes()
 	for (size_t i = 0; i < this->colliders.size(); i++)
 	{
 		this->colliders[i].planes[0].normal = Vector3::TransformNormal(this->colliders[i].planes[0].normal, this->modelMatrix);
+		this->colliders[i].planes[0].normal.y = 0.0f;
 		this->colliders[i].planes[0].normal.Normalize();
 		this->colliders[i].planes[1].normal = Vector3::TransformNormal(this->colliders[i].planes[1].normal, this->modelMatrix);
+		this->colliders[i].planes[1].normal.y = 0.0f;
 		this->colliders[i].planes[1].normal.Normalize();
 		this->colliders[i].planes[2].normal = Vector3::TransformNormal(this->colliders[i].planes[2].normal, this->modelMatrix);
+		this->colliders[i].planes[2].normal.y = 0.0f;
 		this->colliders[i].planes[2].normal.Normalize();
 		this->colliders[i].planes[3].normal = Vector3::TransformNormal(this->colliders[i].planes[3].normal, this->modelMatrix);
+		this->colliders[i].planes[3].normal.y = 0.0f;
 		this->colliders[i].planes[3].normal.Normalize();
+
+		this->colliders[i].planes[0].point = Vector3::Transform(this->colliders[i].planes[0].point, this->modelMatrix);
+		this->colliders[i].planes[1].point = Vector3::Transform(this->colliders[i].planes[1].point, this->modelMatrix);
+		this->colliders[i].planes[2].point = Vector3::Transform(this->colliders[i].planes[2].point, this->modelMatrix);
+		this->colliders[i].planes[3].point = Vector3::Transform(this->colliders[i].planes[3].point, this->modelMatrix);
 	}
 }
 

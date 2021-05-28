@@ -117,7 +117,6 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 {
 	if (AIHANDLER->monster)
 	{
-		Vector3 DirectionVec;
 		switch (AIHANDLER->states)
 		{
 		case EnemyStates::PATROL:
@@ -147,27 +146,30 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			break;
 		case EnemyStates::CHASE:
-			DirectionVec = (AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->getPosition());
-			if ((AIHANDLER->monster->getPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
+			if ((AIHANDLER->monster->GetPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
 			{
 				if (AIHANDLER->monster->CanAttack())
 				{
 					AIHANDLER->monster->PlayAttackAnimation();
-					AIHANDLER->monster->Attack(AIHANDLER->player);
-					std::cout << "Attacking\n";
+					//AIHANDLER->monster->Attack(AIHANDLER->player);
+					//std::cout << "Attacking\n";
 				}
 
 			}
 			else
 			{
-				AIHANDLER->monster->Move({ DirectionVec.x, DirectionVec.z }, deltaTime);
+				Vector3 targetRotation = AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->GetPosition();
+				targetRotation.Normalize();
+
+				AIHANDLER->monster->RotateTo(targetRotation);
+				AIHANDLER->monster->Chase(AIHANDLER->player->GetPlayerPos(), deltaTime);
 			}
 			if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 			{
 				AIHANDLER->states = EnemyStates::PATROL;
 				std::cout << "Switching to Patrol\n";
 				AIHANDLER->stateSwitchTime = omp_get_wtime();
-				AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->getPosition())->GetPos());
+				AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition())->GetPos());
 			}
 			break;
 		}

@@ -337,7 +337,7 @@ void Scene::RenderStaticObjects()
 		}
 	}
 #ifdef _DEBUG
-	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
+	//std::cout << "Active: " << this->staticObjects.size() << " Total: " << this->objects.size() << "\r";
 #endif
 }
 
