@@ -54,4 +54,5 @@ public:
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
 	bool inGame;
+	void Shutdown();
 };

@@ -19,6 +19,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 
 Engine::~Engine()
 {
+	this->Shutdown();
 	ResourceManager::Destroy();
 #ifdef _DEBUG
 	DebugInfo::Destroy();
@@ -193,6 +194,13 @@ void Engine::ToggleSSAO(bool toggle)
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
+}
+
+void Engine::Shutdown()
+{
+	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)

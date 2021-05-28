@@ -105,13 +105,15 @@ Scene::~Scene()
 	if (this->shadowHandler)
 		delete this->shadowHandler;
 	// Delete the allocated memory from vector.
-	for (int i = 0; i < (int)objects.size(); i++)
+	while (!this->objects.empty())
 	{
-		delete this->objects[i];
+		delete this->objects[(int)this->objects.size() - 1];
+		this->objects.pop_back();
 	}
-	for (int i = 0; i < (int)dynamicObjects.size(); i++)
+	while (!this->dynamicObjects.empty())
 	{
-		delete this->dynamicObjects[i];
+		delete this->dynamicObjects[(int)this->dynamicObjects.size() - 1];
+		this->dynamicObjects.pop_back();
 	}
 }
 

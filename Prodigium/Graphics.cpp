@@ -33,6 +33,7 @@ Graphics::~Graphics()
 		this->rasterState->Release();
 	if (this->swapChain)
 		this->swapChain->Release();
+	this->context->Flush();
 	if (this->context)
 		this->context->Release();
 	if (this->device)

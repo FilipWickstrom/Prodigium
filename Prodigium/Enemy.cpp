@@ -25,7 +25,6 @@ Enemy::Enemy()
 
 Enemy::~Enemy()
 {
-	delete this->model;
 }
 
 void Enemy::SetNewTarget(const Vector3& newPos)

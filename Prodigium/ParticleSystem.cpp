@@ -236,6 +236,7 @@ ParticleSystem::~ParticleSystem()
 		this->opacityView->Release();
 	if (this->sampler)
 		this->sampler->Release();
+
 }
 
 bool ParticleSystem::SetUp()
