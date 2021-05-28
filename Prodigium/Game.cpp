@@ -87,10 +87,18 @@ void Game::HandleScenes(const float& deltaTime)
 		this->soundHandler.PlayAmbient(1);
 		this->soundHandler.PlayMusic(0);
 	}
-	if (this->menu.IsInMenu() && this->hasLoaded)
+	if (this->menu.IsInMenu())
 	{
-		// Load menu
-		this->LoadMainMenu();
+		if (this->hasLoaded)
+		{
+			// Load menu
+			this->LoadMainMenu();
+		}
+		if (this->player != nullptr)
+		{
+			//Reset blur
+			this->player->SetBlurLevel(BlurLevel::NOBLUR);
+		}
 	}
 
 	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
