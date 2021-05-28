@@ -64,6 +64,7 @@ void ShadowHandler::ClearHistory()
 		this->lightInfoBuffer->Release();
 		this->lightInfoBuffer = nullptr;
 	}
+
 }
 
 bool ShadowHandler::SetupMapArray()
@@ -179,22 +180,22 @@ void ShadowHandler::Add(const LightStruct& L)
 
 ShadowHandler::~ShadowHandler()
 {
+	while (!this->shadows.empty())
+	{
+		delete this->shadows[(int)this->shadows.size() - 1];
+		this->shadows.pop_back();
+	}
 	if (this->arrayView)
 		this->arrayView->Release();
-	if (this->shadowMapArray)
-		this->shadowMapArray->Release();
 	if (this->lightArrayView)
 		this->lightArrayView->Release();
 	if (this->lightInfoBuffer)
 		this->lightInfoBuffer->Release();
 	if (this->vertexShader)
 		this->vertexShader->Release();
+	if (this->shadowMapArray)
+		this->shadowMapArray->Release();
 
-	for (int i = 0; i < (int)shadows.size(); i++)
-	{
-		if (this->shadows[i])
-			delete this->shadows[i];
-	}
 }
 
 ShadowMap& ShadowHandler::GetShadow(const int index)

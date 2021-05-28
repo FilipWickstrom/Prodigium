@@ -197,7 +197,7 @@ void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, Opt
 	ImGui_ImplDX11_RenderDrawData(GetDrawData());
 }
 
-void GUIHandler::Shutdown()
+void GUIHandler::Destroy()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -417,6 +417,8 @@ void GUIHandler::RenderBrainGUI(int health, int clues, OptionsHandler& options)
     std::string cl(std::to_string(clues));
     cl.append("/" + std::to_string(options.difficulty * 2));
     Text(cl.c_str());
+
+    delete isActive;
 
     End();
 }
