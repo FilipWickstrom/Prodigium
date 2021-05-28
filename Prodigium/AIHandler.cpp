@@ -299,10 +299,13 @@ void AIHandler::Remove()
 	{
 		AIHandler::instance->currentEnemyNode = nullptr;
 		AIHandler::instance->monster = nullptr;
-		AIHANDLER->path.clear();
 		AIHANDLER->states = EnemyStates::PATROL;
 		AIHANDLER->stateSwitchTime = 0.f;
-
+		while (!AIHandler::instance->allNodes.empty())
+		{
+			delete AIHandler::instance->allNodes[(int)AIHandler::instance->allNodes.size() - 1];
+			AIHandler::instance->allNodes.pop_back();
+		}
 	}
 	else
 	{

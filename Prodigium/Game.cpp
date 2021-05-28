@@ -574,7 +574,6 @@ void Game::ResetValues()
 void Game::LoadMainMenu()
 {
 	Engine::inGame = false;
-	AIHandler::Remove();
 	if (this->player)
 		delete this->player;
 
@@ -583,6 +582,7 @@ void Game::LoadMainMenu()
 
 	options.state = MAINMENU;
 	// Refresh the game to a clean slate.
+	AIHandler::Remove();
 	SceneHandler()->RemoveAllScenes();
 	SceneHandler()->AddScene();
 
