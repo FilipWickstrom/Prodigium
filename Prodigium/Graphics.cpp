@@ -21,8 +21,6 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
-	if (this->device)
-		this->device->Release();
 	if (this->context)
 		this->context->Release();
 	if (this->swapChain)
@@ -37,6 +35,8 @@ Graphics::~Graphics()
 		this->depthView->Release();
 	if (this->rasterState)
 		this->rasterState->Release();
+	if (this->device)
+		this->device->Release();
 }
 
 bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
