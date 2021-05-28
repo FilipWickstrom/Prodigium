@@ -103,6 +103,7 @@ private:
 	void UpdateBonesCBuffer();
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
+	void ClearTree(Bone& currentBone);
 	
 public:
 	AnimatedObject();

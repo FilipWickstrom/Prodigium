@@ -504,6 +504,19 @@ void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const Dir
 	}
 }
 
+void AnimatedObject::ClearTree(Bone& currentBone)
+{
+	for (int i = 0; i < currentBone.children.size(); i++)
+	{
+		if (!currentBone.children.empty())
+		{
+			ClearTree(currentBone.children[i]);
+			currentBone.children[i].children.clear();
+		}
+	}
+	currentBone.children.clear();
+}
+
 AnimatedObject::AnimatedObject()
 	:Resource(ResourceType::ANIMATEDOBJ)
 {
@@ -551,9 +564,17 @@ AnimatedObject::~AnimatedObject()
 			delete this->animationList[i];
 		}
 	}
+
+	this->vShaderByteCode.clear();
+	this->shadowVShaderByteCode.clear();
 	this->animationList.clear();	//Need to delete inside of it?
 	this->animStates.clear();
 	this->boneMap.clear();
+	this->meshPositions.clear();
+	this->boneNames.clear();
+
+	//Release everything in bone tree
+	ClearTree(this->rootBone);
 }
 
 bool AnimatedObject::Initialize(std::string animFolder)
