@@ -253,6 +253,8 @@ Game::~Game()
 	if (this->enemy && !this->menu.IsInMenu())
 		delete this->enemy;
 
+	SceneHandler()->RemoveAllScenes();
+
 	AIHandler::Remove();
 }
 
