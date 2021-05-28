@@ -32,8 +32,8 @@ Player::Player()
 	cameraForward.y += 9;
 	cameraForward.Normalize();
 	this->speed = 10.f;
-	this->sanity = 100.f;
-	this->health = 100;
+	this->maxSanity = 100;
+	this->sanity = this->maxSanity;
 	this->cluesCollected = 0;
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
@@ -50,6 +50,7 @@ Player::Player()
 	this->playerModel->UpdateBoundingBoxes();
 
 	this->moving = true;
+	this->currentBlurLevel = BlurLevel::NOBLUR;
 }
 
 Player::~Player()
@@ -99,35 +100,24 @@ void Player::Sprint()
 	this->speed = 35.0f;
 }
 
-void Player::SetSanity(const float& newSanity)
+void Player::SetSanity(const int& newSanity)
 {
 	this->sanity = newSanity;
 }
 
-void Player::IncreaseSanity(const float& amount)
+void Player::IncreaseSanity(const int& amount)
 {
-	this->sanity += amount;
+	this->sanity = std::min(this->sanity + amount, this->maxSanity);
 }
 
-const float& Player::GetSanity() const
+const int& Player::GetSanity() const
 {
 	return this->sanity;
 }
 
-void Player::SetHealth(const int& newHealth)
+const int& Player::GetMaxSanity() const
 {
-	this->health = newHealth;
-}
-
-void Player::IncreaseHealth(const int& amount)
-{
-	this->health = std::min(this->health + amount, 100);
-	this->sanity = this->health * 0.01f;
-}
-
-const int& Player::GetHealth() const
-{
-	return this->health;
+	return this->maxSanity;
 }
 
 void Player::SetCollectedClues(const int& newCollected)
@@ -227,4 +217,14 @@ void Player::SetMovement(bool toggle)
 bool Player::IsMoving()
 {
 	return this->moving;
+}
+
+const BlurLevel& Player::GetBlurLevel() const
+{
+	return this->currentBlurLevel;
+}
+
+void Player::SetBlurLevel(BlurLevel level)
+{
+	this->currentBlurLevel = level;
 }
