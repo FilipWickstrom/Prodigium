@@ -390,10 +390,12 @@ void AnimatedObject::LoadAnimations(std::string animFolder)
 
 	//Load in strafe animation
 	Animation* strafeAnim = new Animation();
-	if (strafeAnim->Load(strafeFile, this->boneMap, true, 40))
+	if (strafeAnim->Load(strafeFile, this->boneMap, true, 50))
 	{
-		this->allAnimations[AnimationState::LEFTSTRAFE] = strafeAnim;
-		this->allAnimations[AnimationState::RIGHTSTRAFE] = strafeAnim;
+		this->allAnimations[AnimationState::WALKLEFT] = strafeAnim;
+		this->allAnimations[AnimationState::RUNLEFT] = strafeAnim;
+		this->allAnimations[AnimationState::WALKRIGHT] = strafeAnim;
+		this->allAnimations[AnimationState::RUNRIGHT] = strafeAnim;
 	}
 
 	//Load in death animation
@@ -548,8 +550,6 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			{
 			case AnimationState::IDLE:
 			case AnimationState::IDLE2:
-			case AnimationState::LEFTSTRAFE:
-			case AnimationState::RIGHTSTRAFE:
 				this->allAnimations[previousState]->ResetCurrentTime();
 				break;
 			case AnimationState::DEAD:
@@ -578,11 +578,17 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			case AnimationState::RUNBACKWARD:
 				this->allAnimations[this->currentState]->SetAnimationSpeed(200);
 				break;
-			case AnimationState::LEFTSTRAFE:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(-40);
+			case AnimationState::WALKLEFT:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(-75);
 				break;
-			case AnimationState::RIGHTSTRAFE:
-				this->allAnimations[this->currentState]->SetAnimationSpeed(40);
+			case AnimationState::RUNLEFT:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(-110);
+				break;
+			case AnimationState::WALKRIGHT:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(75);
+				break;
+			case AnimationState::RUNRIGHT:
+				this->allAnimations[this->currentState]->SetAnimationSpeed(110);
 				break;
 			default:
 				break;
