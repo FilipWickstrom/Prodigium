@@ -25,6 +25,7 @@ Engine::~Engine()
 #endif
 	Graphics::Destroy();
 	GUIHandler::Shutdown();
+	InputHandler::Destroy();
 }
 
 void Engine::RedirectIoToConsole()
