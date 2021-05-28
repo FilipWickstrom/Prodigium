@@ -418,6 +418,8 @@ void GUIHandler::RenderBrainGUI(int health, int clues, OptionsHandler& options)
     cl.append("/" + std::to_string(options.difficulty * 2));
     Text(cl.c_str());
 
+    delete isActive;
+
     End();
 }
 
