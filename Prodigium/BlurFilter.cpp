@@ -112,7 +112,7 @@ BlurFilter::BlurFilter()
 	this->unorderedAccessView = nullptr;
 	this->settingsBuffer = nullptr;
 	this->blurSettings = {};
-	this->currentState = BlurState::NOBLUR;
+	this->screenBlurState = BlurState::NOBLUR;
 }
 
 BlurFilter::~BlurFilter()
@@ -146,20 +146,20 @@ bool BlurFilter::Initialize()
 	return true;
 }
 
-void BlurFilter::ChangeBlur(BlurState state, float sigma)
+void BlurFilter::ChangeScreenBlur(BlurState state, float sigma)
 {
-	if (this->currentState != state)
+	if (this->screenBlurState != state)
 	{
-		this->currentState = state;
+		this->screenBlurState = state;
 		GenerateGaussFilter((UINT)state, sigma);
 		UpdateBlurSettings();
 	}
 }
 
-void BlurFilter::Render()
+void BlurFilter::RenderScreenBlur()
 {
 	//Only render blur when needed
-	if (this->currentState != BlurState::NOBLUR)
+	if (this->screenBlurState != BlurState::NOBLUR)
 	{
 		//The render target view shall not be changed at this time
 		ID3D11RenderTargetView* nullRTV = nullptr;

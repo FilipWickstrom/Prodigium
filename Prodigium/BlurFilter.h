@@ -16,7 +16,7 @@ can see objects better than flat box blur.
 
 The filter is rendered in two passess
 like a cross instead of like a square. 
-Fastest way of doing it
+Much faster and saves alot of memory.
 
 Last update:
 	* More memory effective blur: 
@@ -37,7 +37,6 @@ class BlurFilter
 private:
 	ID3D11ComputeShader* computeShader;
 	ID3D11UnorderedAccessView* unorderedAccessView;		//Backbuffer
-	//Another unorderedAccessView that can be used for textures
 	ID3D11Buffer* settingsBuffer;
 
 	//CBuffer for the compute shader
@@ -49,10 +48,14 @@ private:
 		float weights[MAXWEIGHT];
 	} blurSettings;
 
-	BlurState currentState;
-	//BlurState lastState;		//do avoid calculating same if it's already been made
-	
-	//BlurState screenBlur; for the player
+	BlurState screenBlurState;
+	//Array of weights for screenBlur
+
+
+	//Stuff to render on an other surface
+	//BlurState otherState
+	//Other array of weights
+	//Another unorderedAccessView that can be used for textures
 
 private:
 	//Creating directx buffers and shaders
@@ -70,9 +73,8 @@ public:
 	~BlurFilter();
 
 	bool Initialize();
-	void ChangeBlur(BlurState state, float sigma = 0.0f);
-	//void ChangeBlur(float percentage);	//1.0f = 100% blur aka maxblur and 0.0f is no blur
-	void Render();
+	void ChangeScreenBlur(BlurState state, float sigma = 0.0f);
+	void RenderScreenBlur();
 
 	//void RenderUAV(uav, BlurState);
 };

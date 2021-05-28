@@ -150,14 +150,14 @@ void Engine::Render()
 	if (this->isPaused)
 	{
 		//More effective to change sigma to higher than adding more in radius
-		this->blurPass.ChangeBlur(BlurState::RAD4, 10.0f);
+		this->blurPass.ChangeScreenBlur(BlurState::RAD4, 10.0f);
 	}
 	else
 	{
-		this->blurPass.ChangeBlur(BlurState::NOBLUR);
+		this->blurPass.ChangeScreenBlur(BlurState::NOBLUR);
 	}
 
-	this->blurPass.Render();
+	this->blurPass.RenderScreenBlur();
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
