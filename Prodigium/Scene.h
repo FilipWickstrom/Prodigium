@@ -111,6 +111,7 @@ public:
 
 	// return the object at index
 	MeshObject& GetMeshObject(int index);
+	MeshObject& GetDynamicObject(int index);
 
 	const std::vector<MeshObject*>& GetAllMeshObjects();
 
@@ -156,6 +157,8 @@ public:
 	void SwitchMenuMode(bool sw = true);
 
 	void ClearCullingObjects();
+
+	int GetNrOfDynamicObjects() const;
 
 	std::unordered_map<std::uintptr_t, MeshObject*>& GetAllStaticObjects();
 };

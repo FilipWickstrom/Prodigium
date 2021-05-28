@@ -267,6 +267,11 @@ MeshObject& Scene::GetMeshObject(int index)
 	return *this->objects[index];
 }
 
+MeshObject& Scene::GetDynamicObject(int index)
+{
+	return *this->dynamicObjects[index];
+}
+
 const std::vector<MeshObject*>& Scene::GetAllMeshObjects()
 {
 	return this->objects;
@@ -331,10 +336,7 @@ void Scene::RenderStaticObjects()
 {
 	for (auto object : this->staticObjects)
 	{
-		if (object.second->IsVisible())
-		{
-			object.second->Render();
-		}
+		object.second->Render();
 	}
 #ifdef _DEBUG
 	//std::cout << "Active: " << toRender.size() << " Total: " << this->objects.size() << "\r";
@@ -347,7 +349,10 @@ void Scene::RenderDynamicObjects()
 	{
 		for (int i = 0; i < (int)this->dynamicObjects.size(); i++)
 		{
-			this->dynamicObjects[i]->Render();
+			if (this->dynamicObjects[i]->IsVisible())
+			{
+				this->dynamicObjects[i]->Render();
+			}
 		}
 	}
 }
@@ -475,6 +480,11 @@ void Scene::SwitchMenuMode(bool sw)
 void Scene::ClearCullingObjects()
 {
 	this->staticObjects.clear();
+}
+
+int Scene::GetNrOfDynamicObjects() const
+{
+	return (int)this->dynamicObjects.size();
 }
 
 std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllStaticObjects()
