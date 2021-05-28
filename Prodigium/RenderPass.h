@@ -17,6 +17,7 @@ public:
 	virtual bool Initialize() = 0;
 	virtual void Clear() = 0;
 	virtual void Prepare() = 0;
+	virtual void Destroy() = 0;
 };
 
 class LightPass : public RenderPass
@@ -53,6 +54,7 @@ public:
 	virtual bool Initialize() override;
 	virtual void Clear() override;
 	virtual void Prepare() override;
+	virtual void Destroy() override;
 };
 
 class GeometryPass :public RenderPass
@@ -84,6 +86,7 @@ public:
 	virtual void Clear() override;
 
 	virtual void Prepare() override;
+	virtual void Destroy() override;
 
 	ID3D11DepthStencilView*& GetDepthStencilView();
 };
