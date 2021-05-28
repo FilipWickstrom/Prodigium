@@ -297,6 +297,9 @@ void AIHandler::Remove()
 	{
 		AIHandler::instance->currentEnemyNode = nullptr;
 		AIHandler::instance->monster = nullptr;
+		AIHANDLER->path.clear();
+		AIHANDLER->states = EnemyStates::PATROL;
+		AIHANDLER->stateSwitchTime = 0.f;
 
 	}
 	else
