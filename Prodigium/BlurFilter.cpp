@@ -96,10 +96,14 @@ void BlurFilter::GenerateGaussFilter(BlurLevel level)
 		total *= 2;
 		total += this->blurSettings.weights[0];
 
-		//Normalize each value
-		for (UINT i = 0; i <= radius; i++)
+		//Avoid devide by zero
+		if (total >= 0)
 		{
-			this->blurSettings.weights[i] /= total;
+			//Normalize each value
+			for (UINT i = 0; i <= radius; i++)
+			{
+				this->blurSettings.weights[i] /= total;
+			}
 		}
 	}
 }
