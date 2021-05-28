@@ -21,10 +21,6 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
-	if (this->context)
-		this->context->Release();
-	if (this->swapChain)
-		this->swapChain->Release();
 	if (this->zBufferOn)
 		this->zBufferOn->Release();
 	if (this->zBufferOff)
@@ -35,6 +31,10 @@ Graphics::~Graphics()
 		this->depthView->Release();
 	if (this->rasterState)
 		this->rasterState->Release();
+	if (this->swapChain)
+		this->swapChain->Release();
+	if (this->context)
+		this->context->Release();
 	if (this->device)
 		this->device->Release();
 }

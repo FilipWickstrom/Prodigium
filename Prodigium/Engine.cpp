@@ -23,6 +23,9 @@ Engine::~Engine()
 #ifdef _DEBUG
 	DebugInfo::Destroy();
 #endif
+	this->gPass.Destroy();
+	this->lightPass.Destroy();
+	this->skyboxPass.Destroy();
 	Graphics::Destroy();
 	GUIHandler::Destroy();
 	InputHandler::Destroy();

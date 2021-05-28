@@ -300,26 +300,7 @@ SkyboxPass::SkyboxPass()
 
 SkyboxPass::~SkyboxPass()
 {
-	if (this->vertexBuffer)
-		this->vertexBuffer->Release();
-	if (this->indexBuffer)
-		this->indexBuffer->Release();
-	if (this->vertexShader)
-		this->vertexShader->Release();
-	if (this->pixelShader)
-		this->pixelShader->Release();
-	if (this->sampler)
-		this->sampler->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
-	if (this->combinedTextures)
-		this->combinedTextures->Release();
-	if (this->shaderResourceView)
-		this->shaderResourceView->Release();
-	if (this->noCullingRasterizer)
-		this->noCullingRasterizer->Release();
-	if (this->lessEqualState)
-		this->lessEqualState->Release();
+	
 }
 
 bool SkyboxPass::Initialize()
@@ -406,4 +387,28 @@ void SkyboxPass::Prepare()
 	Graphics::GetContext()->OMSetDepthStencilState(this->lessEqualState, 1);
 
 	Graphics::GetContext()->DrawIndexed(this->nrOfIndices, 0, 0);
+}
+
+void SkyboxPass::Destroy()
+{
+	if (this->vertexBuffer)
+		this->vertexBuffer->Release();
+	if (this->indexBuffer)
+		this->indexBuffer->Release();
+	if (this->vertexShader)
+		this->vertexShader->Release();
+	if (this->pixelShader)
+		this->pixelShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
+	if (this->inputLayout)
+		this->inputLayout->Release();
+	if (this->combinedTextures)
+		this->combinedTextures->Release();
+	if (this->shaderResourceView)
+		this->shaderResourceView->Release();
+	if (this->noCullingRasterizer)
+		this->noCullingRasterizer->Release();
+	if (this->lessEqualState)
+		this->lessEqualState->Release();
 }
