@@ -5,8 +5,6 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
-	this->playerHp = 100;
-	this->cluesCollected = 0;
 	this->stopcompl_timer = 0;
 	this->slowdown_timer = 0;
 #ifdef _DEBUG
@@ -21,12 +19,17 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 
 Engine::~Engine()
 {
+	this->Shutdown();
 	ResourceManager::Destroy();
 #ifdef _DEBUG
 	DebugInfo::Destroy();
 #endif
+	this->gPass.Destroy();
+	this->lightPass.Destroy();
+	this->skyboxPass.Destroy();
 	Graphics::Destroy();
-	GUIHandler::Shutdown();
+	GUIHandler::Destroy();
+	InputHandler::Destroy();
 }
 
 void Engine::RedirectIoToConsole()
@@ -67,12 +70,12 @@ void Engine::RedirectIoToConsole()
 		std::cerr.clear();
 		std::wcin.clear();
 		std::cin.clear();
-	
+
 		consoleOpen = true;
 	}
 }
 
-SceneHandler* Engine::SceneHandle()
+SceneHandler* Engine::SceneHandler()
 {
 	return &sceneHandler;
 }
@@ -82,10 +85,10 @@ void Engine::ClearDisplay()
 	Graphics::ClearDisplay();
 }
 
-void Engine::Render()
+void Engine::Render(Player* player)
 {
-	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
-	toRender->clear();
+	this->sceneHandler.EditScene().GetAllStaticObjects().clear();
+
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
@@ -95,10 +98,10 @@ void Engine::Render()
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
-		this->sceneHandler.Render(*toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, this->sceneHandler.EditScene().GetAllStaticObjects());
+		this->sceneHandler.RenderAllObjects();
 	}
-	 
+
 	// Shadow pass
 	if (!inGame)
 	{
@@ -106,17 +109,16 @@ void Engine::Render()
 	}
 	else
 	{
-		this->sceneHandler.RenderShadows(*toRender);
+		this->sceneHandler.RenderAllShadows();
 	}
 	this->gPass.Clear();
-
 
 	// SSAO PHASE
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
-	this->blurPass.Render(0.5f, this->sceneHandler.EditScene().GetSSAOAccessView());
-
+	this->blurPass.SetBlurLevel(BlurLevel::MEDIUM);
+	this->blurPass.Render(&this->sceneHandler.EditScene().GetSSAOAccessView());
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
@@ -129,10 +131,10 @@ void Engine::Render()
 #ifdef _DEBUG
 	if (inGame)
 	{
+		//DebugInfo::Prepare();
+		//ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
 		DebugInfo::Prepare();
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
-		DebugInfo::Prepare();
-		this->sceneHandler.RenderBoundingBoxes(*toRender);
+		this->sceneHandler.RenderAllBoundingBoxes();
 
 		DebugInfo::Clear();
 	}
@@ -148,49 +150,35 @@ void Engine::Render()
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (!this->isPaused && this->options.hasBlur && this->playerSanity != 1.0f)
+	//Do blur on screen if it is on and player exists
+	if (this->options.hasBlur && player)
 	{
-		//Render the blur depending on sanity
-		//1.0f is full sanity = no blur
-		//0.0f is no sanitiy = max blur
-		this->blurPass.Render(this->playerSanity);
-	}
-
-	if (this->isPaused)
-	{
-		this->blurPass.Render(0);
+		//Game is paused - then we use a high blur
+		if (this->isPaused)
+		{
+			//More effective to change sigma to higher than adding more in radius
+			this->blurPass.SetBlurLevel(BlurLevel::HELLAHIGH);
+		}
+		else
+		{
+			this->blurPass.SetBlurLevel(player->GetBlurLevel());
+		}
+		this->blurPass.Render();
 	}
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
-	GUIHandler::Render(this->playerHp, this->cluesCollected, this->stopcompl_timer, this->slowdown_timer, this->options);
+	if (player)
+	{
+		GUIHandler::Render(player->GetSanity(), player->GetCollectedClues(), this->stopcompl_timer, this->slowdown_timer, this->options);
+	}
+	else
+	{
+		GUIHandler::Render(0, 0, this->stopcompl_timer, this->slowdown_timer, this->options);
+	}
 
 	Graphics::GetSwapChain()->Present(0, 0);
 	Graphics::UnbindBackBuffer();
-}
-
-void Engine::Update(const float& deltaTime)
-{
-	// So we don't go over a certain value
-	this->playerHp = std::min(this->playerHp, 100);
-	this->cluesCollected = std::min(this->cluesCollected, (this->options.difficulty * 2));
-
-	// Update the sanity depending on the health.
-	this->playerSanity = this->playerHp * 0.01f;
-
-	if (this->slowdown_timer > 0.0f)
-	{
-		this->slowdown_timer -= 1.0f * deltaTime;
-		this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
-	}
-
-	if (this->stopcompl_timer > 0.0f)
-	{
-		this->stopcompl_timer -= 1.0f * deltaTime;
-		this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
-	}
-
-	
 }
 
 void Engine::OpenConsole()
@@ -206,6 +194,13 @@ void Engine::ToggleSSAO(bool toggle)
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
+}
+
+void Engine::Shutdown()
+{
+	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
@@ -253,15 +248,10 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	//Max blur radius is 5 for now
-	if (!this->blurPass.Initialize(5))
+	if (!this->blurPass.Initialize())
 	{
 		return false;
 	}
-	AIHandler::Initialize();
-
-	AIHandler::CreateNodes();
-	this->playerSanity = 1.0f;//REMOVE LATER: JUST FOR TESTING BLUR*** 
 
 	return true;
 }

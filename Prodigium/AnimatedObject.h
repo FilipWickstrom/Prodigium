@@ -24,7 +24,8 @@ enum class AnimationState
 	IDLE, IDLE2, 
 	WALKFORWARD, WALKBACKWARD, 
 	RUNFORWARD, RUNBACKWARD, 
-	LEFTSTRAFE, RIGHTSTRAFE, 
+	WALKLEFT, RUNLEFT,
+	WALKRIGHT, RUNRIGHT, 
 	DEAD, PICKUP
 };
 
@@ -70,7 +71,9 @@ private:
 	
 	//Handles which state we are on and what animation to use
 	AnimationState currentState;
-	std::unordered_map<AnimationState, Animation*> allAnimations;
+
+	std::vector<Animation*>animationList;
+	std::unordered_map<AnimationState, UINT> animStates;
 
 	//This setting will make the animation
 	//smoother but will cost some extra frames
@@ -100,6 +103,7 @@ private:
 	void UpdateBonesCBuffer();
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
+	void ClearTree(Bone& currentBone);
 	
 public:
 	AnimatedObject();

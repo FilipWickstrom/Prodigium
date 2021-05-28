@@ -26,25 +26,7 @@ GeometryPass::GeometryPass()
 
 GeometryPass::~GeometryPass()
 {
-	if (this->depthTexture)
-		this->depthTexture->Release();
-	if (this->depthStencilView)
-		this->depthStencilView->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
-	if (this->pShader)
-		this->pShader->Release();
-	if (this->vShader)
-		this->vShader->Release();
-	if (this->sampler)
-		this->sampler->Release();
-	for (int i = 0; i < BUFFER_COUNT; i++)
-	{
-		if (this->gBuffer.renderTargets[i])
-			this->gBuffer.renderTargets[i]->Release();
-		if (this->gBuffer.shaderResourceViews[i])
-			this->gBuffer.shaderResourceViews[i]->Release();
-	}
+	
 }
 
 void GeometryPass::ClearScreen()
@@ -323,6 +305,29 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 
+void GeometryPass::Destroy()
+{
+	if (this->depthTexture)
+		this->depthTexture->Release();
+	if (this->depthStencilView)
+		this->depthStencilView->Release();
+	if (this->inputLayout)
+		this->inputLayout->Release();
+	if (this->pShader)
+		this->pShader->Release();
+	if (this->vShader)
+		this->vShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (this->gBuffer.renderTargets[i])
+			this->gBuffer.renderTargets[i]->Release();
+		if (this->gBuffer.shaderResourceViews[i])
+			this->gBuffer.shaderResourceViews[i]->Release();
+	}
+}
+
 ID3D11DepthStencilView*& GeometryPass::GetDepthStencilView()
 {
 	return this->depthStencilView;
@@ -570,31 +575,7 @@ LightPass::LightPass()
 
 LightPass::~LightPass()
 {
-	if (this->iBuffer)
-		this->iBuffer->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
-	if (this->renderedImage)
-		this->renderedImage->Release();
-	if (this->renderTarget)
-		this->renderTarget->Release();
-	if (this->vBuffer)
-		this->vBuffer->Release();
-	if (this->vShader)
-		this->vShader->Release();
-	if (this->pShader)
-		this->pShader->Release();
-	if (this->sampler)
-		this->sampler->Release();
-	if (this->noDepth)
-		this->noDepth->Release();
-	if (this->turnOffSSAO)
-		this->turnOffSSAO->Release();
-	for (int i = 0; i < BUFFER_COUNT; i++)
-	{
-		if (this->shaderResources[i])
-			this->shaderResources[i]->Release();
-	}
+	
 }
 
 void LightPass::ToggleSSAO(bool toggle)
@@ -702,4 +683,33 @@ void LightPass::Prepare()
 	Graphics::GetContext()->PSSetConstantBuffers(5, 1, &this->turnOffSSAO);
 
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
+}
+
+void LightPass::Destroy()
+{
+	if (this->iBuffer)
+		this->iBuffer->Release();
+	if (this->inputLayout)
+		this->inputLayout->Release();
+	if (this->renderedImage)
+		this->renderedImage->Release();
+	if (this->renderTarget)
+		this->renderTarget->Release();
+	if (this->vBuffer)
+		this->vBuffer->Release();
+	if (this->vShader)
+		this->vShader->Release();
+	if (this->pShader)
+		this->pShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
+	if (this->noDepth)
+		this->noDepth->Release();
+	if (this->turnOffSSAO)
+		this->turnOffSSAO->Release();
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (this->shaderResources[i])
+			this->shaderResources[i]->Release();
+	}
 }

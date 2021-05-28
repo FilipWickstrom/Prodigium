@@ -12,10 +12,6 @@ InputHandler::InputHandler()
 }
 InputHandler::~InputHandler()
 {
-	if (InputHandler::instance)
-	{
-		delete InputHandler::instance;
-	}
 }
 
 const bool InputHandler::Initialize()
@@ -115,6 +111,13 @@ const bool InputHandler::IsMMBHeld()
 const bool InputHandler::IsRunning()
 {
 	return InputHandler::instance->isRunning;
+}
+void InputHandler::Destroy()
+{
+	if (InputHandler::instance)
+	{
+		delete InputHandler::instance;
+	}
 }
 void InputHandler::HandleMessages()
 {

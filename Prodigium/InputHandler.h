@@ -3,8 +3,8 @@
 #include "Graphics.h"
 #pragma warning(push, 0)
 #include <Keyboard.h>
-#pragma warning(pop)
 #include <Mouse.h>
+#pragma warning(pop)
 using namespace DirectX;
 class InputHandler
 {
@@ -42,6 +42,7 @@ public:
 	static const bool IsMMBPressed();
 	static const bool IsMMBHeld();
 	static const bool IsRunning();
+	static void Destroy();
 	static void HandleMessages();
 	static LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };

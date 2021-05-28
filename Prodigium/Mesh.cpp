@@ -55,8 +55,10 @@ Mesh::~Mesh()
 {
 	for (int i = 0; i < this->vertexBuffers.size(); i++)
 	{
-		this->vertexBuffers[i]->Release();
-		this->indexBuffers[i]->Release();
+		if (this->vertexBuffers[i])
+			this->vertexBuffers[i]->Release();
+		if (this->indexBuffers[i])
+			this->indexBuffers[i]->Release();
 	}
 	this->vertexBuffers.clear();
 	this->indexBuffers.clear();
