@@ -38,7 +38,7 @@ public:
 	const DirectX::SimpleMath::Vector3& GetPlayerPos();
 	MeshObject* GetMeshObject() const;
 
-	bool CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
+	void CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 
 	void SetMovement(bool toggle);
 	bool IsMoving();
