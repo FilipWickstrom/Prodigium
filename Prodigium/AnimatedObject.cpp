@@ -315,12 +315,16 @@ bool AnimatedObject::LoadRiggedMesh(std::string animFolder)
 				if (!CreateVertIndBuffers(vertices, indices, this->indexCount))
 				{
 					std::cout << "Failed to create vertex or indexbuffer..." << std::endl;
+					vertices.clear();
 					importer.FreeScene();
 					return false;
 				}
 
+				vertices.clear();
+
 				//Load our tree of bones from the scenes rootnode
 				LoadBoneTree(this->rootBone, scene->mRootNode, tempBoneMap);
+				tempBoneMap.clear();
 			}
 			else
 			{
