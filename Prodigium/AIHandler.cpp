@@ -151,7 +151,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 				if (AIHANDLER->monster->CanAttack())
 				{
 					AIHANDLER->monster->PlayAttackAnimation();
-					//AIHANDLER->monster->Attack(AIHANDLER->player);
+					AIHANDLER->monster->Attack(AIHANDLER->player);
 					//std::cout << "Attacking\n";
 				}
 
