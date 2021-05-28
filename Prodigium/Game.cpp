@@ -170,9 +170,10 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 		// Loops through all traps with monster
 		int index = 0;
-		for (int i = amountOfObjects; i < EDITSCENE.GetNumberOfObjects(); i++)
+		for (int i = 2; i < EDITSCENE.GetNrOfDynamicObjects(); i++)
 		{
-			if (EDITSCENE.GetMeshObject(1).GetDistance(EDITSCENE.GetMeshObject(i)) < 5.0f && EDITSCENE.GetMeshObject(i).IsVisible())
+			float dist;
+			if (dist = EDITSCENE.GetDynamicObject(1).GetDistance(EDITSCENE.GetDynamicObject(i)) < 15.0f && EDITSCENE.GetDynamicObject(i).IsVisible())
 			{
 				if (this->typeOfTrap[index] == 0)
 				{
@@ -182,7 +183,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 				{
 					this->enemy->SetSpeedFactor(0.1f);
 				}
-				EDITSCENE.GetMeshObject(i).SetVisible(false);
+				EDITSCENE.GetDynamicObject(i).SetVisible(false);
 			}
 			index++;
 		}
