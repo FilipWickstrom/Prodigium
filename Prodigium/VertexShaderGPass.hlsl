@@ -31,6 +31,7 @@ struct VertexShaderOutput
     float3 normalWS   : NORMAL;
     float4 tangent    : TANGENT;
     float4 specular   : SPECULAR;
+    float4 viewPosNorm : SSAO;
 };
 
 VertexShaderOutput main(VertexShaderInput input)
@@ -49,6 +50,11 @@ VertexShaderOutput main(VertexShaderInput input)
     
     // Last spot is for if it has normal map or not.
     output.tangent = float4(mul(input.tangent, (float3x3)world), hasNormalMap.x);
+    
+    float4 viewPos = mul(mul(float4(input.position, 1.0f), world), view);
+    float3 viewNormal = normalize(mul(input.normal, (float3x3) mul(world, view)));
+    output.viewPosNorm = float4(viewNormal.xyz, viewPos.z);
+
     
     output.specular = input.specular;
 

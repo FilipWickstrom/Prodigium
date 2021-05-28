@@ -181,3 +181,30 @@ void BlurFilter::RenderScreenBlur()
 		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
 }
+
+void BlurFilter::Render(float blurPercentage, ID3D11UnorderedAccessView& textureView)
+{
+	ID3D11UnorderedAccessView* view = &textureView;
+
+	//Only render blur when needed
+	if (this->useBlurFilter)
+	{
+		//The render target view shall not be changed at this time
+		ID3D11RenderTargetView* nullRTV = nullptr;
+		Graphics::GetContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
+
+		Graphics::GetContext()->CSSetShader(this->computeShader, nullptr, 0);
+		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &view, nullptr);
+		Graphics::GetContext()->CSSetConstantBuffers(5, 1, &this->settingsBuffer);
+
+		//Render in two steps. Use vertical first, then swap and do horizontal. 
+		//Like a cross, which gives better performance than a square 
+		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
+		SwapBlurDirection();
+		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
+
+		//Unbind the unordered access view
+		ID3D11UnorderedAccessView* nullUAV = nullptr;
+		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
+	}
+}

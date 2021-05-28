@@ -4,7 +4,6 @@
 #include "UsefulStructuresHeader.h"
 #include "Frustum.h"
 constexpr float ROTATION_SPEED = 4.f;
-constexpr float FULL_CIRCLE = 6.283185f;
 class CameraObject :
 	public GameObject
 {

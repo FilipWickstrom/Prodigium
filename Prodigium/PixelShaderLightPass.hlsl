@@ -2,7 +2,8 @@
 Texture2D G_positionWS   : register(t0);
 Texture2D G_colour       : register(t1);
 Texture2D G_normalWS     : register(t2);
-Texture2D G_specular     : register(t6);    //LATER FIX WITH ALIGNMENT
+Texture2D G_specular     : register(t7);    //LATER FIX WITH ALIGNMENT
+Texture2D ssaoMap : register(t6);
 SamplerState anisotropic : register(s0);
 
 
@@ -30,6 +31,11 @@ cbuffer Camera : register(b1)
     float4 fogColour;
     float fogStart;
     float fogRange;
+}
+
+cbuffer ssaoBuffer : register(b5)
+{
+    float4 ssaoInfo;
 }
 
 struct LightViewProj
@@ -246,6 +252,7 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
 float4 main(PixelShaderInput input) : SV_TARGET
 {
     GBuffers gbuffers = GetGBuffers(input.texCoord);
+    float4 ssao = ssaoMap.Sample(anisotropic, input.texCoord);
     
     float4 ambient = float4(0.04f, 0.04f, 0.04f, 0.02f) * gbuffers.diffuseColor;
     
@@ -259,7 +266,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     Do light calculations
     */
     float4 lightColor = float4(0.0f, 0.0, 0.0f, 0.0f);
-    float4 specular = float4(0.0f, 0.0, 0.0f, 0.0f);
+    float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
     
     for (int i = 1; i < info.x; i++)
@@ -283,7 +290,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
-    float4 finalColor = (saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular);
+    
+    float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular));
+    
+    if(ssaoInfo.x >= 1)
+    {
+        finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular)) * ssao;
+    }
     
     //FOG
     float3 toEye = camPos.xyz - gbuffers.positionWS.xyz;

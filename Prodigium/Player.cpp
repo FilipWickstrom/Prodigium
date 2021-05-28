@@ -24,7 +24,7 @@ void Player::RotatePlayer()
 
 Player::Player()
 {
-	this->playerModel = new MeshObject();
+	this->playerModel = new MeshObject;
 	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
 
 	Vector3 cameraOffset = { 0.0f, 7.5f, -20.f };
@@ -32,7 +32,9 @@ Player::Player()
 	cameraForward.y += 9;
 	cameraForward.Normalize();
 	this->speed = 10.f;
-
+	this->sanity = 100.f;
+	this->health = 100;
+	this->cluesCollected = 0;
 	this->playerModel->forward = { 0.0f, 0.0f, 1.0f };
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerCam = new CameraObject;
@@ -96,6 +98,57 @@ void Player::RotateCamera(const float& pitch, const float& yaw)
 void Player::Sprint()
 {
 	this->speed = 35.0f;
+}
+
+void Player::SetSanity(const float& newSanity)
+{
+	this->sanity = newSanity;
+}
+
+void Player::IncreaseSanity(const float& amount)
+{
+	this->sanity += amount;
+}
+
+const float& Player::GetSanity() const
+{
+	return this->sanity;
+}
+
+void Player::SetHealth(const int& newHealth)
+{
+	this->health = newHealth;
+}
+
+void Player::IncreaseHealth(const int& amount)
+{
+	this->health = std::min(this->health + amount, 100);
+	this->sanity = this->health * 0.01f;
+}
+
+const int& Player::GetHealth() const
+{
+	return this->health;
+}
+
+void Player::SetCollectedClues(const int& newCollected)
+{
+	this->cluesCollected = newCollected;
+}
+
+void Player::IncreaseCollectedClues()
+{
+	this->cluesCollected++;
+}
+
+const int& Player::GetCollectedClues() const
+{
+	return this->cluesCollected;
+}
+
+const float& Player::GetSpeed() const
+{
+	return this->speed;
 }
 
 void Player::Walk()

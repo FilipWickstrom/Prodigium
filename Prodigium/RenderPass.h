@@ -24,6 +24,7 @@ class LightPass : public RenderPass
 private:
 	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* iBuffer;
+	ID3D11Buffer* turnOffSSAO;
 	ID3D11InputLayout* inputLayout;
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
@@ -40,10 +41,13 @@ private:
 	bool CreateInputLayout();
 	bool CreateSamplerState();
 	bool CreateDepthStencilState();
+	bool CreateSSAOTurnOffBuffer();
 
 public:
 	LightPass();
 	virtual ~LightPass();
+
+	void ToggleSSAO(bool toggle);
 
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
@@ -73,6 +77,7 @@ public:
 	~GeometryPass();
 
 	void ClearScreen();
+	void BindSSAO();
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
 

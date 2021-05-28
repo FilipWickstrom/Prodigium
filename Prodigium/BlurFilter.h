@@ -77,4 +77,5 @@ public:
 	void RenderScreenBlur();
 
 	//void RenderUAV(uav, BlurState);
+	void Render(float blurPercentage, ID3D11UnorderedAccessView& textureView);
 };

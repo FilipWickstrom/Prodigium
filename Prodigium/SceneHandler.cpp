@@ -100,13 +100,22 @@ void SceneHandler::Render()
 	}
 }
 
-void SceneHandler::Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void SceneHandler::RenderAllObjects()
 {
 	if ((int)this->scenes.size() > 0)
 	{
-		this->scenes[this->currentScene]->Render(toRender);
+		this->scenes[this->currentScene]->RenderStaticObjects();
+		this->scenes[this->currentScene]->RenderDynamicObjects();
 	}
 }
+
+//void SceneHandler::RenderDynamicObjects()
+//{
+//	if ((int)this->scenes.size() > 0)
+//	{
+//		this->scenes[this->currentScene]->RenderDynamicObjects();
+//	}
+//}
 
 void SceneHandler::RenderLights()
 {
@@ -126,11 +135,12 @@ void SceneHandler::RenderShadows()
 	}
 }
 
-void SceneHandler::RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void SceneHandler::RenderAllShadows()
 {
 	if ((int)this->scenes.size() > 0)
 	{
-		this->scenes[this->currentScene]->RenderShadows(toRender);
+		this->scenes[this->currentScene]->RenderStaticShadows();
+		this->scenes[this->currentScene]->RenderDynamicShadows();
 	}
 }
 
@@ -143,11 +153,12 @@ void SceneHandler::RenderParticles()
 }
 
 #ifdef _DEBUG
-void SceneHandler::RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender)
+void SceneHandler::RenderAllBoundingBoxes()
 {
-	if((int)this->scenes.size() > 0)
+	if ((int)this->scenes.size() > 0)
 	{
-		this->scenes[this->currentScene]->RenderBoundingBoxes(toRender);
+		this->scenes[this->currentScene]->RenderDynamicBoundingBoxes();
+		this->scenes[this->currentScene]->RenderStaticBoundingBoxes();
 	}
 }
 #endif

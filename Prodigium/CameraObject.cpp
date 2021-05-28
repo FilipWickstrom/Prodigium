@@ -148,6 +148,7 @@ void CameraObject::Update()
 
 	Graphics::GetContext()->VSSetConstantBuffers(0, 1, &matrixBuffer);
 	Graphics::GetContext()->PSSetConstantBuffers(1, 1, &camPosBuffer);
+	Graphics::GetContext()->PSSetConstantBuffers(10, 1, &matrixBuffer);
 
 	// For particles geometry shader.
 	Graphics::GetContext()->GSSetConstantBuffers(0, 1, &matrixBuffer);
