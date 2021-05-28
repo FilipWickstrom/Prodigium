@@ -308,6 +308,7 @@ void Scene::RemoveAllObjects()
 		delete this->dynamicObjects[(int)this->dynamicObjects.size() - 1];
 		this->dynamicObjects.pop_back();
 	}
+
 }
 
 void Scene::Pop()

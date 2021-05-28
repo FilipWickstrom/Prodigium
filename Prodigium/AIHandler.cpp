@@ -63,7 +63,6 @@ const bool AIHandler::Initialize()
 
 AIHandler::~AIHandler()
 {
-
 }
 
 void AIHandler::CreateNodes()
@@ -306,9 +305,6 @@ void AIHandler::Remove()
 			delete AIHandler::instance->allNodes[(int)AIHandler::instance->allNodes.size() - 1];
 			AIHandler::instance->allNodes.pop_back();
 		}
-	}
-	else
-	{
-		std::cout << "Couldn't delete AIHandler\n";
+		delete AIHandler::instance;
 	}
 }
