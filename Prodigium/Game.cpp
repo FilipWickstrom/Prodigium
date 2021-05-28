@@ -385,13 +385,31 @@ void Game::HandleInput(const float& deltaTime)
 			//Sideways
 			if (InputHandler::IsKeyHeld(Keyboard::A))
 			{
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNLEFT);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKLEFT);
+				}
 				direction.y = -1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::LEFTSTRAFE);
 			}
 			else if (InputHandler::IsKeyHeld(Keyboard::D))
 			{
+				if (InputHandler::IsKeyHeld(Keyboard::LeftShift))
+				{
+					this->player->Sprint();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::RUNRIGHT);
+				}
+				else
+				{
+					this->player->Walk();
+					this->player->GetMeshObject()->ChangeAnimState(AnimationState::WALKRIGHT);
+				}
 				direction.y = 1.f;
-				this->player->GetMeshObject()->ChangeAnimState(AnimationState::RIGHTSTRAFE);
 			}
 
 			//Forward

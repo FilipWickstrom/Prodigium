@@ -336,7 +336,10 @@ void Scene::RenderStaticObjects()
 {
 	for (auto object : this->staticObjects)
 	{
-		object.second->Render();
+		if (object.second->IsVisible())
+		{
+			object.second->Render();
+		}
 	}
 #ifdef _DEBUG
 	//std::cout << "Active: " << this->staticObjects.size() << " Total: " << this->objects.size() << "\r";
