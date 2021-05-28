@@ -103,7 +103,7 @@ const bool Enemy::CanAttack() const
 void Enemy::Attack(Player* player)
 {
 	this->lastAttack = omp_get_wtime();
-	player->IncreaseHealth(-20);
+	player->IncreaseSanity(-20);
 }
 
 const DirectX::SimpleMath::Vector3& Enemy::getPosition() const

@@ -8,6 +8,7 @@ const double PI = 3.14159265359;
 const UINT MAXWEIGHT = 8;
 const UINT MAXRADIUS = MAXWEIGHT - 1;	//Bad for performance
 const UINT MINRADIUS = 1;
+const UINT BLURLEVELSIZE = 5;
 
 /*
 Guassian blur filter that makes everything
@@ -22,21 +23,25 @@ Last update:
 	* More memory effective blur: 
 		- less weights as constant buffer
 		- from 112 bytes to 48 bytes in cb
+	* Supports blur up to radius 7 but it
+	  cost some frames...
 */
 
-enum class BlurState
+enum class BlurLevel
 {
-	NOBLUR, RAD1, 
-	RAD2, RAD3, 
-	RAD4, RAD5, 
-	RAD6, RAD7
+	SUPERLOW,			//Rad: 1 sigma: 0.5f
+	LOW,				//Rad: 2 sigma: 2.0f
+	MEDIUM,				//Rad: 3 sigma: 5.0f
+	HIGH,				//Rad: 3 sigma: 10.0f
+	HELLAHIGH,			//Rad: 4 sigma: 10.0f
+	NOBLUR				
 };
 
 class BlurFilter
 {
 private:
 	ID3D11ComputeShader* computeShader;
-	ID3D11UnorderedAccessView* unorderedAccessView;		//Backbuffer
+	ID3D11UnorderedAccessView* unorderedAccessView;	//Backbuffer
 	ID3D11Buffer* settingsBuffer;
 
 	//CBuffer for the compute shader
@@ -45,17 +50,11 @@ private:
 		UINT blurRadius;
 		bool useVerticalBlur;
 		float padding[2];
-		float weights[MAXWEIGHT];
+		float weights[MAXWEIGHT] = {};
 	} blurSettings;
 
-	BlurState screenBlurState;
-	//Array of weights for screenBlur
-
-
-	//Stuff to render on an other surface
-	//BlurState otherState
-	//Other array of weights
-	//Another unorderedAccessView that can be used for textures
+	std::pair<UINT, float> blurLevels[BLURLEVELSIZE];
+	BlurLevel currentBlurLevel;
 
 private:
 	//Creating directx buffers and shaders
@@ -64,7 +63,8 @@ private:
 	bool CreateSettingsBuffer();
 	
 	//Help functions
-	void GenerateGaussFilter(UINT radius, float sigma = 0.0f);
+	void SetupBlurLevels();
+	void GenerateGaussFilter(BlurLevel level);
 	void UpdateBlurSettings();
 	void SwapBlurDirection();
 
@@ -73,9 +73,6 @@ public:
 	~BlurFilter();
 
 	bool Initialize();
-	void ChangeScreenBlur(BlurState state, float sigma = 0.0f);
-	void RenderScreenBlur();
-
-	//void RenderUAV(uav, BlurState);
-	void Render(float blurPercentage, ID3D11UnorderedAccessView& textureView);
+	void SetBlurLevel(BlurLevel level);
+	void Render(ID3D11UnorderedAccessView* uav = nullptr);
 };

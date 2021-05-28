@@ -42,7 +42,7 @@ bool BlurFilter::CreateSettingsBuffer()
 	desc.StructureByteStride = 0;
 
 	this->blurSettings.useVerticalBlur = true;
-	GenerateGaussFilter((UINT)BlurState::RAD1);
+	this->blurSettings.blurRadius = 0;
 
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = &this->blurSettings;
@@ -52,39 +52,55 @@ bool BlurFilter::CreateSettingsBuffer()
 	return !FAILED(Graphics::GetDevice()->CreateBuffer(&desc, &data, &this->settingsBuffer));
 }
 
-void BlurFilter::GenerateGaussFilter(UINT radius, float sigma)
+void BlurFilter::SetupBlurLevels()
 {
-	//Only acceptable to have radiuses in the range of min and max
-	if (radius > MAXRADIUS)
-		radius = MAXRADIUS;
-	else if (radius < MINRADIUS)
-		radius = MINRADIUS;
+	this->blurLevels[(UINT)BlurLevel::SUPERLOW] = std::pair<UINT, float>(1, 0.5f);
+	this->blurLevels[(UINT)BlurLevel::LOW] = std::pair<UINT, float>(2, 2.0f);
+	this->blurLevels[(UINT)BlurLevel::MEDIUM] = std::pair<UINT, float>(3, 5.0f);
+	this->blurLevels[(UINT)BlurLevel::HIGH] = std::pair<UINT, float>(3, 10.0f);
+	this->blurLevels[(UINT)BlurLevel::HELLAHIGH] = std::pair<UINT, float>(4, 10.0f);
+}
 
-	this->blurSettings.blurRadius = radius;
-
-	//If not sigma is picked we calculate it to fit with the curve
-	if (sigma == 0)
-		sigma = float(radius / 2.0f);
-
-	for (int x = 0; x <= (int)radius; x++)
+void BlurFilter::GenerateGaussFilter(BlurLevel level)
+{
+	UINT index = UINT(level);
+	if (index < BLURLEVELSIZE)
 	{
-		float weight = (float)(1.0f / sqrt(2 * PI * pow(sigma, 2)) * exp(-pow(x, 2) / (2 * pow(sigma, 2))));
-		this->blurSettings.weights[x] = weight;
-	}
+		UINT radius = this->blurLevels[index].first;
+		float sigma = this->blurLevels[index].second;
 
-	//Calculate the total sum
-	float total = 0.0f;
-	for (UINT i = 1; i <= radius; i++)
-	{
-		total += this->blurSettings.weights[i];
-	}
-	total *= 2;
-	total += this->blurSettings.weights[0];
+		//Only acceptable to have radiuses in the range of min and max
+		if (radius > MAXRADIUS)
+			radius = MAXRADIUS;
+		else if (radius < MINRADIUS)
+			radius = MINRADIUS;
 
-	//Normalize each value
-	for (UINT i = 0; i <= radius; i++)
-	{
-		this->blurSettings.weights[i] /= total;
+		this->blurSettings.blurRadius = radius;
+
+		//If not sigma is picked we calculate it to fit with the curve
+		if (sigma == 0)
+			sigma = float(radius / 2.0f);
+
+		for (int x = 0; x <= (int)radius; x++)
+		{
+			float weight = (float)(1.0f / sqrt(2 * PI * pow(sigma, 2)) * exp(-pow(x, 2) / (2 * pow(sigma, 2))));
+			this->blurSettings.weights[x] = weight;
+		}
+
+		//Calculate the total sum
+		float total = 0.0f;
+		for (UINT i = 1; i <= radius; i++)
+		{
+			total += this->blurSettings.weights[i];
+		}
+		total *= 2;
+		total += this->blurSettings.weights[0];
+
+		//Normalize each value
+		for (UINT i = 0; i <= radius; i++)
+		{
+			this->blurSettings.weights[i] /= total;
+		}
 	}
 }
 
@@ -112,7 +128,7 @@ BlurFilter::BlurFilter()
 	this->unorderedAccessView = nullptr;
 	this->settingsBuffer = nullptr;
 	this->blurSettings = {};
-	this->screenBlurState = BlurState::NOBLUR;
+	this->currentBlurLevel = BlurLevel::NOBLUR;
 }
 
 BlurFilter::~BlurFilter()
@@ -137,37 +153,47 @@ bool BlurFilter::Initialize()
 		std::cout << "Failed to create unordered accessview..." << std::endl;
 		return false;
 	}
+
+	SetupBlurLevels();
+
 	if (!CreateSettingsBuffer())
 	{
 		std::cout << "Failed to create cbuffer for blur filter..." << std::endl;
 		return false;
-	}
-	
+	}	
 	return true;
 }
 
-void BlurFilter::ChangeScreenBlur(BlurState state, float sigma)
+void BlurFilter::SetBlurLevel(BlurLevel level)
 {
-	if (this->screenBlurState != state)
+	if (this->currentBlurLevel != level)
 	{
-		this->screenBlurState = state;
-		GenerateGaussFilter((UINT)state, sigma);
-		UpdateBlurSettings();
+		this->currentBlurLevel = level;
+		//Does not have to calc blur if no blur and no need to update cbuffer
+		if (this->currentBlurLevel != BlurLevel::NOBLUR)
+		{
+			GenerateGaussFilter(level);
+			UpdateBlurSettings();
+		}
 	}
 }
 
-void BlurFilter::RenderScreenBlur()
+void BlurFilter::Render(ID3D11UnorderedAccessView* uav)
 {
 	//Only render blur when needed
-	if (this->screenBlurState != BlurState::NOBLUR)
+	if (this->currentBlurLevel != BlurLevel::NOBLUR)
 	{
 		//The render target view shall not be changed at this time
 		ID3D11RenderTargetView* nullRTV = nullptr;
 		Graphics::GetContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
-
 		Graphics::GetContext()->CSSetShader(this->computeShader, nullptr, 0);
-		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->unorderedAccessView, nullptr);
 		Graphics::GetContext()->CSSetConstantBuffers(5, 1, &this->settingsBuffer);
+
+		//Render to screen if none other has been set
+		if (uav == nullptr)
+			Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &this->unorderedAccessView, nullptr);
+		else 
+			Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &uav, nullptr);
 
 		//Render in two steps. Use vertical first, then swap and do horizontal. 
 		//Like a cross, which gives better performance than a square 
@@ -175,33 +201,6 @@ void BlurFilter::RenderScreenBlur()
 		SwapBlurDirection();
 		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
 		SwapBlurDirection();
-
-		//Unbind the unordered access view
-		ID3D11UnorderedAccessView* nullUAV = nullptr;
-		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
-	}
-}
-
-void BlurFilter::Render(float blurPercentage, ID3D11UnorderedAccessView& textureView)
-{
-	ID3D11UnorderedAccessView* view = &textureView;
-
-	//Only render blur when needed
-	if (this->useBlurFilter)
-	{
-		//The render target view shall not be changed at this time
-		ID3D11RenderTargetView* nullRTV = nullptr;
-		Graphics::GetContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
-
-		Graphics::GetContext()->CSSetShader(this->computeShader, nullptr, 0);
-		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &view, nullptr);
-		Graphics::GetContext()->CSSetConstantBuffers(5, 1, &this->settingsBuffer);
-
-		//Render in two steps. Use vertical first, then swap and do horizontal. 
-		//Like a cross, which gives better performance than a square 
-		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
-		SwapBlurDirection();
-		Graphics::GetContext()->Dispatch(Graphics::GetWindowWidth() / 8, Graphics::GetWindowHeight() / 8, 1);
 
 		//Unbind the unordered access view
 		ID3D11UnorderedAccessView* nullUAV = nullptr;
