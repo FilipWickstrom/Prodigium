@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "Game.h"
 #include <omp.h>
+#include <crtdbg.h>
 
 #pragma comment(lib, "Winmm.lib")
 
@@ -18,6 +19,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	winWidth = 1280;
 	winHeight = 1024;
 //#endif 
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	Game game(hInstance, winWidth, winHeight);
 	game.OnStart();
