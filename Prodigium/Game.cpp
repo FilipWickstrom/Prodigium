@@ -11,9 +11,9 @@ DirectX::SimpleMath::Vector2 direction(0.0f, 0.0f);
 
 void Game::Whisper()
 {
-	if (player->GetHealth() > 0)
+	if (player->GetSanity() > 0)
 	{
-		int whisperFactor = player->GetHealth() * 100;
+		int whisperFactor = player->GetSanity() * 100;
 		int shouldWhisper = rand() % whisperFactor;
 
 		if (shouldWhisper > 5 && shouldWhisper < 10)
@@ -87,10 +87,18 @@ void Game::HandleScenes(const float& deltaTime)
 		this->soundHandler.PlayAmbient(1);
 		this->soundHandler.PlayMusic(0);
 	}
-	if (this->menu.IsInMenu() && this->hasLoaded)
+	if (this->menu.IsInMenu())
 	{
-		// Load menu
-		this->LoadMainMenu();
+		if (this->hasLoaded)
+		{
+			// Load menu
+			this->LoadMainMenu();
+		}
+		if (this->player != nullptr)
+		{
+			//Reset blur
+			this->player->SetBlurLevel(BlurLevel::NOBLUR);
+		}
 	}
 
 	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
@@ -136,14 +144,38 @@ void Game::HandleGameLogic(const float& deltaTime)
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 		}
 
+		//Different things happen at level of sanity
+		int sanity = player->GetSanity();
+		int maxSanity = player->GetMaxSanity();
 
-		//When player is dead
-		if (player->GetHealth() <= 0)
+		//100% - 60%: noblur
+		if (sanity <= maxSanity && sanity > (maxSanity * 0.6f))
 		{
-			this->player->SetHealth(0);
+			this->player->SetBlurLevel(BlurLevel::NOBLUR);
+		}
+		//60% - 40%: easy blur
+		else if (sanity <= (maxSanity * 0.6f) && sanity > (maxSanity * 0.4f))
+		{
+			this->player->SetBlurLevel(BlurLevel::LOW);
+		}
+		//40% - 20%: medium blur
+		else if (sanity <= (maxSanity * 0.4f) && sanity > (maxSanity * 0.2f))
+		{
+			this->player->SetBlurLevel(BlurLevel::MEDIUM);
+		}
+		//20% - 0%: hard blur
+		else if (sanity <= (maxSanity * 0.2f) && sanity > 0)
+		{
+			this->player->SetBlurLevel(BlurLevel::HIGH);
+		}
+		//When player is dead
+		if (sanity <= 0)
+		{
+			this->player->SetSanity(0);
 			this->player->SetMovement(false);
 			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
 			this->soundHandler.PlayOneShot(0);
+			this->player->SetBlurLevel(BlurLevel::HELLAHIGH);
 		}
 
 		if (this->attackTimer > 0 && !this->isPaused)
@@ -324,15 +356,15 @@ void Game::HandleInput(const float& deltaTime)
 		/*------------------SANITY TESTING----------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::G))
 		{
-			this->player->IncreaseHealth(50);
+			this->player->SetSanity(0);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::H))
 		{
-			this->player->SetHealth(0);
+			this->player->SetSanity(50);
 		}
 		if (InputHandler::IsKeyPressed(Keyboard::J))
 		{
-			this->player->SetHealth(100);
+			this->player->SetSanity(100);
 		}
 		/*------------------SANITY TESTING----------------*/
 
@@ -439,7 +471,7 @@ void Game::HandleInput(const float& deltaTime)
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					this->player->IncreaseCollectedClues();
-					this->player->IncreaseHealth((int)(25 / (this->options.difficulty * 0.5)));
+					this->player->IncreaseSanity((int)(25 / (this->options.difficulty * 0.5)));
 				}
 			}
 		}
@@ -554,8 +586,7 @@ bool Game::OnStart()
 void Game::ResetValues()
 {
 	// Reset values
-	this->player->SetHealth(100);
-	this->player->SetSanity(1.f);
+	this->player->SetSanity(this->player->GetMaxSanity());
 	this->player->SetCollectedClues(0);
 	this->inGoal = false;
 	this->menu.Reset();
