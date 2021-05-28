@@ -155,7 +155,7 @@ MeshObject* Player::GetMeshObject() const
 	return this->playerModel;
 }
 
-bool Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
+void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
 {
 	for (auto object : objects)
 	{
@@ -205,8 +205,6 @@ bool Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 			}
 		}
 	}
-
-	return false;
 }
 
 void Player::SetMovement(bool toggle)
