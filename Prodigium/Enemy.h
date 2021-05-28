@@ -20,9 +20,10 @@ private:
 public:
 	Enemy();
 	virtual ~Enemy();
+	// Sets forward vector to point to the new targets position
 	void SetNewTarget(const DirectX::SimpleMath::Vector3& newPos);
-	void Chase(const DirectX::SimpleMath::Vector3& playerPos, const float& deltaTime);
-	void MoveToTarget(const float& deltaTime);
+	// Moves the enemy towards the forward vector
+	void Move(const float& deltaTime);
 	const float& GetAttackRange() const;
 	void PlayAttackAnimation();
 	const bool CanAttack() const;
@@ -32,6 +33,9 @@ public:
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
 	void SetSpeedFactor(float factor);
-	void RotateTo(const Vector3& targetDirection);
+	// Rotates the enemy towards the forward vector
+	void RotateTo(const float& deltaTime);
+	// Updates the enemy
+	void Update();
 };
 

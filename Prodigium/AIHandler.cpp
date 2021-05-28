@@ -135,7 +135,8 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			else
 			{
-				AIHANDLER->monster->MoveToTarget(deltaTime);
+				AIHANDLER->monster->RotateTo(deltaTime);
+				AIHANDLER->monster->Move(deltaTime);
 				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::CHASE;
@@ -146,6 +147,9 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			break;
 		case EnemyStates::CHASE:
+			AIHANDLER->monster->SetNewTarget(AIHANDLER->player->GetPlayerPos());
+			AIHANDLER->monster->RotateTo(deltaTime);
+
 			if ((AIHANDLER->monster->GetPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
 			{
 				if (AIHANDLER->monster->CanAttack())
@@ -158,11 +162,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			else
 			{
-				Vector3 targetRotation = AIHANDLER->player->GetPlayerPos() - AIHANDLER->monster->GetPosition();
-				targetRotation.Normalize();
-
-				AIHANDLER->monster->RotateTo(targetRotation);
-				AIHANDLER->monster->Chase(AIHANDLER->player->GetPlayerPos(), deltaTime);
+				AIHANDLER->monster->Move(deltaTime);
 			}
 			if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 			{
@@ -173,6 +173,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			break;
 		}
+		AIHANDLER->monster->Update();
 	}
 }
 

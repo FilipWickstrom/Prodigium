@@ -63,7 +63,7 @@ void Player::Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objec
 	{
 		this->Move(direction, deltaTime);
 	}
-	CheckCollision(objects, direction, deltaTime);
+	CheckCollision(objects, deltaTime);
 	Matrix transform = Matrix::CreateTranslation(this->playerModel->position);
 	this->playerCam->SetTransform(transform);
 	this->playerCam->Update();
@@ -165,14 +165,18 @@ MeshObject* Player::GetMeshObject() const
 	return this->playerModel;
 }
 
-void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const Vector2& direction, const float& deltaTime)
+void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const float& deltaTime)
 {
+	Vector3 direction = { 0.0f, 0.0f, 0.0f };
+	bool collided = false;
+
 	for (auto object : objects)
 	{
 		for (int i = 0; i < object.second->colliders.size(); i++)
 		{
 			if (this->playerModel->colliders[0].boundingBox.Intersects(object.second->colliders[i].boundingBox))
 			{
+				collided = true;
 				// Project the u vector onto the plane normal to get a length down to the player position
 				// Take that length - the halflength of current OBB to get the difference. 
 				// If the difference is positive and it's the smallest of all sides, we know the colliding plane
@@ -208,12 +212,15 @@ void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 						lastDistance = currentDistance;
 					}
 				}
-
-				this->playerModel->position += object.second->colliders[i].planes[index].normal * this->speed * deltaTime;
-				this->playerModel->UpdateMatrix();
-				this->playerModel->UpdateBoundingBoxes();
+				this->playerModel->position += object.second->colliders[i].planes[index].normal * this->speed * deltaTime;;
 			}
 		}
+	}
+
+	if (collided)
+	{
+		this->playerModel->UpdateMatrix();
+		this->playerModel->UpdateBoundingBoxes();
 	}
 }
 

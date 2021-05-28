@@ -36,61 +36,31 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->targetDir.y = 0.0f;
 	this->targetDir.Normalize();
 
-	float theta = asin(this->targetDir.x);
+	//float theta = asin(this->targetDir.x);
 
-	if (this->targetDir.z > 0.0f)
-	{
-		if (this->targetDir.x > 0.0f)
-		{
-			theta = XM_PI - theta;
-		}
-		else
-		{
-			theta = -XM_PI - theta;
-		}
-	}
+	//if (this->targetDir.z > 0.0f)
+	//{
+	//	if (this->targetDir.x > 0.0f)
+	//	{
+	//		theta = XM_PI - theta;
+	//	}
+	//	else
+	//	{
+	//		theta = -XM_PI - theta;
+	//	}
+	//}
 
-	this->angle = -theta;
+	//this->angle = -theta;
 }
 
-void Enemy::Chase(const DirectX::SimpleMath::Vector3& playerPos, const float& deltaTime)
+void Enemy::Move(const float& deltaTime)
 {
-	const float ROTATION_SPEED = 5.f;
-
 	// Update speed factor.
 	this->speedDegradeCooldown = std::max(this->speedDegradeCooldown, 0.0f);
 	if (this->speedDegradeCooldown > 0)
 		this->speedDegradeCooldown -= 1 * deltaTime;
 	if (this->speedDegradeCooldown < 0)
 		this->speedFactor = 1.0f;
-
-	this->model->forward = playerPos - this->model->position;
-	this->model->forward.Normalize();
-
-	Quaternion q2 = Quaternion::CreateFromAxisAngle(this->model->up, this->angle);
-	this->model->qRotation = Quaternion::Slerp(this->model->qRotation, q2, ROTATION_SPEED * deltaTime);
-
-	this->model->position += this->model->forward * this->speed * this->speedFactor * deltaTime;
-	this->model->UpdateByQuaternion(this->model->qRotation);
-	this->model->UpdateBoundingBoxes();
-}
-
-void Enemy::MoveToTarget(const float& deltaTime)
-{
-	const float ROTATION_SPEED = 5.f;
-
-	// Update speed factor.
-	this->speedDegradeCooldown = std::max(this->speedDegradeCooldown, 0.0f);
-	if (this->speedDegradeCooldown > 0)
-		this->speedDegradeCooldown -= 1 * deltaTime;
-	if (this->speedDegradeCooldown < 0)
-		this->speedFactor = 1.0f;
-
-	this->model->forward = Vector3::Lerp(this->model->forward, this->targetDir, this->speed * deltaTime);
-	this->model->forward.Normalize();
-
-	Quaternion q2 = Quaternion::CreateFromAxisAngle(this->model->up, this->angle);
-	this->model->qRotation = Quaternion::Slerp(this->model->qRotation, q2, ROTATION_SPEED * deltaTime);
 
 	this->model->position += this->model->forward * this->speed * this->speedFactor * deltaTime;
 
@@ -98,9 +68,6 @@ void Enemy::MoveToTarget(const float& deltaTime)
 	{
 		reachedTarget = true;
 	}
-
-	this->model->UpdateByQuaternion(this->model->qRotation);
-	this->model->UpdateBoundingBoxes();
 }
 
 const float& Enemy::GetAttackRange() const
@@ -157,29 +124,35 @@ void Enemy::SetSpeedFactor(float factor)
 	}
 }
 
-void Enemy::RotateTo(const Vector3& targetDirection)
+void Enemy::RotateTo(const float& deltaTime)
 {
-	float theta = asin(targetDirection.x);
+	const float ROTATION_SPEED = 5.f;
 
-	if (targetDirection.z > 0.0f)
+	this->model->forward = this->targetDir;
+	this->model->forward.Normalize();
+
+	float theta = asin(this->model->forward.x);
+
+	if (this->model->forward.z > 0.0f)
 	{
-		if (targetDirection.x > 0.0f)
+		if (this->model->forward.x > 0.0f)
 		{
 			theta = XM_PI - theta;
 		}
 		else
 		{
-			theta = (-XM_PI - theta);
-			theta += XM_2PI;
-		}
-	}
-	else
-	{
-		if (targetDirection.x < 0.0f)
-		{
-			theta += XM_2PI;
+			theta = -XM_PI - theta;
 		}
 	}
 
 	this->angle = -theta;
+
+	Quaternion q2 = Quaternion::CreateFromAxisAngle(this->model->up, this->angle);
+	this->model->qRotation = Quaternion::Slerp(this->model->qRotation, q2, ROTATION_SPEED * deltaTime);
+}
+
+void Enemy::Update()
+{
+	this->model->UpdateByQuaternion(this->model->qRotation);
+	this->model->UpdateBoundingBoxes();
 }
