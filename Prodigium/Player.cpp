@@ -56,6 +56,7 @@ Player::Player()
 Player::~Player()
 {
 	ResourceManager::RemoveCamera("PlayerCam");
+	delete this->playerModel;
 }
 
 void Player::Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime)
