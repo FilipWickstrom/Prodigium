@@ -24,7 +24,7 @@ Engine::~Engine()
 	DebugInfo::Destroy();
 #endif
 	Graphics::Destroy();
-	GUIHandler::Shutdown();
+	GUIHandler::Destroy();
 	InputHandler::Destroy();
 }
 

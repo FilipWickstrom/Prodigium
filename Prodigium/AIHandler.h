@@ -39,6 +39,7 @@ public:
 	static void ConnectNodes(Node* node1, Node* node2);
 	static void MoveEnemy(const float& deltaTime);
 	static Node* GetNodeByID(const int& id);
-	static void Remove();
+	static void Reset();
+	static void Destroy();
 };
 

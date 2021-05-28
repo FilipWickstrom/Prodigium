@@ -255,7 +255,7 @@ Game::~Game()
 
 	SceneHandler()->RemoveAllScenes();
 
-	AIHandler::Remove();
+	AIHandler::Reset();
 }
 
 const bool Game::IsRunning() const
@@ -633,7 +633,7 @@ void Game::LoadMainMenu()
 
 	options.state = MAINMENU;
 	// Refresh the game to a clean slate.
-	AIHandler::Remove();
+	AIHandler::Reset();
 	SceneHandler()->RemoveAllScenes();
 	SceneHandler()->AddScene();
 

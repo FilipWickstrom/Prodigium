@@ -13,6 +13,7 @@ Node::Node()
 Node::~Node()
 {
 	this->connectedNodes.clear();
+	this->parent = nullptr;
 }
 
 void Node::Initialize(const DirectX::SimpleMath::Vector3& pos, const int& id)

@@ -197,7 +197,7 @@ void GUIHandler::Render(int health, int clues, float& timer1, float& timer2, Opt
 	ImGui_ImplDX11_RenderDrawData(GetDrawData());
 }
 
-void GUIHandler::Shutdown()
+void GUIHandler::Destroy()
 {
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
