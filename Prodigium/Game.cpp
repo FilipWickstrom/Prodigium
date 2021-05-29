@@ -37,7 +37,7 @@ void Game::MonsterSounds(const float& deltaTime)
 	if (this->monsterSoundTimer <= 0)
 	{
 		int index = rand() % 4;
-		this->monsterSoundTimer = rand()% 10 + 5;
+		this->monsterSoundTimer = (float)(rand()% 10 + 5);
 		this->soundHandler.PlayMonsterSounds(index);
 	}
 	else
