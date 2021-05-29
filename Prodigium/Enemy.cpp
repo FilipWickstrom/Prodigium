@@ -16,6 +16,7 @@ Enemy::Enemy()
 	this->model->up.Normalize();
 	this->angle = 0.0f;
 	this->speedFactor = 1.0f;
+	this->defaultSpeedFactor = 1.f;
 	this->speedDegradeCooldown = 0;
 	this->model->qRotation = Quaternion::Identity;
 
@@ -122,6 +123,21 @@ void Enemy::SetSpeedFactor(float factor)
 		this->speedFactor = factor;
 		this->speedDegradeCooldown = 5.0f;
 	}
+}
+
+void Enemy::StopMovement()
+{
+	this->speedFactor = 0.f;
+}
+
+void Enemy::ResetSpeed()
+{
+	this->speedFactor = defaultSpeedFactor;
+}
+
+const float& Enemy::GetSpeedFactor() const
+{
+	return this->speedFactor;
 }
 
 void Enemy::RotateTo(const float& deltaTime)
