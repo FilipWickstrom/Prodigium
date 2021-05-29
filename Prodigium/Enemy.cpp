@@ -78,6 +78,7 @@ const float& Enemy::GetAttackRange() const
 
 void Enemy::PlayAttackAnimation()
 {
+	this->model->ChangeAnimState(AnimationState::ATTACK);
 }
 
 const bool Enemy::CanAttack() const
