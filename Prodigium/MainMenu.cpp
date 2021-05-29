@@ -64,6 +64,9 @@ MainMenu::~MainMenu()
 
 	if (this->eyeBuffer)
 		this->eyeBuffer->Release();
+
+	this->viewBuffer = nullptr;
+	this->eyeBuffer = nullptr;
 }
 
 const bool MainMenu::IsInMenu() const

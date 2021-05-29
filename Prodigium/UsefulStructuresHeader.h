@@ -3,7 +3,7 @@
 #include <SimpleMath.h>
 enum class EnemyStates
 {
-	PATROL,CHASE,RETREAT
+	PATROL,CHASE
 };
 constexpr int BUFFER_COUNT = 5;
 constexpr float FULL_CIRCLE = 6.283185f;

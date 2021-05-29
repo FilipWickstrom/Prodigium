@@ -16,6 +16,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
+
 	for (auto it = this->textures.begin(); it != this->textures.end(); it++)
 	{
 		if (it->second)

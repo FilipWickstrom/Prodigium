@@ -228,6 +228,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->running = true;
 	this->isPaused = false;
 	this->player = nullptr;
+	this->enemy = nullptr;
 	this->hasLoaded = false;
 	this->zoomIn = false;
 	this->inGoal = false;
@@ -487,7 +488,7 @@ void Game::HandleInput(const float& deltaTime)
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
 					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
 					this->player->IncreaseCollectedClues();
-					this->player->IncreaseSanity((int)(25 / (this->options.difficulty * 0.5)));
+					this->player->IncreaseSanity((int)(25 / (1 * 0.5)));
 				}
 			}
 		}

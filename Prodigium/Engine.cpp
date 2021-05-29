@@ -202,6 +202,34 @@ void Engine::Shutdown()
 	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
+
+	ID3D11RenderTargetView* cleanTargets[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT] = { nullptr };
+	ID3D11ShaderResourceView* cleanShader = { nullptr };
+	ID3D11Buffer* cleanBuffer = { nullptr };
+	ID3D11VertexShader* vertexNull = nullptr;
+	ID3D11PixelShader* pixelNull = nullptr;
+	ID3D11GeometryShader* geoNull = nullptr;
+	ID3D11InputLayout* inputNull = nullptr;
+	ID3D11ComputeShader* computeNull = nullptr;
+	ID3D11UnorderedAccessView* unacNull = nullptr;
+	Graphics::GetContext()->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, cleanTargets, nullptr);
+	for (int i = 0; i < 8; i++)
+	{
+		Graphics::GetContext()->PSSetShaderResources(i, 1, &cleanShader);
+		Graphics::GetContext()->VSSetShaderResources(i, 1, &cleanShader);
+		Graphics::GetContext()->VSSetConstantBuffers(i, 1, &cleanBuffer);
+		Graphics::GetContext()->GSSetConstantBuffers(i, 1, &cleanBuffer);
+		Graphics::GetContext()->PSSetConstantBuffers(i, 1, &cleanBuffer);
+		Graphics::GetContext()->CSSetConstantBuffers(i, 1, &cleanBuffer);
+		Graphics::GetContext()->CSSetUnorderedAccessViews(i, 1, &unacNull, nullptr);
+	}
+	Graphics::GetContext()->GSSetShader(geoNull, nullptr, 0);
+	Graphics::GetContext()->CSSetShader(computeNull, nullptr, 0);
+	Graphics::GetContext()->HSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->DSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->PSSetShader(pixelNull, nullptr, 0);
+	Graphics::GetContext()->VSSetShader(vertexNull, nullptr, 0);
+	Graphics::GetContext()->IASetInputLayout(inputNull);
 }
 
 void Engine::Blur(const BlurLevel& amount)

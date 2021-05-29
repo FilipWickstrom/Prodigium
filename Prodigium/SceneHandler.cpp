@@ -7,10 +7,10 @@ SceneHandler::SceneHandler()
 
 SceneHandler::~SceneHandler()
 {
-	for (int i = 0; i < (int)this->scenes.size(); i++)
+	while (!this->scenes.empty())
 	{
-		if(this->scenes[i])
-			delete this->scenes[i];
+		delete this->scenes[(unsigned int)this->scenes.size() - 1];
+		scenes.pop_back();
 	}
 }
 
@@ -75,7 +75,7 @@ const int SceneHandler::GetNrOfScenes() const
 
 void SceneHandler::RemoveAllScenes()
 {
-	for (int i = 0; i < (int)scenes.size(); i++)
+	while(!this->scenes.empty())
 	{
 		delete this->scenes[(unsigned int)this->scenes.size() - 1];
 		scenes.pop_back();
