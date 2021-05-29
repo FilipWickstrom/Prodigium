@@ -5,7 +5,7 @@
 #include "GUIHandler.h"
 #include "Resource.h"
 
-const UINT MAXBONES = 25;
+constexpr UINT MAXBONES = 25;
 
 /*
 Load in a model with bones, ".fbx" supported for now
@@ -26,7 +26,8 @@ enum class AnimationState
 	RUNFORWARD, RUNBACKWARD, 
 	WALKLEFT, RUNLEFT,
 	WALKRIGHT, RUNRIGHT, 
-	DEAD, PICKUP
+	DEAD, PICKUP,
+	ATTACK
 };
 
 class AnimatedObject : public Resource 

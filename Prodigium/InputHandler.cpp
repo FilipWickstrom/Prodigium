@@ -12,6 +12,7 @@ InputHandler::InputHandler()
 }
 InputHandler::~InputHandler()
 {
+
 }
 
 const bool InputHandler::Initialize()

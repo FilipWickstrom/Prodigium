@@ -41,7 +41,7 @@ AIHandler::AIHandler()
 	states = EnemyStates::PATROL;
 	this->monster = nullptr;
 	this->player = nullptr;
-	this->chaseEnabled = true;
+	this->chaseEnabled = false;
 	this->stateSwitchTime = 0.f;
 	this->nrOfAstar = 0;
 }
@@ -85,8 +85,7 @@ void AIHandler::CreateNodes()
 			std::stringstream ss(file.at(currentIndex));
 			int ID = 0;
 			float posX = 0, posZ = 0;
-			int cost = 0;
-			ss >> ID >> posX >> posZ >> cost;
+			ss >> ID >> posX >> posZ;
 			Node* currentNode = new Node();
 			currentNode->Initialize({ posX, -3.f, posZ }, ID);
 			AIHANDLER->allNodes.push_back(currentNode);
@@ -132,6 +131,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 				{
 					AIHANDLER->currentEnemyNode = AIHANDLER->path.at(0);
 					AIHANDLER->monster->SetNewTarget(AIHANDLER->path.at(0)->GetPos());
+					std::cout << "Going to ID: " << AIHANDLER->path.at(0)->GetID() << std::endl;
 					AIHANDLER->path.erase(AIHANDLER->path.begin());
 				}
 				else
@@ -247,10 +247,22 @@ void AIHandler::AStarSearch()
 	openList.push_back(startingNode);
 	startingNode->SetFGH(0.f, 0.f, 0.f);
 	startingNode->SetParent(startingNode);
-	while (goalNode == AIHANDLER->currentEnemyNode)
+	switch (AIHANDLER->nrOfAstar)
 	{
-		goalNode = AIHANDLER->GetRandomNode();
+	case 0:
+		goalNode = AIHANDLER->GetNodeByID(33);
+		break;
+	case 1:
+		goalNode = AIHANDLER->GetNodeByID(31);
+		break;
+	default:
+		while (goalNode == AIHANDLER->currentEnemyNode)
+		{
+			goalNode = AIHANDLER->GetRandomNode();
+		}
+		break;
 	}
+
 	std::cout << "Destination: " << goalNode->GetID() << std::endl;;
 	Node* nodeToAdd = nullptr;
 	int index = 0;
@@ -332,7 +344,7 @@ void AIHandler::AStarSearch()
 		AIHANDLER->allNodes.at(i)->ResetFGH();
 		AIHANDLER->allNodes.at(i)->ResetParent();
 	}
-
+	AIHANDLER->nrOfAstar++;
 }
 void AIHandler::TracePath(Node* src, Node* dst)
 {
