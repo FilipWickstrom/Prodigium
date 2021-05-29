@@ -1,17 +1,19 @@
 #pragma once
 #include "MeshObject.h"
 #include "CameraObject.h"
+#include "BlurFilter.h"
 
 class Player
 {
 private:
-	float sanity; // Blur
-	int health; // Health
+	int sanity;
+	int maxSanity;
 	int cluesCollected; // clues
 	float speed;
 	CameraObject* playerCam;
 	MeshObject* playerModel;
 	bool moving;
+	BlurLevel currentBlurLevel;
 
 private:
 	void RotatePlayer();
@@ -24,22 +26,31 @@ public:
 	void Move(DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
 	void RotateCamera(const float& pitch, const float& yaw);
 	void Sprint();
-	void SetSanity(const float& newSanity);
-	void IncreaseSanity(const float& amount);
-	const float& GetSanity() const;
-	void SetHealth(const int& newHealth);
-	void IncreaseHealth(const int& amount);
-	const int& GetHealth() const;
+
+	//Sanity
+	void SetSanity(const int& newSanity);
+	void IncreaseSanity(const int& amount);
+	const int& GetSanity() const;
+	const int& GetMaxSanity() const;
+
+	//Clues
 	void SetCollectedClues(const int& newCollected);
 	void IncreaseCollectedClues();
 	const int& GetCollectedClues() const;
+	
+	//Movement
 	const float& GetSpeed() const;
 	void Walk();
+
 	const DirectX::SimpleMath::Vector3& GetPlayerPos();
 	MeshObject* GetMeshObject() const;
 
-	bool CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
+	void CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const float& deltaTime);
 
 	void SetMovement(bool toggle);
 	bool IsMoving();
+
+	const BlurLevel& GetBlurLevel() const;
+	void SetBlurLevel(BlurLevel level);
+
 };
