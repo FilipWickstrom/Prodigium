@@ -124,7 +124,7 @@ void Game::HandleScenes(const float& deltaTime)
 		this->menu.Switch(true);
 		this->ResetValues();
 		GUIHandler::ShowMainMenu(true);
-		GUIHandler::ShowGameGUI(false);		
+		GUIHandler::ShowGameGUI(false);
 	}
 }
 
@@ -134,7 +134,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	if (this->hasLoaded)
 	{
 		this->options.gameTimer += 1 * deltaTime;
-		
+
 		player->Update(EDITSCENE.GetAllStaticObjects(), direction, deltaTime);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
@@ -219,7 +219,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
-	}	
+	}
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
@@ -324,7 +324,7 @@ void Game::HandleInput(const float& deltaTime)
 	}
 
 	// You collected all clues! You are WIN!!
-	if ( this->player && this->player->GetCollectedClues() >= (this->options.difficulty * 2))
+	if (this->player && this->player->GetCollectedClues() >= (this->options.difficulty * 2))
 	{
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
@@ -447,10 +447,10 @@ void Game::HandleInput(const float& deltaTime)
 			}
 
 			//When any of movementkeys is released go back to idle animation
-			else if (InputHandler::IsKeyReleased(Keyboard::W) || 
-					 InputHandler::IsKeyReleased(Keyboard::S) ||
-					 InputHandler::IsKeyReleased(Keyboard::A) ||
-					 InputHandler::IsKeyReleased(Keyboard::D) )
+			else if (InputHandler::IsKeyReleased(Keyboard::W) ||
+				InputHandler::IsKeyReleased(Keyboard::S) ||
+				InputHandler::IsKeyReleased(Keyboard::A) ||
+				InputHandler::IsKeyReleased(Keyboard::D))
 			{
 				//Randomize idle state
 				AnimationState state;
@@ -480,6 +480,19 @@ void Game::HandleInput(const float& deltaTime)
 #endif
 		}
 		/*------Animation settings for player------*/
+
+
+		/*------AI Handling------*/
+#ifdef _DEBUG
+		if (InputHandler::IsKeyPressed(Keyboard::Y))
+		{
+			AIHandler::ToggleEnemySpeed();
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::U))
+		{
+			AIHandler::ToggleChase();
+		}
+#endif
 
 		if (InputHandler::IsLMBPressed())
 		{
@@ -616,7 +629,7 @@ void Game::ResetValues()
 	this->options.gameTimer = 0;
 	this->attackTimer = 0;
 	this->monsterSoundTimer = 0;
-	
+
 	this->soundHandler.SetPitch(0.0f);
 	this->soundHandler.PlayMusic(1);
 	this->soundHandler.PlayAmbient(1);
@@ -642,18 +655,18 @@ void Game::LoadMainMenu()
 	EDITSCENE.Add("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
 
 	//Static objects
-	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, {1.5f, 1.5f, 1.5f});
-	EDITSCENE.Add("clue_toy.obj", "toy_albedo.png", "", false, false, {-22.0f, -30.0f, 80.0f}, {0.0f, 0.78f, 0.0f}, {0.5f, 0.5f, 0.5f});
-	EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, {-30.0f, -3.0f, 80.0f}, {-0.52f, 3.14f, 0.0f}, {1.0f, 1.0f, 1.0f});
-	EDITSCENE.Add("clue_book.obj", "book_albedo.png", "", false, false, {42.0f, -22.0f, 58.0f}, {0.0f, 2.35f, 0.0f}, {0.5f, 0.5f, 0.5f});
-	EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, {44.0f, -22.0f, 58.0f}, {1.9f, 0.0f, 0.0f}, {1.5f, 1.5f, 1.5f});
-	EDITSCENE.Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, {0.5f, 0.5f, 0.5f});
+	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+	EDITSCENE.Add("clue_toy.obj", "toy_albedo.png", "", false, false, { -22.0f, -30.0f, 80.0f }, { 0.0f, 0.78f, 0.0f }, { 0.5f, 0.5f, 0.5f });
+	EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, { -30.0f, -3.0f, 80.0f }, { -0.52f, 3.14f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+	EDITSCENE.Add("clue_book.obj", "book_albedo.png", "", false, false, { 42.0f, -22.0f, 58.0f }, { 0.0f, 2.35f, 0.0f }, { 0.5f, 0.5f, 0.5f });
+	EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, { 44.0f, -22.0f, 58.0f }, { 1.9f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+	EDITSCENE.Add("text_prodigium.obj", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 
 	//Animated Objects
-	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35.0f, -24.0f, 70.0f }, {0.0f, 1.57f, 0.0f}, {2.0f, 2.0f, 2.0f});
+	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
-	
+
 	EDITSCENE.Add("geo_bedroom.obj", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
 
 	//Varde Ljus
@@ -679,7 +692,7 @@ void Game::LoadMap()
 	options.state = INGAME;
 
 	SceneHandler()->AddScene();
-	
+
 	//Add player with the standard idle animation from start
 	this->player = new Player();
 	Engine::EDITSCENE.AddDynamicObject(this->player->GetMeshObject());
