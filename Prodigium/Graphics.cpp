@@ -21,23 +21,6 @@ Graphics::Graphics()
 
 Graphics::~Graphics()
 {
-	if (this->zBufferOn)
-		this->zBufferOn->Release();
-	if (this->zBufferOff)
-		this->zBufferOff->Release();
-	if (this->backBufferView)
-		this->backBufferView->Release();
-	if (this->depthView)
-		this->depthView->Release();
-	if (this->rasterState)
-		this->rasterState->Release();
-	if (this->swapChain)
-		this->swapChain->Release();
-	this->context->Flush();
-	if (this->context)
-		this->context->Release();
-	if (this->device)
-		this->device->Release();
 }
 
 bool Graphics::CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight)
@@ -154,7 +137,8 @@ bool Graphics::CreateBackBuffer()
 {
 	HRESULT hr;
 
-	ID3D11Texture2D* tempTexture = ResourceManager::GetTexture("FinalImage");
+	ID3D11Texture2D* tempTexture;
+
 	if (FAILED(Graphics::GetSwapChain()->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTexture))))
 	{
 		return false;
@@ -217,6 +201,24 @@ void Graphics::Destroy()
 {
 	if (Graphics::instance)
 	{
+		if (Graphics::instance->zBufferOn)
+			Graphics::instance->zBufferOn->Release();
+		if (Graphics::instance->zBufferOff)
+			Graphics::instance->zBufferOff->Release();
+		if (Graphics::instance->backBufferView)
+			Graphics::instance->backBufferView->Release();
+		if (Graphics::instance->depthView)
+			Graphics::instance->depthView->Release();
+		if (Graphics::instance->rasterState)
+			Graphics::instance->rasterState->Release();
+		if (Graphics::instance->swapChain)
+			Graphics::instance->swapChain->Release();
+		Graphics::instance->context->Flush();
+		if (Graphics::instance->context)
+			Graphics::instance->context->Release();
+		if (Graphics::instance->device)
+			Graphics::instance->device->Release();
+
 		delete Graphics::instance;
 	}
 }

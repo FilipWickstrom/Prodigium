@@ -15,7 +15,6 @@ private:
 		QuadNode* childs[CHILD_COUNT];
 
 		QuadNode();
-
 	};
 
 	// Recursive call to add into Quadtree

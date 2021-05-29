@@ -1,7 +1,7 @@
 #include "Engine.h"
 #include <omp.h>
 
-Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
+Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
@@ -10,7 +10,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 #ifdef _DEBUG
 	OpenConsole();
 #endif 
-	if (!this->StartUp(instance, width, height, enemy))
+	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
@@ -20,16 +20,17 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 Engine::~Engine()
 {
 	this->Shutdown();
-	ResourceManager::Destroy();
 #ifdef _DEBUG
 	DebugInfo::Destroy();
 #endif
 	this->gPass.Destroy();
 	this->lightPass.Destroy();
 	this->skyboxPass.Destroy();
+	this->blurPass.Destroy();
 	Graphics::Destroy();
 	GUIHandler::Destroy();
 	InputHandler::Destroy();
+	ResourceManager::Destroy();
 }
 
 void Engine::RedirectIoToConsole()
@@ -203,7 +204,12 @@ void Engine::Shutdown()
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
 }
 
-bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
+void Engine::Blur(const BlurLevel& amount)
+{
+	this->blurPass.SetBlurLevel(amount);
+}
+
+bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	if (!InputHandler::Initialize())
 	{

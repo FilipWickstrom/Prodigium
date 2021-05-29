@@ -105,16 +105,18 @@ Scene::~Scene()
 	if (this->shadowHandler)
 		delete this->shadowHandler;
 	// Delete the allocated memory from vector.
-	while (!this->objects.empty())
+	for (int i = 0; i < (int)this->objects.size(); i++)
 	{
-		delete this->objects[(int)this->objects.size() - 1];
-		this->objects.pop_back();
+		delete this->objects[i];
 	}
-	while (!this->dynamicObjects.empty())
+	this->objects.clear();
+
+	for (int i = 0; i < (int)this->dynamicObjects.size(); i++)
 	{
-		delete this->dynamicObjects[(int)this->dynamicObjects.size() - 1];
-		this->dynamicObjects.pop_back();
+		delete this->dynamicObjects[i];
 	}
+	this->dynamicObjects.clear();
+	this->staticObjects.clear();
 }
 
 void Scene::Add(const std::string& objFile,

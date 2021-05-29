@@ -30,19 +30,19 @@ protected:
 
 private:
 	Window window;
+	BlurFilter blurPass;
 	GeometryPass gPass;
 	LightPass lightPass;
 	SkyboxPass skyboxPass;
-	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
-	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
+	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
-	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
+	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	virtual ~Engine();
 
 	SceneHandler* SceneHandler();
@@ -55,4 +55,5 @@ public:
 	virtual bool OnStart() = 0;
 	bool inGame;
 	void Shutdown();
+	void Blur(const BlurLevel& amount);
 };

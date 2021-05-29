@@ -89,7 +89,7 @@ CODE
 /*
 
  MISSION STATEMENT
- =================
+ =================bool *
 
  - Easy to use to create code-driven and data-driven tools.
  - Easy to use to create ad hoc short-lived tools and long-lived, more elaborate tools.

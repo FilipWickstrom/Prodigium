@@ -52,5 +52,4 @@ public:
 
 	const BlurLevel& GetBlurLevel() const;
 	void SetBlurLevel(BlurLevel level);
-
 };

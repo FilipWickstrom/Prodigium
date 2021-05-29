@@ -64,7 +64,6 @@ void ShadowHandler::ClearHistory()
 		this->lightInfoBuffer->Release();
 		this->lightInfoBuffer = nullptr;
 	}
-
 }
 
 bool ShadowHandler::SetupMapArray()
@@ -195,7 +194,6 @@ ShadowHandler::~ShadowHandler()
 		this->vertexShader->Release();
 	if (this->shadowMapArray)
 		this->shadowMapArray->Release();
-
 }
 
 ShadowMap& ShadowHandler::GetShadow(const int index)

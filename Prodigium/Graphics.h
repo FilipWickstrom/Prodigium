@@ -17,7 +17,7 @@ private:
 	ID3D11DeviceContext* context;
 	IDXGISwapChain* swapChain;
 	ID3D11RenderTargetView* backBufferView;
-	ID3D11DepthStencilView* depthView;
+	ID3D11DepthStencilView* depthView;		//Not in use for now
 	ID3D11DepthStencilState* zBufferOn;		//Not in use for now
 	ID3D11DepthStencilState* zBufferOff;	//Not in use for now
 	ID3D11RasterizerState* rasterState;		//Not in use for now

@@ -20,7 +20,7 @@ GeometryPass::GeometryPass()
 	{
 		this->gBuffer.renderTargets[i] = nullptr;
 		this->gBuffer.shaderResourceViews[i] = nullptr;
-		this->gBuffer.textures[i] = new Texture();
+		this->gBuffer.textures[i];
 	}
 }
 
@@ -77,16 +77,17 @@ bool GeometryPass::CreateGBuffer()
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
-		gBuffer.textures[i]->GetTexture2DAddr() = ResourceManager::GetTexture(std::string(std::to_string(i)));
+		std::string key = std::to_string(i);
+		gBuffer.textures[i] = ResourceManager::GetTexture(key, true);
 
-		hr = Graphics::GetDevice()->CreateRenderTargetView(gBuffer.textures[i]->GetTexture2D(), &renderTargetDesc, &gBuffer.renderTargets[i]);
+		hr = Graphics::GetDevice()->CreateRenderTargetView(gBuffer.textures[i], &renderTargetDesc, &gBuffer.renderTargets[i]);
 
 		if (FAILED(hr))
 		{
 			return false;
 		}
 
-		hr = Graphics::GetDevice()->CreateShaderResourceView(gBuffer.textures[i]->GetTexture2D(), &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
+		hr = Graphics::GetDevice()->CreateShaderResourceView(gBuffer.textures[i], &shaderResourceDesc, &gBuffer.shaderResourceViews[i]);
 
 		if (FAILED(hr))
 		{
@@ -399,9 +400,12 @@ bool LightPass::CreateShaderResources()
 	shaderResourceDesc.Texture2D.MipLevels = 1;
 	shaderResourceDesc.Texture2D.MostDetailedMip = 0;
 
+	std::string key;
+
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
-		hr = Graphics::GetDevice()->CreateShaderResourceView(ResourceManager::GetTexture(std::string(std::to_string(i))), &shaderResourceDesc, &shaderResources[i]);
+		key = std::to_string(i);
+		hr = Graphics::GetDevice()->CreateShaderResourceView(ResourceManager::GetTexture(key), &shaderResourceDesc, &shaderResources[i]);
 
 		if (FAILED(hr))
 		{
@@ -558,7 +562,6 @@ LightPass::LightPass()
 {
 	this->iBuffer = nullptr;
 	this->inputLayout = nullptr;
-	this->pShader = nullptr;
 	this->renderedImage = nullptr;
 	this->renderTarget = nullptr;
 	this->turnOffSSAO = nullptr;
@@ -707,6 +710,7 @@ void LightPass::Destroy()
 		this->noDepth->Release();
 	if (this->turnOffSSAO)
 		this->turnOffSSAO->Release();
+
 	for (int i = 0; i < BUFFER_COUNT; i++)
 	{
 		if (this->shaderResources[i])

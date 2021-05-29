@@ -24,6 +24,7 @@ ResourceManager::~ResourceManager()
 		}
 	}
 	this->textures.clear();
+
 	for (auto it = this->meshes.begin(); it != this->meshes.end(); it++)
 	{
 		if (it->second)
@@ -32,6 +33,7 @@ ResourceManager::~ResourceManager()
 		}
 	}
 	this->meshes.clear();
+
 	for (auto it = this->audio.begin(); it != this->audio.end(); it++)
 	{
 		if (it->second)
@@ -49,7 +51,6 @@ ResourceManager::~ResourceManager()
 		}
 	}
 	this->animatedObjects.clear();
-
 }
 
 void ResourceManager::Initialize()
@@ -57,22 +58,6 @@ void ResourceManager::Initialize()
 	if (!ResourceManager::instance)
 	{
 		ResourceManager::instance = new ResourceManager();
-		Texture* gBufferTextures[BUFFER_COUNT];
-		Texture* lightImage = new Texture();
-		std::string key = "";
-
-		for (int i = 0; i < BUFFER_COUNT; i++)
-		{
-			key = std::string(std::to_string(i));
-			gBufferTextures[i] = new Texture();
-			gBufferTextures[i]->Initialize(key);
-			ResourceManager::instance->textures.emplace(key, gBufferTextures[i]);
-			ResourceManager::instance->referenceCount++;
-		}
-		key = "FinalImage";
-		lightImage->Initialize(key);
-		ResourceManager::instance->textures.emplace(key, lightImage);
-		ResourceManager::instance->referenceCount++;
 	}
 	else
 	{
@@ -80,9 +65,9 @@ void ResourceManager::Initialize()
 	}
 }
 
-ID3D11Texture2D* ResourceManager::GetTexture(const std::string& key)
+ID3D11Texture2D* ResourceManager::GetTexture(const std::string& key, bool isGBufferTexture)
 {
-	ID3D11Texture2D* rv = instance->GetTextureInternal(key);
+	ID3D11Texture2D* rv = instance->GetTextureInternal(key, isGBufferTexture);
 
 	if (rv == nullptr)
 	{
@@ -132,7 +117,7 @@ void ResourceManager::AddResource(std::string key, Resource* resource)
 	this->referenceCount++;
 }
 
-ID3D11Texture2D* ResourceManager::GetTextureInternal(const std::string& key)
+ID3D11Texture2D* ResourceManager::GetTextureInternal(const std::string& key, bool isGBufferTexture)
 {
 	auto found = instance->textures.find(key);
 
@@ -140,25 +125,43 @@ ID3D11Texture2D* ResourceManager::GetTextureInternal(const std::string& key)
 	{
 		Texture* texture = new Texture();
 
-		int width;
-		int height;
-		int comp;
-
-		unsigned char* image = stbi_load(key.c_str(), &width, &height, &comp, STBI_rgb_alpha);
-
-		D3D11_SUBRESOURCE_DATA data = {};
-		data.pSysMem = (void*)image;
-
-		// Distances in bytes of one line beginning to the next line = width * channels(RGBA)
-		data.SysMemPitch = static_cast<UINT>(width * 4);
-		// Used in 3D textures, default to 0
-		data.SysMemSlicePitch = 0;
-
-		if (!texture->Initialize(key, width, height, &data))
+		if (!isGBufferTexture)
 		{
-			delete texture;
-			
-			return nullptr;
+			int width;
+			int height;
+			int comp;
+
+			unsigned char* image = stbi_load(key.c_str(), &width, &height, &comp, STBI_rgb_alpha);
+
+			if (!image)
+			{
+				return nullptr;
+			}
+
+			D3D11_SUBRESOURCE_DATA data = {};
+			data.pSysMem = (void*)image;
+
+			// Distances in bytes of one line beginning to the next line = width * channels(RGBA)
+			data.SysMemPitch = static_cast<UINT>(width * 4);
+			// Used in 3D textures, default to 0
+			data.SysMemSlicePitch = 0;
+
+			if (!texture->Initialize(key, width, height, &data))
+			{
+				delete texture;
+
+				return nullptr;
+			}
+			stbi_image_free(image);
+		}
+		else
+		{
+			if (!texture->Initialize(key))
+			{
+				delete texture;
+
+				return nullptr;
+			}
 		}
 
 		AddResource(key, texture);
@@ -218,7 +221,7 @@ const UINT ResourceManager::GetReferenceCount()
 
 void ResourceManager::Destroy()
 {
-	if (ResourceManager::instance)
+	if (ResourceManager::instance != nullptr)
 	{
 		delete ResourceManager::instance;
 	}
