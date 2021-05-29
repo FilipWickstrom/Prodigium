@@ -6,7 +6,7 @@ class Enemy
 {
 private:
 	MeshObject* model;
-	float speed;
+	float speed, defaultSpeedFactor;
 	float speedFactor;
 	float attackRange;
 	float speedDegradeCooldown;
@@ -33,6 +33,9 @@ public:
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
 	void SetSpeedFactor(float factor);
+	void StopMovement();
+	void ResetSpeed();
+	const float& GetSpeedFactor() const;
 	// Rotates the enemy towards the forward vector
 	void RotateTo(const float& deltaTime);
 	// Updates the enemy

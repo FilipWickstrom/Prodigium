@@ -21,12 +21,12 @@ private:
 	Enemy* monster;
 	Player* player;
 	int nrOfAstar;
+	bool chaseEnabled;
 	double stateSwitchTime;
 	static AIHandler* instance;
 	static std::vector<std::string> OpenFile(std::string filePath);
 	AIHandler();
 	virtual ~AIHandler();
-	static std::vector<std::string> openFile(const std::string& filePath);
 	Node* GetRandomNode();
 	Node* FindClosestNode(const DirectX::SimpleMath::Vector3& position);
 	static void AStarSearch();
@@ -39,6 +39,9 @@ public:
 	static void ConnectNodes(Node* node1, Node* node2);
 	static void MoveEnemy(const float& deltaTime);
 	static Node* GetNodeByID(const int& id);
+	static const bool& IsChaseEnabled();
+	static void ToggleChase();
+	static void ToggleEnemySpeed();
 	static void Reset();
 	static void Destroy();
 };
