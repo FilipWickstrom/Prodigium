@@ -215,3 +215,8 @@ void BlurFilter::Destroy()
 	if (this->settingsBuffer)
 		this->settingsBuffer->Release();
 }
+
+BlurLevel BlurFilter::GetBlurLevel() const
+{
+	return this->currentBlurLevel;
+}

@@ -76,4 +76,5 @@ public:
 	void SetBlurLevel(BlurLevel level);
 	void Render(ID3D11UnorderedAccessView* uav = nullptr);
 	void Destroy();
+	BlurLevel GetBlurLevel()const;
 };

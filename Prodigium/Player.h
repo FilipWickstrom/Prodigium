@@ -13,7 +13,6 @@ private:
 	CameraObject* playerCam;
 	MeshObject* playerModel;
 	bool moving;
-	BlurLevel currentBlurLevel;
 
 private:
 	void RotatePlayer();
@@ -49,7 +48,4 @@ public:
 
 	void SetMovement(bool toggle);
 	bool IsMoving();
-
-	const BlurLevel& GetBlurLevel() const;
-	void SetBlurLevel(BlurLevel level);
 };

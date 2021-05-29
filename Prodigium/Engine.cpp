@@ -118,8 +118,10 @@ void Engine::Render(Player* player)
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
+	BlurLevel current = this->blurPass.GetBlurLevel();
 	this->blurPass.SetBlurLevel(BlurLevel::MEDIUM);
 	this->blurPass.Render(&this->sceneHandler.EditScene().GetSSAOAccessView());
+	this->blurPass.SetBlurLevel(current);
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
@@ -152,18 +154,8 @@ void Engine::Render(Player* player)
 	this->skyboxPass.Clear();
 
 	//Do blur on screen if it is on and player exists
-	if (this->options.hasBlur && player)
+	if (this->options.hasBlur)
 	{
-		//Game is paused - then we use a high blur
-		if (this->isPaused)
-		{
-			//More effective to change sigma to higher than adding more in radius
-			this->blurPass.SetBlurLevel(BlurLevel::HELLAHIGH);
-		}
-		else
-		{
-			this->blurPass.SetBlurLevel(player->GetBlurLevel());
-		}
 		this->blurPass.Render();
 	}
 

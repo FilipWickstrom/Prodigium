@@ -134,47 +134,46 @@ void Game::HandleGameLogic(const float& deltaTime)
 			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
 			BulletTime(); //Slows down all sounds if you're near the enemy
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
-		}
 
 		//Different things happen at level of sanity
-		int sanity = player->GetSanity();
-		int maxSanity = player->GetMaxSanity();
+			int sanity = player->GetSanity();
+			int maxSanity = player->GetMaxSanity();
 
-		//100% - 60%: noblur
-		if (sanity <= maxSanity && sanity > (maxSanity * 0.6f))
-		{
-			this->player->SetBlurLevel(BlurLevel::NOBLUR);
-		}
-		//60% - 40%: easy blur
-		else if (sanity <= (maxSanity * 0.6f) && sanity > (maxSanity * 0.4f))
-		{
-			this->player->SetBlurLevel(BlurLevel::LOW);
-		}
-		//40% - 20%: medium blur
-		else if (sanity <= (maxSanity * 0.4f) && sanity > (maxSanity * 0.2f))
-		{
-			this->player->SetBlurLevel(BlurLevel::MEDIUM);
-		}
-		//20% - 0%: hard blur
-		else if (sanity <= (maxSanity * 0.2f) && sanity > 0)
-		{
-			this->player->SetBlurLevel(BlurLevel::HIGH);
-		}
-		//When player is dead
-		if (sanity <= 0)
-		{
-			this->player->SetSanity(0);
-			this->player->SetMovement(false);
-			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
-			this->soundHandler.PlayOneShot(0);
-			this->player->SetBlurLevel(BlurLevel::HELLAHIGH);
-		}
+			//100% - 60%: noblur
+			if (sanity <= maxSanity && sanity > (maxSanity * 0.6f))
+			{
+				Engine::Blur(BlurLevel::NOBLUR);
+			}
+			//60% - 40%: easy blur
+			else if (sanity <= (maxSanity * 0.6f) && sanity > (maxSanity * 0.4f))
+			{
+				Engine::Blur(BlurLevel::LOW);
+			}
+			//40% - 20%: medium blur
+			else if (sanity <= (maxSanity * 0.4f) && sanity > (maxSanity * 0.2f))
+			{
+				Engine::Blur(BlurLevel::MEDIUM);
+			}
+			//20% - 0%: hard blur
+			else if (sanity <= (maxSanity * 0.2f) && sanity > 0)
+			{
+				Engine::Blur(BlurLevel::HIGH);
+			}
+			//When player is dead
+			if (sanity <= 0)
+			{
+				this->player->SetSanity(0);
+				this->player->SetMovement(false);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+				this->soundHandler.PlayOneShot(0);
+				Engine::Blur(BlurLevel::HELLAHIGH);
+			}
 
-		if (this->attackTimer > 0 && !this->isPaused)
-		{
-			this->attackTimer -= 1 * deltaTime;
+			if (this->attackTimer > 0 && !this->isPaused)
+			{
+				this->attackTimer -= 1 * deltaTime;
+			}
 		}
-
 		//Check if the current animation has ended
 		if (this->player->GetMeshObject()->HasAnimationEnded())
 		{
@@ -281,6 +280,7 @@ void Game::HandleInput(const float& deltaTime)
 	// Pause the game.
 	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
+		Engine::Blur(BlurLevel::HELLAHIGH);
 		GUIHandler::PauseGame();
 		GUIHandler::ShowGameGUI(false);
 		this->isPaused = true;
