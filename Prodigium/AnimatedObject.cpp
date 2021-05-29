@@ -632,7 +632,7 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			case AnimationState::DEAD:
 			case AnimationState::PICKUP:
 				this->animationList[this->animStates[previousState]]->ResetCurrentTime();
-				this->animationList[this->animStates[previousState]]->ResetCurrentTime();
+				this->animationList[this->animStates[previousState]]->ResetReachedEnd();
 				break;
 			default:
 				break;
