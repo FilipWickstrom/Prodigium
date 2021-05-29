@@ -36,22 +36,6 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->targetDir = this->targetPos - this->model->position;
 	this->targetDir.y = 0.0f;
 	this->targetDir.Normalize();
-
-	//float theta = asin(this->targetDir.x);
-
-	//if (this->targetDir.z > 0.0f)
-	//{
-	//	if (this->targetDir.x > 0.0f)
-	//	{
-	//		theta = XM_PI - theta;
-	//	}
-	//	else
-	//	{
-	//		theta = -XM_PI - theta;
-	//	}
-	//}
-
-	//this->angle = -theta;
 }
 
 void Enemy::Move(const float& deltaTime)

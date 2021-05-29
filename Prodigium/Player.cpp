@@ -202,13 +202,14 @@ void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 						lastDistance = currentDistance;
 					}
 				}
-				this->playerModel->position += object.second->colliders[i].planes[index].normal * this->speed * deltaTime;;
+				direction += object.second->colliders[i].planes[index].normal;
 			}
 		}
 	}
 
 	if (collided)
 	{
+		this->playerModel->position += direction * this->speed * deltaTime;
 		this->playerModel->UpdateMatrix();
 		this->playerModel->UpdateBoundingBoxes();
 	}
