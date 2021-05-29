@@ -17,7 +17,8 @@ private:
 
 	// Vector for all the objects present in this scene.
 	std::vector<MeshObject*> objects;
-	std::unordered_map<std::uintptr_t, MeshObject*> visibleObjects;
+	std::unordered_map<std::uintptr_t, MeshObject*> staticObjects;
+	std::vector<MeshObject*> dynamicObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -75,9 +76,20 @@ public:
 			 const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},
 			 const DirectX::SimpleMath::Vector3& rotation = {0.0f, 0.0f, 0.0f},
 			 const DirectX::SimpleMath::Vector3& scale = {1.0f, 1.0f, 1.0f});
-
+	
 	// Adds a reference to an already initialized object to the scene
 	void Add(MeshObject* object);
+
+	void AddDynamicObject(const std::string& objFile,
+		const std::string& diffuseTxt = "",
+		const std::string& normalTxt = "",
+		bool hasBounds = true,
+		bool hasAnimation = false,
+		const DirectX::SimpleMath::Vector3& position = { 0.0f, 0.0f, 0.0f },
+		const DirectX::SimpleMath::Vector3& rotation = { 0.0f, 0.0f, 0.0f },
+		const DirectX::SimpleMath::Vector3& scale = { 1.0f, 1.0f, 1.0f });
+
+	void AddDynamicObject(MeshObject* object);
 
 	/* 
 	* adds a light into the scene, the behavior of this light is defined by the struct input.
@@ -99,6 +111,7 @@ public:
 
 	// return the object at index
 	MeshObject& GetMeshObject(int index);
+	MeshObject& GetDynamicObject(int index);
 
 	const std::vector<MeshObject*>& GetAllMeshObjects();
 
@@ -118,18 +131,21 @@ public:
 	// loop through all objects and call their render function.
 	void Render();
 
-	void Render(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
+	void RenderStaticObjects();
+	void RenderDynamicObjects();
 
 	// loop through all lights are bind them to the light pass
 	void RenderLights();
 
 #ifdef _DEBUG
-	void RenderBoundingBoxes(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
+	void RenderStaticBoundingBoxes();
+	void RenderDynamicBoundingBoxes();
 #endif
 
 	// render all shadows to be prepared for the light pass
 	void RenderShadows();
-	void RenderShadows(const std::unordered_map<std::uintptr_t, MeshObject*>& toRender);
+	void RenderStaticShadows();
+	void RenderDynamicShadows();
 
 	// render the particles inside the scene.
 	void RenderParticles();
@@ -142,5 +158,7 @@ public:
 
 	void ClearCullingObjects();
 
-	std::unordered_map<std::uintptr_t, MeshObject*>& GetAllCullingObjects();
+	int GetNrOfDynamicObjects() const;
+
+	std::unordered_map<std::uintptr_t, MeshObject*>& GetAllStaticObjects();
 };

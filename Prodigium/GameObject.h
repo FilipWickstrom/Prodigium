@@ -19,6 +19,7 @@ public:
 	DirectX::SimpleMath::Vector3 position;
 	DirectX::SimpleMath::Vector3 scale;
 	DirectX::SimpleMath::Vector3 rotation;
+	DirectX::SimpleMath::Quaternion qRotation;
 	DirectX::SimpleMath::Vector3 forward;
 	DirectX::SimpleMath::Vector3 right;
 	DirectX::SimpleMath::Vector3 up;
@@ -28,6 +29,7 @@ public:
 	bool UpdateMatrix(const DirectX::SimpleMath::Vector3& pos, const DirectX::SimpleMath::Vector3& scl, const DirectX::SimpleMath::Vector3& rot);
 	bool UpdateMatrix();
 	void UpdateMatrixCPU();
+	bool UpdateByQuaternion(const DirectX::SimpleMath::Quaternion& rotation);
 	
 	const DirectX::SimpleMath::Vector3& GetPosition() const;
 	const DirectX::SimpleMath::Vector3& GetScale() const;
