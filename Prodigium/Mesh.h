@@ -29,7 +29,7 @@ private:
 
 public:
 	Mesh();
-	~Mesh();
+	virtual ~Mesh();
 	
 	bool LoadFile(std::string filename);
 	void Render();

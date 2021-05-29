@@ -48,4 +48,6 @@ public:
 
 	virtual void Prepare() override;
 
+	virtual void Destroy() override;
+
 };

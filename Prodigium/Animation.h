@@ -47,7 +47,7 @@ private:
 
 public:
 	Animation();
-	~Animation();
+	virtual ~Animation();
 
 	//Load in the animation. Only takes the bones that was loaded from the object
 	bool Load(std::string filename, std::unordered_map<std::string, UINT> boneMap, bool looping = true, int animSpeed = 0);

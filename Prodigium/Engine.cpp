@@ -19,12 +19,17 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 
 Engine::~Engine()
 {
+	this->Shutdown();
 	ResourceManager::Destroy();
 #ifdef _DEBUG
 	DebugInfo::Destroy();
 #endif
+	this->gPass.Destroy();
+	this->lightPass.Destroy();
+	this->skyboxPass.Destroy();
 	Graphics::Destroy();
-	GUIHandler::Shutdown();
+	GUIHandler::Destroy();
+	InputHandler::Destroy();
 }
 
 void Engine::RedirectIoToConsole()
@@ -82,8 +87,8 @@ void Engine::ClearDisplay()
 
 void Engine::Render(Player* player)
 {
-	std::unordered_map<std::uintptr_t, MeshObject*>* toRender = &this->sceneHandler.EditScene().GetAllCullingObjects();
-	toRender->clear();
+	this->sceneHandler.EditScene().GetAllStaticObjects().clear();
+
 	//Render the scene to the gbuffers - 3 render targets
 	this->gPass.ClearScreen();
 	this->gPass.Prepare();
@@ -93,10 +98,10 @@ void Engine::Render(Player* player)
 	}
 	else
 	{
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, *toRender);
-		this->sceneHandler.Render(*toRender);
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Drawable(quadTree, this->sceneHandler.EditScene().GetAllStaticObjects());
+		this->sceneHandler.RenderAllObjects();
 	}
-	 
+
 	// Shadow pass
 	if (!inGame)
 	{
@@ -104,17 +109,16 @@ void Engine::Render(Player* player)
 	}
 	else
 	{
-		this->sceneHandler.RenderShadows(*toRender);
+		this->sceneHandler.RenderAllShadows();
 	}
 	this->gPass.Clear();
-
 
 	// SSAO PHASE
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
-	this->blurPass.Render(0.5f, this->sceneHandler.EditScene().GetSSAOAccessView());
-
+	this->blurPass.SetBlurLevel(BlurLevel::MEDIUM);
+	this->blurPass.Render(&this->sceneHandler.EditScene().GetSSAOAccessView());
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
@@ -127,10 +131,10 @@ void Engine::Render(Player* player)
 #ifdef _DEBUG
 	if (inGame)
 	{
+		//DebugInfo::Prepare();
+		//ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
 		DebugInfo::Prepare();
-		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
-		DebugInfo::Prepare();
-		this->sceneHandler.RenderBoundingBoxes(*toRender);
+		this->sceneHandler.RenderAllBoundingBoxes();
 
 		DebugInfo::Clear();
 	}
@@ -146,24 +150,27 @@ void Engine::Render(Player* player)
 	this->skyboxPass.Prepare();
 	this->skyboxPass.Clear();
 
-	if (!this->isPaused && player && this->options.hasBlur && player->GetSanity() != 1.0f)
+	//Do blur on screen if it is on and player exists
+	if (this->options.hasBlur && player)
 	{
-		//Render the blur depending on sanity
-		//1.0f is full sanity = no blur
-		//0.0f is no sanitiy = max blur
-		this->blurPass.Render(player->GetSanity());
-	}
-
-	if (this->isPaused)
-	{
-		this->blurPass.Render(0);
+		//Game is paused - then we use a high blur
+		if (this->isPaused)
+		{
+			//More effective to change sigma to higher than adding more in radius
+			this->blurPass.SetBlurLevel(BlurLevel::HELLAHIGH);
+		}
+		else
+		{
+			this->blurPass.SetBlurLevel(player->GetBlurLevel());
+		}
+		this->blurPass.Render();
 	}
 
 	Graphics::BindBackBuffer();
 	Graphics::SetMainWindowViewport();
 	if (player)
 	{
-		GUIHandler::Render(player->GetHealth(), player->GetCollectedClues(), this->stopcompl_timer, this->slowdown_timer, this->options);
+		GUIHandler::Render(player->GetSanity(), player->GetCollectedClues(), this->stopcompl_timer, this->slowdown_timer, this->options);
 	}
 	else
 	{
@@ -179,9 +186,21 @@ void Engine::OpenConsole()
 	this->RedirectIoToConsole();
 }
 
+void Engine::ToggleSSAO(bool toggle)
+{
+	this->lightPass.ToggleSSAO(toggle);
+}
+
 void Engine::ChangeActiveTrap()
 {
 	GUIHandler::ChangeActiveTrap();
+}
+
+void Engine::Shutdown()
+{
+	Graphics::GetContext()->PSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->GSSetShader(NULL, NULL, NULL);
+	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
@@ -229,8 +248,7 @@ bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& h
 		return false;
 	}
 
-	//Max blur radius is 5 for now
-	if (!this->blurPass.Initialize(5))
+	if (!this->blurPass.Initialize())
 	{
 		return false;
 	}

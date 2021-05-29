@@ -6,3 +6,6 @@
 	className(const className&& other) = delete;           \
 	className& operator=(const className& other) = delete;  \
 	className& operator=(const className&& other) = delete;
+
+// Lerps between two values a and b with factor f
+#define LERP(a, b, f)		(a + f * (b - a))

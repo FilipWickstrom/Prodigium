@@ -17,6 +17,7 @@ public:
 	virtual bool Initialize() = 0;
 	virtual void Clear() = 0;
 	virtual void Prepare() = 0;
+	virtual void Destroy() = 0;
 };
 
 class LightPass : public RenderPass
@@ -24,6 +25,7 @@ class LightPass : public RenderPass
 private:
 	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* iBuffer;
+	ID3D11Buffer* turnOffSSAO;
 	ID3D11InputLayout* inputLayout;
 	ID3D11VertexShader* vShader;
 	ID3D11PixelShader* pShader;
@@ -40,15 +42,19 @@ private:
 	bool CreateInputLayout();
 	bool CreateSamplerState();
 	bool CreateDepthStencilState();
+	bool CreateSSAOTurnOffBuffer();
 
 public:
 	LightPass();
 	virtual ~LightPass();
 
+	void ToggleSSAO(bool toggle);
+
 	// Inherited via RenderPass
 	virtual bool Initialize() override;
 	virtual void Clear() override;
 	virtual void Prepare() override;
+	virtual void Destroy() override;
 };
 
 class GeometryPass :public RenderPass
@@ -80,6 +86,7 @@ public:
 	virtual void Clear() override;
 
 	virtual void Prepare() override;
+	virtual void Destroy() override;
 
 	ID3D11DepthStencilView*& GetDepthStencilView();
 };

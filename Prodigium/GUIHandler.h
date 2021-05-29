@@ -46,7 +46,7 @@ public:
 	DELETE_COPY_ASSIGNMENT(GUIHandler);
 	static const bool Initialize(const HWND& window);
 	static void Render(int health, int clues, float& timer1, float& timer2, OptionsHandler& options);
-	static void Shutdown();
+	static void Destroy();
 	static void ChangeActiveTrap();
 	static void SetPlayerPos(const DirectX::SimpleMath::Vector3& playerPos);
 	static void PauseGame();

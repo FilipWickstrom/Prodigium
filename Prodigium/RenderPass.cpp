@@ -26,25 +26,7 @@ GeometryPass::GeometryPass()
 
 GeometryPass::~GeometryPass()
 {
-	if (this->depthTexture)
-		this->depthTexture->Release();
-	if (this->depthStencilView)
-		this->depthStencilView->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
-	if (this->pShader)
-		this->pShader->Release();
-	if (this->vShader)
-		this->vShader->Release();
-	if (this->sampler)
-		this->sampler->Release();
-	for (int i = 0; i < BUFFER_COUNT; i++)
-	{
-		if (this->gBuffer.renderTargets[i])
-			this->gBuffer.renderTargets[i]->Release();
-		if (this->gBuffer.shaderResourceViews[i])
-			this->gBuffer.shaderResourceViews[i]->Release();
-	}
+	
 }
 
 void GeometryPass::ClearScreen()
@@ -323,6 +305,29 @@ void GeometryPass::Prepare()
 	Graphics::GetContext()->PSSetSamplers(0, 1, &sampler);
 }
 
+void GeometryPass::Destroy()
+{
+	if (this->depthTexture)
+		this->depthTexture->Release();
+	if (this->depthStencilView)
+		this->depthStencilView->Release();
+	if (this->inputLayout)
+		this->inputLayout->Release();
+	if (this->pShader)
+		this->pShader->Release();
+	if (this->vShader)
+		this->vShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (this->gBuffer.renderTargets[i])
+			this->gBuffer.renderTargets[i]->Release();
+		if (this->gBuffer.shaderResourceViews[i])
+			this->gBuffer.shaderResourceViews[i]->Release();
+	}
+}
+
 ID3D11DepthStencilView*& GeometryPass::GetDepthStencilView()
 {
 	return this->depthStencilView;
@@ -533,6 +538,22 @@ bool LightPass::CreateDepthStencilState()
 	return !FAILED(hr);
 }
 
+bool LightPass::CreateSSAOTurnOffBuffer()
+{
+	HRESULT hr;
+
+	D3D11_BUFFER_DESC desc;
+	desc.ByteWidth = sizeof(Vector4);
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;
+
+	hr = Graphics::GetDevice()->CreateBuffer(&desc, NULL, &this->turnOffSSAO);
+
+	return SUCCEEDED(hr);
+}
+
 LightPass::LightPass()
 {
 	this->iBuffer = nullptr;
@@ -540,6 +561,7 @@ LightPass::LightPass()
 	this->pShader = nullptr;
 	this->renderedImage = nullptr;
 	this->renderTarget = nullptr;
+	this->turnOffSSAO = nullptr;
 	this->vBuffer = nullptr;
 	this->vShader = nullptr;
 	this->pShader = nullptr;
@@ -553,29 +575,21 @@ LightPass::LightPass()
 
 LightPass::~LightPass()
 {
-	if (this->iBuffer)
-		this->iBuffer->Release();
-	if (this->inputLayout)
-		this->inputLayout->Release();
-	if (this->renderedImage)
-		this->renderedImage->Release();
-	if (this->renderTarget)
-		this->renderTarget->Release();
-	if (this->vBuffer)
-		this->vBuffer->Release();
-	if (this->vShader)
-		this->vShader->Release();
-	if (this->pShader)
-		this->pShader->Release();
-	if (this->sampler)
-		this->sampler->Release();
-	if (this->noDepth)
-		this->noDepth->Release();
-	for (int i = 0; i < BUFFER_COUNT; i++)
-	{
-		if (this->shaderResources[i])
-			this->shaderResources[i]->Release();
-	}
+	
+}
+
+void LightPass::ToggleSSAO(bool toggle)
+{
+	Vector4 package = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	if (!toggle)
+		package = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	D3D11_MAPPED_SUBRESOURCE submap;
+	HRESULT hr = Graphics::GetContext()->Map(this->turnOffSSAO, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+	memcpy(submap.pData, &package, sizeof(Vector4));
+
+	Graphics::GetContext()->Unmap(this->turnOffSSAO, 0);
 }
 
 bool LightPass::Initialize()
@@ -609,6 +623,9 @@ bool LightPass::Initialize()
 	{
 		return false;
 	}
+
+	if (!CreateSSAOTurnOffBuffer())
+		return false;
 
 
 	return true;
@@ -663,5 +680,36 @@ void LightPass::Prepare()
 	Graphics::GetContext()->OMSetDepthStencilState(this->noDepth, 1);
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	Graphics::GetContext()->PSSetConstantBuffers(5, 1, &this->turnOffSSAO);
+
 	Graphics::GetContext()->DrawIndexed(6, 0, 0);
+}
+
+void LightPass::Destroy()
+{
+	if (this->iBuffer)
+		this->iBuffer->Release();
+	if (this->inputLayout)
+		this->inputLayout->Release();
+	if (this->renderedImage)
+		this->renderedImage->Release();
+	if (this->renderTarget)
+		this->renderTarget->Release();
+	if (this->vBuffer)
+		this->vBuffer->Release();
+	if (this->vShader)
+		this->vShader->Release();
+	if (this->pShader)
+		this->pShader->Release();
+	if (this->sampler)
+		this->sampler->Release();
+	if (this->noDepth)
+		this->noDepth->Release();
+	if (this->turnOffSSAO)
+		this->turnOffSSAO->Release();
+	for (int i = 0; i < BUFFER_COUNT; i++)
+	{
+		if (this->shaderResources[i])
+			this->shaderResources[i]->Release();
+	}
 }

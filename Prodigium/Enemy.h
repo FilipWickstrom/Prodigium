@@ -16,20 +16,26 @@ private:
 	DirectX::SimpleMath::Vector3 targetDir;
 	bool reachedTarget;
 	float angle;
+
 public:
 	Enemy();
 	virtual ~Enemy();
+	// Sets forward vector to point to the new targets position
 	void SetNewTarget(const DirectX::SimpleMath::Vector3& newPos);
-	void Move(const DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
-	void MoveToTarget(const float& deltaTime);
+	// Moves the enemy towards the forward vector
+	void Move(const float& deltaTime);
 	const float& GetAttackRange() const;
 	void PlayAttackAnimation();
 	const bool CanAttack() const;
 	void Attack(Player* player);
-	const DirectX::SimpleMath::Vector3& getPosition() const;
+	const DirectX::SimpleMath::Vector3& GetPosition() const;
 	const bool IsCloseToPlayer(const DirectX::SimpleMath::Vector3& playerPos);
 	MeshObject* GetMeshObject() const;
 	const bool& HasReachedTarget() const;
 	void SetSpeedFactor(float factor);
+	// Rotates the enemy towards the forward vector
+	void RotateTo(const float& deltaTime);
+	// Updates the enemy
+	void Update();
 };
 

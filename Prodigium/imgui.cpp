@@ -3385,7 +3385,7 @@ void ImGui::DestroyContext(ImGuiContext* ctx)
 {
     if (ctx == NULL)
         ctx = GImGui;
-    Shutdown(ctx);
+    Destroy(ctx);
     if (GImGui == ctx)
         SetCurrentContext(NULL);
     IM_DELETE(ctx);
@@ -4129,7 +4129,7 @@ void ImGui::Initialize(ImGuiContext* context)
 }
 
 // This function is merely here to free heap allocations.
-void ImGui::Shutdown(ImGuiContext* context)
+void ImGui::Destroy(ImGuiContext* context)
 {
     // The fonts atlas can be used prior to calling NewFrame(), so we clear it even if g.Initialized is FALSE (which would happen if we never called NewFrame)
     ImGuiContext& g = *context;

@@ -70,7 +70,6 @@ bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vect
 	return !FAILED(hr);
 }
 
-
 bool GameObject::UpdateMatrix()
 {
 	Matrix transformedCPU = Matrix::CreateScale(this->scale) * 
@@ -101,6 +100,30 @@ void GameObject::UpdateMatrixCPU()
 		Matrix::CreateScale(this->scale) * 
 		Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
 		Matrix::CreateTranslation(this->position);
+}
+
+bool GameObject::UpdateByQuaternion(const DirectX::SimpleMath::Quaternion& rotation)
+{
+	Matrix transformedCPU = Matrix::CreateScale(this->scale) *
+		Matrix::CreateFromQuaternion(rotation) *
+		Matrix::CreateTranslation(this->position);
+
+	this->modelMatrix = transformedCPU;
+
+	//Update the buffer if it exists. Otherwise just locally
+	if (this->modelMatrixBuffer)
+	{
+		Matrix transformedGPU = Matrix(transformedCPU).Transpose();
+
+		D3D11_MAPPED_SUBRESOURCE submap;
+		HRESULT hr = Graphics::GetContext()->Map(this->modelMatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &submap);
+		memcpy(submap.pData, &transformedGPU, sizeof(DirectX::SimpleMath::Matrix));
+		Graphics::GetContext()->Unmap(this->modelMatrixBuffer, 0);
+
+		return !FAILED(hr);
+	}
+
+	return true;
 }
 
 const Vector3& GameObject::GetPosition() const

@@ -7,10 +7,13 @@ Node::Node()
 	this->g = FLT_MAX;
 	this->h = FLT_MAX;
 	this->id = -1;
+	this->parent = nullptr;
 }
 
 Node::~Node()
 {
+	this->connectedNodes.clear();
+	this->parent = nullptr;
 }
 
 void Node::Initialize(const DirectX::SimpleMath::Vector3& pos, const int& id)

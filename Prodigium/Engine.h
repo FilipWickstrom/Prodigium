@@ -49,8 +49,10 @@ public:
 	void ClearDisplay();
 	void Render(Player* player);
 	void OpenConsole();
+	void ToggleSSAO(bool toggle);
 	void ChangeActiveTrap();
 	virtual bool OnFrame(const float& deltaTime) = 0;
 	virtual bool OnStart() = 0;
 	bool inGame;
+	void Shutdown();
 };
