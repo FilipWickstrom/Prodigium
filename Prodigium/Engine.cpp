@@ -1,7 +1,7 @@
 #include "Engine.h"
 #include <omp.h>
 
-Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
+Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	srand((unsigned int)time(NULL));
 	this->consoleOpen = false;
@@ -10,7 +10,7 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height,
 #ifdef _DEBUG
 	OpenConsole();
 #endif 
-	if (!this->StartUp(instance, width, height, enemy))
+	if (!this->StartUp(instance, width, height))
 	{
 		std::cout << "Failed to initialize Engine!" << std::endl;
 		exit(-1);
@@ -203,7 +203,7 @@ void Engine::Shutdown()
 	Graphics::GetContext()->CSSetShader(NULL, NULL, NULL);
 }
 
-bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy)
+bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)
 {
 	if (!InputHandler::Initialize())
 	{

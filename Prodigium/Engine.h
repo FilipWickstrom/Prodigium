@@ -37,12 +37,12 @@ private:
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
-	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
+	bool StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	void RedirectIoToConsole();
 
 public:
 	DELETE_COPY_ASSIGNMENT(Engine)
-	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height, Enemy* enemy);
+	Engine(const HINSTANCE& instance, const UINT& width, const UINT& height);
 	virtual ~Engine();
 
 	SceneHandler* SceneHandler();

@@ -115,6 +115,7 @@ Scene::~Scene()
 		delete this->dynamicObjects[(int)this->dynamicObjects.size() - 1];
 		this->dynamicObjects.pop_back();
 	}
+
 }
 
 void Scene::Add(const std::string& objFile,

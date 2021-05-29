@@ -53,6 +53,7 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
+
 	for (int i = 0; i < this->vertexBuffers.size(); i++)
 	{
 		if (this->vertexBuffers[i])
