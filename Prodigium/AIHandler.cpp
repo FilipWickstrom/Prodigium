@@ -41,7 +41,7 @@ AIHandler::AIHandler()
 	states = EnemyStates::PATROL;
 	this->monster = nullptr;
 	this->player = nullptr;
-	this->chaseEnabled = false;
+	this->chaseEnabled = true;
 	this->stateSwitchTime = 0.f;
 	this->nrOfAstar = 0;
 }
