@@ -19,10 +19,10 @@ const bool Scene::SetupLightBuffer()
 
 	// Description for the buffer containing all the light information.
 	D3D11_BUFFER_DESC desc = {};
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.ByteWidth = sizeof(LightStruct) * (UINT)this->lights.size();
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.StructureByteStride = sizeof(LightStruct);
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
@@ -172,6 +172,14 @@ void Scene::PopAllLights()
 		this->lights.pop_back();
 		this->firstTime = true;
 	}
+}
+
+void Scene::UpdateLightsBuffer()
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	Graphics::GetContext()->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	memcpy(resource.pData, &this->lights[0], sizeof(LightStruct) * this->lights.size());
+	Graphics::GetContext()->Unmap(this->lightBuffer, 0);
 }
 
 void Scene::Add(MeshObject* object)
@@ -531,6 +539,20 @@ void Scene::CheckObjectsVisibility(float deltaTime)
 				UINT index = visibleObjects[i].index;
 				this->objects[index]->SetVisible(this->visibleObjects[i].visible);
 				this->visibleObjects.erase(this->visibleObjects.begin() + i);
+				
+				//Check if any light is close
+				bool foundLight = false;
+				for (size_t lightIndex = 0; lightIndex < this->lights.size() && !foundLight; lightIndex++)
+				{
+					if (this->objects[index]->GetDistance(this->lights[lightIndex].position) < 5.0f)
+					{
+						foundLight = true;
+						//Turn of the light - aka set type to anything other than 
+						//0,1,2 (direction, point, spot)
+						this->lights[lightIndex].attentuate.w = -1.0f;
+						UpdateLightsBuffer();
+					}
+				}
 			}
 		}
 	}

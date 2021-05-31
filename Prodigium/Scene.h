@@ -108,6 +108,7 @@ public:
 	void AddLight(LightStruct& L);
 	void PopLight();
 	void PopAllLights();
+	void UpdateLightsBuffer();
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
 	void UpdateMatrix(const DirectX::SimpleMath::Vector3& pos = { 0.0f, 0.0f, 0.0f },
