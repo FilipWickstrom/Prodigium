@@ -117,6 +117,7 @@ Scene::~Scene()
 	}
 	this->dynamicObjects.clear();
 	this->staticObjects.clear();
+	this->visibleObjects.clear();
 }
 
 void Scene::Add(const std::string& objFile,
@@ -498,6 +499,41 @@ int Scene::GetNrOfDynamicObjects() const
 std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllStaticObjects()
 {
 	return this->staticObjects;
+}
+
+void Scene::TurnVisibilty(const int& index, float afterTime, bool visible)
+{
+	if (index < (int)this->objects.size() - 1 && index >= 0)
+	{
+		if (this->objects[index] != nullptr)
+		{
+			VisibleObject obj = {};
+			obj.index = index;
+			obj.finalTime = afterTime;
+			obj.visible = visible;
+			this->visibleObjects.push_back(obj);
+		}
+	}
+}
+
+void Scene::CheckObjectsVisibility(float deltaTime)
+{
+	if (!this->visibleObjects.empty())
+	{
+		for (size_t i = 0; i < this->visibleObjects.size(); i++)
+		{
+			//Increase the time of the object
+			this->visibleObjects[i].currentTime += deltaTime;
+
+			//Reached the end of the timer - going to set its visibility to on or off
+			if (this->visibleObjects[i].currentTime >= this->visibleObjects[i].finalTime)
+			{
+				UINT index = visibleObjects[i].index;
+				this->objects[index]->SetVisible(this->visibleObjects[i].visible);
+				this->visibleObjects.erase(this->visibleObjects.begin() + i);
+			}
+		}
+	}
 }
 
 #ifdef _DEBUG

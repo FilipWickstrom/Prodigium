@@ -118,6 +118,9 @@ void Game::HandleScenes(const float& deltaTime)
 		GUIHandler::ShowGameGUI(false);
 		this->LoadMainMenu();
 	}
+
+	//Check if we are going to remove an object that is going on a timer
+	SceneHandler()->EditScene().CheckObjectsVisibility(deltaTime);
 }
 
 void Game::HandleGameLogic(const float& deltaTime)
@@ -432,9 +435,9 @@ void Game::HandleInput(const float& deltaTime)
 
 			//When any of movementkeys is released go back to idle animation
 			else if (InputHandler::IsKeyReleased(Keyboard::W) ||
-				InputHandler::IsKeyReleased(Keyboard::S) ||
-				InputHandler::IsKeyReleased(Keyboard::A) ||
-				InputHandler::IsKeyReleased(Keyboard::D))
+					 InputHandler::IsKeyReleased(Keyboard::S) ||
+					 InputHandler::IsKeyReleased(Keyboard::A) ||
+					 InputHandler::IsKeyReleased(Keyboard::D))
 			{
 				//Randomize idle state
 				AnimationState state;
@@ -486,7 +489,10 @@ void Game::HandleInput(const float& deltaTime)
 				{
 					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
-					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+
+					//Set visibility to off after 1.8f seconds
+					SceneHandler()->EditScene().TurnVisibilty(i, 1.8f, false);
+
 					this->player->IncreaseCollectedClues();
 					this->player->IncreaseSanity((int)(25 / (1 * 0.5)));
 				}

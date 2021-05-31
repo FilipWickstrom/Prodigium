@@ -19,6 +19,16 @@ private:
 	std::vector<MeshObject*> objects;
 	std::unordered_map<std::uintptr_t, MeshObject*> staticObjects;
 	std::vector<MeshObject*> dynamicObjects;
+	
+	//Objects that is going to disappear or reappear
+	struct VisibleObject
+	{
+		UINT index = 0;
+		float currentTime = 0.0f;
+		float finalTime = 0.0f;
+		bool visible = false;
+	};
+	std::vector<VisibleObject> visibleObjects;
 
 	// points to the current selected object.
 	int currentObject;
@@ -161,4 +171,8 @@ public:
 	int GetNrOfDynamicObjects() const;
 
 	std::unordered_map<std::uintptr_t, MeshObject*>& GetAllStaticObjects();
+
+	//Turn the visibility of an item to on or off after time
+	void TurnVisibilty(const int& index, float afterTime, bool visible = false);
+	void CheckObjectsVisibility(float deltaTime);
 };
