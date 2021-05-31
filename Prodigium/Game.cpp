@@ -826,6 +826,22 @@ void Game::LoadMap()
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	EDITSCENE.AddLight(L);
 
+	/*
+		Bounds
+	*/
+	//Left of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { -350,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Front of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,350 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Right of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 750,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Back from spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,-450 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
 	{
