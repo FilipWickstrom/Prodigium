@@ -571,7 +571,7 @@ AnimatedObject::~AnimatedObject()
 
 	this->vShaderByteCode.clear();
 	this->shadowVShaderByteCode.clear();
-	this->animationList.clear();	//Need to delete inside of it?
+	this->animationList.clear();
 	this->animStates.clear();
 	this->boneMap.clear();
 	this->meshPositions.clear();
@@ -632,7 +632,7 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 			case AnimationState::DEAD:
 			case AnimationState::PICKUP:
 				this->animationList[this->animStates[previousState]]->ResetCurrentTime();
-				this->animationList[this->animStates[previousState]]->ResetCurrentTime();
+				this->animationList[this->animStates[previousState]]->ResetReachedEnd();
 				break;
 			default:
 				break;

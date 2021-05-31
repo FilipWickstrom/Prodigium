@@ -15,6 +15,8 @@ std::vector<std::string> AIHandler::OpenFile(std::string filePath)
 			allLines.push_back(currentLine);
 		}
 	}
+	nodeFile.close();
+
 	return allLines;
 
 }
@@ -70,7 +72,6 @@ void AIHandler::CreateNodes()
 {
 	if (AIHANDLER->allNodes.empty())
 	{
-
 		//Todo: Add correct nodes and add their connections
 		std::vector<std::string> file = OpenFile("Resources/Nodes/NodeInfo.txt");//replace with actual name
 		int currentIndex = 0;

@@ -30,10 +30,10 @@ protected:
 
 private:
 	Window window;
+	BlurFilter blurPass;
 	GeometryPass gPass;
 	LightPass lightPass;
 	SkyboxPass skyboxPass;
-	BlurFilter blurPass;
 	bool consoleOpen;
 	SceneHandler sceneHandler;
 	
@@ -55,4 +55,5 @@ public:
 	virtual bool OnStart() = 0;
 	bool inGame;
 	void Shutdown();
+	void Blur(const BlurLevel& amount);
 };

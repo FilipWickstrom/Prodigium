@@ -33,7 +33,7 @@ private:
 
 	void AddResource(std::string key, Resource* resource);
 
-	ID3D11Texture2D* GetTextureInternal(const std::string& key);
+	ID3D11Texture2D* GetTextureInternal(const std::string& key, bool isGBufferTexture);
 	Mesh* GetMeshInternal(const std::string& key);
 	AnimatedObject* GetAnimObjIternal(const std::string& key);
 
@@ -45,7 +45,7 @@ public:
 
 	static void Initialize();
 
-	static ID3D11Texture2D* GetTexture(const std::string& key);
+	static ID3D11Texture2D* GetTexture(const std::string& key, bool isGBufferTexture = false);
 
 	static Mesh* GetMesh(const std::string& key);
 
@@ -60,5 +60,4 @@ public:
 	static void RemoveCamera(std::string key);
 
 	static AnimatedObject* GetAnimateObject(std::string key);
-
 };

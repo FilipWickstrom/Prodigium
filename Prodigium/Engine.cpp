@@ -20,16 +20,17 @@ Engine::Engine(const HINSTANCE& instance, const UINT& width, const UINT& height)
 Engine::~Engine()
 {
 	this->Shutdown();
-	ResourceManager::Destroy();
 #ifdef _DEBUG
 	DebugInfo::Destroy();
 #endif
 	this->gPass.Destroy();
 	this->lightPass.Destroy();
 	this->skyboxPass.Destroy();
+	this->blurPass.Destroy();
 	Graphics::Destroy();
 	GUIHandler::Destroy();
 	InputHandler::Destroy();
+	ResourceManager::Destroy();
 }
 
 void Engine::RedirectIoToConsole()
@@ -117,8 +118,10 @@ void Engine::Render(Player* player)
 	this->gPass.BindSSAO();
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
+	BlurLevel current = this->blurPass.GetBlurLevel();
 	this->blurPass.SetBlurLevel(BlurLevel::MEDIUM);
 	this->blurPass.Render(&this->sceneHandler.EditScene().GetSSAOAccessView());
+	this->blurPass.SetBlurLevel(current);
 
 	//Bind only 1 render target, backbuffer
 	Graphics::BindBackBuffer();
@@ -151,18 +154,8 @@ void Engine::Render(Player* player)
 	this->skyboxPass.Clear();
 
 	//Do blur on screen if it is on and player exists
-	if (this->options.hasBlur && player)
+	if (this->options.hasBlur)
 	{
-		//Game is paused - then we use a high blur
-		if (this->isPaused)
-		{
-			//More effective to change sigma to higher than adding more in radius
-			this->blurPass.SetBlurLevel(BlurLevel::HELLAHIGH);
-		}
-		else
-		{
-			this->blurPass.SetBlurLevel(player->GetBlurLevel());
-		}
 		this->blurPass.Render();
 	}
 
@@ -229,6 +222,11 @@ void Engine::Shutdown()
 	Graphics::GetContext()->PSSetShader(pixelNull, nullptr, 0);
 	Graphics::GetContext()->VSSetShader(vertexNull, nullptr, 0);
 	Graphics::GetContext()->IASetInputLayout(inputNull);
+}
+
+void Engine::Blur(const BlurLevel& amount)
+{
+	this->blurPass.SetBlurLevel(amount);
 }
 
 bool Engine::StartUp(const HINSTANCE& instance, const UINT& width, const UINT& height)

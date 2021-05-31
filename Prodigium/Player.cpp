@@ -50,7 +50,6 @@ Player::Player()
 	this->playerModel->UpdateBoundingBoxes();
 
 	this->moving = true;
-	this->currentBlurLevel = BlurLevel::NOBLUR;
 }
 
 Player::~Player()
@@ -223,14 +222,4 @@ void Player::SetMovement(bool toggle)
 bool Player::IsMoving()
 {
 	return this->moving;
-}
-
-const BlurLevel& Player::GetBlurLevel() const
-{
-	return this->currentBlurLevel;
-}
-
-void Player::SetBlurLevel(BlurLevel level)
-{
-	this->currentBlurLevel = level;
 }

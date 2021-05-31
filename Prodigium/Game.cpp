@@ -87,19 +87,6 @@ void Game::HandleScenes(const float& deltaTime)
 		this->soundHandler.PlayAmbient(1);
 		this->soundHandler.PlayMusic(0);
 	}
-	if (this->menu.IsInMenu())
-	{
-		if (this->hasLoaded)
-		{
-			// Load menu
-			this->LoadMainMenu();
-		}
-		if (this->player != nullptr)
-		{
-			//Reset blur
-			this->player->SetBlurLevel(BlurLevel::NOBLUR);
-		}
-	}
 
 	//Om man trycker p? Resumeknappen i GUI:t ska denna bli true, annars ?r den false
 	if (GUIHandler::ShouldResume())
@@ -117,14 +104,19 @@ void Game::HandleScenes(const float& deltaTime)
 		this->isInOptions = true;
 	if (GUIHandler::ShouldReturnToMainMenu())
 	{
-		this->isPaused = false;
+		if (quadTree)
+		{
+			delete quadTree;
+		}
+		Engine::Blur(BlurLevel::NOBLUR);
 		this->soundHandler.ResumeAudio();
+		this->soundHandler.MenuAudio();
 		Engine::inGame = false;
-		// Set these values if you want to return to menu.
 		this->menu.Switch(true);
 		this->ResetValues();
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
+		this->LoadMainMenu();
 	}
 }
 
@@ -142,47 +134,46 @@ void Game::HandleGameLogic(const float& deltaTime)
 			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
 			BulletTime(); //Slows down all sounds if you're near the enemy
 			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
-		}
 
 		//Different things happen at level of sanity
-		int sanity = player->GetSanity();
-		int maxSanity = player->GetMaxSanity();
+			int sanity = player->GetSanity();
+			int maxSanity = player->GetMaxSanity();
 
-		//100% - 60%: noblur
-		if (sanity <= maxSanity && sanity > (maxSanity * 0.6f))
-		{
-			this->player->SetBlurLevel(BlurLevel::NOBLUR);
-		}
-		//60% - 40%: easy blur
-		else if (sanity <= (maxSanity * 0.6f) && sanity > (maxSanity * 0.4f))
-		{
-			this->player->SetBlurLevel(BlurLevel::LOW);
-		}
-		//40% - 20%: medium blur
-		else if (sanity <= (maxSanity * 0.4f) && sanity > (maxSanity * 0.2f))
-		{
-			this->player->SetBlurLevel(BlurLevel::MEDIUM);
-		}
-		//20% - 0%: hard blur
-		else if (sanity <= (maxSanity * 0.2f) && sanity > 0)
-		{
-			this->player->SetBlurLevel(BlurLevel::HIGH);
-		}
-		//When player is dead
-		if (sanity <= 0)
-		{
-			this->player->SetSanity(0);
-			this->player->SetMovement(false);
-			this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
-			this->soundHandler.PlayOneShot(0);
-			this->player->SetBlurLevel(BlurLevel::HELLAHIGH);
-		}
+			//100% - 60%: noblur
+			if (sanity <= maxSanity && sanity > (maxSanity * 0.6f))
+			{
+				Engine::Blur(BlurLevel::NOBLUR);
+			}
+			//60% - 40%: easy blur
+			else if (sanity <= (maxSanity * 0.6f) && sanity > (maxSanity * 0.4f))
+			{
+				Engine::Blur(BlurLevel::LOW);
+			}
+			//40% - 20%: medium blur
+			else if (sanity <= (maxSanity * 0.4f) && sanity > (maxSanity * 0.2f))
+			{
+				Engine::Blur(BlurLevel::MEDIUM);
+			}
+			//20% - 0%: hard blur
+			else if (sanity <= (maxSanity * 0.2f) && sanity > 0)
+			{
+				Engine::Blur(BlurLevel::HIGH);
+			}
+			//When player is dead
+			if (sanity <= 0)
+			{
+				this->player->SetSanity(0);
+				this->player->SetMovement(false);
+				this->player->GetMeshObject()->ChangeAnimState(AnimationState::DEAD);
+				this->soundHandler.PlayOneShot(0);
+				Engine::Blur(BlurLevel::HELLAHIGH);
+			}
 
-		if (this->attackTimer > 0 && !this->isPaused)
-		{
-			this->attackTimer -= 1 * deltaTime;
+			if (this->attackTimer > 0 && !this->isPaused)
+			{
+				this->attackTimer -= 1 * deltaTime;
+			}
 		}
-
 		//Check if the current animation has ended
 		if (this->player->GetMeshObject()->HasAnimationEnded())
 		{
@@ -244,6 +235,7 @@ Game::Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windo
 	this->attackTimer = 0;
 	this->monsterSoundTimer = 0;
 	this->isInOptions = false;
+	this->enemy = nullptr;
 }
 
 Game::~Game()
@@ -256,7 +248,14 @@ Game::~Game()
 
 	SceneHandler()->RemoveAllScenes();
 
-	AIHandler::Reset();
+	AIHandler::Destroy();
+
+	if (quadTree && !this->menu.IsInMenu())
+	{
+		delete this->quadTree;
+	}
+
+	this->soundHandler.StopAudio();
 }
 
 const bool Game::IsRunning() const
@@ -278,10 +277,10 @@ void Game::HandleInput(const float& deltaTime)
 
 	direction = { 0.f, 0.f };
 
-
 	// Pause the game.
 	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
+		Engine::Blur(BlurLevel::HELLAHIGH);
 		GUIHandler::PauseGame();
 		GUIHandler::ShowGameGUI(false);
 		this->isPaused = true;
@@ -339,21 +338,7 @@ void Game::HandleInput(const float& deltaTime)
 	if (!this->hasLoaded && !this->isInOptions && InputHandler::IsKeyPressed(Keyboard::Space))
 	{
 		this->zoomIn = true;
-	}
-
-	// Go back to Menu
-	/*
-	if (!this->zoomIn && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::O))
-	{
-		Engine::inGame = false;
-		// Set these values if you want to return to menu.
-		this->menu.Switch(true);
-		this->ResetValues();
-		GUIHandler::ShowMainMenu(true);
-		GUIHandler::ShowGameGUI(false);
-	}
-	*/
-
+	} 
 	if (this->hasLoaded && !this->isPaused)
 	{
 		/*------------------SANITY TESTING----------------*/
@@ -380,9 +365,7 @@ void Game::HandleInput(const float& deltaTime)
 			EDITSCENE.GetParticles().SetActive(false);
 		}
 
-
 		/*------------------MOVEMENT----------------*/
-
 		if (this->player->IsMoving())
 		{
 			//Sideways
@@ -620,16 +603,16 @@ bool Game::OnStart()
 void Game::ResetValues()
 {
 	// Reset values
-	this->player->SetSanity(this->player->GetMaxSanity());
-	this->player->SetCollectedClues(0);
 	this->inGoal = false;
+	this->hasLoaded = false;
+	this->isPaused = false;
 	this->menu.Reset();
 	this->picker.Reset();
-	Engine::slowdown_timer = 0;
-	Engine::stopcompl_timer = 0;
-	this->options.gameTimer = 0;
-	this->attackTimer = 0;
-	this->monsterSoundTimer = 0;
+	Engine::slowdown_timer = 0.f;
+	Engine::stopcompl_timer = 0.f;
+	this->options.gameTimer = 0.f;
+	this->attackTimer = 0.f;
+	this->monsterSoundTimer = 0.f;
 
 	this->soundHandler.SetPitch(0.0f);
 	this->soundHandler.PlayMusic(1);
@@ -638,14 +621,14 @@ void Game::ResetValues()
 
 void Game::LoadMainMenu()
 {
-	Engine::inGame = false;
+	options.state = MAINMENU;
+
 	if (this->player)
 		delete this->player;
 
 	if (this->enemy)
 		delete this->enemy;
 
-	options.state = MAINMENU;
 	// Refresh the game to a clean slate.
 	AIHandler::Reset();
 	SceneHandler()->RemoveAllScenes();
@@ -683,9 +666,6 @@ void Game::LoadMainMenu()
 
 	ToggleSSAO(false);
 	EDITSCENE.GetParticles().SetActive(false);
-
-	this->hasLoaded = false;
-	this->inGoal = false;
 }
 
 void Game::LoadMap()
@@ -705,7 +685,6 @@ void Game::LoadMap()
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
-	// 
 	// Terrain
 	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });

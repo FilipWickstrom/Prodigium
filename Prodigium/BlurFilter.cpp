@@ -137,12 +137,6 @@ BlurFilter::BlurFilter()
 
 BlurFilter::~BlurFilter()
 {
-	if (this->computeShader)
-		this->computeShader->Release();
-	if (this->unorderedAccessView)
-		this->unorderedAccessView->Release();
-	if (this->settingsBuffer)
-		this->settingsBuffer->Release();
 }
 
 bool BlurFilter::Initialize()
@@ -210,4 +204,19 @@ void BlurFilter::Render(ID3D11UnorderedAccessView* uav)
 		ID3D11UnorderedAccessView* nullUAV = nullptr;
 		Graphics::GetContext()->CSSetUnorderedAccessViews(0, 1, &nullUAV, nullptr);
 	}
+}
+
+void BlurFilter::Destroy()
+{
+	if (this->computeShader)
+		this->computeShader->Release();
+	if (this->unorderedAccessView)
+		this->unorderedAccessView->Release();
+	if (this->settingsBuffer)
+		this->settingsBuffer->Release();
+}
+
+BlurLevel BlurFilter::GetBlurLevel() const
+{
+	return this->currentBlurLevel;
 }

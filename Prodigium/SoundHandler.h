@@ -39,4 +39,6 @@ public:
 	void SetPitch(const float& newPitch);
 	void SuspendAudio();
 	void ResumeAudio();
+	void StopAudio();
+	void MenuAudio();
 };

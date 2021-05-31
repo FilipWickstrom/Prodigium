@@ -86,6 +86,7 @@ bool MeshObject::LoadTextures(std::string& diffuse, std::string& normal)
 			std::cout << "Failed to create SRV for diffuse texture" << std::endl;
 			return false;
 		}
+
 	}
 	if (normal != "")
 	{

@@ -131,7 +131,7 @@ void InputHandler::HandleMessages()
 
 LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (InputHandler::instance->confineCursor)
+ 	if (InputHandler::instance->confineCursor)
 	{
 		RECT rect;
 		GetClientRect(hWnd, &rect);
@@ -154,7 +154,7 @@ LRESULT InputHandler::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 		break;
 	case WM_CLOSE:
 		DestroyWindow(hWnd);
-		return 0;
+		break;
 	case WM_ACTIVATE:
 		InputHandler::instance->confineCursor = true;
 		break;

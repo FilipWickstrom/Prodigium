@@ -19,15 +19,6 @@ SoundHandler::SoundHandler()
 
 SoundHandler::~SoundHandler()
 {
-	this->instanceFX.release();
-	this->instanceAmbient.release();
-	this->instanceMusic.release();
-	this->instanceMonster.release();
-	this->waveBankFX.release();
-	this->waveBankAmbient.release();
-	this->waveBankMusic.release();
-	this->waveBankMonster.release();
-	this->audEngine.release();	
 }
 
 const bool SoundHandler::Initialize()
@@ -168,4 +159,18 @@ void SoundHandler::SuspendAudio()
 void SoundHandler::ResumeAudio()
 {
 	this->audEngine->Resume();
+}
+
+void SoundHandler::StopAudio()
+{
+	this->instanceAmbient->Stop();
+	this->instanceFX->Stop();
+	this->instanceMonster->Stop();
+	this->instanceMusic->Stop();
+}
+
+void SoundHandler::MenuAudio()
+{
+	this->instanceFX->Stop();
+	this->instanceMonster->Stop();
 }
