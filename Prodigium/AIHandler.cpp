@@ -145,8 +145,8 @@ void AIHandler::MoveEnemy()
 			}
 			else
 			{
-				AIHANDLER->monster->RotateTo(deltaTime);
-				AIHANDLER->monster->Move(deltaTime);
+				AIHANDLER->monster->RotateTo();
+				AIHANDLER->monster->Move();
 				std::cout << AIHANDLER->monster->GetPosition().x << " " << AIHANDLER->monster->GetPosition().z << "\r";
 				if (AIHANDLER->chaseEnabled && omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
