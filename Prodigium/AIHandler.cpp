@@ -109,7 +109,11 @@ void AIHandler::SetEnemyAndPlayer(Enemy* enemy, Player* player)
 {
 	AIHANDLER->monster = enemy;
 	AIHANDLER->path.clear();
-	AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition())->GetPos());
+	AIHANDLER->currentEnemyNode = AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition());
+#ifdef _DEBUG
+	std::cout << "Closest Node ID: " << AIHANDLER->currentEnemyNode->GetID()<<std::endl;
+#endif
+	AIHANDLER->monster->SetNewTarget(AIHANDLER->currentEnemyNode->GetPos());
 	AIHANDLER->player = player;
 }
 
@@ -143,8 +147,9 @@ void AIHandler::MoveEnemy()
 			}
 			else
 			{
-				AIHANDLER->monster->RotateTo();
-				AIHANDLER->monster->Move();
+				AIHANDLER->monster->RotateTo(deltaTime);
+				AIHANDLER->monster->Move(deltaTime);
+				std::cout << AIHANDLER->monster->GetPosition().x << " " << AIHANDLER->monster->GetPosition().z << "\r";
 				if (AIHANDLER->chaseEnabled && omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::CHASE;
@@ -251,10 +256,21 @@ void AIHandler::AStarSearch()
 	startingNode->SetFGH(0.f, 0.f, 0.f);
 	startingNode->SetParent(startingNode);
 
-	while (goalNode == AIHANDLER->currentEnemyNode)
-	{
-		goalNode = AIHANDLER->GetRandomNode();
+		while (goalNode == AIHANDLER->currentEnemyNode)
+		{
+			goalNode = AIHANDLER->GetRandomNode();
+		}
+	case 1:
+
+		break;
+	default:
+		while (goalNode == AIHANDLER->currentEnemyNode)
+		{
+			goalNode = AIHANDLER->GetRandomNode();
+		}
+		break;
 	}
+
 
 	std::cout << "Destination: " << goalNode->GetID() << std::endl;;
 	Node* nodeToAdd = nullptr;

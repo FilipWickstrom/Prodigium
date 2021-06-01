@@ -36,6 +36,10 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->targetDir = this->targetPos - this->model->position;
 	this->targetDir.y = 0.0f;
 	this->targetDir.Normalize();
+	if ((this->model->position - targetPos).Length() < 10.f)
+	{
+		reachedTarget = true;
+	}
 }
 
 void Enemy::Move()
@@ -49,7 +53,7 @@ void Enemy::Move()
 
 	this->model->position += this->model->forward * this->speed * this->speedFactor * Graphics::deltaTime;
 
-	if ((this->model->position - this->targetPos).Length() < 10.f)
+	if ((this->model->position - targetPos).Length() < 10.f)
 	{
 		reachedTarget = true;
 	}
