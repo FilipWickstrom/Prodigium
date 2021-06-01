@@ -34,6 +34,7 @@ Node* AIHandler::FindClosestNode(const Vector3& position)
 			currentClosest = currentNode;
 		}
 	}
+
 	return currentClosest;
 }
 
@@ -103,7 +104,6 @@ void AIHandler::CreateNodes()
 	}
 	AIHANDLER->currentEnemyNode = AIHANDLER->allNodes.at(0);
 }
-
 
 void AIHandler::SetEnemyAndPlayer(Enemy* enemy, Player* player)
 {
@@ -250,20 +250,10 @@ void AIHandler::AStarSearch()
 	openList.push_back(startingNode);
 	startingNode->SetFGH(0.f, 0.f, 0.f);
 	startingNode->SetParent(startingNode);
-	switch (AIHANDLER->nrOfAstar)
+
+	while (goalNode == AIHANDLER->currentEnemyNode)
 	{
-	case 0:
-		goalNode = AIHANDLER->GetNodeByID(33);
-		break;
-	case 1:
-		goalNode = AIHANDLER->GetNodeByID(31);
-		break;
-	default:
-		while (goalNode == AIHANDLER->currentEnemyNode)
-		{
-			goalNode = AIHANDLER->GetRandomNode();
-		}
-		break;
+		goalNode = AIHANDLER->GetRandomNode();
 	}
 
 	std::cout << "Destination: " << goalNode->GetID() << std::endl;;

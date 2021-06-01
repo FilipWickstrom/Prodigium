@@ -6,7 +6,7 @@ using namespace DirectX::SimpleMath;
 Enemy::Enemy()
 {
 	this->model = new MeshObject;
-	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", true, true, { 1.0f, -3.0f, 1.0f });
+	this->model->Initialize("Monster", "monster_Albedo.png", "Monster_Normal.jpg", true, true, { 350.0f, -3.0f, -70.0f });
 	this->attackRange = 20.f;
 	this->speed = 10.f;
 	this->reachedTarget = false;
@@ -49,7 +49,7 @@ void Enemy::Move()
 
 	this->model->position += this->model->forward * this->speed * this->speedFactor * Graphics::deltaTime;
 
-	if ((this->model->position - targetPos).Length() < 10.f)
+	if ((this->model->position - this->targetPos).Length() < 10.f)
 	{
 		reachedTarget = true;
 	}
