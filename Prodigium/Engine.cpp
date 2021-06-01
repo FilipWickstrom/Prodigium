@@ -119,7 +119,7 @@ void Engine::Render(Player* player)
 	this->sceneHandler.EditScene().RenderSSAO();
 	this->gPass.Clear();
 	BlurLevel current = this->blurPass.GetBlurLevel();
-	this->blurPass.SetBlurLevel(BlurLevel::MEDIUM);
+	this->blurPass.SetBlurLevel(BlurLevel::HIGH);
 	this->blurPass.Render(&this->sceneHandler.EditScene().GetSSAOAccessView());
 	this->blurPass.SetBlurLevel(current);
 

@@ -32,7 +32,7 @@ void Game::BulletTime()
 	this->soundHandler.SetPitch(-speed);
 }
 
-void Game::MonsterSounds(const float& deltaTime)
+void Game::MonsterSounds()
 {
 	if (this->monsterSoundTimer <= 0)
 	{
@@ -42,16 +42,16 @@ void Game::MonsterSounds(const float& deltaTime)
 	}
 	else
 	{
-		this->monsterSoundTimer -= 1 * deltaTime;
+		this->monsterSoundTimer -= 1 * Graphics::deltaTime;
 		//std::cout << "Current Monster Sound Timer: " << this->monsterSoundTimer << "\r";
 	}
 }
 
-void Game::HandleScenes(const float& deltaTime)
+void Game::HandleScenes()
 {
 	if (this->zoomIn)
 	{
-		this->menu.ZoomIn({ 30.0f, -22.0f, 63.0f, 1.0f }, deltaTime, this->inGoal);
+		this->menu.ZoomIn({ 30.0f, -22.0f, 63.0f, 1.0f }, Graphics::deltaTime, this->inGoal);
 		GUIHandler::ShowMainMenu(false);
 	}
 	else if (!this->zoomIn && !this->isInOptions && this->options.state == MAINMENU)
@@ -120,23 +120,23 @@ void Game::HandleScenes(const float& deltaTime)
 	}
 
 	//Check if we are going to remove an object that is going on a timer
-	SceneHandler()->EditScene().CheckObjectsVisibility(deltaTime);
+	SceneHandler()->EditScene().CheckObjectsVisibility();
 }
 
-void Game::HandleGameLogic(const float& deltaTime)
+void Game::HandleGameLogic()
 {
 	// Return to player buffers.
 	if (this->hasLoaded)
 	{
-		this->options.gameTimer += 1 * deltaTime;
+		this->options.gameTimer += 1 * Graphics::deltaTime;
 
-		player->Update(EDITSCENE.GetAllStaticObjects(), direction, deltaTime);
+		this->player->Update(EDITSCENE.GetAllStaticObjects(), direction);
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
 			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
 			BulletTime(); //Slows down all sounds if you're near the enemy
-			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
+			MonsterSounds(); //Monster makes a sound every 5 seconds, that plays in 3D space
 
 		//Different things happen at level of sanity
 			int sanity = player->GetSanity();
@@ -174,7 +174,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 			if (this->attackTimer > 0 && !this->isPaused)
 			{
-				this->attackTimer -= 1 * deltaTime;
+				this->attackTimer -= 1 * Graphics::deltaTime;
 			}
 		}
 		//Check if the current animation has ended
@@ -209,7 +209,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 				{
 					this->enemy->SetSpeedFactor(0.1f);
 				}
-				EDITSCENE.GetDynamicObject(i).SetVisible(false);
+				EDITSCENE.RemoveDynamicObject(i);
 			}
 			index++;
 		}
@@ -218,7 +218,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
 		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
-		AIHandler::MoveEnemy(deltaTime);
+		AIHandler::MoveEnemy();
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -271,14 +271,12 @@ const bool Game::IsRunning() const
 	return true;
 }
 
-void Game::HandleInput(const float& deltaTime)
+void Game::HandleInput()
 {
 	//Example of how the keyboard and mouse input is gathered and used.
 	//Updates the keyboard and mouse with new info about their current state.
 
 	InputHandler::UpdateKeyboardAndMouse();
-
-	direction = { 0.f, 0.f };
 
 	// Pause the game.
 	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
@@ -342,33 +340,11 @@ void Game::HandleInput(const float& deltaTime)
 	{
 		this->zoomIn = true;
 	} 
-	if (this->hasLoaded && !this->isPaused)
+	if (this->hasLoaded && !this->isPaused && Engine::inGame)
 	{
-		/*------------------SANITY TESTING----------------*/
-		if (InputHandler::IsKeyPressed(Keyboard::G))
-		{
-			this->player->SetSanity(0);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::H))
-		{
-			this->player->SetSanity(50);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::J))
-		{
-			this->player->SetSanity(100);
-		}
-		/*------------------SANITY TESTING----------------*/
-
-		if (InputHandler::IsKeyPressed(Keyboard::K))
-		{
-			OpenConsole();
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::L))
-		{
-			EDITSCENE.GetParticles().SetActive(false);
-		}
-
 		/*------------------MOVEMENT----------------*/
+		direction = { 0.f, 0.f };
+
 		if (this->player->IsMoving())
 		{
 			//Sideways
@@ -449,38 +425,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 		}
 
-		/*------------------MOVEMENT----------------*/
-
-		/*------Animation settings for player------*/
-		if (InputHandler::IsKeyPressed(Keyboard::D9))
-		{
-			this->player->GetMeshObject()->InterpolateAnim(true);
-#ifdef _DEBUG
-			std::cout << "[Player] Interpolation: ON" << std::endl;
-#endif
-		}
-		else if (InputHandler::IsKeyPressed(Keyboard::D0))
-		{
-			this->player->GetMeshObject()->InterpolateAnim(false);
-#ifdef _DEBUG
-			std::cout << "[Player] Interpolation: OFF" << std::endl;
-#endif
-		}
-		/*------Animation settings for player------*/
-
-
-		/*------AI Handling------*/
-#ifdef _DEBUG
-		if (InputHandler::IsKeyPressed(Keyboard::Y))
-		{
-			AIHandler::ToggleEnemySpeed();
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::U))
-		{
-			AIHandler::ToggleChase();
-		}
-#endif
-
+		/*--------------Picking up cluses------------*/
 		if (InputHandler::IsLMBPressed())
 		{
 			for (int i = trapIndices[0]; i < trapIndices[0] + (trapIndices.size()); i++)
@@ -498,6 +443,8 @@ void Game::HandleInput(const float& deltaTime)
 				}
 			}
 		}
+
+		/*--------------Placing traps------------*/
 		if (InputHandler::IsRMBPressed())
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
@@ -519,17 +466,75 @@ void Game::HandleInput(const float& deltaTime)
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}
+		
+		/*--------------Swaping traps------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::E))
 		{
 			Engine::ChangeActiveTrap();
 		}
+
+		/*--------------Rotate player------------*/
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
 			int invert = 1;
 			if (this->options.inverseSens)
 				invert = -1;
 
-			this->player->RotateCamera(invert * InputHandler::GetMouseY() * deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * deltaTime * this->options.mouseSens);
+			this->player->RotateCamera(invert * InputHandler::GetMouseY() * Graphics::deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * Graphics::deltaTime * this->options.mouseSens);
+		}
+
+#ifdef _DEBUG
+		/*
+			Cheats and shortcutes when in debug
+		*/
+
+		/*------------------Sanity testing----------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::G))
+		{
+			this->player->SetSanity(0);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::H))
+		{
+			this->player->SetSanity(50);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::J))
+		{
+			this->player->SetSanity(100);
+		}
+
+		/*------------------Particle toggle----------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::L))
+		{
+			EDITSCENE.GetParticles().SetActive(false);
+		}
+
+		/*------Animation settings for player------*/
+		if (InputHandler::IsKeyPressed(Keyboard::D9))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(true);
+			std::cout << "[Player] Interpolation: ON" << std::endl;
+		}
+		else if (InputHandler::IsKeyPressed(Keyboard::D0))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(false);
+			std::cout << "[Player] Interpolation: OFF" << std::endl;
+		}
+
+		/*------AI Handling------*/
+		if (InputHandler::IsKeyPressed(Keyboard::Y))
+		{
+			AIHandler::ToggleEnemySpeed();
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::U))
+		{
+			AIHandler::ToggleChase();
+		}
+
+#endif 
+		/*--------------Toggling on console window------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::K))
+		{
+			OpenConsole();
 		}
 	}
 }
@@ -541,33 +546,33 @@ bool Game::OnFrame(const float& deltaTime)
 	// 2. Update the game assets and logic
 	// 3. Render
 
-	Graphics::SetDeltaTime(deltaTime);
+	Graphics::deltaTime = deltaTime;
 	/*---------------ONE---------------*/
-	HandleInput(deltaTime);
+	HandleInput();
 
 	/*---------------TWO---------------*/
-	HandleScenes(deltaTime);
-	HandleGameLogic(deltaTime);
+	HandleGameLogic();
+	HandleScenes();
 
 	/*---------------THREE---------------*/
 	Engine::ClearDisplay();
 	Engine::Render(this->player);
 
-	if (!this->isPaused && player)
+	if (!this->isPaused && player && hasLoaded)
 	{
-		AIHandler::MoveEnemy(deltaTime);
+		AIHandler::MoveEnemy();
 		// So we don't go over a certain value
 		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
 
 		if (this->slowdown_timer > 0.0f)
 		{
-			this->slowdown_timer -= 1.0f * deltaTime;
+			this->slowdown_timer -= 1.0f * Graphics::deltaTime;
 			this->slowdown_timer = std::max(this->slowdown_timer, 0.0f);
 		}
 
 		if (this->stopcompl_timer > 0.0f)
 		{
-			this->stopcompl_timer -= 1.0f * deltaTime;
+			this->stopcompl_timer -= 1.0f * Graphics::deltaTime;
 			this->stopcompl_timer = std::max(this->stopcompl_timer, 0.0f);
 		}
 	}
@@ -690,7 +695,7 @@ void Game::LoadMap()
 	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
-	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+
 	// Terrain
 	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
@@ -825,6 +830,22 @@ void Game::LoadMap()
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	EDITSCENE.AddLight(L);
+
+	/*
+		Bounds
+	*/
+	//Left of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { -350,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Front of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,350 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Right of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 750,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Back from spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,-450 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)

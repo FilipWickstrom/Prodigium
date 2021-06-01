@@ -37,7 +37,7 @@ public:
 	static void CreateNodes();
 	static void SetEnemyAndPlayer(Enemy* enemy, Player* player);
 	static void ConnectNodes(Node* node1, Node* node2);
-	static void MoveEnemy(const float& deltaTime);
+	static void MoveEnemy();
 	static Node* GetNodeByID(const int& id);
 	static const bool& IsChaseEnabled();
 	static void ToggleChase();

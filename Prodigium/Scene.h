@@ -108,6 +108,7 @@ public:
 	void AddLight(LightStruct& L);
 	void PopLight();
 	void PopAllLights();
+	void UpdateLightsBuffer();
 
 	// update the object matrix buffer of current selected object, as in update the position, rotation and scale.
 	void UpdateMatrix(const DirectX::SimpleMath::Vector3& pos = { 0.0f, 0.0f, 0.0f },
@@ -115,6 +116,7 @@ public:
 
 	// the vector will erase whatever item was at begin() + index, resets currentObject to 0.
 	void RemoveObject(const int& index);
+	void RemoveDynamicObject(const int& index);
 
 	// switches the current object to indexed object if it is within the scope of the vector! else nothing changes.
 	void SwitchObject(const int& index);
@@ -174,5 +176,5 @@ public:
 
 	//Turn the visibility of an item to on or off after time
 	void TurnVisibilty(const int& index, float afterTime, bool visible = false);
-	void CheckObjectsVisibility(float deltaTime);
+	void CheckObjectsVisibility();
 };

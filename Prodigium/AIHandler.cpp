@@ -121,13 +121,14 @@ void AIHandler::ConnectNodes(Node* node1, Node* node2)
 	node2->AddConnectedNode(node1);
 }
 
-void AIHandler::MoveEnemy(const float& deltaTime)
+void AIHandler::MoveEnemy()
 {
 	if (AIHANDLER->monster)
 	{
 		switch (AIHANDLER->states)
 		{
 		case EnemyStates::PATROL:
+			AIHANDLER->monster->speed = 10.f;
 			if (AIHANDLER->monster->HasReachedTarget())
 			{
 				if (AIHANDLER->path.size() > 0)
@@ -157,11 +158,12 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			break;
 		case EnemyStates::CHASE:
+			AIHANDLER->monster->speed = 17.5f;
 			if (AIHANDLER->chaseEnabled)
 			{
 
 				AIHANDLER->monster->SetNewTarget(AIHANDLER->player->GetPlayerPos());
-				AIHANDLER->monster->RotateTo(deltaTime);
+				AIHANDLER->monster->RotateTo();
 
 				if ((AIHANDLER->monster->GetPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
 				{
@@ -175,7 +177,7 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 				}
 				else
 				{
-					AIHANDLER->monster->Move(deltaTime);
+					AIHANDLER->monster->Move();
 				}
 				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
