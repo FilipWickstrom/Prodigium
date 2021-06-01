@@ -120,7 +120,7 @@ void Game::HandleScenes()
 	}
 
 	//Check if we are going to remove an object that is going on a timer
-	SceneHandler()->EditScene().CheckObjectsVisibility(deltaTime);
+	SceneHandler()->EditScene().CheckObjectsVisibility(Graphics::deltaTime);
 }
 
 void Game::HandleGameLogic()
