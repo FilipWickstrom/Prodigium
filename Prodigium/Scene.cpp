@@ -19,10 +19,10 @@ const bool Scene::SetupLightBuffer()
 
 	// Description for the buffer containing all the light information.
 	D3D11_BUFFER_DESC desc = {};
-	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.ByteWidth = sizeof(LightStruct) * (UINT)this->lights.size();
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	desc.StructureByteStride = sizeof(LightStruct);
 	desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
@@ -117,6 +117,7 @@ Scene::~Scene()
 	}
 	this->dynamicObjects.clear();
 	this->staticObjects.clear();
+	this->visibleObjects.clear();
 }
 
 void Scene::Add(const std::string& objFile,
@@ -171,6 +172,14 @@ void Scene::PopAllLights()
 		this->lights.pop_back();
 		this->firstTime = true;
 	}
+}
+
+void Scene::UpdateLightsBuffer()
+{
+	D3D11_MAPPED_SUBRESOURCE resource;
+	Graphics::GetContext()->Map(this->lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	memcpy(resource.pData, &this->lights[0], sizeof(LightStruct) * this->lights.size());
+	Graphics::GetContext()->Unmap(this->lightBuffer, 0);
 }
 
 void Scene::Add(MeshObject* object)
@@ -498,6 +507,55 @@ int Scene::GetNrOfDynamicObjects() const
 std::unordered_map<std::uintptr_t, MeshObject*>& Scene::GetAllStaticObjects()
 {
 	return this->staticObjects;
+}
+
+void Scene::TurnVisibilty(const int& index, float afterTime, bool visible)
+{
+	if (index < (int)this->objects.size() - 1 && index >= 0)
+	{
+		if (this->objects[index] != nullptr)
+		{
+			VisibleObject obj = {};
+			obj.index = index;
+			obj.finalTime = afterTime;
+			obj.visible = visible;
+			this->visibleObjects.push_back(obj);
+		}
+	}
+}
+
+void Scene::CheckObjectsVisibility(float deltaTime)
+{
+	if (!this->visibleObjects.empty())
+	{
+		for (size_t i = 0; i < this->visibleObjects.size(); i++)
+		{
+			//Increase the time of the object
+			this->visibleObjects[i].currentTime += deltaTime;
+
+			//Reached the end of the timer - going to set its visibility to on or off
+			if (this->visibleObjects[i].currentTime >= this->visibleObjects[i].finalTime)
+			{
+				UINT index = visibleObjects[i].index;
+				this->objects[index]->SetVisible(this->visibleObjects[i].visible);
+				this->visibleObjects.erase(this->visibleObjects.begin() + i);
+				
+				//Check if any light is close
+				bool foundLight = false;
+				for (size_t lightIndex = 0; lightIndex < this->lights.size() && !foundLight; lightIndex++)
+				{
+					if (this->objects[index]->GetDistance(this->lights[lightIndex].position) < 5.0f)
+					{
+						foundLight = true;
+						//Turn of the light - aka set type to anything other than 
+						//0,1,2 (direction, point, spot)
+						this->lights[lightIndex].attentuate.w = -1.0f;
+						UpdateLightsBuffer();
+					}
+				}
+			}
+		}
+	}
 }
 
 #ifdef _DEBUG

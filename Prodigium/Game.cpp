@@ -118,6 +118,9 @@ void Game::HandleScenes()
 		GUIHandler::ShowGameGUI(false);
 		this->LoadMainMenu();
 	}
+
+	//Check if we are going to remove an object that is going on a timer
+	SceneHandler()->EditScene().CheckObjectsVisibility(deltaTime);
 }
 
 void Game::HandleGameLogic()
@@ -432,9 +435,9 @@ void Game::HandleInput()
 
 			//When any of movementkeys is released go back to idle animation
 			else if (InputHandler::IsKeyReleased(Keyboard::W) ||
-				InputHandler::IsKeyReleased(Keyboard::S) ||
-				InputHandler::IsKeyReleased(Keyboard::A) ||
-				InputHandler::IsKeyReleased(Keyboard::D))
+					 InputHandler::IsKeyReleased(Keyboard::S) ||
+					 InputHandler::IsKeyReleased(Keyboard::A) ||
+					 InputHandler::IsKeyReleased(Keyboard::D))
 			{
 				//Randomize idle state
 				AnimationState state;
@@ -486,7 +489,10 @@ void Game::HandleInput()
 				{
 					this->player->SetMovement(false);
 					this->player->GetMeshObject()->ChangeAnimState(AnimationState::PICKUP);
-					SceneHandler()->EditScene().GetMeshObject(i).SetVisible(false);
+
+					//Set visibility to off after 1.8f seconds
+					SceneHandler()->EditScene().TurnVisibilty(i, 1.8f, false);
+
 					this->player->IncreaseCollectedClues();
 					this->player->IncreaseSanity((int)(25 / (1 * 0.5)));
 				}
@@ -819,6 +825,22 @@ void Game::LoadMap()
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	EDITSCENE.AddLight(L);
+
+	/*
+		Bounds
+	*/
+	//Left of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { -350,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Front of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,350 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Right of spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 750,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	//Back from spawn
+	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,-450 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
