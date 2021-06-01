@@ -175,5 +175,5 @@ public:
 
 	//Turn the visibility of an item to on or off after time
 	void TurnVisibilty(const int& index, float afterTime, bool visible = false);
-	void CheckObjectsVisibility(float deltaTime);
+	void CheckObjectsVisibility();
 };

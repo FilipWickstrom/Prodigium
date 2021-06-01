@@ -225,11 +225,7 @@ void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 			{
 				continue;
 			}
-			// Project the u vector onto the plane normal to get a length down to the player position
-			// Take that length (-+) the halflength of current OBB to get the difference. 
-			// If the difference is positive and it's the smallest of all sides, we which of the 
-			// planes of the OBB we collided which. That will move the player in the direction
-			// of the planes normal.
+
 			Vector3 corners[8];
 			this->playerModel->colliders[0].boundingBox.GetCorners(corners);
 			Vector3 halfLengths = object.second->colliders[i].boundingBox.Extents;
@@ -238,6 +234,8 @@ void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 			int planeIndex = 0;
 			int cornerIndex = 0;
 
+			// Loop through all planes of the colliding object to see which direction
+			// to push the player towards
 			for (int k = 0; k < 4; k++)
 			{
 				Vector3 planeNormal = object.second->colliders[i].planes[k].normal;
@@ -267,15 +265,6 @@ void Player::CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*
 
 				float projectedLength = (dot * planeNormal).Length();
 				currentLength = projectedLength;
-
-				//if (k == 0 || k == 1)
-				//{
-				//	currentLength = halfLengths.z - projectedLength;
-				//}
-				//else
-				//{
-				//	currentLength = halfLengths.x - projectedLength;
-				//}
 
 				if (currentLength < lastDistance)
 				{

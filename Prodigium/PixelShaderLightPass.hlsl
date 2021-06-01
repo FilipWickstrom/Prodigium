@@ -112,7 +112,7 @@ float doShadow(float index, float4 lightViewPos)
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 diff = float4(1.0f, 1.0f, 1.0f, 0.8f);
+    float4 diff = float4(1.0f, 1.0f, 1.0f, 1.0f);
     float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
     float distance = length(lights[index].position.xyz - buff.positionWS.xyz);
     float3 lightVector = normalize(lights[index].position.xyz - buff.positionWS.xyz);
@@ -153,14 +153,14 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
         float d = max(distance - range, 0);
         
         //Attenuate depending on distance from lightsource
-        float denom = d / range + 1.f;
+        float denom = d / range + 0.75f;
         float attenuation = 1.f / (denom * denom);
-        float cutoff = 0.001f;
+        float cutoff = 0.1f;
      
         // scale and bias attenuation such that:
         // attenuation == 0 at extent of max influence
         // attenuation == 1 when d == 0
-        attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.05f;
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
         attenuation = max(attenuation, 0);
         
         float4 matSpec = float4(buff.specular.xyz, 1.0f);
@@ -239,14 +239,14 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
         float d = max(distance - range, 0);
         
         //Attenuate depending on distance from lightsource
-        float denom = d / range + 1.f;
+        float denom = d / range + 0.75f;
         float attenuation = 1.f / (denom * denom);
-        float cutoff = 0.01f;
+        float cutoff = 0.1f;
      
         // scale and bias attenuation such that:
         // attenuation == 0 at extent of max influence
         // attenuation == 1 when d == 0
-        attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.1f;
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
         attenuation = max(attenuation, 0);
     
         // Add upp the specular

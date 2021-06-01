@@ -524,14 +524,14 @@ void Scene::TurnVisibilty(const int& index, float afterTime, bool visible)
 	}
 }
 
-void Scene::CheckObjectsVisibility(float deltaTime)
+void Scene::CheckObjectsVisibility()
 {
 	if (!this->visibleObjects.empty())
 	{
 		for (size_t i = 0; i < this->visibleObjects.size(); i++)
 		{
 			//Increase the time of the object
-			this->visibleObjects[i].currentTime += deltaTime;
+			this->visibleObjects[i].currentTime += Graphics::deltaTime;
 
 			//Reached the end of the timer - going to set its visibility to on or off
 			if (this->visibleObjects[i].currentTime >= this->visibleObjects[i].finalTime)

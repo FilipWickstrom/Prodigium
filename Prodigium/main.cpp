@@ -27,7 +27,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	double currentFrame = 0.f, lastFrame = omp_get_wtime();
 	float deltaTime = 0.f, deltaSum = 0.f;
-	const float targetDelta = 1 / 250.f;
+	const float targetDelta = 1 / 144.f;
 	srand((unsigned int)time(0));
 	while (game.IsRunning())
 	{
