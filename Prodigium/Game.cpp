@@ -278,8 +278,6 @@ void Game::HandleInput()
 
 	InputHandler::UpdateKeyboardAndMouse();
 
-	direction = { 0.f, 0.f };
-
 	// Pause the game.
 	if (!this->isPaused && this->hasLoaded && InputHandler::IsKeyPressed(Keyboard::Escape))
 	{
@@ -344,31 +342,9 @@ void Game::HandleInput()
 	} 
 	if (this->hasLoaded && !this->isPaused && Engine::inGame)
 	{
-		/*------------------SANITY TESTING----------------*/
-		if (InputHandler::IsKeyPressed(Keyboard::G))
-		{
-			this->player->SetSanity(0);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::H))
-		{
-			this->player->SetSanity(50);
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::J))
-		{
-			this->player->SetSanity(100);
-		}
-		/*------------------SANITY TESTING----------------*/
-
-		if (InputHandler::IsKeyPressed(Keyboard::K))
-		{
-			OpenConsole();
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::L))
-		{
-			EDITSCENE.GetParticles().SetActive(false);
-		}
-
 		/*------------------MOVEMENT----------------*/
+		direction = { 0.f, 0.f };
+
 		if (this->player->IsMoving())
 		{
 			//Sideways
@@ -449,38 +425,7 @@ void Game::HandleInput()
 			}
 		}
 
-		/*------------------MOVEMENT----------------*/
-
-		/*------Animation settings for player------*/
-		if (InputHandler::IsKeyPressed(Keyboard::D9))
-		{
-			this->player->GetMeshObject()->InterpolateAnim(true);
-#ifdef _DEBUG
-			std::cout << "[Player] Interpolation: ON" << std::endl;
-#endif
-		}
-		else if (InputHandler::IsKeyPressed(Keyboard::D0))
-		{
-			this->player->GetMeshObject()->InterpolateAnim(false);
-#ifdef _DEBUG
-			std::cout << "[Player] Interpolation: OFF" << std::endl;
-#endif
-		}
-		/*------Animation settings for player------*/
-
-
-		/*------AI Handling------*/
-#ifdef _DEBUG
-		if (InputHandler::IsKeyPressed(Keyboard::Y))
-		{
-			AIHandler::ToggleEnemySpeed();
-		}
-		if (InputHandler::IsKeyPressed(Keyboard::U))
-		{
-			AIHandler::ToggleChase();
-		}
-#endif
-
+		/*--------------Picking up cluses------------*/
 		if (InputHandler::IsLMBPressed())
 		{
 			for (int i = trapIndices[0]; i < trapIndices[0] + (trapIndices.size()); i++)
@@ -498,6 +443,8 @@ void Game::HandleInput()
 				}
 			}
 		}
+
+		/*--------------Placing traps------------*/
 		if (InputHandler::IsRMBPressed())
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
@@ -519,10 +466,14 @@ void Game::HandleInput()
 				this->slowdown_timer = SLOWCOOLDOWN * this->options.difficulty;
 			}
 		}
+		
+		/*--------------Swaping traps------------*/
 		if (InputHandler::IsKeyPressed(Keyboard::E))
 		{
 			Engine::ChangeActiveTrap();
 		}
+
+		/*--------------Rotate player------------*/
 		if (InputHandler::getMouseMode() == Mouse::Mode::MODE_RELATIVE && (InputHandler::GetMouseX() != 0 || InputHandler::GetMouseY() != 0))
 		{
 			int invert = 1;
@@ -530,6 +481,60 @@ void Game::HandleInput()
 				invert = -1;
 
 			this->player->RotateCamera(invert * InputHandler::GetMouseY() * Graphics::deltaTime * this->options.mouseSens, invert * InputHandler::GetMouseX() * Graphics::deltaTime * this->options.mouseSens);
+		}
+
+#ifdef _DEBUG
+		/*
+			Cheats and shortcutes when in debug
+		*/
+
+		/*------------------Sanity testing----------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::G))
+		{
+			this->player->SetSanity(0);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::H))
+		{
+			this->player->SetSanity(50);
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::J))
+		{
+			this->player->SetSanity(100);
+		}
+
+		/*------------------Particle toggle----------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::L))
+		{
+			EDITSCENE.GetParticles().SetActive(false);
+		}
+
+		/*------Animation settings for player------*/
+		if (InputHandler::IsKeyPressed(Keyboard::D9))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(true);
+			std::cout << "[Player] Interpolation: ON" << std::endl;
+		}
+		else if (InputHandler::IsKeyPressed(Keyboard::D0))
+		{
+			this->player->GetMeshObject()->InterpolateAnim(false);
+			std::cout << "[Player] Interpolation: OFF" << std::endl;
+		}
+
+		/*------AI Handling------*/
+		if (InputHandler::IsKeyPressed(Keyboard::Y))
+		{
+			AIHandler::ToggleEnemySpeed();
+		}
+		if (InputHandler::IsKeyPressed(Keyboard::U))
+		{
+			AIHandler::ToggleChase();
+		}
+
+#endif 
+		/*--------------Toggling on console window------------*/
+		if (InputHandler::IsKeyPressed(Keyboard::K))
+		{
+			OpenConsole();
 		}
 	}
 }
