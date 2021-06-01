@@ -706,9 +706,9 @@ void Game::LoadMap()
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 
-	// Terrain
-	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
-		{ 1000.0f, 1.0f, 1000.0f });
+	// Terrain: 10x10 quads with updating uv-coords
+	// One side of the total grid is 100. Scale it up by 20 = 2000x2000 like before
+	SceneHandler()->EditScene().Add("geo_terrain10x10.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f,0.0f }, {}, {20, 1, 20});
 
 	LightStruct L;
 
