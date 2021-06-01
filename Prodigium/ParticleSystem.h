@@ -53,7 +53,7 @@ public:
 	ParticleSystem();
 	virtual ~ParticleSystem();
 	void SetActive(bool act = true);
-	bool UpdateSpeedBuffer(DirectX::SimpleMath::Vector3 playerPos, DirectX::SimpleMath::Vector3 monsterPos);
+	bool UpdateSpeedBuffer(const DirectX::SimpleMath::Vector3& playerPos, const DirectX::SimpleMath::Vector3& monsterPos);
 	void Render();
 	const bool IsActive() const;
 };

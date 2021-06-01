@@ -126,6 +126,7 @@ void AIHandler::MoveEnemy()
 		switch (AIHANDLER->states)
 		{
 		case EnemyStates::PATROL:
+			AIHANDLER->monster->speed = 10.f;
 			if (AIHANDLER->monster->HasReachedTarget())
 			{
 				if (AIHANDLER->path.size() > 0)
@@ -154,6 +155,7 @@ void AIHandler::MoveEnemy()
 			}
 			break;
 		case EnemyStates::CHASE:
+			AIHANDLER->monster->speed = 17.5f;
 			if (AIHANDLER->chaseEnabled)
 			{
 

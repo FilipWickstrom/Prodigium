@@ -84,7 +84,7 @@ const DirectX::SimpleMath::Vector3& Enemy::GetPosition() const
 const bool Enemy::IsCloseToPlayer(const DirectX::SimpleMath::Vector3& playerPos)
 {
 	bool toReturn = false;
-	if ((this->model->position - playerPos).Length() < 50.f)
+	if ((this->model->position - playerPos).Length() < 100.f)
 	{
 		toReturn = true;
 	}

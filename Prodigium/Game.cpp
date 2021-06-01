@@ -209,7 +209,7 @@ void Game::HandleGameLogic()
 				{
 					this->enemy->SetSpeedFactor(0.1f);
 				}
-				EDITSCENE.GetDynamicObject(i).SetVisible(false);
+				EDITSCENE.RemoveDynamicObject(i);
 			}
 			index++;
 		}
@@ -690,7 +690,7 @@ void Game::LoadMap()
 	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
-	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+
 	// Terrain
 	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });

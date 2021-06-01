@@ -262,6 +262,31 @@ void Scene::RemoveObject(const int& index)
 	}
 }
 
+void Scene::RemoveDynamicObject(const int& index)
+{
+	if (index < (int)this->dynamicObjects.size() && index >= 0)
+	{
+		if (this->dynamicObjects[index] != nullptr)
+		{
+			delete this->dynamicObjects[index];
+			this->dynamicObjects.erase(this->dynamicObjects.begin() + index);
+		}
+		else
+		{
+#ifdef _DEBUG
+			std::cout << "Object was a nullptr!\n";
+#endif
+		}
+	}
+	else
+	{
+#ifdef _DEBUG
+		std::cout << "index is outside of vector scope!\n";
+		std::cout << "index was: " << index << ". Scope is: " << 0 << " to " << (int)this->dynamicObjects.size() - 1 << "\n";
+#endif
+	}
+}
+
 void Scene::SwitchObject(const int& index)
 {
 	if (index < (int)this->objects.size() && index >= 0)

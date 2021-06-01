@@ -6,7 +6,7 @@ class Enemy
 {
 private:
 	MeshObject* model;
-	float speed, defaultSpeedFactor;
+	float defaultSpeedFactor;
 	float speedFactor;
 	float attackRange;
 	float speedDegradeCooldown;
@@ -20,6 +20,8 @@ private:
 public:
 	Enemy();
 	virtual ~Enemy();
+
+	float speed;
 	// Sets forward vector to point to the new targets position
 	void SetNewTarget(const DirectX::SimpleMath::Vector3& newPos);
 	// Moves the enemy towards the forward vector
