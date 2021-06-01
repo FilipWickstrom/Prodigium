@@ -360,6 +360,7 @@ void AnimatedObject::LoadAnimations(std::string animFolder)
 	std::string strafeFile = animFolder + "/" + animFolder + "_Strafe.fbx";
 	std::string deathFile = animFolder + "/" + animFolder + "_Dead.fbx";
 	std::string pickupFile = animFolder + "/" + animFolder + "_Pickup.fbx";
+	std::string attackFile = animFolder + "/" + animFolder + "_Attack.fbx";
 
 	UINT counter = 0;
 
@@ -459,6 +460,19 @@ void AnimatedObject::LoadAnimations(std::string animFolder)
 	{
 		delete pickupAnim;
 	}
+
+	//Load in attack animation
+	Animation* attackAnim = new Animation();
+	if (attackAnim->Load(attackFile, this->boneMap, false, 200))
+	{
+		this->animationList.push_back(attackAnim);
+		this->animStates[AnimationState::ATTACK] = counter;
+		counter++;
+	}
+	else
+	{
+		delete attackAnim;
+	}
 }
 
 bool AnimatedObject::CreateBonesCBuffer()
@@ -519,6 +533,24 @@ void AnimatedObject::ClearTree(Bone& currentBone)
 		}
 	}
 	currentBone.children.clear();
+}
+
+void AnimatedObject::CheckEndedAnimations()
+{
+	if (this->animationList[this->animStates[this->currentState]]->HasReachedEnd())
+	{
+		switch (this->currentState)
+		{
+		case AnimationState::ATTACK:
+			this->animationList[this->animStates[this->currentState]]->ResetCurrentTime();
+			this->animationList[this->animStates[this->currentState]]->ResetReachedEnd();
+			this->currentState = AnimationState::IDLE;
+			break;
+		//Pickup could have been here but now its needed in game. Don't have time to fix
+		default:
+			break;
+		};
+	}
 }
 
 AnimatedObject::AnimatedObject()
@@ -631,6 +663,7 @@ void AnimatedObject::ChangeAnimState(AnimationState state)
 				break;
 			case AnimationState::DEAD:
 			case AnimationState::PICKUP:
+			case AnimationState::ATTACK:
 				this->animationList[this->animStates[previousState]]->ResetCurrentTime();
 				this->animationList[this->animStates[previousState]]->ResetReachedEnd();
 				break;
@@ -697,6 +730,9 @@ void AnimatedObject::Render(const Matrix& worldMatrix, bool animate)
 		//Animate the object and get the new matrices
 		if (animate && this->currentState != AnimationState::NONE)
 		{
+			//Check if the current animation has reached end and switch if needed
+			CheckEndedAnimations();
+
 			//Get all animated matrices at this time for every bone
 			this->animationList[this->animStates[this->currentState]]->GetAnimationMatrices(this->boneNames, this->animatedMatrices, this->useInterpolation);
 
