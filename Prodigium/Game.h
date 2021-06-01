@@ -25,9 +25,9 @@ private:
 	SoundHandler soundHandler;
 	RandomSpotPicker picker;
 	bool running;
-	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
+	bool hasLoaded;
 
 	bool isInOptions;
 	std::vector<int> trapIndices;

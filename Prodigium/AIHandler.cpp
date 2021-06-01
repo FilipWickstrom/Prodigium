@@ -34,6 +34,7 @@ Node* AIHandler::FindClosestNode(const Vector3& position)
 			currentClosest = currentNode;
 		}
 	}
+
 	return currentClosest;
 }
 
@@ -104,13 +105,14 @@ void AIHandler::CreateNodes()
 	AIHANDLER->currentEnemyNode = AIHANDLER->allNodes.at(0);
 }
 
-
 void AIHandler::SetEnemyAndPlayer(Enemy* enemy, Player* player)
 {
 	AIHANDLER->monster = enemy;
 	AIHANDLER->path.clear();
 	AIHANDLER->currentEnemyNode = AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition());
+#ifdef _DEBUG
 	std::cout << "Closest Node ID: " << AIHANDLER->currentEnemyNode->GetID()<<std::endl;
+#endif
 	AIHANDLER->monster->SetNewTarget(AIHANDLER->currentEnemyNode->GetPos());
 	AIHANDLER->player = player;
 }
@@ -258,6 +260,16 @@ void AIHandler::AStarSearch()
 		{
 			goalNode = AIHANDLER->GetRandomNode();
 		}
+	case 1:
+
+		break;
+	default:
+		while (goalNode == AIHANDLER->currentEnemyNode)
+		{
+			goalNode = AIHANDLER->GetRandomNode();
+		}
+		break;
+	}
 
 
 	std::cout << "Destination: " << goalNode->GetID() << std::endl;;

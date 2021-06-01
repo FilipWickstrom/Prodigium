@@ -342,7 +342,8 @@ bool ParticleSystem::UpdateSpeedBuffer(const DirectX::SimpleMath::Vector3& playe
 	// Control the speed of particles.
 
 	// Distance between player and monster
-	float dist = (playerPos - monsterPos).Length();
+	float radius = 55.f;
+	float dist = (playerPos - monsterPos).Length() - radius;
 
 	// Changes the speed factor, highest being 1.0 aka normal speed.
 	float factor = std::max(std::min(dist, 100.0f), 5.0f) * 0.25f;
