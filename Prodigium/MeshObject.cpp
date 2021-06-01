@@ -134,17 +134,17 @@ void MeshObject::BuildCollider(const DirectX::SimpleMath::Vector3& min, const Di
 
 	// Front plane
 	out.planes[0].normal = Vector3(Vector3(corners[0] - corners[1])).Cross(Vector3(corners[2] - corners[1]));
-	out.planes[0].point = corners[1];
+	out.planes[0].point = corners[6];
 
 	// Back plane
 	out.planes[1].normal = out.planes[0].normal * -1.f;
-	out.planes[1].point = corners[6];
+	out.planes[1].point = corners[0];
 
-	// Right side plane
+	// Right plane
 	out.planes[2].normal = Vector3(Vector3(corners[0] - corners[4])).Cross(Vector3(corners[7] - corners[4]));
 	out.planes[2].point = corners[4];
 
-	// Left side plane
+	// Left plane
 	out.planes[3].normal = out.planes[2].normal * -1.f;
 	out.planes[3].point = corners[5];
 }

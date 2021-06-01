@@ -44,7 +44,7 @@ private:
 public:
 	CameraObject();
 	virtual ~CameraObject();
-	void SetTransform(const DirectX::SimpleMath::Matrix& transform);
+	void MoveCameraTowards(const Vector3& playerPos);
 	bool Initialize(const int& windowWidth,const int& windowHeight, const float& nearPlane,const float& farPlane,const float& fov, const DirectX::SimpleMath::Vector3& eyePosition, const DirectX::SimpleMath::Vector3& lookTo);
 	void Rotate(const float& pitchAmount, const float& yawAmount, const float& rollAmount);
 	DirectX::SimpleMath::Vector3 GetPos() const;

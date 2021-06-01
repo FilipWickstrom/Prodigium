@@ -23,7 +23,7 @@ public:
 	// Sets forward vector to point to the new targets position
 	void SetNewTarget(const DirectX::SimpleMath::Vector3& newPos);
 	// Moves the enemy towards the forward vector
-	void Move(const float& deltaTime);
+	void Move();
 	const float& GetAttackRange() const;
 	void PlayAttackAnimation();
 	const bool CanAttack() const;
@@ -37,7 +37,7 @@ public:
 	void ResetSpeed();
 	const float& GetSpeedFactor() const;
 	// Rotates the enemy towards the forward vector
-	void RotateTo(const float& deltaTime);
+	void RotateTo();
 	// Updates the enemy
 	void Update();
 };

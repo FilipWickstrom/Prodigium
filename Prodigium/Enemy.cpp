@@ -38,16 +38,16 @@ void Enemy::SetNewTarget(const Vector3& newPos)
 	this->targetDir.Normalize();
 }
 
-void Enemy::Move(const float& deltaTime)
+void Enemy::Move()
 {
 	// Update speed factor.
 	this->speedDegradeCooldown = std::max(this->speedDegradeCooldown, 0.0f);
 	if (this->speedDegradeCooldown > 0)
-		this->speedDegradeCooldown -= 1 * deltaTime;
+		this->speedDegradeCooldown -= 1 * Graphics::deltaTime;
 	if (this->speedDegradeCooldown < 0)
 		this->speedFactor = 1.0f;
 
-	this->model->position += this->model->forward * this->speed * this->speedFactor * deltaTime;
+	this->model->position += this->model->forward * this->speed * this->speedFactor * Graphics::deltaTime;
 
 	if ((this->model->position - targetPos).Length() < 10.f)
 	{
@@ -125,7 +125,7 @@ const float& Enemy::GetSpeedFactor() const
 	return this->speedFactor;
 }
 
-void Enemy::RotateTo(const float& deltaTime)
+void Enemy::RotateTo()
 {
 	const float ROTATION_SPEED = 5.f;
 
@@ -149,7 +149,7 @@ void Enemy::RotateTo(const float& deltaTime)
 	this->angle = -theta;
 
 	Quaternion q2 = Quaternion::CreateFromAxisAngle(this->model->up, this->angle);
-	this->model->qRotation = Quaternion::Slerp(this->model->qRotation, q2, ROTATION_SPEED * deltaTime);
+	this->model->qRotation = Quaternion::Slerp(this->model->qRotation, q2, ROTATION_SPEED * Graphics::deltaTime);
 }
 
 void Enemy::Update()

@@ -50,6 +50,7 @@ void GameObject::BuildMatrix(const Vector3& pos, const Vector3& scl, const Vecto
 	this->modelMatrix = Matrix::CreateScale(this->scale) * 
 						Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * 
 						Matrix::CreateTranslation(position);
+	this->qRotation = Quaternion::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z);
 }
 
 bool GameObject::UpdateMatrix(const Vector3& pos, const Vector3& scl, const Vector3& rot)

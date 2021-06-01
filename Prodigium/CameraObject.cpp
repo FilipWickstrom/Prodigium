@@ -53,7 +53,9 @@ bool CameraObject::Initialize(const int& windowWidth, const int& windowHeight,
 	this->viewProjMatrixCPU.projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(this->fieldOfView, aspectRatio, this->nearPlane, this->farPlane);
 	this->viewProjMatrix.projectionMatrix = this->viewProjMatrixCPU.projectionMatrix.Transpose();
 	this->scale = { 1.f, 1.f, 1.f };
+	this->yaw = DirectX::XM_PIDIV2;
 	this->rotation = { pitch, yaw, roll };
+	this->qRotation = Quaternion::CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->position = eyePos;
 	this->UpdateMatrixCPU();
 	if (!this->frustum->Initialize())
@@ -110,6 +112,7 @@ void CameraObject::Rotate(const float& pitchAmount, const float& yawAmount, cons
 		this->pitch = -0.32f;
 	}
 
+	this->qRotation = Quaternion::CreateFromYawPitchRoll(this->yaw, this->pitch, this->roll);
 	this->rotation = { this->pitch, this->yaw, this->roll };
 }
 
@@ -182,12 +185,13 @@ Frustum* CameraObject::GetFrustum()
 	return this->frustum;
 }
 
-void CameraObject::SetTransform(const Matrix& transform)
+void CameraObject::MoveCameraTowards(const Vector3& playerPos)
 {
-	Matrix transformed = Matrix::CreateFromYawPitchRoll(this->rotation.y, this->rotation.x, this->rotation.z) * transform;
+	Matrix transformed = Matrix::CreateFromQuaternion(this->qRotation) * Matrix::CreateTranslation(playerPos);
 
 	this->eyePos = Vector3::Transform(this->defaultPosition, transformed);
 	this->position = eyePos;
-	this->camForward = Vector3::TransformNormal(this->defaultForward, transformed);
+	this->camForward = (playerPos - this->position);
+	this->camForward.y += 9.f;
 	this->camForward.Normalize();
 }

@@ -484,7 +484,7 @@ void AnimatedObject::UpdateBonesCBuffer()
 	Graphics::GetContext()->Unmap(this->boneMatricesBuffer, 0);
 }
 
-void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix)
+void AnimatedObject::CalcFinalMatrix(Bone& currentBone, UINT parentID, const Matrix& worldMatrix)
 {
 	Matrix localMatrix = this->animatedMatrices[this->boneMap[currentBone.name]];
 	UINT id = currentBone.id;
@@ -690,7 +690,7 @@ const AnimationState& AnimatedObject::GetAnimationState()
 	return this->currentState;
 }
 
-void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool animate)
+void AnimatedObject::Render(const Matrix& worldMatrix, bool animate)
 {	
 	if (!GUIHandler::IsPaused())
 	{
@@ -724,7 +724,7 @@ void AnimatedObject::Render(const DirectX::SimpleMath::Matrix& worldMatrix, bool
 	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &nullBoneBuffer);
 }
 
-void AnimatedObject::RenderShadows(const DirectX::SimpleMath::Matrix& worldMatrix)
+void AnimatedObject::RenderShadows(const Matrix& worldMatrix)
 {
 	Graphics::GetContext()->VSSetConstantBuffers(6, 1, &this->boneMatricesBuffer);
 	Graphics::GetContext()->VSSetShader(this->shadowVertexShader, nullptr, 0);
