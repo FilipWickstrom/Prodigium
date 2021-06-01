@@ -163,7 +163,7 @@ void AIHandler::MoveEnemy()
 			}
 			break;
 		case EnemyStates::CHASE:
-			AIHANDLER->monster->speed = 17.5f;
+			AIHANDLER->monster->speed = 20.f;
 			if (AIHANDLER->chaseEnabled)
 			{
 
