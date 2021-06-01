@@ -9,7 +9,7 @@ struct PixelShaderInput
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
     float4 tangent    : TANGENT;
-    float4 specular   : SPECULAR;
+    float3 biTangent  : BITANGENT;
     float4 viewPosNorm : SSAO;
 };
 
@@ -35,11 +35,13 @@ PixelShaderOutput main(PixelShaderInput input)
     
     if(input.tangent.w >= 1.0f)
     {
-        float3 tangent = input.tangent.xyz;
+        /*float3 tangent = input.tangent.xyz;
         tangent = normalize(tangent);
         float3 bitangent = cross(input.tangent.xyz, input.normalWS);
-        bitangent = normalize(bitangent);
-        float3x3 TBN = float3x3(tangent, bitangent, input.normalWS);
+        bitangent = normalize(bitangent);*/
+        float3 tangent = normalize(input.tangent.xyz);
+        float3 biTangent = normalize(input.biTangent);
+        float3x3 TBN = float3x3(tangent, biTangent, input.normalWS);
     
         output.normalWS = float4(mul(normalMap, TBN), 0.0f);
         output.normalWS = normalize(output.normalWS);
@@ -51,7 +53,7 @@ PixelShaderOutput main(PixelShaderInput input)
     input.viewPosNorm.xyz = normalize(input.viewPosNorm.xyz);
     output.viewPosNorm = input.viewPosNorm;
  
-    output.specularGB = input.specular;
+    output.specularGB = float4(0,0,0,0);
     
     return output;
 }

@@ -388,7 +388,7 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		return false;
 	}
 
-	LoadColliders(hasBounds);
+	//LoadColliders(hasBounds);
 
 	if (!CreateModelMatrixBuffer())
 	{

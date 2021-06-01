@@ -4,12 +4,12 @@
 
 using namespace DirectX::SimpleMath;
 
-bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices)
+bool Mesh::CreateVertIndiBuffers(const std::vector<MyFileFormat::VertexData>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices)
 {
 	/*-----Vertexbuffer-----*/
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.ByteWidth = sizeof(Vertex) * (UINT)vertices.size();
+	desc.ByteWidth = sizeof(MyFileFormat::VertexData) * (UINT)vertices.size();
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
@@ -28,8 +28,9 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 		return false;
 	}
 	this->vertexBuffers.push_back(vertbuffer);
-
-	/*-----Indexbuffer-----*/
+	
+	
+	//-----Indexbuffer-----
 	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	desc.ByteWidth = sizeof(UINT) * nrOfIndices;
 	data.pSysMem = &indices[0];
@@ -42,7 +43,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<Vertex>& vertices, const std:
 		return false;
 	}
 	this->indexBuffers.push_back(indbuffer);
-
+	
 	return true;
 }
 
@@ -72,9 +73,9 @@ Mesh::~Mesh()
 	this->meshPositions.clear();
 }
 
-bool Mesh::LoadFile(std::string filename)
+bool Mesh::LoadFile(std::string fileName)
 {
-	Assimp::Importer importer;
+	/*Assimp::Importer importer;
 
 	//Load in the scene - can be many meshes together in one file
 	const aiScene* scene = importer.ReadFile("Models/" + filename,
@@ -166,16 +167,146 @@ bool Mesh::LoadFile(std::string filename)
 	std::cout << "Model: " << filename << " was successfully loaded! Meshes: " << scene->mNumMeshes << std::endl;
 	importer.FreeScene();
 	return true;
+	*/
+	std::string filePath = "Models/" + fileName;
+
+	if (AssetLoader::LoadModel(filePath.c_str()))
+	{
+		int nrOfMeshes = AssetLoader::GetNumberOfMeshesInScene();
+
+		if (nrOfMeshes <= 0)
+			return false;
+
+		this->meshes.resize(nrOfMeshes);
+
+		if (nrOfMeshes == 1)
+		{
+			this->meshes[0] = AssetLoader::GetModel(0);
+			this->vertexSet.insert({ 0, AssetLoader::GetVertexSet(0) });
+			this->nrOfVertices.push_back((UINT)this->meshes[0].nrOfVertices);
+			std::vector<MyFileFormat::VertexData> vertices;
+			std::vector<UINT> indices;
+			indices.resize(meshes[0].nrOfVertices);
+			UINT nrOfIndices = indices.size();
+
+			this->indexCount.push_back(nrOfIndices);
+
+			vertices.resize(nrOfVertices[0]);
+			for (int i = 0; i < meshes[0].nrOfVertices; i++)
+			{
+				//Positions
+				vertices[i].positions.X = vertexSet[0][i].positions.X;
+				vertices[i].positions.Y = vertexSet[0][i].positions.Y;
+				vertices[i].positions.Z = -vertexSet[0][i].positions.Z; //Inverts the Z:axis to be left-handed
+
+				//Normals
+				vertices[i].normals.X = vertexSet[0][i].normals.X;
+				vertices[i].normals.Y = vertexSet[0][i].normals.Y;
+				vertices[i].normals.Z = -vertexSet[0][i].normals.Z;	//Inverts the Z:axis to be left-handed
+
+				//UVs
+				vertices[i].uvs.X = vertexSet[0][i].uvs.X;
+				vertices[i].uvs.Y = -vertexSet[0][i].uvs.Y; //Inverts the V:value to comply to DirectX
+
+				//Tangents
+				vertices[i].tangent.X = vertexSet[0][i].tangent.X;
+				vertices[i].tangent.Y = vertexSet[0][i].tangent.Y;
+				vertices[i].tangent.Z = vertexSet[0][i].tangent.Z;
+
+				//BiTangents
+				vertices[i].biTangent.X = vertexSet[0][i].biTangent.X;
+				vertices[i].biTangent.Y = vertexSet[0][i].biTangent.Y;
+				vertices[i].biTangent.Z = vertexSet[0][i].biTangent.Z;
+			}
+
+			//Reverse the draw order of triangle
+			size_t o = 2;
+			std::vector<MyFileFormat::VertexData> temp;
+			for (int i = 0; i < meshes[0].nrOfVertices / 3; i++)
+			{
+				temp.push_back(vertices[o]);
+				temp.push_back(vertices[o - 1]);
+				temp.push_back(vertices[o - 2]);
+				o += 3;
+			}
+
+			if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
+				return false;
+		}
+		else if (nrOfMeshes > 1)
+		{
+			for (int i = 0; i < nrOfMeshes; i++)
+			{
+				std::vector<MyFileFormat::VertexData> vertices;
+				std::vector<UINT> indices;
+				UINT nrOfIndices = 0;
+
+				this->meshes[i] = AssetLoader::GetModel(i);
+				this->vertexSet.insert({i, AssetLoader::GetVertexSet(i)});
+
+				this->nrOfVertices.push_back((UINT)this->meshes[i].nrOfVertices);
+				indices.resize(meshes[i].nrOfVertices);
+				nrOfIndices = indices.size();
+				this->indexCount.push_back(nrOfIndices);
+				vertices.resize(nrOfVertices[i]);
+				for (int j = 0; j < meshes[i].nrOfVertices; j++)
+				{
+					//Positions
+					vertices[j].positions.X = vertexSet[i][j].positions.X;
+					vertices[j].positions.Y = vertexSet[i][j].positions.Y;
+					vertices[j].positions.Z = -vertexSet[i][j].positions.Z; //Inverts the Z:axis to be left-handed
+
+					//Normals
+					vertices[j].normals.X = vertexSet[i][j].normals.X;
+					vertices[j].normals.Y = vertexSet[i][j].normals.Y;
+					vertices[j].normals.Z = -vertexSet[i][j].normals.Z; //Inverts the Z:axis to be left-handed
+
+					//UVs
+					vertices[j].uvs.X = vertexSet[i][j].uvs.X;
+					vertices[j].uvs.Y = -vertexSet[i][j].uvs.Y; //Inverts the V:value to comply to DirectX
+
+					//Tangents
+					vertices[j].tangent.X = vertexSet[i][j].tangent.X;
+					vertices[j].tangent.Y = vertexSet[i][j].tangent.Y;
+					vertices[j].tangent.Z = vertexSet[i][j].tangent.Z;
+
+					//BiTangents
+					vertices[j].biTangent.X = vertexSet[i][j].biTangent.X;
+					vertices[j].biTangent.Y = vertexSet[i][j].biTangent.Y;
+					vertices[j].biTangent.Z = vertexSet[i][j].biTangent.Z;
+				}
+
+				//Reverse the draw order of triangle
+				size_t o = 2;
+				std::vector<MyFileFormat::VertexData> temp;
+				for (int i = 0; i < meshes[0].nrOfVertices / 3; i++)
+				{
+					temp.push_back(vertices[o]);
+					temp.push_back(vertices[o - 1]);
+					temp.push_back(vertices[o - 2]);
+					o += 3;
+				}
+
+				if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
+					return false;
+			}
+		}
+
+		return true;
+	}
+	else
+		return false;
 }
 
 void Mesh::Render()
 {
-	UINT stride = sizeof(Vertex);
+	UINT stride = sizeof(MyFileFormat::VertexData);
 	UINT offset = 0;
 	for (int i = 0; i < this->vertexBuffers.size(); i++)
 	{
 		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);
-		Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R32_UINT, 0);
-		Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
+		Graphics::GetContext()->Draw(this->nrOfVertices[i], 0);
+		//Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R32_UINT, 0);
+		//Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
 	}
 }
