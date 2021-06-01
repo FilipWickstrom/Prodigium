@@ -137,7 +137,9 @@ void AIHandler::MoveEnemy()
 				{
 					AIHANDLER->currentEnemyNode = AIHANDLER->path.at(0);
 					AIHANDLER->monster->SetNewTarget(AIHANDLER->path.at(0)->GetPos());
+#ifdef _DEBUG
 					std::cout << "Going to ID: " << AIHANDLER->path.at(0)->GetID() << std::endl;
+#endif
 					AIHANDLER->path.erase(AIHANDLER->path.begin());
 				}
 				else
@@ -149,11 +151,12 @@ void AIHandler::MoveEnemy()
 			{
 				AIHANDLER->monster->RotateTo();
 				AIHANDLER->monster->Move();
-				std::cout << AIHANDLER->monster->GetPosition().x << " " << AIHANDLER->monster->GetPosition().z << "\r";
 				if (AIHANDLER->chaseEnabled && omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::CHASE;
+#ifdef _DEBUG
 					std::cout << "Switching to Chase\n";
+#endif
 					AIHANDLER->stateSwitchTime = omp_get_wtime();
 					AIHANDLER->path.clear();
 				}
@@ -173,7 +176,9 @@ void AIHandler::MoveEnemy()
 					{
 						AIHANDLER->monster->PlayAttackAnimation();
 						AIHANDLER->monster->Attack(AIHANDLER->player);
-						//std::cout << "Attacking\n";
+#ifdef _DEBUG
+						std::cout << "Attacking\n";
+#endif
 					}
 
 				}
@@ -184,7 +189,9 @@ void AIHandler::MoveEnemy()
 				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::PATROL;
+#ifdef _DEBUG
 					std::cout << "Switching to Patrol\n";
+#endif
 					AIHANDLER->stateSwitchTime = omp_get_wtime();
 					AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition())->GetPos());
 				}
