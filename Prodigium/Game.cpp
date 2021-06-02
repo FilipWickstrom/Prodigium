@@ -414,21 +414,6 @@ void Game::HandleInput()
 				}
 				direction.x = -1.f;
 			}
-
-			//When any of movementkeys is released go back to idle animation
-			else if (InputHandler::IsKeyReleased(Keyboard::W) ||
-				InputHandler::IsKeyReleased(Keyboard::S) ||
-				InputHandler::IsKeyReleased(Keyboard::A) ||
-				InputHandler::IsKeyReleased(Keyboard::D))
-			{
-				//Randomize idle state
-				AnimationState state;
-				if (rand() % 4 == 0)
-					state = AnimationState::IDLE2;
-				else
-					state = AnimationState::IDLE;
-				this->player->GetMeshObject()->ChangeAnimState(state);
-			}
 		}
 
 		/*--------------Picking up clues------------*/
@@ -539,6 +524,20 @@ void Game::HandleInput()
 		//	OpenConsole();
 		//}
 #endif 
+	}
+
+	//When any of movementkeys is released go back to idle animation
+	if (this->player && direction.Length() <= 0.f && 
+		(this->player->GetMeshObject()->GetAnimState() != AnimationState::IDLE && 
+		this->player->GetMeshObject()->GetAnimState() != AnimationState::IDLE2))
+	{
+		//Randomize idle state
+		AnimationState state;
+		if (rand() % 4 == 0)
+			state = AnimationState::IDLE2;
+		else
+			state = AnimationState::IDLE;
+		this->player->GetMeshObject()->ChangeAnimState(state);
 	}
 }
 
@@ -708,7 +707,7 @@ void Game::LoadMap()
 
 	// Terrain: 10x10 quads with updating uv-coords
 	// One side of the total grid is 100. Scale it up by 20 = 2000x2000 like before
-	SceneHandler()->EditScene().Add("geo_terrain10x10.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f,0.0f }, {}, {20, 1, 20});
+	SceneHandler()->EditScene().Add("geo_terrain10x10.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f,0.0f }, {}, { 20, 1, 20 });
 
 	LightStruct L;
 
