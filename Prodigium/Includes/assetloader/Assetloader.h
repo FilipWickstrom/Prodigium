@@ -9,11 +9,9 @@ namespace AssetLoader
 
 	bool LoadModel(const char* filePath);
 
-	const std::string GetTextureName(unsigned int modelId);
+	std::string GetTextureName(unsigned int modelId);
 
 	const MyFileFormat::Mesh GetModel(unsigned int modelId);
-
-	const MyFileFormat::Material GetMaterial(unsigned int materialId);
 
 	const int GetNumberOfMeshesInScene();
 

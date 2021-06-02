@@ -12,19 +12,9 @@ bool AssetLoader::LoadModel(const char* p_Path)
 		return true;
 }
 
-const std::string AssetLoader::GetTextureName(unsigned int modelId)
-{
-	return MFF::GetMFF().GetModelTextureName(modelId);
-}
-
 const MyFileFormat::Mesh AssetLoader::GetModel(unsigned int modelId)
 {
 	return MFF::GetMFF().GetModel(modelId);
-}
-
-const MyFileFormat::Material AssetLoader::GetMaterial(unsigned int materialId)
-{
-	return MFF::GetMFF().GetMaterial(materialId);
 }
 
 const int AssetLoader::GetNumberOfMeshesInScene()

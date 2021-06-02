@@ -25,10 +25,14 @@ private:
 	std::unordered_map<unsigned int, std::unordered_map<unsigned int, MyFileFormat::VertexData>> vertexSet;
 	std::vector<UINT> nrOfVertices;
 
+	
+
 public:
 	// Mesh positions local space
 	// Used for colliders and reserved for other computations
 	std::vector<std::vector<DirectX::SimpleMath::Vector3>> meshPositions;
+	std::string diffuseTextureName;
+	std::string normalMapTextureName;
 	
 private:
 	bool CreateVertIndiBuffers(const std::vector<MyFileFormat::VertexData>& vertices, const std::vector<UINT>& indices, UINT nrOfIndices);

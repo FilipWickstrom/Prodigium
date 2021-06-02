@@ -45,7 +45,7 @@ public:
 	Collider modelCollider;
 
 private:
-	bool LoadTextures(std::string& diffuse, std::string& normal);
+	bool LoadTextures();
 	void BuildCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, Collider& out);
 	void BuildRenderCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, const std::vector<DirectX::SimpleMath::Vector3>& positions, Collider& out);
 	bool LoadColliders(bool hasColliders);
@@ -64,8 +64,6 @@ public:
 	virtual ~MeshObject();
 
 	bool Initialize(const std::string& meshObject, 
-					std::string diffuse = "", 
-					std::string normal = "", 
 					bool hasBounds = true,
 					bool hasAnimation = false,
 					const DirectX::SimpleMath::Vector3& pos = {0.0f,0.0f,0.0f},

@@ -4,48 +4,47 @@ namespace MyFileFormat
 {
 #define MAX_FILE_PATH_NAME 256
 #define MAX_NAME 64
-	//Structs for float3 and float2 to make it cleaner than using float arrays
+
 	struct float3
 	{
-		float X, Y, Z;
+		float x, y, z;
 
-		float3(float x, float y, float z)
+		float3(float X, float Y, float Z)
 		{
-			X = x;
-			Y = y;
-			Z = z;
+			x = X;
+			y = Y;
+			z = Z;
 		}
 		float3()
 		{
-			X = 0.0f;
-			Y = 0.0f;
-			Z = 0.0f;
+			x = 0;
+			y = 0;
+			z = 0;
 		}
 	};
 
 	struct float2
 	{
-		float X, Y;
+		float x, y;
 
-		float2(float x, float y)
+		float2(float X, float Y)
 		{
-			X = x;
-			Y = y;
+			x = X;
+			y = Y;
 		}
 		float2()
 		{
-			X = 0.0f;
-			Y = 0.0f;
+			x = 0;
+			y = 0;
 		}
 	};
-
+	
 	enum class SectionType
 	{
 		UNKNOWN,
 		FILE_PATH,
 		SCENE,
 		MESH,
-		MATERIAL,
 	};
 
 	struct SectionHeader
@@ -81,6 +80,20 @@ namespace MyFileFormat
 		char meshName[MAX_NAME] = {};
 		int nrOfVertices = 0;
 
+		char materialName[MAX_NAME] = {};
+		float3 ambientCol;
+		float3 diffuseCol;
+		float3 emissiveCol;
+		float3 specularCol;
+		float shininess = 0;
+
+		short hasTexture = 0;
+		char textureName[MAX_NAME] = {};
+		char textureFilePath[MAX_FILE_PATH_NAME] = {};
+		short hasNormalMap = 0;
+		char normalMapName[MAX_NAME] = {};
+		char normalMapFilePath[MAX_FILE_PATH_NAME] = {};
+
 		Mesh() : SectionHeader(SectionType::MESH) {}
 	};
 
@@ -93,26 +106,4 @@ namespace MyFileFormat
 		float3 tangent;
 		float3 biTangent;
 	};
-
-	struct Material : SectionHeader
-	{
-		char materialName[MAX_NAME] = {};
-
-		float3 ambientCol;
-		float3 diffuseCol;
-		float3 emissiveCol;
-		float3 specularCol;
-
-		float shininess = 0;
-
-		short hasTexture = 0;
-		char textureName[MAX_NAME] = {};
-		char textureFilePath[MAX_FILE_PATH_NAME] = {};
-
-		short hasNormalMap = 0;
-		char normalMapName[MAX_NAME] = {};
-		char normalMapFilePath[MAX_FILE_PATH_NAME] = {};
-
-		Material() : SectionHeader(SectionType::MATERIAL) {}
-	};	
 }

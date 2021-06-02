@@ -68,9 +68,7 @@ public:
 	const bool SetupInfoBuffer();
 
 	// adds an object to the scene, current selected object will point towards this new object.
-	void Add(const std::string& objFile,
-			 const std::string& diffuseTxt = "", 
-			 const std::string& normalTxt = "", 
+	void Add(const std::string& modelFile,
 			 bool hasBounds = true,
 			 bool hasAnimation = false,
 			 const DirectX::SimpleMath::Vector3& position = {0.0f, 0.0f, 0.0f},

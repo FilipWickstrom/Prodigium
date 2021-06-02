@@ -1,5 +1,6 @@
 #include "MFF.h"
 #include <filesystem>
+#include <iostream>
 
 void MFF::ReadFilePath()
 {
@@ -36,24 +37,12 @@ void MFF::ReadMesh()
 	meshId++;
 }
 
-void MFF::ReadMaterial()
-{
-	MyFileFormat::Material material;
-	ReadHeader(&material);
-
-	m_materialHeader.insert({ materialId, material });
-
-	materialId++;
-}
-
 void MFF::ResetObject()
 {
 	m_meshHeader.clear();
 	m_meshVertices.clear();
 	m_meshVerticesSets.clear();
-	m_materialHeader.clear();
 	meshId = 0;
-	materialId = 0;
 }
 
 MFF::MFF()
@@ -86,18 +75,17 @@ bool MFF::ReadFile()
 			if (section.Type == MyFileFormat::SectionType::FILE_PATH)
 			{
 				ReadFilePath();
+				std::cout << "File Path Read!" << std::endl;
 			}
 			if (section.Type == MyFileFormat::SectionType::SCENE)
 			{
 				ReadScene();
+				std::cout << "Scene Read!" << std::endl;
 			}
 			if (section.Type == MyFileFormat::SectionType::MESH)
 			{
 				ReadMesh();
-			}
-			if (section.Type == MyFileFormat::SectionType::MATERIAL)
-			{
-				ReadMaterial();
+				std::cout << "Mesh Read!" << std::endl;
 			}
 		}
 		m_readFile.close();
@@ -132,29 +120,9 @@ const MyFileFormat::Mesh& MFF::GetModel(unsigned int modelId)
 	return m_meshHeader.at(modelId);
 }
 
-const MyFileFormat::Material& MFF::GetMaterial(unsigned int materialId)
-{
-	return m_materialHeader.at(materialId);
-}
-
 const int& MFF::GetNumberOfMeshesInScene()
 {
 	return m_scene.numberOfMeshes;
-}
-
-const std::string MFF::GetModelTextureName(unsigned int modelId)
-{
-	MyFileFormat::Material material;
-	material = m_materialHeader.at(modelId);
-	if (material.hasTexture == true)
-	{
-		std::string textureName = material.textureName;
-		return textureName;
-	}
-	else
-	{
-		return "This model has no texture";
-	}
 }
 
 const std::unordered_map<unsigned int, MyFileFormat::VertexData>& MFF::GetVertexSet(unsigned int modelId)

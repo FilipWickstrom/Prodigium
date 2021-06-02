@@ -10,7 +10,6 @@ class MFF
 {
 private:
 	unsigned int meshId = 0;
-	unsigned int materialId = 0;
 
 	std::string m_readPath;
 	std::ifstream m_readFile;
@@ -18,7 +17,6 @@ private:
 	MyFileFormat::Scene m_scene;
 
 	std::unordered_map<unsigned int, MyFileFormat::Mesh> m_meshHeader;
-	std::unordered_map<unsigned int, MyFileFormat::Material> m_materialHeader;
 	std::unordered_map<unsigned int, MyFileFormat::VertexData> m_meshVertices;
 	std::unordered_map<unsigned int, std::unordered_map<unsigned int, MyFileFormat::VertexData>> m_meshVerticesSets;
 
@@ -27,7 +25,6 @@ private:
 	void ReadFilePath();
 	void ReadScene();
 	void ReadMesh();
-	void ReadMaterial();
 	void ResetObject();
 
 public:
@@ -40,9 +37,7 @@ public:
 	static MFF& GetMFF();
 
 	const MyFileFormat::Mesh& GetModel(unsigned int modelId);
-	const MyFileFormat::Material& GetMaterial(unsigned int materialId);
 	const int& GetNumberOfMeshesInScene();
-	const std::string GetModelTextureName(unsigned int modelId);
 	const std::unordered_map<unsigned int, MyFileFormat::VertexData>& GetVertexSet(unsigned int modelId);
 };
 

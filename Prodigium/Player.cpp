@@ -25,7 +25,7 @@ void Player::RotatePlayer()
 Player::Player()
 {
 	this->playerModel = new MeshObject;
-	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
+	this->playerModel->Initialize("Player", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
 
 	Vector3 cameraOffset = { 0.0f, 7.5f, -20.f };
 	Vector3 cameraForward = this->playerModel->colliders[0].boundingBox.Center - cameraOffset;

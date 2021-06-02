@@ -64,17 +64,15 @@ bool MeshObject::CreateColliderBuffers()
 }
 #endif
 
-bool MeshObject::LoadTextures(std::string& diffuse, std::string& normal)
+bool MeshObject::LoadTextures()
 {
 	HRESULT hr;
 
 	//Load in the diffuse texture
-	if (diffuse != "")
+	if (mesh->diffuseTextureName != "")
 	{
 		//To avoid writing long paths to textures
-		diffuse = "Textures/" + diffuse;
-
-		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuse);
+		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->diffuseTextureName));
 		if (diffTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -88,12 +86,11 @@ bool MeshObject::LoadTextures(std::string& diffuse, std::string& normal)
 		}
 
 	}
-	if (normal != "")
+	if (mesh->normalMapTextureName != "")
 	{
 		//To avoid writing long paths to textures
-		normal = "Textures/" + normal;
 
-		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normal);
+		ID3D11Texture2D* normTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->normalMapTextureName));
 		if (normTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -347,8 +344,6 @@ MeshObject::~MeshObject()
 }
 
 bool MeshObject::Initialize(const std::string& meshObject,
-							std::string diffuse,
-							std::string normal,
 							bool hasBounds,
 							bool hasAnimation,
 							const DirectX::SimpleMath::Vector3& pos,
@@ -382,7 +377,7 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		}
 	}
 
-	if (!LoadTextures(diffuse, normal))
+	if (!LoadTextures())
 	{
 		std::cout << "Failed to create textures..." << std::endl;
 		return false;

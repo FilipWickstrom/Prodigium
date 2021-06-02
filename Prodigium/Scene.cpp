@@ -119,9 +119,7 @@ Scene::~Scene()
 	this->staticObjects.clear();
 }
 
-void Scene::Add(const std::string& objFile,
-	const std::string& diffuseTxt,
-	const std::string& normalTxt,
+void Scene::Add(const std::string& modelFile,
 	bool hasBounds,
 	bool hasAnimation,
 	const Vector3& position,
@@ -132,7 +130,7 @@ void Scene::Add(const std::string& objFile,
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, hasAnimation, position, rotation, scale))
+	if (newObject->Initialize(modelFile, hasBounds, hasAnimation, position, rotation, scale))
 	{
 		this->objects.push_back(newObject);
 		this->currentObject = (int)objects.size() - 1;
@@ -188,7 +186,7 @@ void Scene::AddDynamicObject(const std::string& objFile, const std::string& diff
 		Create a new MeshObject from input.
 	*/
 	MeshObject* newObject = new MeshObject;
-	if (newObject->Initialize(objFile, diffuseTxt, normalTxt, hasBounds, hasAnimation, position, rotation, scale))
+	if (newObject->Initialize(objFile, hasBounds, hasAnimation, position, rotation, scale))
 	{
 		this->dynamicObjects.push_back(newObject);
 	}

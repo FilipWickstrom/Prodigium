@@ -636,22 +636,22 @@ void Game::LoadMainMenu()
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
-	EDITSCENE.Add("Barbwiretrap.mff", "BarbWireTrapAlbedo.png", "", false, false, { 0.0f, -100.0f, 0.0f });
+	//EDITSCENE.Add("Barbwiretrap.mff", false, false, { 0.0f, -100.0f, 0.0f });
 
 	//Static objects
-	EDITSCENE.Add("Bedroom.mff", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, { 1.5f, 1.5f, 1.5f });
+	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, { 1.5f, 1.5f, 1.5f });
 	//EDITSCENE.Add("clue_toy.obj", "toy_albedo.png", "", false, false, { -22.0f, -30.0f, 80.0f }, { 0.0f, 0.78f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 	//EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, { -30.0f, -3.0f, 80.0f }, { -0.52f, 3.14f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 	//EDITSCENE.Add("clue_book.obj", "book_albedo.png", "", false, false, { 42.0f, -22.0f, 58.0f }, { 0.0f, 2.35f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 	//EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, { 44.0f, -22.0f, 58.0f }, { 1.9f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
-	EDITSCENE.Add("ProdigiumText.mff", "ProdigiumTextAlbedo.png", "", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
+	//EDITSCENE.Add("ProdigiumText.mff", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 
 	//Animated Objects
-	EDITSCENE.Add("Player", "Char_Albedo.png", "Char_Normal.jpg", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
-	EDITSCENE.Add("Monster", "monster_albedo.png", "Monster_Normal.jpg", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
+	//EDITSCENE.Add("Player", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+	//EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+	//EDITSCENE.Add("Monster", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
 
-	EDITSCENE.Add("Bedroom.mff", "Bedroom_Diffuse.png", "Bedroom_Normal.png", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
 
 	//Varde Ljus
 	LightStruct L;
@@ -670,6 +670,7 @@ void Game::LoadMainMenu()
 
 void Game::LoadMap()
 {
+	/*
 	options.state = INGAME;
 
 	SceneHandler()->AddScene();
@@ -686,7 +687,7 @@ void Game::LoadMap()
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	// Terrain
-	SceneHandler()->EditScene().Add("geo_terrain.obj", "Terrain_Diffuse.png", "Terrain_Normal.png", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
+	SceneHandler()->EditScene().Add("geo_terrain.obj", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
 		{ 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;
@@ -767,6 +768,7 @@ void Game::LoadMap()
 	/*
 		Lamps
 	*/
+	/*
 	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
@@ -855,4 +857,5 @@ void Game::LoadMap()
 	ToggleSSAO(true);
 
 	this->inGoal = true;
+	*/
 }

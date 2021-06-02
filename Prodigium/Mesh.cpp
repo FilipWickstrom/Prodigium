@@ -195,30 +195,31 @@ bool Mesh::LoadFile(std::string fileName)
 			for (int i = 0; i < meshes[0].nrOfVertices; i++)
 			{
 				//Positions
-				vertices[i].positions.X = vertexSet[0][i].positions.X;
-				vertices[i].positions.Y = vertexSet[0][i].positions.Y;
-				vertices[i].positions.Z = -vertexSet[0][i].positions.Z; //Inverts the Z:axis to be left-handed
+				vertices[i].positions.x = vertexSet[0][i].positions.x;
+				vertices[i].positions.y = vertexSet[0][i].positions.y;
+				vertices[i].positions.z = -vertexSet[0][i].positions.z; //Inverts the Z:axis to be left-handed
 
 				//Normals
-				vertices[i].normals.X = vertexSet[0][i].normals.X;
-				vertices[i].normals.Y = vertexSet[0][i].normals.Y;
-				vertices[i].normals.Z = -vertexSet[0][i].normals.Z;	//Inverts the Z:axis to be left-handed
+				vertices[i].normals.x = vertexSet[0][i].normals.x;
+				vertices[i].normals.y = vertexSet[0][i].normals.y;
+				vertices[i].normals.z = -vertexSet[0][i].normals.z;	//Inverts the Z:axis to be left-handed
 
 				//UVs
-				vertices[i].uvs.X = vertexSet[0][i].uvs.X;
-				vertices[i].uvs.Y = -vertexSet[0][i].uvs.Y; //Inverts the V:value to comply to DirectX
+				vertices[i].uvs.x = vertexSet[0][i].uvs.x;
+				vertices[i].uvs.y = -vertexSet[0][i].uvs.y; //Inverts the V:value to comply to DirectX
 
 				//Tangents
-				vertices[i].tangent.X = vertexSet[0][i].tangent.X;
-				vertices[i].tangent.Y = vertexSet[0][i].tangent.Y;
-				vertices[i].tangent.Z = vertexSet[0][i].tangent.Z;
+				vertices[i].tangent.x = vertexSet[0][i].tangent.x;
+				vertices[i].tangent.y = vertexSet[0][i].tangent.y;
+				vertices[i].tangent.z = vertexSet[0][i].tangent.z;
 
 				//BiTangents
-				vertices[i].biTangent.X = vertexSet[0][i].biTangent.X;
-				vertices[i].biTangent.Y = vertexSet[0][i].biTangent.Y;
-				vertices[i].biTangent.Z = vertexSet[0][i].biTangent.Z;
+				vertices[i].biTangent.x = vertexSet[0][i].biTangent.x;
+				vertices[i].biTangent.y = vertexSet[0][i].biTangent.y;
+				vertices[i].biTangent.z = vertexSet[0][i].biTangent.z;
 			}
 
+			
 			//Reverse the draw order of triangle
 			size_t o = 2;
 			std::vector<MyFileFormat::VertexData> temp;
@@ -229,7 +230,7 @@ bool Mesh::LoadFile(std::string fileName)
 				temp.push_back(vertices[o - 2]);
 				o += 3;
 			}
-
+			
 			if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
 				return false;
 		}
@@ -252,30 +253,31 @@ bool Mesh::LoadFile(std::string fileName)
 				for (int j = 0; j < meshes[i].nrOfVertices; j++)
 				{
 					//Positions
-					vertices[j].positions.X = vertexSet[i][j].positions.X;
-					vertices[j].positions.Y = vertexSet[i][j].positions.Y;
-					vertices[j].positions.Z = -vertexSet[i][j].positions.Z; //Inverts the Z:axis to be left-handed
+					vertices[j].positions.x = vertexSet[i][j].positions.x;
+					vertices[j].positions.y = vertexSet[i][j].positions.y;
+					vertices[j].positions.z = -vertexSet[i][j].positions.z; //Inverts the Z:axis to be left-handed
 
 					//Normals
-					vertices[j].normals.X = vertexSet[i][j].normals.X;
-					vertices[j].normals.Y = vertexSet[i][j].normals.Y;
-					vertices[j].normals.Z = -vertexSet[i][j].normals.Z; //Inverts the Z:axis to be left-handed
+					vertices[j].normals.x = vertexSet[i][j].normals.x;
+					vertices[j].normals.y = vertexSet[i][j].normals.y;
+					vertices[j].normals.z = -vertexSet[i][j].normals.z; //Inverts the Z:axis to be left-handed
 
 					//UVs
-					vertices[j].uvs.X = vertexSet[i][j].uvs.X;
-					vertices[j].uvs.Y = -vertexSet[i][j].uvs.Y; //Inverts the V:value to comply to DirectX
+					vertices[j].uvs.x = vertexSet[i][j].uvs.x;
+					vertices[j].uvs.y = -vertexSet[i][j].uvs.y; //Inverts the V:value to comply to DirectX
 
 					//Tangents
-					vertices[j].tangent.X = vertexSet[i][j].tangent.X;
-					vertices[j].tangent.Y = vertexSet[i][j].tangent.Y;
-					vertices[j].tangent.Z = vertexSet[i][j].tangent.Z;
+					vertices[j].tangent.x = vertexSet[i][j].tangent.x;
+					vertices[j].tangent.y = vertexSet[i][j].tangent.y;
+					vertices[j].tangent.z = vertexSet[i][j].tangent.z;
 
 					//BiTangents
-					vertices[j].biTangent.X = vertexSet[i][j].biTangent.X;
-					vertices[j].biTangent.Y = vertexSet[i][j].biTangent.Y;
-					vertices[j].biTangent.Z = vertexSet[i][j].biTangent.Z;
+					vertices[j].biTangent.x = vertexSet[i][j].biTangent.x;
+					vertices[j].biTangent.y = vertexSet[i][j].biTangent.y;
+					vertices[j].biTangent.z = vertexSet[i][j].biTangent.z;
 				}
 
+				
 				//Reverse the draw order of triangle
 				size_t o = 2;
 				std::vector<MyFileFormat::VertexData> temp;
@@ -286,12 +288,16 @@ bool Mesh::LoadFile(std::string fileName)
 					temp.push_back(vertices[o - 2]);
 					o += 3;
 				}
-
+				
 				if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
 					return false;
 			}
 		}
 
+		if (meshes[0].hasTexture == 1)
+			this->diffuseTextureName = meshes[0].textureName;
+		if (meshes[0].hasNormalMap == 1)
+			this->normalMapTextureName = meshes[0].normalMapName;
 		return true;
 	}
 	else
