@@ -7,9 +7,9 @@
 #include "Resource.h"
 
 #pragma warning(push, 0)
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+//#include <assimp/Importer.hpp>
+//#include <assimp/postprocess.h>
+//#include <assimp/scene.h>
 
 #include <assetloader/Assetloader.h>
 
@@ -22,13 +22,17 @@ private:
 	std::vector<UINT>indexCount;
 
 	std::vector<MyFileFormat::Mesh> meshes;
-	std::unordered_map<unsigned int, std::unordered_map<unsigned int, MyFileFormat::VertexData>> vertexSet;
-	std::vector<UINT> nrOfVertices;	
+	std::vector<MyFileFormat::Mesh> meshesColliders;
+	std::vector<std::vector<MyFileFormat::VertexData>> vertexSet;
+	std::vector<std::vector<MyFileFormat::VertexData>> vertexSetColliders;
+	std::vector<UINT> nrOfVertices;
+	std::vector<UINT> nrOfVerticesColliders;
 
 public:
 	// Mesh positions local space
 	// Used for colliders and reserved for other computations
 	std::vector<std::vector<DirectX::SimpleMath::Vector3>> meshPositions;
+
 	std::string diffuseTextureName;
 	std::string normalMapTextureName;
 	

@@ -168,10 +168,12 @@ bool Mesh::LoadFile(std::string fileName)
 	importer.FreeScene();
 	return true;
 	*/
+	
 	std::string filePath = "Models/" + fileName;
 
 	if (AssetLoader::LoadModel(filePath.c_str()))
 	{
+		
 		int nrOfMeshes = AssetLoader::GetNumberOfMeshesInScene();
 
 		if (nrOfMeshes <= 0)
@@ -183,7 +185,8 @@ bool Mesh::LoadFile(std::string fileName)
 		if (nrOfMeshes == 1)
 		{
 			this->meshes[0] = AssetLoader::GetModel(0);
-			this->vertexSet.insert({ 0, AssetLoader::GetVertexSet(0) });
+			
+			this->vertexSet.push_back(AssetLoader::GetVertexSet(0));		
 			this->nrOfVertices.push_back((UINT)this->meshes[0].nrOfVertices);
 			std::vector<MyFileFormat::VertexData> vertices;
 			std::vector<UINT> indices;
@@ -237,7 +240,9 @@ bool Mesh::LoadFile(std::string fileName)
 			
 			if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
 				return false;
+		
 		}
+		
 		else if (nrOfMeshes > 1)
 		{
 			for (int i = 0; i < nrOfMeshes; i++)
@@ -247,7 +252,7 @@ bool Mesh::LoadFile(std::string fileName)
 				UINT nrOfIndices = 0;
 
 				this->meshes[i] = AssetLoader::GetModel(i);
-				this->vertexSet.insert({i, AssetLoader::GetVertexSet(i)});
+				this->vertexSet.push_back(AssetLoader::GetVertexSet(i));
 
 				this->nrOfVertices.push_back((UINT)this->meshes[i].nrOfVertices);
 				indices.resize(meshes[i].nrOfVertices);
@@ -288,13 +293,15 @@ bool Mesh::LoadFile(std::string fileName)
 
 				
 				//Reverse the draw order of triangle
+				size_t o = 2;
 				std::vector<MyFileFormat::VertexData> temp;
 				temp.resize(meshes[i].nrOfVertices / 3);
-				for (int k = 2; k < meshes[i].nrOfVertices / 3; k += 3)
+				for (int k = 2; k < meshes[i].nrOfVertices / 3; k++)
 				{
-					temp.push_back(vertices[k - 2]);
-					temp.push_back(vertices[k - 1]);
-					temp.push_back(vertices[k]);
+					temp.push_back(vertices[o]);
+					temp.push_back(vertices[o - 1]);
+					temp.push_back(vertices[o - 2]);
+					o += 3;
 				}
 				
 				if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
@@ -306,16 +313,18 @@ bool Mesh::LoadFile(std::string fileName)
 			this->diffuseTextureName = meshes[0].textureName;
 		if (meshes[0].hasNormalMap == 1)
 			this->normalMapTextureName = meshes[0].normalMapName;
+			
 		return true;
 	}
 	else
-		return false;
+		return false;		
 }
 
 void Mesh::Render()
 {
 	UINT stride = sizeof(MyFileFormat::VertexData);
 	UINT offset = 0;
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	for (int i = 0; i < this->vertexBuffers.size(); i++)
 	{
 		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);

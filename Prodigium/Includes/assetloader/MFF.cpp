@@ -1,5 +1,4 @@
 #include "MFF.h"
-#include <filesystem>
 #include <iostream>
 
 void MFF::ReadFilePath()
@@ -22,17 +21,18 @@ void MFF::ReadMesh()
 	MyFileFormat::VertexData vertex;
 	ReadHeader(&mesh);
 
-	m_meshHeader.insert({ meshId, mesh });
+	m_meshHeader.push_back(mesh);
+
 
 	m_meshVertices.clear();
 
 	for (int i = 0; i < mesh.nrOfVertices; i++)
 	{
 		m_readFile.read((char*)&vertex, sizeof(MyFileFormat::VertexData));
-		m_meshVertices.insert({ i, vertex });
+		m_meshVertices.push_back(vertex);
 	}
 
-	m_meshVerticesSets.insert({ meshId, m_meshVertices });
+	m_meshVerticesSets.push_back(m_meshVertices);
 
 	meshId++;
 }
@@ -117,7 +117,7 @@ MFF& MFF::GetMFF()
 
 const MyFileFormat::Mesh& MFF::GetModel(unsigned int modelId)
 {
-	return m_meshHeader.at(modelId);
+	return m_meshHeader[modelId];
 }
 
 const int& MFF::GetNumberOfMeshesInScene()
@@ -125,7 +125,7 @@ const int& MFF::GetNumberOfMeshesInScene()
 	return m_scene.numberOfMeshes;
 }
 
-const std::unordered_map<unsigned int, MyFileFormat::VertexData>& MFF::GetVertexSet(unsigned int modelId)
+const std::vector<MyFileFormat::VertexData>& MFF::GetVertexSet(unsigned int modelId)
 {
-	return m_meshVerticesSets.at(modelId);
+	return m_meshVerticesSets[modelId];
 }

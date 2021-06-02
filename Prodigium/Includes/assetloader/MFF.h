@@ -2,9 +2,7 @@
 #include "MyFileFormat.h"
 #include <vector>
 #include <iostream>
-#include <unordered_map>
 #include <fstream>
-#include <filesystem>
 
 class MFF
 {
@@ -16,9 +14,9 @@ private:
 	MyFileFormat::FilePath m_filePath;
 	MyFileFormat::Scene m_scene;
 
-	std::unordered_map<unsigned int, MyFileFormat::Mesh> m_meshHeader;
-	std::unordered_map<unsigned int, MyFileFormat::VertexData> m_meshVertices;
-	std::unordered_map<unsigned int, std::unordered_map<unsigned int, MyFileFormat::VertexData>> m_meshVerticesSets;
+	std::vector<MyFileFormat::Mesh> m_meshHeader;
+	std::vector<MyFileFormat::VertexData> m_meshVertices;
+	std::vector<std::vector<MyFileFormat::VertexData>> m_meshVerticesSets;
 
 	template<typename T>
 	void ReadHeader(T* header);
@@ -38,7 +36,7 @@ public:
 
 	const MyFileFormat::Mesh& GetModel(unsigned int modelId);
 	const int& GetNumberOfMeshesInScene();
-	const std::unordered_map<unsigned int, MyFileFormat::VertexData>& GetVertexSet(unsigned int modelId);
+	const std::vector<MyFileFormat::VertexData>& GetVertexSet(unsigned int modelId);
 };
 
 template<typename T>

@@ -1,5 +1,4 @@
 #include "Assetloader.h"
-#include "MFF.h"
 #include <fstream>
 
 bool AssetLoader::LoadModel(const char* p_Path)
@@ -22,7 +21,7 @@ const int AssetLoader::GetNumberOfMeshesInScene()
 	return MFF::GetMFF().GetNumberOfMeshesInScene();
 }
 
-const std::unordered_map<unsigned int, MyFileFormat::VertexData> AssetLoader::GetVertexSet(unsigned int modelId)
+const std::vector<MyFileFormat::VertexData>& AssetLoader::GetVertexSet(unsigned int modelId)
 {
 	return MFF::GetMFF().GetVertexSet(modelId);
 }
