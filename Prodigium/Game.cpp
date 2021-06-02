@@ -179,12 +179,6 @@ void Game::HandleGameLogic()
 			if (this->player->GetCollectedClues() >= (this->options.difficulty * 2))
 			{
 				GUIHandler::ReturnToMainMenu();
-				GUIHandler::ShowMainMenu(true);
-				GUIHandler::ShowGameGUI(false);
-				Engine::inGame = false;
-				// Set these values if you want to return to menu.
-				this->menu.Switch(true);
-				this->ResetValues();
 			}
 
 			if (this->attackTimer > 0 && !this->isPaused)
@@ -205,6 +199,9 @@ void Game::HandleGameLogic()
 				this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
 				this->player->IncreaseCollectedClues();
 				this->player->IncreaseSanity((int)(25 / (1 * 0.5)));
+				break;
+			case AnimationState::DEAD:
+				GUIHandler::ReturnToMainMenu();
 				break;
 			default:
 				break;
