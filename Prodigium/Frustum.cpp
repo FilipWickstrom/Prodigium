@@ -149,12 +149,12 @@ bool Frustum::Initialize()
 	DirectX::BoundingFrustum::CreateFromMatrix(this->frustumColliderOriginal, playerCam->GetProjMatrixCPU());
 
 	//SHOWCASE PURPOSE
-	//Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 25.f });
-	//this->frustumColliderOriginal.Far = 100.f;
+	Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 25.f });
+	this->frustumColliderOriginal.Far = 100.f;
 
 	// THIS SHOULD BE ON WHEN NOT SHOWCASING
-	this->frustumColliderOriginal.Far = 250.f;
-	Matrix transform = Matrix::CreateTranslation(playerCam->position);
+	//this->frustumColliderOriginal.Far = 250.f;
+	//Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
 
@@ -171,7 +171,7 @@ bool Frustum::Initialize()
 }
 
 #ifdef _DEBUG
-void Frustum::Render()
+void Frustum::Render(QuadTree* quadTree)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData = {};
 
@@ -189,5 +189,9 @@ void Frustum::Render()
 	UINT offset = 0;
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->DrawIndexed(24, 0, 0);
+
+#ifdef _DEBUG
+	quadTree->RenderNodes();
+#endif
 }
 #endif

@@ -15,7 +15,9 @@ void Player::RotatePlayer()
 Player::Player()
 {
 	this->playerModel = new MeshObject;
-	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { -40.f ,-5.3f, 45.f }, { 0.f, -DirectX::XM_PIDIV2, 0.f });
+	//this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { -40.f ,-5.3f, 45.f }, { 0.f, -DirectX::XM_PIDIV2, 0.f });
+	this->playerModel->Initialize("Player", "Char_Albedo.png", "Char_Normal.jpg", true, true, { -40.f ,75.f, 45.f }, { 0.f, -DirectX::XM_PIDIV2, 0.f });
+	this->playerModel->SetVisible(false);
 
 	Vector3 cameraOffset = { 0.0f, 7.5f, -17.f };
 	this->speed = 10.f;
@@ -26,7 +28,8 @@ Player::Player()
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerCam = new CameraObject;
 	ResourceManager::AddCamera("PlayerCam", playerCam);
-	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
+	//this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
+	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 1500.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
 	this->playerCam->MoveCameraTowards(this->playerModel->position);
 
 	//Fixes the large hitbox of the tposing player
@@ -83,7 +86,7 @@ void Player::RotateCamera(const float& pitch, const float& yaw)
 
 void Player::Sprint()
 {
-	this->speed = 35.0f;
+	this->speed = 60.0f;
 }
 
 void Player::SetSanity(const int& newSanity)
@@ -128,7 +131,7 @@ const float& Player::GetSpeed() const
 
 void Player::Walk()
 {
-	this->speed = 20.0f;
+	this->speed = 40.0f;
 }
 
 const DirectX::SimpleMath::Vector3& Player::GetPlayerPos()

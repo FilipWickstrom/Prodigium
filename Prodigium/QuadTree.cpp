@@ -14,6 +14,9 @@ void QuadTree::AddNodes(int level, QuadNode* node)
 	{
 		node->childs[i] = new QuadNode;
 		this->CalculateChildDimensions(i, node, node->childs[i]);
+#ifdef _DEBUG
+		this->CreateVertiAndIndices(node->childs[i]);
+#endif
 		AddNodes(level + 1, node->childs[i]);
 	}
 }
@@ -28,6 +31,10 @@ void QuadTree::ClearTree(QuadNode* node)
 		}
 	}
 
+#ifdef _DEBUG
+	node->vBuffer->Release();
+#endif
+
 	delete node;
 }
 
@@ -39,6 +46,10 @@ void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrus
 	{
 		return;
 	}
+
+#ifdef _DEBUG
+	this->nodesToDraw.push_back(node);
+#endif
 
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
@@ -87,6 +98,7 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		box.Extents = { 750.f, 6.0f, 750.f };
 		root->bounds = box;
 		root->objects = objects;
+		this->CreateVertiAndIndices(root);
 
 		this->AddNodes(0, root);
 	}
@@ -99,15 +111,26 @@ void QuadTree::DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unord
 		return;
 	}
 
+#ifdef _DEBUG
+	this->nodesToDraw.clear();
+#endif
 	this->DrawableNodesInternal(root, frustum, out);
-
-	std::pair<std::uintptr_t, MeshObject*> toAdd;
-	toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[0]), root->objects[0]);
-	out.emplace(toAdd);
-
-	toAdd = std::make_pair(reinterpret_cast<std::uintptr_t>(root->objects[1]), root->objects[1]);
-	out.emplace(toAdd);
 }
+
+#ifdef _DEBUG
+void QuadTree::RenderNodes()
+{
+	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+
+	for (int i = 0; i < (int)this->nodesToDraw.size(); i++)
+	{
+		UINT stride = sizeof(Vector3);
+		UINT offset = 0;
+		Graphics::GetContext()->IASetVertexBuffers(0, 1, &nodesToDraw[i]->vBuffer, &stride, &offset);
+		Graphics::GetContext()->Draw(16, 0);
+	}
+}
+#endif
 
 QuadTree::QuadTree(int depth)
 	:depth(depth)
@@ -125,10 +148,61 @@ QuadTree::~QuadTree()
 
 QuadTree::QuadNode::QuadNode()
 {
+	this->vBuffer = nullptr;
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
 		childs[i] = nullptr;
 	}
+}
+
+bool QuadTree::CreateVertiAndIndices(QuadNode* node)
+{
+	DirectX::XMFLOAT3 corners[8];
+
+	// Returns 8 corners position of bounding box.
+	node->bounds.GetCorners(corners);
+
+	std::vector<Vector3> allCorners;
+
+	allCorners.push_back(corners[1]);
+	allCorners.push_back(corners[0]);
+	allCorners.push_back(corners[3]);
+	allCorners.push_back(corners[2]);
+	allCorners.push_back(corners[1]);
+	allCorners.push_back(corners[5]);
+	allCorners.push_back(corners[6]);
+	allCorners.push_back(corners[2]);
+	allCorners.push_back(corners[3]);
+	allCorners.push_back(corners[7]);
+	allCorners.push_back(corners[6]);
+	allCorners.push_back(corners[7]);
+	allCorners.push_back(corners[4]);
+	allCorners.push_back(corners[0]);
+	allCorners.push_back(corners[4]);
+	allCorners.push_back(corners[5]);
+
+	D3D11_BUFFER_DESC desc = {};
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	desc.ByteWidth = sizeof(Vector3) * (UINT)allCorners.size();
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+
+	D3D11_SUBRESOURCE_DATA data = {};
+	data.pSysMem = &allCorners[0];
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
+
+	HRESULT hr = Graphics::GetDevice()->CreateBuffer(&desc, &data, &node->vBuffer);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed to create vertex buffer..." << std::endl;
+		return false;
+	}
+
+
+	return true;
 }
 
 void QuadTree::CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child)

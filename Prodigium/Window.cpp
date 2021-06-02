@@ -40,9 +40,7 @@ bool Window::SetupWindow(const HINSTANCE& instance, const UINT& width, const UIN
 		return false;
 	}
 
-#ifdef _DEBUG
-	ShowWindow(windowHandler, SW_SHOW);
-#else
+	//ShowWindow(windowHandler, SW_SHOW);
 	//Fullscreen borderless mode
 	// Tries to maximize the screen with set resolution from main
 	ShowWindow(windowHandler, SW_MAXIMIZE);
@@ -50,7 +48,6 @@ bool Window::SetupWindow(const HINSTANCE& instance, const UINT& width, const UIN
 	int w = GetSystemMetrics(SM_CXSCREEN);
 	int h = GetSystemMetrics(SM_CYSCREEN);
 	SetWindowPos(windowHandler, HWND_TOP, 0, 0, w, h, SWP_FRAMECHANGED);
-#endif
 	SetForegroundWindow(windowHandler);
 	SetFocus(windowHandler);
 

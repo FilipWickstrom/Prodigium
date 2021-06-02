@@ -134,10 +134,10 @@ void Engine::Render(Player* player)
 #ifdef _DEBUG
 	if (inGame)
 	{
-		//DebugInfo::Prepare();
-		//ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render();
 		DebugInfo::Prepare();
-		this->sceneHandler.RenderAllBoundingBoxes();
+		ResourceManager::GetCamera("PlayerCam")->GetFrustum()->Render(this->quadTree);
+		//DebugInfo::Prepare();
+		//this->sceneHandler.RenderAllBoundingBoxes();
 
 		DebugInfo::Clear();
 	}

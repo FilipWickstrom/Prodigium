@@ -31,6 +31,6 @@ public:
 	bool Initialize();
 
 #ifdef _DEBUG
-	void Render();
+	void Render(QuadTree* quadTree);
 #endif
 };

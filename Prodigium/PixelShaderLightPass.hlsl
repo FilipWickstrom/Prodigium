@@ -177,7 +177,7 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
     float3 normals = normalize(buff.normalWS.xyz);
     float3 lightVec = -normalize(lights[index].direction.xyz);
 
-    float4 diff = float4(0.1f, 0.1f, 0.2f, 0.35f);
+    float4 diff = float4(0.75f, 0.75f, 0.75f, 0.35f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     float diffuseFactor = max(dot(lightVec, normals), 0.0f);
@@ -314,7 +314,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
     float distanceToEye = length(toEye);
     
     float fogFactor = saturate((distanceToEye - fogStart) / fogRange);
-    finalColor = lerp(finalColor, fogColour, fogFactor);
+    //finalColor = lerp(finalColor, fogColour, fogFactor);
     
     return finalColor;
 }
