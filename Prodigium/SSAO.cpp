@@ -233,7 +233,7 @@ bool SSAO::SetupPreparations()
 	
 	*/
 	float fov = DirectX::XM_PI * 0.5f;
-	float farZ = 500.0f;
+	float farZ = 425.f;
 
 	float aspect = (float)Graphics::GetWindowWidth() / (float)Graphics::GetWindowHeight();
 
@@ -317,7 +317,7 @@ bool SSAO::SetupPreparations()
 
 	*/
 
-	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_SAMPLER_DESC samplerDesc = {};
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
