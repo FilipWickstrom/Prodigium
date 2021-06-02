@@ -95,6 +95,7 @@ void Game::HandleScenes()
 		Engine::isPaused = false;
 		this->soundHandler.ResumeAudio();
 		GUIHandler::ShowGameGUI(true);
+		ToggleSSAO(true);
 	}
 
 	//Om man trycker p? Quitknappen i GUI:t ska denna bli true, annars ?r den false
@@ -303,6 +304,7 @@ void Game::HandleInput()
 		this->isPaused = true;
 		Engine::isPaused = true;
 		this->soundHandler.SuspendAudio();
+		ToggleSSAO(false);
 	}
 
 	// Resume the game.
@@ -312,6 +314,7 @@ void Game::HandleInput()
 		GUIHandler::ShowGameGUI(true);
 		this->isPaused = false;
 		Engine::isPaused = false;
+		ToggleSSAO(true);
 	}
 
 	// Go to Options Menu
