@@ -178,6 +178,7 @@ bool Mesh::LoadFile(std::string fileName)
 			return false;
 
 		this->meshes.resize(nrOfMeshes);
+		meshPositions.resize(nrOfMeshes);
 
 		if (nrOfMeshes == 1)
 		{
@@ -187,17 +188,20 @@ bool Mesh::LoadFile(std::string fileName)
 			std::vector<MyFileFormat::VertexData> vertices;
 			std::vector<UINT> indices;
 			indices.resize(meshes[0].nrOfVertices);
-			UINT nrOfIndices = indices.size();
+			UINT nrOfIndices = (UINT)indices.size();
 
 			this->indexCount.push_back(nrOfIndices);
 
 			vertices.resize(nrOfVertices[0]);
+			meshPositions[0].resize(meshes[0].nrOfVertices);
 			for (int i = 0; i < meshes[0].nrOfVertices; i++)
 			{
 				//Positions
 				vertices[i].positions.x = vertexSet[0][i].positions.x;
 				vertices[i].positions.y = vertexSet[0][i].positions.y;
 				vertices[i].positions.z = -vertexSet[0][i].positions.z; //Inverts the Z:axis to be left-handed
+				DirectX::SimpleMath::Vector3 meshPos = DirectX::SimpleMath::Vector3(vertices[i].positions.x, vertices[i].positions.y, vertices[i].positions.z);
+				meshPositions[0].push_back(meshPos);
 
 				//Normals
 				vertices[i].normals.x = vertexSet[0][i].normals.x;
@@ -247,15 +251,20 @@ bool Mesh::LoadFile(std::string fileName)
 
 				this->nrOfVertices.push_back((UINT)this->meshes[i].nrOfVertices);
 				indices.resize(meshes[i].nrOfVertices);
-				nrOfIndices = indices.size();
+				nrOfIndices = (UINT)indices.size();
 				this->indexCount.push_back(nrOfIndices);
 				vertices.resize(nrOfVertices[i]);
+
+				meshPositions[i].resize(meshes[i].nrOfVertices);
 				for (int j = 0; j < meshes[i].nrOfVertices; j++)
 				{
 					//Positions
 					vertices[j].positions.x = vertexSet[i][j].positions.x;
 					vertices[j].positions.y = vertexSet[i][j].positions.y;
 					vertices[j].positions.z = -vertexSet[i][j].positions.z; //Inverts the Z:axis to be left-handed
+
+					DirectX::SimpleMath::Vector3 meshPos = DirectX::SimpleMath::Vector3(vertices[j].positions.x, vertices[j].positions.y, vertices[j].positions.z);
+					meshPositions[i].push_back(meshPos);
 
 					//Normals
 					vertices[j].normals.x = vertexSet[i][j].normals.x;
@@ -279,14 +288,13 @@ bool Mesh::LoadFile(std::string fileName)
 
 				
 				//Reverse the draw order of triangle
-				size_t o = 2;
 				std::vector<MyFileFormat::VertexData> temp;
-				for (int i = 0; i < meshes[0].nrOfVertices / 3; i++)
+				temp.resize(meshes[i].nrOfVertices / 3);
+				for (int k = 2; k < meshes[i].nrOfVertices / 3; k += 3)
 				{
-					temp.push_back(vertices[o]);
-					temp.push_back(vertices[o - 1]);
-					temp.push_back(vertices[o - 2]);
-					o += 3;
+					temp.push_back(vertices[k - 2]);
+					temp.push_back(vertices[k - 1]);
+					temp.push_back(vertices[k]);
 				}
 				
 				if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))

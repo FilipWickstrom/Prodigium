@@ -131,9 +131,9 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
-			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-			BulletTime(); //Slows down all sounds if you're near the enemy
-			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
+			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			//BulletTime(); //Slows down all sounds if you're near the enemy
+			//MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 
 		//Different things happen at level of sanity
 			int sanity = player->GetSanity();
@@ -190,7 +190,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 				break;
 			};
 		}
-
+		/*
 		// Loops through all traps with monster
 		int index = 0;
 		for (int i = 2; i < EDITSCENE.GetNrOfDynamicObjects(); i++)
@@ -210,12 +210,13 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
+		*/
 	}
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
-		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
-		AIHandler::MoveEnemy(deltaTime);
+		//this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
+		//AIHandler::MoveEnemy(deltaTime);
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -549,7 +550,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	if (!this->isPaused && player)
 	{
-		AIHandler::MoveEnemy(deltaTime);
+		//AIHandler::MoveEnemy(deltaTime);
 		// So we don't go over a certain value
 		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
 
@@ -583,6 +584,7 @@ bool Game::OnStart()
 
 	this->menu.Init();
 	this->LoadMainMenu();
+	//this->LoadMap();
 
 	if (!this->soundHandler.Initialize())
 	{
@@ -636,7 +638,7 @@ void Game::LoadMainMenu()
 
 	int randX = rand() % 80 - rand() % 80;
 	int randZ = rand() % 60 + 10;
-	//EDITSCENE.Add("Barbwiretrap.mff", false, false, { 0.0f, -100.0f, 0.0f });
+	EDITSCENE.Add("House1.mff", false, false, { 0.0f, -100.0f, 0.0f });
 
 	//Static objects
 	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, { 1.5f, 1.5f, 1.5f });
@@ -644,11 +646,11 @@ void Game::LoadMainMenu()
 	//EDITSCENE.Add("clue_mask.obj", "mask_albedo.png", "mask_normal.png", false, false, { -30.0f, -3.0f, 80.0f }, { -0.52f, 3.14f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 	//EDITSCENE.Add("clue_book.obj", "book_albedo.png", "", false, false, { 42.0f, -22.0f, 58.0f }, { 0.0f, 2.35f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 	//EDITSCENE.Add("clue_necklace.obj", "necklace_albedo.png", "", false, false, { 44.0f, -22.0f, 58.0f }, { 1.9f, 0.0f, 0.0f }, { 1.5f, 1.5f, 1.5f });
-	//EDITSCENE.Add("ProdigiumText.mff", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
+	EDITSCENE.Add("ProdigiumText.mff", false, false, { 0.0f, 5.0f, 20.0f }, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f });
 
 	//Animated Objects
-	//EDITSCENE.Add("Player", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
-	//EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
+	EDITSCENE.Add("Player", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
 	//EDITSCENE.Add("Monster", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
 
 	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
@@ -670,7 +672,7 @@ void Game::LoadMainMenu()
 
 void Game::LoadMap()
 {
-	/*
+	
 	options.state = INGAME;
 
 	SceneHandler()->AddScene();
@@ -681,14 +683,15 @@ void Game::LoadMap()
 	this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
 
 	//Enemy
+	/*
 	this->enemy = new Enemy();
 	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+	*/
 	// Terrain
-	SceneHandler()->EditScene().Add("geo_terrain.obj", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f },
-		{ 1000.0f, 1.0f, 1000.0f });
+	//EDITSCENE.Add("geo_terrain.obj", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1000.0f, 1.0f, 1000.0f });
 
 	LightStruct L;
 
@@ -697,7 +700,7 @@ void Game::LoadMap()
 	L.attentuate = { 0.4f, 0.008f, 0.0f, 0.0f };
 	L.position = { 0.0f, 20.0f, 10.0f, 25.0f };
 	EDITSCENE.AddLight(L);
-
+	/*
 	for (int i = 0; i < this->options.difficulty * 2; i++)
 	{
 		trapIndices.push_back(EDITSCENE.GetNumberOfObjects());
@@ -737,80 +740,80 @@ void Game::LoadMap()
 		L.position = { pos.x, 0.0f, pos.y , 5.0f };
 		EDITSCENE.AddLight(L);
 	}
-
+	*/
 	// Houses around the town.
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -50.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -50.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
-	EDITSCENE.Add("geo_house1.obj", "Hus1_Diffuse.png", "Hus1_Normal.png", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Beartrap.mff", true, false, { 100.0f, -7.0f, -50.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -5.0f, -7.0f, -50.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	EDITSCENE.Add("Hus1.mff", true, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
 
 	/*
 		Lamps
 	*/
-	/*
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	
+	EDITSCENE.Add("Lamp1.mff", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 575.0f, 25.0f, 50.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -45.0f, 25.0f, -100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 130.0f, 25.0f, 0.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 30.0f, 25.0f, 0.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 190.0f, 25.0f, 90.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 30.0f, 25.0f, 100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.position = { 130.0f, 25.0f, 100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("geo_lamp1.obj", "Lamp1_Diffuse.png", "Lamp1_Normal.png", true, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", true, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 325.0f, 25.0f, -75.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
 	// Big momma house
-	EDITSCENE.Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-	EDITSCENE.Add("geo_house2.obj", "Hus2_Diffuse.png", "Hus2_Normal.png", true, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
+	EDITSCENE.Add("House2.mff", true, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("House2.mff", true, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -91.0f, 12.f, 50.0f, 40.0f };
@@ -822,6 +825,7 @@ void Game::LoadMap()
 	L.position = { 420.0f, 12.f, -195.0f, 40.0f };
 	EDITSCENE.AddLight(L);
 
+	/*
 	// Tree galore!! aka Performance test
 	for (int i = 0; i < 1500; i++)
 	{
@@ -848,8 +852,7 @@ void Game::LoadMap()
 
 		EDITSCENE.Add("shitty_mountain.obj", "gray_color.png", "", true, false, { x, -12.5f, z }, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	}
-
-
+	*/
 	this->amountOfObjects = EDITSCENE.GetNumberOfObjects();
 	Engine::inGame = true;
 	Engine::quadTree = new QuadTree;
@@ -857,5 +860,5 @@ void Game::LoadMap()
 	ToggleSSAO(true);
 
 	this->inGoal = true;
-	*/
+	
 }

@@ -23,9 +23,7 @@ private:
 
 	std::vector<MyFileFormat::Mesh> meshes;
 	std::unordered_map<unsigned int, std::unordered_map<unsigned int, MyFileFormat::VertexData>> vertexSet;
-	std::vector<UINT> nrOfVertices;
-
-	
+	std::vector<UINT> nrOfVertices;	
 
 public:
 	// Mesh positions local space

@@ -68,11 +68,56 @@ bool MeshObject::LoadTextures()
 {
 	HRESULT hr;
 
-	//Load in the diffuse texture
-	if (mesh->diffuseTextureName != "")
+	if (mesh)
+	{
+		//Load in the diffuse texture
+		if (mesh->diffuseTextureName != "")
+		{
+			//To avoid writing long paths to textures
+			ID3D11Texture2D* diffTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->diffuseTextureName));
+			if (diffTexture == nullptr)
+			{
+				std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+				return false;
+			}
+			hr = Graphics::GetDevice()->CreateShaderResourceView(diffTexture, nullptr, &this->shaderResourceViews[0]);
+			if (FAILED(hr))
+			{
+				std::cout << "Failed to create SRV for diffuse texture" << std::endl;
+				return false;
+			}
+
+		}
+		if (mesh->normalMapTextureName != "")
+		{
+			//To avoid writing long paths to textures
+
+			ID3D11Texture2D* normTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->normalMapTextureName));
+			if (normTexture == nullptr)
+			{
+				std::cout << "Failed to get a texture from resourceManager..." << std::endl;
+				return false;
+			}
+			hr = Graphics::GetDevice()->CreateShaderResourceView(normTexture, nullptr, &this->shaderResourceViews[1]);
+			if (FAILED(hr))
+			{
+				std::cout << "Failed to create SRV for normal texture" << std::endl;
+				return false;
+			}
+
+			//Load normal map settings
+			if (!this->SetUpNormalMapBuffer())
+			{
+				std::cout << "Failed to setup 'has normal map' buffer.\n";
+				return false;
+			}
+		}
+	}
+
+	else if (animatedObj)
 	{
 		//To avoid writing long paths to textures
-		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->diffuseTextureName));
+		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture("Textures/Char_Albedo.png");
 		if (diffTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -85,12 +130,7 @@ bool MeshObject::LoadTextures()
 			return false;
 		}
 
-	}
-	if (mesh->normalMapTextureName != "")
-	{
-		//To avoid writing long paths to textures
-
-		ID3D11Texture2D* normTexture = ResourceManager::GetTexture("Textures/" + std::string(mesh->normalMapTextureName));
+		ID3D11Texture2D* normTexture = ResourceManager::GetTexture("Textures/Char_Normal.jpg");
 		if (normTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -110,6 +150,8 @@ bool MeshObject::LoadTextures()
 			return false;
 		}
 	}
+
+	
 
 	return true;
 }
@@ -383,7 +425,7 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		return false;
 	}
 
-	//LoadColliders(hasBounds);
+	LoadColliders(hasBounds);
 
 	if (!CreateModelMatrixBuffer())
 	{
