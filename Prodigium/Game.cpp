@@ -117,6 +117,7 @@ void Game::HandleScenes()
 		this->ResetValues();
 		GUIHandler::ShowMainMenu(true);
 		GUIHandler::ShowGameGUI(false);
+		Engine::ToggleSSAO(false);
 		this->LoadMainMenu();
 	}
 
@@ -302,6 +303,7 @@ void Game::HandleInput()
 		Engine::isPaused = true;
 		this->soundHandler.SuspendAudio();
 		ToggleSSAO(false);
+		this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
 	}
 
 	// Resume the game.
@@ -414,6 +416,21 @@ void Game::HandleInput()
 				}
 				direction.x = -1.f;
 			}
+
+			//When any of movementkeys is released go back to idle animation
+			if (InputHandler::IsKeyReleased(Keyboard::W) ||
+				InputHandler::IsKeyReleased(Keyboard::S) ||
+				InputHandler::IsKeyReleased(Keyboard::A) ||
+				InputHandler::IsKeyReleased(Keyboard::D))
+			{
+				//Randomize idle state
+				AnimationState state;
+				if (rand() % 4 == 0)
+					state = AnimationState::IDLE2;
+				else
+					state = AnimationState::IDLE;
+				this->player->GetMeshObject()->ChangeAnimState(state);
+			}
 		}
 
 		/*--------------Picking up clues------------*/
@@ -524,20 +541,6 @@ void Game::HandleInput()
 		//	OpenConsole();
 		//}
 #endif 
-	}
-
-	//When any of movementkeys is released go back to idle animation
-	if (this->player && direction.Length() <= 0.f && 
-		(this->player->GetMeshObject()->GetAnimState() != AnimationState::IDLE && 
-		this->player->GetMeshObject()->GetAnimState() != AnimationState::IDLE2))
-	{
-		//Randomize idle state
-		AnimationState state;
-		if (rand() % 4 == 0)
-			state = AnimationState::IDLE2;
-		else
-			state = AnimationState::IDLE;
-		this->player->GetMeshObject()->ChangeAnimState(state);
 	}
 }
 
