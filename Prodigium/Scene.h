@@ -79,8 +79,6 @@ public:
 	void Add(MeshObject* object);
 
 	void AddDynamicObject(const std::string& objFile,
-		const std::string& diffuseTxt = "",
-		const std::string& normalTxt = "",
 		bool hasBounds = true,
 		bool hasAnimation = false,
 		const DirectX::SimpleMath::Vector3& position = { 0.0f, 0.0f, 0.0f },

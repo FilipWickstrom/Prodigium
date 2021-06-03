@@ -180,7 +180,7 @@ void Scene::Add(MeshObject* object)
 	}
 }
 
-void Scene::AddDynamicObject(const std::string& objFile, const std::string& diffuseTxt, const std::string& normalTxt, bool hasBounds, bool hasAnimation, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, const DirectX::SimpleMath::Vector3& scale)
+void Scene::AddDynamicObject(const std::string& objFile, bool hasBounds, bool hasAnimation, const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& rotation, const DirectX::SimpleMath::Vector3& scale)
 {
 	/*
 		Create a new MeshObject from input.

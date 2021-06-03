@@ -131,9 +131,9 @@ void Game::HandleGameLogic(const float& deltaTime)
 		GUIHandler::SetPlayerPos(player->GetPlayerPos());
 		if (!this->isPaused)
 		{
-			//Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
-			//BulletTime(); //Slows down all sounds if you're near the enemy
-			//MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
+			Whisper(); //Checks every frame if you should get a whisper, and then randomize which one you should get
+			BulletTime(); //Slows down all sounds if you're near the enemy
+			MonsterSounds(deltaTime); //Monster makes a sound every 5 seconds, that plays in 3D space
 
 		//Different things happen at level of sanity
 			int sanity = player->GetSanity();
@@ -190,7 +190,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 				break;
 			};
 		}
-		/*
+		
 		// Loops through all traps with monster
 		int index = 0;
 		for (int i = 2; i < EDITSCENE.GetNrOfDynamicObjects(); i++)
@@ -210,7 +210,7 @@ void Game::HandleGameLogic(const float& deltaTime)
 			}
 			index++;
 		}
-		*/
+		
 	}
 
 	if (!this->isPaused && !this->menu.IsInMenu())
@@ -497,7 +497,7 @@ void Game::HandleInput(const float& deltaTime)
 		{
 			if (GUIHandler::ActiveTrap() && this->stopcompl_timer <= 0.0f)
 			{
-				EDITSCENE.AddDynamicObject("trap_bear.obj", "BearTrapAlbedo.png", "", true, false,
+				EDITSCENE.AddDynamicObject("Beartrap.mff", true, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 0.6f, 0.6f, 0.6f });
@@ -506,7 +506,7 @@ void Game::HandleInput(const float& deltaTime)
 			}
 			else if (!GUIHandler::ActiveTrap() && this->slowdown_timer <= 0.0f)
 			{
-				EDITSCENE.AddDynamicObject("trap_barbwire.obj", "BarbWireTrapAlbedo.png", "", true, false,
+				EDITSCENE.AddDynamicObject("Barbwiretrap.mff", true, false,
 					{ this->player->GetMeshObject()->GetPosition().x, -5.0f, this->player->GetMeshObject()->GetPosition().z }, // Position
 					{ this->player->GetMeshObject()->GetRotation().x, this->player->GetMeshObject()->GetRotation().y, this->player->GetMeshObject()->GetRotation().z }, // Rotation
 					{ 1.5f, 1.5f, 1.5f });
@@ -584,7 +584,6 @@ bool Game::OnStart()
 
 	this->menu.Init();
 	this->LoadMainMenu();
-	//this->LoadMap();
 
 	if (!this->soundHandler.Initialize())
 	{
@@ -636,9 +635,9 @@ void Game::LoadMainMenu()
 	SceneHandler()->RemoveAllScenes();
 	SceneHandler()->AddScene();
 
-	int randX = rand() % 80 - rand() % 80;
-	int randZ = rand() % 60 + 10;
-	EDITSCENE.Add("House1Colliders.mff", false, false, { 0.0f, -100.0f, 0.0f });
+	//Load them to memory to make it faster when you actually place them
+	EDITSCENE.Add("Barbwiretrap.mff", false, false, { 0.0f, -100.0f, 0.0f });
+	EDITSCENE.Add("Beartrap.mff", false, false, { 0.0f, -100.0f, 0.0f });
 
 	//Static objects
 	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, -30.0f, 30.0f }, { 0.f, 1.57f, 0.0f }, { 1.5f, 1.5f, 1.5f });
@@ -688,7 +687,7 @@ void Game::LoadMap()
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
 	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
-	// 
+	
 	// Terrain
 	EDITSCENE.Add("Terrain.mff", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1000.0f, 1.0f, 1000.0f });
 
