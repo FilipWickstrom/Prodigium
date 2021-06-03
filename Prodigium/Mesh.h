@@ -5,10 +5,8 @@
 
 #include "UsefulStructuresHeader.h"
 #include "Resource.h"
-
 #include <assetloader/Assetloader.h>
 
-#pragma warning(pop)
 class Mesh : public Resource
 {
 private:
