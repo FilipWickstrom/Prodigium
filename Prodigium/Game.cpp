@@ -215,8 +215,8 @@ void Game::HandleGameLogic(const float& deltaTime)
 
 	if (!this->isPaused && !this->menu.IsInMenu())
 	{
-		//this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
-		//AIHandler::MoveEnemy(deltaTime);
+		this->soundHandler.Update(this->player->GetPlayerPos(), this->enemy->GetMeshObject()->position, this->player->GetMeshObject()->forward, this->enemy->GetMeshObject()->forward);
+		AIHandler::MoveEnemy(deltaTime);
 	}
 
 	Engine::isPaused = this->isPaused;
@@ -550,7 +550,7 @@ bool Game::OnFrame(const float& deltaTime)
 
 	if (!this->isPaused && player)
 	{
-		//AIHandler::MoveEnemy(deltaTime);
+		AIHandler::MoveEnemy(deltaTime);
 		// So we don't go over a certain value
 		player->SetCollectedClues(std::min(player->GetCollectedClues(), options.difficulty * 2));
 
@@ -651,7 +651,7 @@ void Game::LoadMainMenu()
 	//Animated Objects
 	EDITSCENE.Add("Player", false, true, { 35.0f, -24.0f, 70.0f }, { 0.0f, 1.57f, 0.0f }, { 2.0f, 2.0f, 2.0f });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).ChangeAnimState(AnimationState::DEAD);
-	//EDITSCENE.Add("Monster", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("Monster", false, true, { -35.0f, -23.0f, 80.0f }, { 0.0f, 0.0f, 0.0f });
 
 	EDITSCENE.Add("Bedroom.mff", false, false, { 0.0f, 30.0f, 30.0f }, { 0.f, 1.57f, XM_PI }, { 3.0f, 3.0f, 3.0f });
 
@@ -683,13 +683,12 @@ void Game::LoadMap()
 	this->player->GetMeshObject()->ChangeAnimState(AnimationState::IDLE);
 
 	//Enemy
-	/*
 	this->enemy = new Enemy();
 	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
-	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
-	*/
+	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+	// 
 	// Terrain
 	EDITSCENE.Add("Terrain.mff", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1000.0f, 1.0f, 1000.0f });
 

@@ -45,7 +45,7 @@ public:
 	Collider modelCollider;
 
 private:
-	bool LoadTextures();
+	bool LoadTextures(bool isPlayer = false, bool isMonster = false);	//Super ugly...
 	void BuildCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, Collider& out);
 	void BuildRenderCollider(const DirectX::SimpleMath::Vector3& min, const DirectX::SimpleMath::Vector3& max, const std::vector<DirectX::SimpleMath::Vector3>& positions, Collider& out);
 	bool LoadColliders(bool hasColliders);
