@@ -755,75 +755,225 @@ void Game::LoadMap()
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 
 	EDITSCENE.Add("House1.mff", false, false, { -5.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0f, 0.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0f, 0.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 225.0f, -7.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 225.0f, 0.0f, 125.0f }, { 0.0f, 4.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 204.0f, 0.0f, 112.0f }, { 0.0f, 4.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 100.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0f, 0.0f, 200.0f }, { 0.0f, 0.0f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0, 0.0f, 225.0f }, { 0.0f, 0.0f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 100.0f, -7.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0f, 0.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0, 0.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { -5.0f, -7.0f, 200.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0f, 0.0f, 200.0f }, { 0.0f, 0.0f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0, 0.0f, 225.0f }, { 0.0f, 0.0f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 330.0f, -7.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 330.0f, 0.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 330.0, 0.0f, 75.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 450.0f, -7.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 450.0f, 0.0f, 100.0f }, { 0.0f, 4.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 429.0, 0.0f, 87.0f }, { 0.0f, 4.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 500.0f, -7.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 500.0f, 0.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 474.0, 0.0f, -10.0f }, { 0.0f, 4.71238898f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 200.0f, -7.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 200.0f, 0.0f, -100.0f }, { 0.0f, 1.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 223.0f, 0.0f, -90.0f }, { 0.0f, 1.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 175.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 175.0f, 0.0f, -350.0f }, { 0.0f, 0.0f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 175.0f, 0.0f, -325.0f }, { 0.0f, 0.0f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	
+
 	EDITSCENE.Add("House1.mff", false, false, { 50.0f, -7.0f, -350.0f }, { 0.0f, 0.0f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 50.0f, 0.0f, -350.0f }, { 0.0f, 0.0f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 50.0f, 0.0f, -325.0f }, { 0.0f, 0.0f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	
+
 	EDITSCENE.Add("House1.mff", false, false, { 100.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0f, 0.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 100.0f, 0.0f, -160.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	
+
 	EDITSCENE.Add("House1.mff", false, false, { -5.0f, -7.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0f, 0.0f, -135.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -5.0f, 0.0f, -160.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 325.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 325.0f, 0.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 325.0f, 0.0f, 200.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 425.0f, -7.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 425.0f, 0.0f, 225.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 425.0f, 0.0f, 200.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 675.0f, -7.0f, -25.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 675.0f, 0.0f, -25.0f }, { 0.0f, 4.71f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 650.0f, 0.0f, -25.0f }, { 0.0f, 4.71f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 675.0f, -7.0f, 100.0f }, { 0.0f, 4.71f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 675.0f, 0.0f, 100.0f }, { 0.0f, 4.71f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 650.0f, 0.0f, 100.0f }, { 0.0f, 4.71f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 575.0f, -7.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 575.0f, 0.0f, 175.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 575.0f, 0.0f, 150.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { -200.0f, -7.0f, -200.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -200.0f, 0.0f, -200.0f }, { 0.0f, 1.57f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -175.0f, 0.0f, -200.0f }, { 0.0f, 1.57f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { -200.0f, -7.0f, -330.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -200.0f, 0.0f, -330.0f }, { 0.0f, 1.57f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -175.0f, 0.0f, -330.0f }, { 0.0f, 1.57f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 125.0f, -7.0f, -240.0f }, { 0.0f, 1.57f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 125.0f, 0.0f, -240.0f }, { 0.0f, 1.57f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 150.0f, 0.0f, -240.0f }, { 0.0f, 1.57f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { 75.0f, -7.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 75.0f, 0.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 50.0f, 0.0f, -240.0f }, { 0.0f, 4.7123f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
 	EDITSCENE.Add("House1.mff", false, false, { -275.0f, -7.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -275.0f, 0.0f, 125.0f }, { 0.0f, 3.14159f, 0.0f }, { 95,10,45 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -275.0f, 0.0f, 100.0f }, { 0.0f, 3.14159f, 0.0f }, { 15,10,10 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 
 	/*
 		Lamps
 	*/
 	
-	EDITSCENE.Add("Lamp1.mff", true, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 575.0f, -7.0f, 50.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 575.0f, -0.0f, 50.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 575.0f, 25.0f, 50.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { -45.0f, -7.0f, -100.0f }, { 0.0f, 1.57f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -45.0f, -0.0f, -100.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { -45.0f, 25.0f, -100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 130.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 130.0f, -0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.direction = { 0.f, -1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 130.0f, 25.0f, 0.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 30.0f, -7.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 30.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.position = { 30.0f, 25.0f, 0.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 190.0f, -7.0f, 90.0f }, { 0.0f, 4.14159f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 190.0f, -0.0f, 90.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.position = { 190.0f, 25.0f, 90.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 30.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 30.0f, -0.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.position = { 30.0f, 25.0f, 100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 130.0f, -7.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 130.0f, -0.0f, 100.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.position = { 130.0f, 25.0f, 100.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
-	EDITSCENE.Add("Lamp1.mff", true, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("Lamp1.mff", false, false, { 325.0f, -7.0f, -75.0f }, { 0.0f, 1.57079633f, 0.0f }, { 5.0f, 5.0f, 5.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 325.0f, -0.0f, -75.0f }, { 0.0f, 0.0f, 0.0f }, { 2,10,2 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.attentuate = { 0.032f, 0.003f, 0.0f, 2.0f };
 	L.position = { 325.0f, 25.0f, -75.0f, 30.0f };
 	EDITSCENE.AddLight(L);
 
 	// Big momma house
-	EDITSCENE.Add("House2.mff", true, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
-	EDITSCENE.Add("House2.mff", true, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 4.0f, 4.0f, 4.0f });
+	EDITSCENE.Add("House2.mff", false, false, { -150.0f, 1.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -150.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 310,10,52 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -150.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 118,10,76 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -106.0f, 0.0f, 48.0f }, { 0.0f, 4.71238898f, 0.0f }, { 72,10,15 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -90.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 44,10,17 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+
+	EDITSCENE.Add("House2.mff", false, false, { 475.0f, 1.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 3.0f, 3.0f, 3.0f });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 475.0f, 0.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 310,10,52 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 475.0f, 0.0f, -250.0f }, { 0.0f, 2.35619449f, 0.0f }, { 118,10,76 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 444.0f, 0.0f, -219.0f }, { 0.0f, 2.35619449f, 0.0f }, { 76,10,15 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 432.0f, 0.0f, -207.0f }, { 0.0f, 2.35619449f, 0.0f }, { 44,10,17 });
+	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	L.direction = { -0.3f, 1.0f, 0.0f, 1.5f };
 	L.attentuate = { 0.4f, 0.5f, 0.0f, 2.0f };
 	L.position = { -91.0f, 12.f, 50.0f, 40.0f };
