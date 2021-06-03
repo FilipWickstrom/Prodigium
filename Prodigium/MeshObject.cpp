@@ -64,7 +64,7 @@ bool MeshObject::CreateColliderBuffers()
 }
 #endif
 
-bool MeshObject::LoadTextures()
+bool MeshObject::LoadTextures(bool isPlayer, bool isMonster)
 {
 	HRESULT hr;
 
@@ -115,9 +115,23 @@ bool MeshObject::LoadTextures()
 	}
 
 	else if (animatedObj)
-	{
-		//To avoid writing long paths to textures
-		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture("Textures/Char_Albedo.png");
+	{	
+		//Riktig fullösning...
+		std::string diffuseFile ="";
+		std::string normalFile = "";
+		
+		if (isPlayer)
+		{
+			diffuseFile = "Textures/Char_Albedo.png";
+			normalFile = "Textures/Char_Normal.jpg";
+		}
+		else if (isMonster)
+		{
+			diffuseFile = "Textures/monster_albedo.png";
+			normalFile = "Textures/Monster_Normal.jpg";
+		}
+
+		ID3D11Texture2D* diffTexture = ResourceManager::GetTexture(diffuseFile);
 		if (diffTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -130,7 +144,7 @@ bool MeshObject::LoadTextures()
 			return false;
 		}
 
-		ID3D11Texture2D* normTexture = ResourceManager::GetTexture("Textures/Char_Normal.jpg");
+		ID3D11Texture2D* normTexture = ResourceManager::GetTexture(normalFile);
 		if (normTexture == nullptr)
 		{
 			std::cout << "Failed to get a texture from resourceManager..." << std::endl;
@@ -419,7 +433,18 @@ bool MeshObject::Initialize(const std::string& meshObject,
 		}
 	}
 
-	if (!LoadTextures())
+	bool isPlayer = false;
+	bool isMonster = false;
+	if (meshObject == "Player")
+	{
+		isPlayer = true;
+	}
+	else if (meshObject == "Monster")
+	{
+		isMonster = true;
+	}
+
+	if (!LoadTextures(isPlayer, isMonster))
 	{
 		std::cout << "Failed to create textures..." << std::endl;
 		return false;
