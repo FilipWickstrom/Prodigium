@@ -29,6 +29,11 @@ void MFF::ReadMesh()
 	for (int i = 0; i < mesh.nrOfVertices; i++)
 	{
 		m_readFile.read((char*)&vertex, sizeof(MyFileFormat::VertexData));
+
+		vertex.positions.z = -vertex.positions.z;
+		vertex.normals.z = -vertex.normals.z;
+		vertex.uvs.y = -vertex.uvs.y;
+
 		m_meshVertices.push_back(vertex);
 	}
 
@@ -75,17 +80,14 @@ bool MFF::ReadFile()
 			if (section.Type == MyFileFormat::SectionType::FILE_PATH)
 			{
 				ReadFilePath();
-				std::cout << "File Path Read!" << std::endl;
 			}
 			if (section.Type == MyFileFormat::SectionType::SCENE)
 			{
 				ReadScene();
-				std::cout << "Scene Read!" << std::endl;
 			}
 			if (section.Type == MyFileFormat::SectionType::MESH)
 			{
 				ReadMesh();
-				std::cout << "Mesh Read!" << std::endl;
 			}
 		}
 		m_readFile.close();
@@ -93,20 +95,6 @@ bool MFF::ReadFile()
 	}
 	else
 		return false;
-}
-
-void MFF::CopyTexturesToDirectory(std::string directory)
-{
-	/*
-	MyFileFormat::Material material;
-	std::filesystem::path pathFileName;
-	std::string stringFileName;
-
-	for (int i = 0; i < meshId; i++)
-	{
-		material = 
-	}
-	*/
 }
 
 MFF& MFF::GetMFF()

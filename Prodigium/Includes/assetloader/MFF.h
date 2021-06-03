@@ -30,7 +30,6 @@ public:
 	~MFF();
 	void SetFilePath(const char* p_Path);
 	bool ReadFile();
-	void CopyTexturesToDirectory(std::string directory);
 
 	static MFF& GetMFF();
 

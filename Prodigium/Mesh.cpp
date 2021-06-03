@@ -182,132 +182,62 @@ bool Mesh::LoadFile(std::string fileName)
 		this->meshes.resize(nrOfMeshes);
 		meshPositions.resize(nrOfMeshes);
 
-		if (nrOfMeshes == 1)
+		this->meshes[0] = AssetLoader::GetModel(0);
+
+		this->vertexSet.push_back(AssetLoader::GetVertexSet(0));
+		this->nrOfVertices.push_back((UINT)this->meshes[0].nrOfVertices);
+		std::vector<MyFileFormat::VertexData> vertices;
+		std::vector<UINT> indices;
+		indices.resize(meshes[0].nrOfVertices);
+		UINT nrOfIndices = (UINT)indices.size();
+
+		this->indexCount.push_back(nrOfIndices);
+
+		vertices.resize(nrOfVertices[0]);
+		meshPositions[0].resize(meshes[0].nrOfVertices);
+		for (int i = 0; i < meshes[0].nrOfVertices; i++)
 		{
-			this->meshes[0] = AssetLoader::GetModel(0);
-			
-			this->vertexSet.push_back(AssetLoader::GetVertexSet(0));		
-			this->nrOfVertices.push_back((UINT)this->meshes[0].nrOfVertices);
-			std::vector<MyFileFormat::VertexData> vertices;
-			std::vector<UINT> indices;
-			indices.resize(meshes[0].nrOfVertices);
-			UINT nrOfIndices = (UINT)indices.size();
+			//Positions
+			vertices[i].positions.x = vertexSet[0][i].positions.x;
+			vertices[i].positions.y = vertexSet[0][i].positions.y;
+			vertices[i].positions.z = vertexSet[0][i].positions.z;
+			DirectX::SimpleMath::Vector3 meshPos = DirectX::SimpleMath::Vector3(vertices[i].positions.x, vertices[i].positions.y, vertices[i].positions.z);
+			meshPositions[0].push_back(meshPos);
 
-			this->indexCount.push_back(nrOfIndices);
+			//Normals
+			vertices[i].normals.x = vertexSet[0][i].normals.x;
+			vertices[i].normals.y = vertexSet[0][i].normals.y;
+			vertices[i].normals.z = vertexSet[0][i].normals.z;
 
-			vertices.resize(nrOfVertices[0]);
-			meshPositions[0].resize(meshes[0].nrOfVertices);
-			for (int i = 0; i < meshes[0].nrOfVertices; i++)
-			{
-				//Positions
-				vertices[i].positions.x = vertexSet[0][i].positions.x;
-				vertices[i].positions.y = vertexSet[0][i].positions.y;
-				vertices[i].positions.z = -vertexSet[0][i].positions.z; //Inverts the Z:axis to be left-handed
-				DirectX::SimpleMath::Vector3 meshPos = DirectX::SimpleMath::Vector3(vertices[i].positions.x, vertices[i].positions.y, vertices[i].positions.z);
-				meshPositions[0].push_back(meshPos);
+			//UVs
+			vertices[i].uvs.x = vertexSet[0][i].uvs.x;
+			vertices[i].uvs.y = vertexSet[0][i].uvs.y;
 
-				//Normals
-				vertices[i].normals.x = vertexSet[0][i].normals.x;
-				vertices[i].normals.y = vertexSet[0][i].normals.y;
-				vertices[i].normals.z = -vertexSet[0][i].normals.z;	//Inverts the Z:axis to be left-handed
+			//Tangents
+			vertices[i].tangent.x = vertexSet[0][i].tangent.x;
+			vertices[i].tangent.y = vertexSet[0][i].tangent.y;
+			vertices[i].tangent.z = vertexSet[0][i].tangent.z;
 
-				//UVs
-				vertices[i].uvs.x = vertexSet[0][i].uvs.x;
-				vertices[i].uvs.y = -vertexSet[0][i].uvs.y; //Inverts the V:value to comply to DirectX
-
-				//Tangents
-				vertices[i].tangent.x = vertexSet[0][i].tangent.x;
-				vertices[i].tangent.y = vertexSet[0][i].tangent.y;
-				vertices[i].tangent.z = vertexSet[0][i].tangent.z;
-
-				//BiTangents
-				vertices[i].biTangent.x = vertexSet[0][i].biTangent.x;
-				vertices[i].biTangent.y = vertexSet[0][i].biTangent.y;
-				vertices[i].biTangent.z = vertexSet[0][i].biTangent.z;
-			}
-
-			
-			//Reverse the draw order of triangle
-			size_t o = 2;
-			std::vector<MyFileFormat::VertexData> temp;
-			for (int i = 0; i < meshes[0].nrOfVertices / 3; i++)
-			{
-				temp.push_back(vertices[o]);
-				temp.push_back(vertices[o - 1]);
-				temp.push_back(vertices[o - 2]);
-				o += 3;
-			}
-			
-			if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
-				return false;
-		
+			//BiTangents
+			vertices[i].biTangent.x = vertexSet[0][i].biTangent.x;
+			vertices[i].biTangent.y = vertexSet[0][i].biTangent.y;
+			vertices[i].biTangent.z = vertexSet[0][i].biTangent.z;
 		}
-		
-		else if (nrOfMeshes > 1)
+
+
+		//Reverse the draw order of triangle
+		size_t o = 2;
+		std::vector<MyFileFormat::VertexData> rewindOrder;
+		for (int i = 0; i < meshes[0].nrOfVertices / 3; i++)
 		{
-			for (int i = 0; i < nrOfMeshes; i++)
-			{
-				std::vector<MyFileFormat::VertexData> vertices;
-				std::vector<UINT> indices;
-				UINT nrOfIndices = 0;
-
-				this->meshes[i] = AssetLoader::GetModel(i);
-				this->vertexSet.push_back(AssetLoader::GetVertexSet(i));
-
-				this->nrOfVertices.push_back((UINT)this->meshes[i].nrOfVertices);
-				indices.resize(meshes[i].nrOfVertices);
-				nrOfIndices = (UINT)indices.size();
-				this->indexCount.push_back(nrOfIndices);
-				vertices.resize(nrOfVertices[i]);
-
-				meshPositions[i].resize(meshes[i].nrOfVertices);
-				for (int j = 0; j < meshes[i].nrOfVertices; j++)
-				{
-					//Positions
-					vertices[j].positions.x = vertexSet[i][j].positions.x;
-					vertices[j].positions.y = vertexSet[i][j].positions.y;
-					vertices[j].positions.z = -vertexSet[i][j].positions.z; //Inverts the Z:axis to be left-handed
-
-					DirectX::SimpleMath::Vector3 meshPos = DirectX::SimpleMath::Vector3(vertices[j].positions.x, vertices[j].positions.y, vertices[j].positions.z);
-					meshPositions[i].push_back(meshPos);
-
-					//Normals
-					vertices[j].normals.x = vertexSet[i][j].normals.x;
-					vertices[j].normals.y = vertexSet[i][j].normals.y;
-					vertices[j].normals.z = -vertexSet[i][j].normals.z; //Inverts the Z:axis to be left-handed
-
-					//UVs
-					vertices[j].uvs.x = vertexSet[i][j].uvs.x;
-					vertices[j].uvs.y = -vertexSet[i][j].uvs.y; //Inverts the V:value to comply to DirectX
-
-					//Tangents
-					vertices[j].tangent.x = vertexSet[i][j].tangent.x;
-					vertices[j].tangent.y = vertexSet[i][j].tangent.y;
-					vertices[j].tangent.z = vertexSet[i][j].tangent.z;
-
-					//BiTangents
-					vertices[j].biTangent.x = vertexSet[i][j].biTangent.x;
-					vertices[j].biTangent.y = vertexSet[i][j].biTangent.y;
-					vertices[j].biTangent.z = vertexSet[i][j].biTangent.z;
-				}
-
-				
-				//Reverse the draw order of triangle
-				size_t o = 2;
-				std::vector<MyFileFormat::VertexData> temp;
-				temp.resize(meshes[i].nrOfVertices / 3);
-				for (int k = 2; k < meshes[i].nrOfVertices / 3; k++)
-				{
-					temp.push_back(vertices[o]);
-					temp.push_back(vertices[o - 1]);
-					temp.push_back(vertices[o - 2]);
-					o += 3;
-				}
-				
-				if (!CreateVertIndiBuffers(temp, indices, nrOfIndices))
-					return false;
-			}
+			rewindOrder.push_back(vertices[o]);
+			rewindOrder.push_back(vertices[o - 1]);
+			rewindOrder.push_back(vertices[o - 2]);
+			o += 3;
 		}
+
+		if (!CreateVertIndiBuffers(rewindOrder, indices, nrOfIndices))
+			return false;
 
 		if (meshes[0].hasTexture == 1)
 			this->diffuseTextureName = meshes[0].textureName;

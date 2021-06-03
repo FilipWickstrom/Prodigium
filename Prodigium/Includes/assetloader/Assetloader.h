@@ -7,8 +7,6 @@ namespace AssetLoader
 	//Loads the model into memory
 	bool LoadModel(const char* filePath);
 
-	std::string GetTextureName(unsigned int modelId);
-
 	//Returns the loaded models mesh data
 	const MyFileFormat::Mesh GetModel(unsigned int modelId);
 
