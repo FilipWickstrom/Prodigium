@@ -75,100 +75,6 @@ Mesh::~Mesh()
 
 bool Mesh::LoadFile(std::string fileName)
 {
-	/*Assimp::Importer importer;
-
-	//Load in the scene - can be many meshes together in one file
-	const aiScene* scene = importer.ReadFile("Models/" + filename,
-											aiProcess_Triangulate |               //Triangulate every surface
-											aiProcess_JoinIdenticalVertices |     //Ignores identical veritices - memory saving
-											aiProcess_FlipUVs |                   //Flips the textures to fit directX-style                                              
-											aiProcess_FlipWindingOrder |          //Makes it clockwise order
-											aiProcess_MakeLeftHanded |			  //Use a lefthanded system for the models                                                                             
-											aiProcess_CalcTangentSpace);          //Fix tangents automatic for us
-
-	//Check if it was possible to load file
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	{
-		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-		importer.FreeScene();
-		return false;
-	}
-
-	std::vector<DirectX::SimpleMath::Vector3> positions;
-
-	//Going through all the meshes in the file
-	for (unsigned int m = 0; m < scene->mNumMeshes; m++)
-	{
-		const aiMesh* mesh = scene->mMeshes[m];
-		std::vector<Vertex> vertices;
-		vertices.reserve(mesh->mNumVertices);
-		positions.reserve(mesh->mNumVertices);
-
-		//Load in material
-		const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		float shiniess = 0.0f;
-		aiColor4D specular = { 0.0f,0.0f,0.0f,0.0f };
-
-		if (material != nullptr)
-		{
-			aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shiniess);
-			aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
-		}
-
-		//Loading in all the vertices to the right structure
-		for (unsigned int v = 0; v < mesh->mNumVertices; v++)
-		{
-			Vertex temp;
-			temp.position = { mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z };
-			temp.normal = { mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z };
-			temp.uv = { mesh->mTextureCoords[0][v].x, mesh->mTextureCoords[0][v].y };
-			temp.tangent = { mesh->mTangents[v].x, mesh->mTangents[v].y, mesh->mTangents[v].z };
-			//Add material
-			temp.specular = { specular.r, specular.g, specular.b, shiniess };
-			vertices.push_back(temp);
-
-			//Adding all the vertices positions to an temp vector
-			positions.push_back(temp.position);
-		}
-		std::vector<UINT> indices;
-		indices.reserve((size_t)mesh->mNumFaces * 3);
-		UINT tempIndexCount = mesh->mNumFaces * 3;
-		this->indexCount.push_back(tempIndexCount);
-
-		//Add to the 2d-array of all the positions
-		this->meshPositions.push_back(positions);
-		positions.clear();
-
-		//Loading in the indices
-		for (unsigned int f = 0; f < mesh->mNumFaces; f++)
-		{
-			const aiFace face = mesh->mFaces[f];
-			//Only accepts 3 vertices per face
-			if (face.mNumIndices == 3)
-			{
-				indices.push_back(face.mIndices[0]);
-				indices.push_back(face.mIndices[1]);
-				indices.push_back(face.mIndices[2]);
-			}
-		}
-
-		//Vertex and index buffer to communicate with vertexshader later
-		if (!CreateVertIndiBuffers(vertices, indices, tempIndexCount))
-		{
-			std::cout << "Failed to create vertex and index buffers..." << std::endl;
-			importer.FreeScene();
-			return false;
-		}
-
-		vertices.clear();
-		indices.clear();
-	}
-
-	std::cout << "Model: " << filename << " was successfully loaded! Meshes: " << scene->mNumMeshes << std::endl;
-	importer.FreeScene();
-	return true;
-	*/
-	
 	std::string filePath = "Models/" + fileName;
 
 	if (AssetLoader::LoadModel(filePath.c_str()))
@@ -259,7 +165,5 @@ void Mesh::Render()
 	{
 		Graphics::GetContext()->IASetVertexBuffers(0, 1, &this->vertexBuffers[i], &stride, &offset);
 		Graphics::GetContext()->Draw(this->nrOfVertices[i], 0);
-		//Graphics::GetContext()->IASetIndexBuffer(this->indexBuffers[i], DXGI_FORMAT_R32_UINT, 0);
-		//Graphics::GetContext()->DrawIndexed(this->indexCount[i], 0, 0);
 	}
 }
