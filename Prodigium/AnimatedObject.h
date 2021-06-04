@@ -105,6 +105,8 @@ private:
 	
 	void CalcFinalMatrix(Bone& currentBone, UINT parentID, const DirectX::SimpleMath::Matrix& worldMatrix);
 	void ClearTree(Bone& currentBone);
+
+	void CheckEndedAnimations();
 	
 public:
 	AnimatedObject();

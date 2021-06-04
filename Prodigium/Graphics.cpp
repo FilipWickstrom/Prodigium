@@ -2,6 +2,7 @@
 #include "ResourceManager.h"
 
 Graphics* Graphics::instance = nullptr;
+float Graphics::deltaTime = 0.f;
 
 Graphics::Graphics()
 {
@@ -283,14 +284,4 @@ bool Graphics::SetupGraphics()
 	}
 
 	return true;
-}
-
-void Graphics::SetDeltaTime(const float& time)
-{
-	Graphics::instance->deltaTime = time;
-}
-
-const float& Graphics::GetDeltaTime()
-{
-	return Graphics::instance->deltaTime;
 }

@@ -34,6 +34,7 @@ Node* AIHandler::FindClosestNode(const Vector3& position)
 			currentClosest = currentNode;
 		}
 	}
+
 	return currentClosest;
 }
 
@@ -43,7 +44,7 @@ AIHandler::AIHandler()
 	states = EnemyStates::PATROL;
 	this->monster = nullptr;
 	this->player = nullptr;
-	this->chaseEnabled = false;
+	this->chaseEnabled = true;
 	this->stateSwitchTime = 0.f;
 	this->nrOfAstar = 0;
 }
@@ -104,12 +105,15 @@ void AIHandler::CreateNodes()
 	AIHANDLER->currentEnemyNode = AIHANDLER->allNodes.at(0);
 }
 
-
 void AIHandler::SetEnemyAndPlayer(Enemy* enemy, Player* player)
 {
 	AIHANDLER->monster = enemy;
 	AIHANDLER->path.clear();
-	AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition())->GetPos());
+	AIHANDLER->currentEnemyNode = AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition());
+#ifdef _DEBUG
+	std::cout << "Closest Node ID: " << AIHANDLER->currentEnemyNode->GetID() << std::endl;
+#endif
+	AIHANDLER->monster->SetNewTarget(AIHANDLER->currentEnemyNode->GetPos());
 	AIHANDLER->player = player;
 }
 
@@ -119,20 +123,23 @@ void AIHandler::ConnectNodes(Node* node1, Node* node2)
 	node2->AddConnectedNode(node1);
 }
 
-void AIHandler::MoveEnemy(const float& deltaTime)
+void AIHandler::MoveEnemy()
 {
 	if (AIHANDLER->monster)
 	{
 		switch (AIHANDLER->states)
 		{
 		case EnemyStates::PATROL:
+			AIHANDLER->monster->speed = 10.f;
 			if (AIHANDLER->monster->HasReachedTarget())
 			{
 				if (AIHANDLER->path.size() > 0)
 				{
 					AIHANDLER->currentEnemyNode = AIHANDLER->path.at(0);
 					AIHANDLER->monster->SetNewTarget(AIHANDLER->path.at(0)->GetPos());
+#ifdef _DEBUG
 					std::cout << "Going to ID: " << AIHANDLER->path.at(0)->GetID() << std::endl;
+#endif
 					AIHANDLER->path.erase(AIHANDLER->path.begin());
 				}
 				else
@@ -142,23 +149,26 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 			}
 			else
 			{
-				AIHANDLER->monster->RotateTo(deltaTime);
-				AIHANDLER->monster->Move(deltaTime);
+				AIHANDLER->monster->RotateTo();
+				AIHANDLER->monster->Move();
 				if (AIHANDLER->chaseEnabled && omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::CHASE;
+#ifdef _DEBUG
 					std::cout << "Switching to Chase\n";
+#endif
 					AIHANDLER->stateSwitchTime = omp_get_wtime();
 					AIHANDLER->path.clear();
 				}
 			}
 			break;
 		case EnemyStates::CHASE:
+			AIHANDLER->monster->speed = 20.f;
 			if (AIHANDLER->chaseEnabled)
 			{
 
 				AIHANDLER->monster->SetNewTarget(AIHANDLER->player->GetPlayerPos());
-				AIHANDLER->monster->RotateTo(deltaTime);
+				AIHANDLER->monster->RotateTo();
 
 				if ((AIHANDLER->monster->GetPosition() - AIHANDLER->player->GetPlayerPos()).Length() < AIHANDLER->monster->GetAttackRange())
 				{
@@ -166,18 +176,22 @@ void AIHandler::MoveEnemy(const float& deltaTime)
 					{
 						AIHANDLER->monster->PlayAttackAnimation();
 						AIHANDLER->monster->Attack(AIHANDLER->player);
-						//std::cout << "Attacking\n";
+#ifdef _DEBUG
+						std::cout << "Attacking\n";
+#endif
 					}
 
 				}
 				else
 				{
-					AIHANDLER->monster->Move(deltaTime);
+					AIHANDLER->monster->Move();
 				}
 				if (omp_get_wtime() - AIHANDLER->stateSwitchTime > 2.f && !AIHANDLER->monster->IsCloseToPlayer(AIHANDLER->player->GetPlayerPos()))
 				{
 					AIHANDLER->states = EnemyStates::PATROL;
+#ifdef _DEBUG
 					std::cout << "Switching to Patrol\n";
+#endif
 					AIHANDLER->stateSwitchTime = omp_get_wtime();
 					AIHANDLER->monster->SetNewTarget(AIHANDLER->FindClosestNode(AIHANDLER->monster->GetPosition())->GetPos());
 				}
@@ -248,23 +262,12 @@ void AIHandler::AStarSearch()
 	openList.push_back(startingNode);
 	startingNode->SetFGH(0.f, 0.f, 0.f);
 	startingNode->SetParent(startingNode);
-	switch (AIHANDLER->nrOfAstar)
+
+	while (goalNode == AIHANDLER->currentEnemyNode)
 	{
-	case 0:
-		goalNode = AIHANDLER->GetNodeByID(33);
-		break;
-	case 1:
-		goalNode = AIHANDLER->GetNodeByID(31);
-		break;
-	default:
-		while (goalNode == AIHANDLER->currentEnemyNode)
-		{
-			goalNode = AIHANDLER->GetRandomNode();
-		}
-		break;
+		goalNode = AIHANDLER->GetRandomNode();
 	}
 
-	std::cout << "Destination: " << goalNode->GetID() << std::endl;;
 	Node* nodeToAdd = nullptr;
 	int index = 0;
 	while (!openList.empty() && nodeToAdd != goalNode)

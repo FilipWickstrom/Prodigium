@@ -25,9 +25,9 @@ private:
 	SoundHandler soundHandler;
 	RandomSpotPicker picker;
 	bool running;
-	bool hasLoaded;
 	bool zoomIn;
 	bool inGoal;
+	bool hasLoaded;
 
 	bool isInOptions;
 	std::vector<int> trapIndices;
@@ -37,15 +37,15 @@ private:
 
 	void Whisper();
 	void BulletTime();
-	void MonsterSounds(const float& deltaTime);
-	void HandleScenes(const float& deltaTime);
-	void HandleGameLogic(const float& deltaTime);
+	void MonsterSounds();
+	void HandleScenes();
+	void HandleGameLogic();
 	int amountOfObjects;
 public:
 	Game(const HINSTANCE& instance, const UINT& windowWidth, const UINT& windowHeight);
 	~Game();
 	const bool IsRunning() const;
-	void HandleInput(const float& deltaTime);
+	void HandleInput();
 	// Inherited via Engine
 	virtual bool OnFrame(const float& deltaTime) override;
 	virtual bool OnStart() override;

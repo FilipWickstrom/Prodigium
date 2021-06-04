@@ -219,7 +219,7 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones,
 	if (!this->reachedEnd)
 	{
 		//Adding to the current frame
-		this->currentFrameTime += this->ticksPerSecond * Graphics::GetDeltaTime();
+		this->currentFrameTime += this->ticksPerSecond * Graphics::deltaTime;
 
 		//Resets to start when reached end
 		if (this->currentFrameTime >= this->duration)
@@ -227,7 +227,7 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones,
 			if (!this->loopable)
 			{
 				this->reachedEnd = true;
-				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
+				this->currentFrameTime -= this->ticksPerSecond * Graphics::deltaTime;
 			}
 			else
 			{
@@ -241,7 +241,7 @@ void Animation::GetAnimationMatrices(const std::vector<std::string>& allBones,
 			if (!this->loopable)
 			{
 				this->reachedEnd = true;
-				this->currentFrameTime -= this->ticksPerSecond * Graphics::GetDeltaTime();
+				this->currentFrameTime -= this->ticksPerSecond * Graphics::deltaTime;
 			}
 			else
 			{ 

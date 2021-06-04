@@ -21,8 +21,8 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
-	void Move(DirectX::SimpleMath::Vector2& direction, const float& deltaTime);
+	void Update(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, DirectX::SimpleMath::Vector2& direction);
+	void Move(DirectX::SimpleMath::Vector2& direction);
 	void RotateCamera(const float& pitch, const float& yaw);
 	void Sprint();
 
@@ -44,7 +44,7 @@ public:
 	const DirectX::SimpleMath::Vector3& GetPlayerPos();
 	MeshObject* GetMeshObject() const;
 
-	void CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects, const float& deltaTime);
+	void CheckCollision(const std::unordered_map<std::uintptr_t, MeshObject*>& objects);
 
 	void SetMovement(bool toggle);
 	bool IsMoving();

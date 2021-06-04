@@ -24,7 +24,6 @@ private:
 	D3D11_VIEWPORT viewport;
 	UINT windowWidth;
 	UINT windowHeight;
-	float deltaTime;
 
 	bool CreateDeviceAndSwapChain(const HWND& windowHandler, const UINT& windowWidth, const UINT& windowHeight);
 	bool CreateZBufferStates();
@@ -34,6 +33,7 @@ private:
 public:
 	DELETE_COPY_ASSIGNMENT(Graphics);
 
+	static float deltaTime;
 	static ID3D11Device*& GetDevice();
 	static ID3D11DeviceContext* GetContext();
 	static IDXGISwapChain*& GetSwapChain();
@@ -49,6 +49,4 @@ public:
 	static void UnbindBackBuffer();
 	static void ClearDisplay();
 	static bool SetupGraphics();
-	static void SetDeltaTime(const float& time);
-	static const float& GetDeltaTime();
 };

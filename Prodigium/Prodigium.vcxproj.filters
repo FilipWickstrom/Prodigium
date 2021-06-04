@@ -145,9 +145,6 @@
     <ClCompile Include="InputHandler.cpp">
       <Filter>Engine\IO</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Engine\AI</Filter>
-    </ClCompile>
     <ClCompile Include="AIHandler.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
@@ -183,6 +180,9 @@
     </ClCompile>
     <ClCompile Include="SSAO.cpp">
       <Filter>Engine\Graphics\Techniques</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -279,9 +279,6 @@
     <ClInclude Include="InputHandler.h">
       <Filter>Engine\IO</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Engine\AI</Filter>
-    </ClInclude>
     <ClInclude Include="AIHandler.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
@@ -314,6 +311,9 @@
     </ClInclude>
     <ClInclude Include="Node.h">
       <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

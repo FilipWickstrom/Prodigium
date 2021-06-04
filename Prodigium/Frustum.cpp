@@ -150,10 +150,13 @@ bool Frustum::Initialize()
 
 	//SHOWCASE PURPOSE
 	//Matrix transform = Matrix::CreateTranslation({ 0.0f, 0.0f, 25.f });
+	//this->frustumColliderOriginal.Far = 100.f;
+
+	// THIS SHOULD BE ON WHEN NOT SHOWCASING
+	this->frustumColliderOriginal.Far = 250.f;
 	Matrix transform = Matrix::CreateTranslation(playerCam->position);
 
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
-	this->frustumColliderOriginal.Far = 250.f;
 
 	this->transformed = frustumColliderOriginal;
 

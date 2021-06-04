@@ -69,6 +69,7 @@ struct TextureRenderTargets
 * 0 = Directional Light.
 * 1 = Point Light.
 * 2 = Spot Light.
+* !(1 or 2 or 3) = No Light.
 */
 struct LightStruct
 {

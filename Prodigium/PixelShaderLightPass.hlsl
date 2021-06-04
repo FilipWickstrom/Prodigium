@@ -112,7 +112,7 @@ float doShadow(float index, float4 lightViewPos)
 
 float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 {
-    float4 diff = float4(1.0f, 1.0f, 1.0f, 0.8f);
+    float4 diff = float4(1.0f, 1.0f, 1.0f, 1.0f);
     float4 spec = float4(0.2f, 0.2f, 0.2f, 1.0f);
     float distance = length(lights[index].position.xyz - buff.positionWS.xyz);
     float3 lightVector = normalize(lights[index].position.xyz - buff.positionWS.xyz);
@@ -129,44 +129,47 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
     float diffuseFactor = max(dot(normals, lightVector), 0.0f);
     diff *= diffuseFactor;
     
+    float4 finalReturn = 0;
     if (diffuseFactor <= 0.f)
     {
-        return diff * shadowCoeff;
+        finalReturn = diff * shadowCoeff;
     }
-
-    float3 reflection = reflect(-lightVector, normals);
-    // --change to camera pos--
-    float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-    spec *= pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
+    else
+    {
+        float3 reflection = reflect(-lightVector, normals);
+        // --change to camera pos--
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+        spec *= pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
     
-    float3 direction = normalize(lights[index].direction.xyz);
+        float3 direction = normalize(lights[index].direction.xyz);
 
-    // Nice effect to fade the lgiht at the rim of the cone
-    float minCos = cos(15.f);
-    float maxCos = (minCos + 1.0f) * 0.5f;
-    float cosAngle = dot(direction, -lightVector);
-    float spot = smoothstep(minCos, maxCos, cosAngle);
+        // Nice effect to fade the lgiht at the rim of the cone
+        float minCos = cos(15.f);
+        float maxCos = (minCos + 1.0f) * 0.5f;
+        float cosAngle = dot(direction, -lightVector);
+        float spot = smoothstep(minCos, maxCos, cosAngle);
         
-    float range = lights[index].position.w;
-    float d = max(distance - range, 0);
+        float range = lights[index].position.w;
+        float d = max(distance - range, 0);
         
-    //Attenuate depending on distance from lightsource
-    float denom = d / range + 1.f;
-    float attenuation = 1.f / (denom * denom);
-    float cutoff = 0.001f;
+        //Attenuate depending on distance from lightsource
+        float denom = d / range + 0.75f;
+        float attenuation = 1.f / (denom * denom);
+        float cutoff = 0.1f;
      
-    // scale and bias attenuation such that:
-    // attenuation == 0 at extent of max influence
-    // attenuation == 1 when d == 0
-    attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.05f;
-    attenuation = max(attenuation, 0);
+        // scale and bias attenuation such that:
+        // attenuation == 0 at extent of max influence
+        // attenuation == 1 when d == 0
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = max(attenuation, 0);
         
-    float4 matSpec = float4(buff.specular.xyz, 1.0f);
-    s += spec * matSpec * attenuation * spot * shadowCoeff;
-    diff *= attenuation * spot * shadowCoeff;
-
-    
-    return diff;
+        float4 matSpec = float4(buff.specular.xyz, 1.0f);
+        s += spec * matSpec * attenuation * spot * shadowCoeff;
+        diff *= attenuation * spot * shadowCoeff;
+        
+        finalReturn = diff;
+    }
+    return finalReturn;
 }
 
 float4 doDirectional(float index, GBuffers buff, inout float4 s)
@@ -181,19 +184,23 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
 
     diff *= diffuseFactor;
     
+    float4 finalReturn = 0;
     if (diffuseFactor <= 0.f)
     {
-        return diff;
+        finalReturn = diff;
     }
-    
-    float3 v = reflect(-lightVec, normals);
-    float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-    float specFactor = pow(max(dot(v, toEye), 0.0f), buff.specular.w);
+    else
+    {
+        float3 v = reflect(-lightVec, normals);
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+        float specFactor = pow(max(dot(v, toEye), 0.0f), buff.specular.w);
 
-    float4 matSpec = float4(buff.specular.xyz, 1.0f);
-    s += spec * matSpec * specFactor;
-
-    return diff;
+        float4 matSpec = float4(buff.specular.xyz, 1.0f);
+        s += spec * matSpec * specFactor;
+        
+        finalReturn = diff;
+    }
+    return finalReturn;
 }
 
 float4 doPointLight(float index, GBuffers buff, inout float4 s)
@@ -216,37 +223,41 @@ float4 doPointLight(float index, GBuffers buff, inout float4 s)
     float diffuseFactor = max(dot(vecToLight, normals), 0.0f);
     diff *= diffuseFactor;
 
+    float4 finalReturn = 0;
     if (diffuseFactor <= 0.f)
     {
-        return diff * shadowCoeff;
+        finalReturn = diff * shadowCoeff;
     }
-    
-    //Specular
-    float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
-    float3 reflection = normalize(reflect(-vecToLight, normals));
-    float specular = pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
+    else
+    {
+        //Specular
+        float3 toEye = normalize(camPos.xyz - buff.positionWS.xyz);
+        float3 reflection = normalize(reflect(-vecToLight, normals));
+        float specular = pow(max(dot(reflection, toEye), 0.0f), buff.specular.w);
         
-    float range = lights[index].position.w;
-    float d = max(distance - range, 0);
+        float range = lights[index].position.w;
+        float d = max(distance - range, 0);
         
-    //Attenuate depending on distance from lightsource
-    float denom = d / range + 1.f;
-    float attenuation = 1.f / (denom * denom);
-    float cutoff = 0.01f;
+        //Attenuate depending on distance from lightsource
+        float denom = d / range + 0.75f;
+        float attenuation = 1.f / (denom * denom);
+        float cutoff = 0.1f;
      
-    // scale and bias attenuation such that:
-    // attenuation == 0 at extent of max influence
-    // attenuation == 1 when d == 0
-    attenuation = (attenuation - cutoff) / (1 - cutoff) - 0.1f;
-    attenuation = max(attenuation, 0);
+        // scale and bias attenuation such that:
+        // attenuation == 0 at extent of max influence
+        // attenuation == 1 when d == 0
+        attenuation = (attenuation - cutoff) / (1 - cutoff);
+        attenuation = max(attenuation, 0);
     
-    // Add upp the specular
-    float4 matSpec = float4(buff.specular.xyz, 1.0f);
-    s += spec * matSpec * specular * attenuation * shadowCoeff;
+        // Add upp the specular
+        float4 matSpec = float4(buff.specular.xyz, 1.0f);
+        s += spec * matSpec * specular * attenuation * shadowCoeff;
             
-    diff *= attenuation;
+        diff *= attenuation;
         
-    return diff * shadowCoeff;
+        finalReturn = diff * shadowCoeff;
+    }
+    return finalReturn;
 }
 
 float4 main(PixelShaderInput input) : SV_TARGET
