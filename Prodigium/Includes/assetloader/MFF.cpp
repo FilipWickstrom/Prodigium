@@ -32,7 +32,7 @@ void MFF::ReadMesh()
 
 		vertex.positions.z = -vertex.positions.z;
 		vertex.normals.z = -vertex.normals.z;
-		vertex.uvs.y = -vertex.uvs.y;
+		vertex.uvs.y = 1 - vertex.uvs.y;
 
 		m_meshVertices.push_back(vertex);
 	}

@@ -84,7 +84,7 @@ bool Mesh::LoadFile(std::string fileName)
 
 		if (nrOfMeshes <= 0)
 			return false;
-
+		
 		this->meshes.resize(nrOfMeshes);
 		meshPositions.resize(nrOfMeshes);
 

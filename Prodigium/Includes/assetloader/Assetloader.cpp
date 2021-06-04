@@ -11,7 +11,7 @@ bool AssetLoader::LoadModel(const char* p_Path)
 		return true;
 }
 
-const MyFileFormat::Mesh AssetLoader::GetModel(unsigned int modelId)
+const MyFileFormat::Mesh& AssetLoader::GetModel(unsigned int modelId)
 {
 	return MFF::GetMFF().GetModel(modelId);
 }
