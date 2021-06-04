@@ -15,7 +15,7 @@ void Player::RotatePlayer()
 Player::Player()
 {
 	this->playerModel = new MeshObject;
-	this->playerModel->Initialize("Player", true, true, { 0,-5,0 }, { 0, DirectX::XM_PI,0 });
+	this->playerModel->Initialize("Player", true, true, { -40.f,-5.3f,45.f }, { 0, -DirectX::XM_PIDIV2,0 });
 
 	Vector3 cameraOffset = { 0.0f, 7.5f, -17.f };
 	this->speed = 10.f;

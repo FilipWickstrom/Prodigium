@@ -712,7 +712,7 @@ void Game::LoadMap()
 	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	
 	// Terrain
-	EDITSCENE.Add("Terrain.mff", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1000.0f, 1.0f, 1000.0f });
+	EDITSCENE.Add("Terrain.mff", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 20.0f, 1.0f, 20.0f });
 
 	LightStruct L;
 
@@ -733,22 +733,22 @@ void Game::LoadMap()
 		std::string normalmap = "";
 
 		// Used to fix inconsistencies in scale and rotation.
-		if (clue == "book" || clue == "toy")
+		if (clue == "Book" || clue == "Toy")
 			scale = { 0.5f, 0.5f, 0.5f };
 
-		else if (clue == "drawing")
+		else if (clue == "Drawing")
 		{
 			rotation = { 3.14159f, 3.14159f, 0.0f };
 			scale = { 0.5f, 0.5f, 0.5f };
 			normalmap = "drawing_normal.png";
 		}
 
-		else if (clue == "mask")
+		else if (clue == "Mask")
 		{
 			scale = { 1.2f, 1.2f, 1.2f };
 			normalmap = "mask_normal.png";
 		}
-		else if (clue == "knife")
+		else if (clue == "Knife")
 		{
 			scale = { 0.25f, 0.25f, 0.25f };
 		}
@@ -981,7 +981,7 @@ void Game::LoadMap()
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	EDITSCENE.Add("BoundingBox.mff", true, false, { -150.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 118,10,76 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
-	EDITSCENE.Add("BoundingBox.mff", true, false, { -106.0f, 0.0f, 48.0f }, { 0.0f, 4.71238898f, 0.0f }, { 72,10,15 });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -106.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 76,10,15 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	EDITSCENE.Add("BoundingBox.mff", true, false, { -90.0f, 0.0f, 50.0f }, { 0.0f, 4.71238898f, 0.0f }, { 44,10,17 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);

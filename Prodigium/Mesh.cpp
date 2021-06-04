@@ -9,7 +9,7 @@ bool Mesh::CreateVertIndiBuffers(const std::vector<MyFileFormat::VertexData>& ve
 	/*-----Vertexbuffer-----*/
 	D3D11_BUFFER_DESC desc = {};
 	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	desc.ByteWidth = sizeof(MyFileFormat::VertexData) * (UINT)vertices.size();
+	desc.ByteWidth = (sizeof(MyFileFormat::VertexData)) * (UINT)vertices.size();
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
@@ -124,10 +124,12 @@ bool Mesh::LoadFile(std::string fileName)
 			vertices[i].tangent.y = vertexSet[0][i].tangent.y;
 			vertices[i].tangent.z = vertexSet[0][i].tangent.z;
 
+			
 			//BiTangents
 			vertices[i].biTangent.x = vertexSet[0][i].biTangent.x;
 			vertices[i].biTangent.y = vertexSet[0][i].biTangent.y;
 			vertices[i].biTangent.z = vertexSet[0][i].biTangent.z;
+			
 		}
 
 

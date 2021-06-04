@@ -20,7 +20,6 @@ struct VertexShaderInput
     float2 texCoord : TEXCOORD;
     float3 normal   : NORMAL;
     float3 tangent  : TANGENT;
-    float3 biTangent : BITANGENT;
 };
 
 struct VertexShaderOutput
@@ -30,7 +29,6 @@ struct VertexShaderOutput
     float2 texCoord   : TEXCOORD;
     float3 normalWS   : NORMAL;
     float4 tangent    : TANGENT;
-    float3 biTangent  : BITANGENT;
     float4 viewPosNorm : SSAO;
 };
 
@@ -54,9 +52,6 @@ VertexShaderOutput main(VertexShaderInput input)
     float4 viewPos = mul(mul(float4(input.position, 1.0f), world), view);
     float3 viewNormal = normalize(mul(input.normal, (float3x3) mul(world, view)));
     output.viewPosNorm = float4(viewNormal.xyz, viewPos.z);
-
-    
-    output.biTangent = mul(input.biTangent, (float3x3)world);
 
 	return output;
 }
