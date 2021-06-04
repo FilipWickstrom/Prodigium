@@ -709,7 +709,7 @@ void Game::LoadMap()
 	Engine::EDITSCENE.AddDynamicObject(this->enemy->GetMeshObject());
 	AIHandler::Initialize();
 	AIHandler::SetEnemyAndPlayer(enemy, player);
-	this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
+	//this->enemy->GetMeshObject()->position = { 10.f, 0.f, 10.f };
 	
 	// Terrain
 	EDITSCENE.Add("Terrain.mff", false, false, { 0.0f, -5.25f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1000.0f, 1.0f, 1000.0f });
@@ -1010,16 +1010,16 @@ void Game::LoadMap()
 		Bounds
 	*/
 	//Left of spawn
-	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { -350,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { -350,5,-50 }, { 0,0,0 }, { 1,10,800 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	//Front of spawn
-	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,350 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 200,5,350 }, { 0,0,0 }, { 1100,10,1 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	//Right of spawn
-	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 750,5,-50 }, { 0,0,0 }, { 1,10,400 });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 750,5,-50 }, { 0,0,0 }, { 1,10,800 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 	//Back from spawn
-	EDITSCENE.Add("geo_cube.obj", "", "", true, false, { 200,5,-450 }, { 0,0,0 }, { 550,10,1 });
+	EDITSCENE.Add("BoundingBox.mff", true, false, { 200,5,-450 }, { 0,0,0 }, { 1100,10,1 });
 	EDITSCENE.GetMeshObject(EDITSCENE.GetNumberOfObjects() - 1).SetVisible(false);
 
 	// Tree galore!! aka Performance test
