@@ -98,7 +98,9 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		box.Extents = { 750.f, 6.0f, 750.f };
 		root->bounds = box;
 		root->objects = objects;
+#ifdef _DEBUG
 		this->CreateVertiAndIndices(root);
+#endif
 
 		this->AddNodes(0, root);
 	}
@@ -148,13 +150,16 @@ QuadTree::~QuadTree()
 
 QuadTree::QuadNode::QuadNode()
 {
+#ifdef _DEBUG
 	this->vBuffer = nullptr;
+#endif
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
 		childs[i] = nullptr;
 	}
 }
 
+#ifdef _DEBUG
 bool QuadTree::CreateVertiAndIndices(QuadNode* node)
 {
 	DirectX::XMFLOAT3 corners[8];
@@ -204,6 +209,7 @@ bool QuadTree::CreateVertiAndIndices(QuadNode* node)
 
 	return true;
 }
+#endif
 
 void QuadTree::CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child)
 {

@@ -21,7 +21,9 @@ private:
 		QuadNode();
 	};
 
+#ifdef _DEBUG
 	bool CreateVertiAndIndices(QuadNode* node);
+#endif
 
 	// Recursive call to add into Quadtree
 	void CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child);
