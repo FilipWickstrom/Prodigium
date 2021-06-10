@@ -14,9 +14,9 @@ void QuadTree::AddNodes(int level, QuadNode* node)
 	{
 		node->childs[i] = new QuadNode;
 		this->CalculateChildDimensions(i, node, node->childs[i]);
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		this->CreateVertiAndIndices(node->childs[i]);
-#endif
+//#endif
 		AddNodes(level + 1, node->childs[i]);
 	}
 }
@@ -31,9 +31,9 @@ void QuadTree::ClearTree(QuadNode* node)
 		}
 	}
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	node->vBuffer->Release();
-#endif
+//#endif
 
 	delete node;
 }
@@ -46,10 +46,10 @@ void QuadTree::DrawableNodesInternal(QuadNode* node, const DirectX::BoundingFrus
 	{
 		return;
 	}
-
-#ifdef _DEBUG
+//
+//#ifdef _DEBUG
 	this->nodesToDraw.push_back(node);
-#endif
+//#endif
 
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
@@ -98,9 +98,9 @@ void QuadTree::BuildQuadTree(const std::vector<MeshObject*>& objects)
 		box.Extents = { 750.f, 6.0f, 750.f };
 		root->bounds = box;
 		root->objects = objects;
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		this->CreateVertiAndIndices(root);
-#endif
+//#endif
 
 		this->AddNodes(0, root);
 	}
@@ -113,13 +113,13 @@ void QuadTree::DrawableNodes(const DirectX::BoundingFrustum& frustum, std::unord
 		return;
 	}
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	this->nodesToDraw.clear();
-#endif
+//#endif
 	this->DrawableNodesInternal(root, frustum, out);
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 void QuadTree::RenderNodes()
 {
 	Graphics::GetContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
@@ -132,7 +132,7 @@ void QuadTree::RenderNodes()
 		Graphics::GetContext()->Draw(16, 0);
 	}
 }
-#endif
+//#endif
 
 QuadTree::QuadTree(int depth)
 	:depth(depth)
@@ -150,16 +150,16 @@ QuadTree::~QuadTree()
 
 QuadTree::QuadNode::QuadNode()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	this->vBuffer = nullptr;
-#endif
+//#endif
 	for (int i = 0; i < CHILD_COUNT; i++)
 	{
 		childs[i] = nullptr;
 	}
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 bool QuadTree::CreateVertiAndIndices(QuadNode* node)
 {
 	DirectX::XMFLOAT3 corners[8];
@@ -209,7 +209,7 @@ bool QuadTree::CreateVertiAndIndices(QuadNode* node)
 
 	return true;
 }
-#endif
+//#endif
 
 void QuadTree::CalculateChildDimensions(int index, QuadNode* parent, QuadNode* child)
 {

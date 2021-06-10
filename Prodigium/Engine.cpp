@@ -131,7 +131,7 @@ void Engine::Render(Player* player)
 	this->lightPass.Clear();
 
 	Graphics::BindBackBuffer(this->gPass.GetDepthStencilView());
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if (inGame)
 	{
 		DebugInfo::Prepare();
@@ -141,7 +141,7 @@ void Engine::Render(Player* player)
 
 		DebugInfo::Clear();
 	}
-#endif
+//#endif
 
 	if (this->options.hasParticles)
 	{

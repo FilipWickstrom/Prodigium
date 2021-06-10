@@ -10,12 +10,12 @@ private:
 	DirectX::BoundingFrustum transformed;
 	DirectX::BoundingFrustum frustumColliderOriginal;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* iBuffer;
 
 	bool CreateVertIndiBuffers();
-#endif
+//#endif
 
 public:
 	Frustum();
@@ -30,7 +30,7 @@ public:
 	void Drawable(QuadTree*& quadTree, std::unordered_map<std::uintptr_t, MeshObject*>& out);
 	bool Initialize();
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	void Render(QuadTree* quadTree);
-#endif
+//#endif
 };

@@ -2,7 +2,7 @@
 #include "ResourceManager.h"
 #include "Graphics.h"
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 bool Frustum::CreateVertIndiBuffers()
 {
 	DirectX::XMFLOAT3 corners[8];
@@ -95,14 +95,14 @@ bool Frustum::CreateVertIndiBuffers()
 
 	return true;
 }
-#endif
+//#endif
 
 Frustum::Frustum()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	this->vBuffer = nullptr;
 	this->iBuffer = nullptr;
-#endif
+//#endif
 }
 
 Frustum::Frustum(const Frustum& other)
@@ -116,12 +116,12 @@ Frustum::Frustum(const Frustum& other)
 
 Frustum::~Frustum()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	if (this->vBuffer)
 		this->vBuffer->Release();
 	if (this->iBuffer)
 		this->iBuffer->Release();
-#endif
+//#endif
 }
 
 void Frustum::Update()
@@ -159,18 +159,18 @@ bool Frustum::Initialize()
 	this->frustumColliderOriginal.Transform(this->frustumColliderOriginal, transform);
 
 	this->transformed = frustumColliderOriginal;
-
-#ifdef _DEBUG
+//
+//#ifdef _DEBUG
 	if (!CreateVertIndiBuffers())
 	{
 		return false;
 	}
-#endif
+//#endif
 
 	return true;
 }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 void Frustum::Render(QuadTree* quadTree)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedData = {};
@@ -190,8 +190,8 @@ void Frustum::Render(QuadTree* quadTree)
 	Graphics::GetContext()->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 	Graphics::GetContext()->DrawIndexed(24, 0, 0);
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	quadTree->RenderNodes();
-#endif
+//#endif
 }
-#endif
+//#endif

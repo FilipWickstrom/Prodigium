@@ -592,14 +592,14 @@ bool Game::OnFrame(const float& deltaTime)
 
 bool Game::OnStart()
 {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	OpenConsole();
 
 	if (!DebugInfo::Initialize())
 	{
 		return false;
 	}
-#endif
+//#endif
 
 	this->menu.Init();
 	this->LoadMainMenu();

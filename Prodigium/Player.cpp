@@ -28,8 +28,8 @@ Player::Player()
 	this->playerModel->right = this->playerModel->up.Cross(this->playerModel->forward);
 	this->playerCam = new CameraObject;
 	ResourceManager::AddCamera("PlayerCam", playerCam);
-	//this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
-	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 1500.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
+	this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 425.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
+	//this->playerCam->Initialize(Graphics::GetWindowWidth(), Graphics::GetWindowHeight(), 0.1f, 1500.f, DirectX::XM_PI * 0.5f, cameraOffset, { 0.0f, 0.0f, 1.0f });
 	this->playerCam->MoveCameraTowards(this->playerModel->position);
 
 	//Fixes the large hitbox of the tposing player

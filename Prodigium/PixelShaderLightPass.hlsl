@@ -127,6 +127,7 @@ float4 doSpotlight(float index, GBuffers buff, inout float4 s)
 
     float3 normals = normalize(buff.normalWS.xyz);
     float diffuseFactor = max(dot(normals, lightVector), 0.0f);
+    diffuseFactor = floor(diffuseFactor * 10.f) / 10.f;
     diff *= diffuseFactor;
     
     float4 finalReturn = 0;
@@ -181,6 +182,7 @@ float4 doDirectional(float index, GBuffers buff, inout float4 s)
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     float diffuseFactor = max(dot(lightVec, normals), 0.0f);
+    diffuseFactor = floor(diffuseFactor * 10) / 10;
 
     diff *= diffuseFactor;
     
@@ -301,6 +303,12 @@ float4 main(PixelShaderInput input) : SV_TARGET
         }
     }
 
+    float4 offsetguy = G_colour.Sample(anisotropic, input.texCoord - 0.0002f);
+    
+    if(length(gbuffers.diffuseColor - offsetguy) > 0.1f)
+    {
+        return float4(0.f, 0.f, 0.f, 1.f);
+    }
     
     float4 finalColor = ((saturate(lightColor) * gbuffers.diffuseColor + ambient) + saturate(specular));
     
